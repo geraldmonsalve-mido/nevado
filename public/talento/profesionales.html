@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profesionales — Capital Humano · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #05050A; --ivory: #E8E4DC; --gold: #B8944A; --accent: #F4D03F; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#F4D03F; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#F4D03F; background:rgba(244,208,63,0.10); border:1px solid rgba(244,208,63,0.28); box-shadow:0 0 12px rgba(244,208,63,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#F4D03F; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    .page-content { padding:32px 10vw 80px; position:relative; z-index:10; }
+    .page-header { margin-bottom:32px; }
+    .page-tag { font-size:9px; font-weight:600; letter-spacing:0.25em; text-transform:uppercase; color:#F4D03F; margin-bottom:12px; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,7vw,5rem); letter-spacing:0.04em; line-height:0.92; color:var(--ivory); margin-bottom:12px; }
+    .page-desc { font-size:14px; font-weight:300; color:var(--text-mid); max-width:560px; line-height:1.7; }
+    .btn-accent { background:#F4D03F; color:#05050A; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#F4D03F; border:1px solid rgba(244,208,63,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(244,208,63,0.08); }
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#F4D03F; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#F4D03F; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    @media(max-width:768px){ .std-fg { grid-template-columns:1fr 1fr; } }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#F4D03F; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+    /* PAGE SPECIFIC */
+    .search-bar { display:flex; gap:12px; margin-bottom:16px; align-items:center; }
+    .search-input { flex:1; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:11px 16px; font-size:13px; color:var(--ivory); font-family:inherit; outline:none; transition:border-color 0.2s; cursor:none; }
+    .search-input:focus { border-color:#F4D03F; }
+    .search-input::placeholder { color:var(--text-dim); }
+    .filters-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+    .filter-select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:7px 12px; font-size:11px; color:var(--text-mid); font-family:inherit; outline:none; cursor:none; }
+    .filter-select:focus { border-color:#F4D03F; }
+    .filter-pill { background:transparent; border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:11px; letter-spacing:0.06em; color:var(--text-mid); cursor:none; transition:all 0.2s; font-family:inherit; }
+    .filter-pill:hover { border-color:rgba(244,208,63,0.30); color:rgba(232,228,220,0.80); }
+    .filter-pill.active { border-color:#F4D03F; color:#F4D03F; background:rgba(244,208,63,0.08); }
+    .pros-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    @media(max-width:900px){ .pros-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:560px){ .pros-grid { grid-template-columns:1fr; } }
+    .pro-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px; transition:border-color 0.2s,transform 0.2s; }
+    .pro-card:hover { border-color:rgba(244,208,63,0.25); transform:translateY(-2px); }
+    .pro-top { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+    .pro-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#05050A; flex-shrink:0; }
+    .pro-name { font-size:14px; font-weight:600; color:var(--ivory); }
+    .pro-role { font-size:12px; color:var(--text-mid); margin-top:2px; }
+    .pro-location { font-size:11px; color:var(--text-dim); margin-top:2px; }
+    .pro-skills { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+    .skill-tag { background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text-mid); font-size:10px; padding:3px 8px; border-radius:12px; }
+    .pro-footer { display:flex; align-items:center; justify-content:space-between; }
+    .status-badge-avail { display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#2ECC71; }
+    .status-badge-avail::before { content:''; width:6px; height:6px; border-radius:50%; background:#2ECC71; }
+    .status-badge-busy { display:inline-flex; align-items:center; gap:5px; font-size:10px; color:var(--text-dim); }
+    .status-badge-busy::before { content:''; width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.20); }
+    .pro-btns { display:flex; gap:6px; }
+    .pro-btn { background:transparent; border:1px solid var(--border); border-radius:5px; padding:5px 10px; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-mid); cursor:none; font-family:inherit; transition:all 0.2s; }
+    .pro-btn:hover { border-color:rgba(244,208,63,0.30); color:#F4D03F; }
+    .pro-btn.primary { border-color:rgba(244,208,63,0.35); color:#F4D03F; }
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:1000; display:none; align-items:center; justify-content:center; padding:20px; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:#0E0E16; border:1px solid rgba(255,255,255,0.10); border-radius:12px; padding:36px; max-width:580px; width:100%; max-height:80vh; overflow-y:auto; }
+    .modal-close-btn { float:right; background:transparent; border:none; color:var(--text-dim); font-size:20px; cursor:none; }
+    .modal-avatar { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; color:#05050A; margin-bottom:16px; }
+    .modal-name { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.04em; color:var(--ivory); }
+    .modal-role { font-size:14px; color:var(--text-mid); margin-bottom:20px; }
+    .modal-bio { font-size:13px; color:var(--text-mid); line-height:1.8; margin-bottom:20px; }
+    .modal-section { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:10px; margin-top:20px; }
+    .exp-item { margin-bottom:12px; }
+    .exp-title { font-size:13px; font-weight:600; color:var(--ivory); }
+    .exp-meta { font-size:11px; color:var(--text-dim); }
+    .modal-links { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .modal-link { font-size:11px; color:#F4D03F; text-decoration:none; border:1px solid rgba(244,208,63,0.25); border-radius:5px; padding:5px 12px; }
+    .modal-link:hover { background:rgba(244,208,63,0.08); }
+    .modal-cta { display:flex; gap:10px; margin-top:24px; }
+  </style>
+</head>
+<body data-accent="yellow">
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item active" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a href="/talento.html" class="nv-bc-back">← Capital Humano</a>
+  <span class="nv-bc-sep">·</span>
+  <span class="nv-bc-current">Red de Profesionales</span>
+</div>
+
+<main class="page-content">
+  <div class="page-header">
+    <div class="page-tag">Capital Humano</div>
+    <h1 class="page-title">RED DE<br>PROFESIONALES</h1>
+    <p class="page-desc">Conecta con el talento venezolano más destacado en el mercado global. Más de 12,400 profesionales verificados.</p>
+  </div>
+
+  <!-- SEARCH + FILTERS -->
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Buscar por nombre, habilidad o cargo..." id="search-input" oninput="filterCards()">
+  </div>
+  <div class="filters-row">
+    <button class="filter-pill active" onclick="setFilter('area','all',this)">Todos</button>
+    <button class="filter-pill" onclick="setFilter('area','Dev',this)">Desarrollo</button>
+    <button class="filter-pill" onclick="setFilter('area','Design',this)">Diseño</button>
+    <button class="filter-pill" onclick="setFilter('area','Marketing',this)">Marketing</button>
+    <button class="filter-pill" onclick="setFilter('area','Data',this)">Data</button>
+    <button class="filter-pill" onclick="setFilter('area','Finance',this)">Finanzas</button>
+    <span style="color:var(--border);margin:0 4px;">|</span>
+    <button class="filter-pill active" onclick="setFilter('avail','all',this)" data-group="avail">Todos</button>
+    <button class="filter-pill" onclick="setFilter('avail','disponible',this)" data-group="avail">Disponible</button>
+    <button class="filter-pill" onclick="setFilter('avail','ocupado',this)" data-group="avail">Ocupado</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="pros-grid" id="pros-grid">
+
+    <!-- CARD 1 -->
+    <div class="pro-card" data-area="Dev" data-avail="disponible" data-id="1">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#F4D03F">AC</div>
+        <div>
+          <div class="pro-name">Ana Carolina Ríos</div>
+          <div class="pro-role">Full Stack Developer</div>
+          <div class="pro-location">🇻🇪 Caracas, Venezuela</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">PostgreSQL</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(1)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud de conexión enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="pro-card" data-area="Design" data-avail="ocupado" data-id="2">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#5DADE2">JM</div>
+        <div>
+          <div class="pro-name">José Manuel Salcedo</div>
+          <div class="pro-role">Senior Product Designer</div>
+          <div class="pro-location">🇪🇸 Madrid, España</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Figma</span>
+        <span class="skill-tag">Design Systems</span>
+        <span class="skill-tag">UX Research</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-busy">Ocupado</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(2)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="pro-card" data-area="Data" data-avail="disponible" data-id="3">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#2ECC71">VR</div>
+        <div>
+          <div class="pro-name">Valentina Rondón</div>
+          <div class="pro-role">Data Scientist</div>
+          <div class="pro-location">🇨🇱 Santiago, Chile</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Machine Learning</span>
+        <span class="skill-tag">SQL</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(3)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="pro-card" data-area="Dev" data-avail="disponible" data-id="4">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#E74C3C">LG</div>
+        <div>
+          <div class="pro-name">Luis Gabriel Pérez</div>
+          <div class="pro-role">Backend Engineer</div>
+          <div class="pro-location">🇨🇴 Bogotá, Colombia</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Go</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">Microservices</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(4)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 5 -->
+    <div class="pro-card" data-area="Marketing" data-avail="disponible" data-id="5">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#9B59B6">MF</div>
+        <div>
+          <div class="pro-name">María Fernanda Ochoa</div>
+          <div class="pro-role">Growth Marketing Lead</div>
+          <div class="pro-location">🇺🇸 Miami, EEUU</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">SEO/SEM</span>
+        <span class="skill-tag">HubSpot</span>
+        <span class="skill-tag">Analytics</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(5)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 6 -->
+    <div class="pro-card" data-area="Finance" data-avail="ocupado" data-id="6">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#F39C12">RC</div>
+        <div>
+          <div class="pro-name">Rafael Contreras</div>
+          <div class="pro-role">CFO Fractional / Finanzas</div>
+          <div class="pro-location">🇵🇪 Lima, Perú</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">FP&A</span>
+        <span class="skill-tag">Crypto / DeFi</span>
+        <span class="skill-tag">Excel Avanzado</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-busy">Ocupado</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(6)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 7 -->
+    <div class="pro-card" data-area="Dev" data-avail="disponible" data-id="7">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#1ABC9C">KA</div>
+        <div>
+          <div class="pro-name">Karla Andreína Blanco</div>
+          <div class="pro-role">Mobile Developer · iOS/Android</div>
+          <div class="pro-location">🇦🇷 Buenos Aires, Argentina</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Swift</span>
+        <span class="skill-tag">React Native</span>
+        <span class="skill-tag">Flutter</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(7)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 8 -->
+    <div class="pro-card" data-area="Design" data-avail="disponible" data-id="8">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#E67E22">DM</div>
+        <div>
+          <div class="pro-name">Diego Medina Solano</div>
+          <div class="pro-role">Brand Designer · Motion</div>
+          <div class="pro-location">🇻🇪 Maracaibo, Venezuela</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">After Effects</span>
+        <span class="skill-tag">Illustrator</span>
+        <span class="skill-tag">Brand Identity</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(8)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 9 -->
+    <div class="pro-card" data-area="Data" data-avail="ocupado" data-id="9">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#2980B9">GP</div>
+        <div>
+          <div class="pro-name">Gabriela Páez Torres</div>
+          <div class="pro-role">Data Engineer · Cloud</div>
+          <div class="pro-location">🇨🇴 Medellín, Colombia</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Spark</span>
+        <span class="skill-tag">dbt</span>
+        <span class="skill-tag">BigQuery</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-busy">Ocupado</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(9)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 10 -->
+    <div class="pro-card" data-area="Dev" data-avail="disponible" data-id="10">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#8E44AD">OV</div>
+        <div>
+          <div class="pro-name">Orlando Vásquez</div>
+          <div class="pro-role">DevOps / SRE Engineer</div>
+          <div class="pro-location">🇻🇪 Valencia, Venezuela</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">Terraform</span>
+        <span class="skill-tag">CI/CD</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(10)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 11 -->
+    <div class="pro-card" data-area="Marketing" data-avail="disponible" data-id="11">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#27AE60">CB</div>
+        <div>
+          <div class="pro-name">Carmen Beatriz Leal</div>
+          <div class="pro-role">Content Strategist · SaaS</div>
+          <div class="pro-location">🇺🇸 Austin, EEUU</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Content Marketing</span>
+        <span class="skill-tag">SEO</span>
+        <span class="skill-tag">Copywriting</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(11)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 12 -->
+    <div class="pro-card" data-area="Finance" data-avail="disponible" data-id="12">
+      <div class="pro-top">
+        <div class="pro-avatar" style="background:#C0392B">HA</div>
+        <div>
+          <div class="pro-name">Héctor Alejandro Mora</div>
+          <div class="pro-role">Financial Analyst · Startup</div>
+          <div class="pro-location">🇨🇱 Santiago, Chile</div>
+        </div>
+      </div>
+      <div class="pro-skills">
+        <span class="skill-tag">Modelado Financiero</span>
+        <span class="skill-tag">Tableau</span>
+        <span class="skill-tag">M&A</span>
+      </div>
+      <div class="pro-footer">
+        <span class="status-badge-avail">Disponible</span>
+        <div class="pro-btns">
+          <button class="pro-btn primary" onclick="openModal(12)">Ver perfil</button>
+          <button class="pro-btn" onclick="alert('Solicitud enviada (demo)')">Conectar</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end grid -->
+</main>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal-box" id="modal-content">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N·EVADO</a>
+      <p class="std-fl-desc">Red de talento venezolano para el mercado global.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Capital Humano</div>
+      <a class="std-fl" href="/talento/cv.html">Constructor de CV</a>
+      <a class="std-fl" href="/talento/profesionales.html">Profesionales</a>
+      <a class="std-fl" href="/talento/mentorias.html">Mentorías</a>
+      <a class="std-fl" href="/talento/aplicaciones.html">Mis Aplicaciones</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · Capital Humano · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+<script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+const PROFILES = {
+  1:{name:'Ana Carolina Ríos',role:'Full Stack Developer',location:'🇻🇪 Caracas, Venezuela',color:'#F4D03F',initials:'AC',bio:'Ingeniera en Computación egresada de la USB con 5 años de experiencia construyendo productos digitales. Apasionada por la arquitectura de software limpia y la experiencia de usuario. Ha trabajado con equipos distribuidos en Venezuela, Colombia y España.',skills:['React','Node.js','PostgreSQL','TypeScript','Docker'],exp:[{title:'Lead Frontend · TechRemote VE',dates:'2023 – presente'},{title:'Full Stack Dev · Guaire Labs',dates:'2021 – 2023'},{title:'Dev Jr · MiCV.app',dates:'2020 – 2021'}],links:['github.com/acaríos','linkedin.com/in/anacarios']},
+  2:{name:'José Manuel Salcedo',role:'Senior Product Designer',location:'🇪🇸 Madrid, España',color:'#5DADE2',initials:'JM',bio:'Diseñador con 7 años de experiencia creando design systems y productos digitales para empresas en LATAM y Europa. Especializado en UX research y diseño orientado a conversión.',skills:['Figma','Design Systems','UX Research','Prototyping','User Testing'],exp:[{title:'Lead Designer · Startup EU',dates:'2022 – presente'},{title:'Senior Designer · Nodo VE',dates:'2019 – 2022'}],links:['jmsalcedo.design','linkedin.com/in/jmsalcedo']},
+  3:{name:'Valentina Rondón',role:'Data Scientist',location:'🇨🇱 Santiago, Chile',color:'#2ECC71',initials:'VR',bio:'Matemática de la UCV convertida en Data Scientist. Especialista en modelos predictivos para e-commerce y fintech. Experiencia con grandes volúmenes de datos y puesta en producción de modelos ML.',skills:['Python','Scikit-learn','TensorFlow','SQL','Tableau'],exp:[{title:'Data Scientist Sr · Falabella',dates:'2024 – presente'},{title:'ML Engineer · Mercado VE',dates:'2022 – 2024'}],links:['github.com/vrondon','linkedin.com/in/valentinarondon']},
+  4:{name:'Luis Gabriel Pérez',role:'Backend Engineer',location:'🇨🇴 Bogotá, Colombia',color:'#E74C3C',initials:'LG',bio:'Desarrollador backend especializado en microservicios y sistemas de alta concurrencia. Ha construido APIs que procesan millones de transacciones diarias para empresas de fintech en LATAM.',skills:['Go','Kubernetes','PostgreSQL','Redis','gRPC'],exp:[{title:'Sr Backend Engineer · Rappi',dates:'2023 – presente'},{title:'Backend Dev · Fintech VE',dates:'2021 – 2023'}],links:['github.com/lgperez','linkedin.com/in/luisgperez']},
+  5:{name:'María Fernanda Ochoa',role:'Growth Marketing Lead',location:'🇺🇸 Miami, EEUU',color:'#9B59B6',initials:'MF',bio:'Estratega de crecimiento para startups B2B SaaS. Ha liderado campañas que generaron más de $2M en ARR para empresas de software en LATAM. Especializada en performance marketing y automatización.',skills:['HubSpot','Google Ads','SEO','Analytics','Email Marketing'],exp:[{title:'Head of Growth · SaaS Co',dates:'2024 – presente'},{title:'Marketing Lead · PropTech VE',dates:'2022 – 2024'}],links:['linkedin.com/in/mfochoa']},
+  6:{name:'Rafael Contreras',role:'CFO Fractional',location:'🇵🇪 Lima, Perú',color:'#F39C12',initials:'RC',bio:'Economista con 12 años de experiencia en finanzas corporativas y startups. Actualmente opera como CFO fractional para 3 empresas de tecnología en LATAM. Experto en levantamiento de capital y treasury.',skills:['Modelado Financiero','FP&A','Crypto/DeFi','Excel','Fundraising'],exp:[{title:'CFO Fractional · 3 startups',dates:'2023 – presente'},{title:'Director Financiero · Orinoco Tech',dates:'2020 – 2023'}],links:['linkedin.com/in/rafaelcontreras']},
+  7:{name:'Karla Andreína Blanco',role:'Mobile Developer',location:'🇦🇷 Buenos Aires, Argentina',color:'#1ABC9C',initials:'KA',bio:'Desarrolladora mobile con publicaciones en App Store y Google Play. Especializada en React Native y Flutter para aplicaciones de alto rendimiento. Ha trabajado en apps con más de 100k usuarios activos.',skills:['React Native','Flutter','Swift','Kotlin','Firebase'],exp:[{title:'Mobile Lead · App Studio BA',dates:'2023 – presente'},{title:'iOS Developer · Startup VE',dates:'2021 – 2023'}],links:['github.com/karlaandreina','linkedin.com/in/karlaandreina']},
+  8:{name:'Diego Medina Solano',role:'Brand Designer · Motion',location:'🇻🇪 Maracaibo, Venezuela',color:'#E67E22',initials:'DM',bio:'Diseñador gráfico y motion artist con proyectos para marcas en Venezuela, España y EEUU. Especializado en identidad visual y animación para productos digitales y campañas publicitarias.',skills:['After Effects','Illustrator','Premiere','Branding','UI Design'],exp:[{title:'Creative Director · Freelance',dates:'2022 – presente'},{title:'Brand Designer · Agencia VE',dates:'2020 – 2022'}],links:['diegomedina.ve','linkedin.com/in/diegomedina']},
+  9:{name:'Gabriela Páez Torres',role:'Data Engineer',location:'🇨🇴 Medellín, Colombia',color:'#2980B9',initials:'GP',bio:'Ingeniera de datos especializada en pipelines en tiempo real y arquitectura data lakehouse. Construcción de infraestructura de datos para empresas de retail y fintech con millones de registros diarios.',skills:['Apache Spark','dbt','BigQuery','Airflow','Python'],exp:[{title:'Senior Data Engineer · Bancolombia',dates:'2024 – presente'},{title:'Data Engineer · Mercado Libre',dates:'2022 – 2024'}],links:['github.com/gpaeztorres','linkedin.com/in/gpaez']},
+  10:{name:'Orlando Vásquez',role:'DevOps / SRE Engineer',location:'🇻🇪 Valencia, Venezuela',color:'#8E44AD',initials:'OV',bio:'SRE con experiencia en infraestructura cloud para empresas con SLA del 99.99%. Especialista en AWS, Terraform y automatización de pipelines CI/CD para equipos de ingeniería remotos.',skills:['AWS','Terraform','Docker','Kubernetes','GitHub Actions'],exp:[{title:'SRE · Orinoco Tech',dates:'2023 – presente'},{title:'DevOps Engineer · Remote Corp',dates:'2021 – 2023'}],links:['github.com/orlandovasquez','linkedin.com/in/ovvasquez']},
+  11:{name:'Carmen Beatriz Leal',role:'Content Strategist',location:'🇺🇸 Austin, EEUU',color:'#27AE60',initials:'CB',bio:'Estratega de contenido para empresas SaaS B2B. Ha construido blogs y comunidades que generan más de 200k visitas orgánicas mensuales. Experta en content marketing en inglés y español para mercados globales.',skills:['Content Strategy','SEO','Copywriting','Webflow','HubSpot'],exp:[{title:'Content Lead · SaaS Global',dates:'2024 – presente'},{title:'Content Strategist · Startup MX',dates:'2022 – 2024'}],links:['carmenleal.io','linkedin.com/in/carmenbeatriz']},
+  12:{name:'Héctor Alejandro Mora',role:'Financial Analyst',location:'🇨🇱 Santiago, Chile',color:'#C0392B',initials:'HA',bio:'Analista financiero con experiencia en due diligence, modelado para venture capital y análisis de mercados emergentes. Ha participado en rondas de inversión por más de $15M para startups LATAM.',skills:['Modelado Financiero','Tableau','M&A','SQL','Pitch Decks'],exp:[{title:'Financial Analyst · VC Chile',dates:'2024 – presente'},{title:'Junior Analyst · Banca VE',dates:'2022 – 2024'}],links:['linkedin.com/in/hectormora']}
+};
+
+function openModal(id){
+  const p=PROFILES[id];
+  if(!p) return;
+  const skillsHtml=p.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('');
+  const expHtml=p.exp.map(e=>`<div class="exp-item"><div class="exp-title">${e.title}</div><div class="exp-meta">${e.dates}</div></div>`).join('');
+  const linksHtml=p.links.map(l=>`<a class="modal-link" href="javascript:void(0)">${l}</a>`).join('');
+  document.getElementById('modal-content').innerHTML=`
+    <button class="modal-close-btn" onclick="document.getElementById('profile-modal').classList.remove('open')">×</button>
+    <div class="modal-avatar" style="background:${p.color}">${p.initials}</div>
+    <div class="modal-name">${p.name}</div>
+    <div class="modal-role">${p.role} · ${p.location}</div>
+    <div class="modal-bio">${p.bio}</div>
+    <div class="modal-section">Habilidades</div>
+    <div class="pro-skills">${skillsHtml}</div>
+    <div class="modal-section">Experiencia</div>
+    ${expHtml}
+    <div class="modal-section">Links</div>
+    <div class="modal-links">${linksHtml}</div>
+    <div class="modal-cta">
+      <button class="btn-accent" onclick="alert('Mensaje enviado (demo)')">Contactar</button>
+      <button class="btn-outline" onclick="document.getElementById('profile-modal').classList.remove('open')">Cerrar</button>
+    </div>
+  `;
+  document.getElementById('profile-modal').classList.add('open');
+}
+
+document.getElementById('profile-modal').addEventListener('click',function(e){
+  if(e.target===this) this.classList.remove('open');
+});
+
+let activeArea='all', activeAvail='all';
+function setFilter(type,val,btn){
+  if(type==='area') activeArea=val;
+  if(type==='avail') activeAvail=val;
+  btn.closest('.filters-row').querySelectorAll(`.filter-pill[data-group="${type}"]`).forEach(b=>b.classList.remove('active'));
+  if(!btn.dataset.group){
+    // area buttons have no data-group
+    document.querySelectorAll('.filters-row .filter-pill:not([data-group])').forEach(b=>b.classList.remove('active'));
+  }
+  btn.classList.add('active');
+  filterCards();
+}
+function filterCards(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('.pro-card').forEach(card=>{
+    const area=card.dataset.area;
+    const avail=card.dataset.avail;
+    const text=card.innerText.toLowerCase();
+    const areaOk=activeArea==='all'||area===activeArea;
+    const availOk=activeAvail==='all'||avail===activeAvail;
+    const searchOk=!q||text.includes(q);
+    card.style.display=(areaOk&&availOk&&searchOk)?'':'none';
+  });
+}
+</script>
+</body>
+</html>

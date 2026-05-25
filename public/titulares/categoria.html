@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Categorías · Titulares · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#2980B9;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+
+    .page-header{margin-bottom:32px}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:520px}
+
+    /* CATEGORY TABS */
+    .cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+    .cat-tab{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit;display:flex;align-items:center;gap:6px}
+    .cat-tab:hover{border-color:rgba(255,255,255,0.15);color:var(--text)}
+    .cat-tab.active{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 8%,transparent)}
+    .cat-count{font-size:9px;background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px}
+    .cat-tab.active .cat-count{background:color-mix(in srgb,var(--page-accent) 15%,transparent)}
+
+    /* SUB-FILTERS */
+    .sub-filters{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .sub-filter-group{display:flex;gap:4px}
+    .sub-pill{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit}
+    .sub-pill.active,.sub-pill:hover{border-color:color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 6%,transparent)}
+    .article-count-label{font-size:11px;color:var(--text-muted)}
+
+    /* FEATURED */
+    .featured-article{display:grid;grid-template-columns:1fr 280px;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;cursor:none;transition:border-color 0.2s}
+    .featured-article:hover{border-color:color-mix(in srgb,var(--page-accent) 25%,transparent)}
+    .feat-art-img{background:linear-gradient(135deg,color-mix(in srgb,var(--page-accent) 12%,transparent),rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;font-size:48px}
+    .feat-art-body{padding:24px}
+    .feat-cat-tag{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--page-accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .verified-dot{width:5px;height:5px;border-radius:50%;background:var(--page-accent)}
+    .feat-art-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.3}
+    .feat-art-excerpt{font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:14px}
+    .feat-art-meta{display:flex;gap:14px;font-size:10px;color:var(--text-muted)}
+
+    /* ARTICLE GRID */
+    .articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+    .article-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;cursor:none;transition:border-color 0.2s,transform 0.2s}
+    .article-card:hover{border-color:color-mix(in srgb,var(--page-accent) 20%,transparent);transform:translateY(-1px)}
+    .article-thumb{height:60px;display:flex;align-items:center;justify-content:center;font-size:24px;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))}
+    .article-body{padding:14px}
+    .article-cat{font-size:9px;letter-spacing:0.10em;text-transform:uppercase;color:var(--page-accent);margin-bottom:5px}
+    .article-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.4}
+    .article-excerpt{font-size:11px;color:var(--text-dim);line-height:1.6;margin-bottom:10px}
+    .article-meta{display:flex;justify-content:space-between;align-items:center}
+    .article-date{font-size:10px;color:var(--text-muted)}
+    .article-badges{display:flex;gap:4px}
+    .badge-sm{font-size:8px;letter-spacing:0.06em;padding:2px 6px;border-radius:3px;border:1px solid}
+    .badge-verified{border-color:color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+    .badge-popular{border-color:rgba(231,76,60,0.30);color:#e74c3c;background:rgba(231,76,60,0.06)}
+
+    /* PAGINATION */
+    .pagination{display:flex;justify-content:center;gap:6px;margin-top:12px}
+    .page-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-family:inherit}
+    .page-btn.active,.page-btn:hover{border-color:color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item active" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/enterate.html">← Titulares</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Categorías</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Categorías</h1>
+    <p>Explora noticias verificadas organizadas por tema. Fuentes revisadas por la comunidad NEVADO.</p>
+  </div>
+
+  <!-- CATEGORY TABS -->
+  <div class="cat-tabs" id="cat-tabs">
+    <button class="cat-tab active" data-cat="economia">Economía <span class="cat-count">24</span></button>
+    <button class="cat-tab" data-cat="tecnologia">Tecnología <span class="cat-count">18</span></button>
+    <button class="cat-tab" data-cat="diaspora">Diáspora <span class="cat-count">31</span></button>
+    <button class="cat-tab" data-cat="politica">Política <span class="cat-count">15</span></button>
+    <button class="cat-tab" data-cat="cultura">Cultura <span class="cat-count">12</span></button>
+    <button class="cat-tab" data-cat="emprendimiento">Emprendimiento <span class="cat-count">20</span></button>
+    <button class="cat-tab" data-cat="remesas">Remesas <span class="cat-count">9</span></button>
+    <button class="cat-tab" data-cat="educacion">Educación <span class="cat-count">14</span></button>
+    <button class="cat-tab" data-cat="salud">Salud <span class="cat-count">7</span></button>
+  </div>
+
+  <!-- SUB-FILTERS -->
+  <div class="sub-filters">
+    <div class="sub-filter-group">
+      <button class="sub-pill active">Más reciente</button>
+      <button class="sub-pill">Más leído</button>
+      <button class="sub-pill">Solo verificados</button>
+    </div>
+    <span class="article-count-label" id="art-count">24 artículos en Economía</span>
+  </div>
+
+  <!-- FEATURED -->
+  <div class="featured-article">
+    <div class="feat-art-img">📈</div>
+    <div class="feat-art-body">
+      <div class="feat-cat-tag"><div class="verified-dot"></div>Economía · Verificado</div>
+      <div class="feat-art-title">El dólar paralelo se estabiliza mientras el BCV ajusta la tasa oficial</div>
+      <div class="feat-art-excerpt">El tipo de cambio oficial cerró la semana en Bs. 36.50 por dólar, mientras el mercado paralelo mantiene una brecha del 8%. Economistas señalan que la estabilidad relativa responde a medidas de política monetaria implementadas desde enero.</div>
+      <div class="feat-art-meta">
+        <span>Fuente: Economía hoy</span>
+        <span>12 Mayo 2025</span>
+        <span>4 min lectura</span>
+        <span>👁 2,840 lecturas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTICLES GRID -->
+  <div class="articles-grid" id="articles-grid">
+    <div class="article-card">
+      <div class="article-thumb">💵</div>
+      <div class="article-body">
+        <div class="article-cat">Economía</div>
+        <div class="article-title">Inflación mensual cae a 3.2% según cifras del BCV</div>
+        <div class="article-excerpt">El indicador más bajo desde 2016 abre debate sobre sostenibilidad de la estabilización.</div>
+        <div class="article-meta">
+          <span class="article-date">10 May 2025</span>
+          <div class="article-badges"><span class="badge-sm badge-verified">Verificado</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="article-card">
+      <div class="article-thumb">🏦</div>
+      <div class="article-body">
+        <div class="article-cat">Economía</div>
+        <div class="article-title">Nuevos canales de pago internacional llegan a Venezuela</div>
+        <div class="article-excerpt">Tres fintechs anuncia servicios de transferencias internacionales con comisiones reducidas.</div>
+        <div class="article-meta">
+          <span class="article-date">09 May 2025</span>
+          <div class="article-badges"><span class="badge-sm badge-popular">Popular</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="article-card">
+      <div class="article-thumb">📊</div>
+      <div class="article-body">
+        <div class="article-cat">Economía</div>
+        <div class="article-title">Exportaciones no petroleras crecen 12% en el primer trimestre</div>
+        <div class="article-excerpt">El sector agroindustrial lidera el repunte con productos destinados al Caribe y Colombia.</div>
+        <div class="article-meta">
+          <span class="article-date">07 May 2025</span>
+          <div class="article-badges"><span class="badge-sm badge-verified">Verificado</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="article-card">
+      <div class="article-thumb">🏗️</div>
+      <div class="article-body">
+        <div class="article-cat">Economía</div>
+        <div class="article-title">Inversión privada en sector construcción sube 22% interanual</div>
+        <div class="article-excerpt">Proyectos en Caracas y Valencia impulsan un sector que vivió una larga contracción.</div>
+        <div class="article-meta">
+          <span class="article-date">05 May 2025</span>
+          <div class="article-badges"><span class="badge-sm badge-verified">Verificado</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="article-card">
+      <div class="article-thumb">🛒</div>
+      <div class="article-body">
+        <div class="article-cat">Economía</div>
+        <div class="article-title">Canasta alimentaria en USD se mantiene estable por segundo mes</div>
+        <div class="article-excerpt">Organizaciones de consumidores confirman precios estables en productos básicos del mercado formal.</div>
+        <div class="article-meta">
+          <span class="article-date">03 May 2025</span>
+          <div class="article-badges"></div>
+        </div>
+      </div>
+    </div>
+    <div class="article-card">
+      <div class="article-thumb">✈️</div>
+      <div class="article-body">
+        <div class="article-cat">Economía</div>
+        <div class="article-title">Turismo receptivo genera $180M en el primer cuatrimestre</div>
+        <div class="article-excerpt">Los Roques, Mérida y el Gran Sabana concentran el 68% de los visitantes extranjeros.</div>
+        <div class="article-meta">
+          <span class="article-date">01 May 2025</span>
+          <div class="article-badges"><span class="badge-sm badge-popular">Popular</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <button class="page-btn active">1</button>
+    <button class="page-btn">2</button>
+    <button class="page-btn">3</button>
+    <button class="page-btn">4</button>
+    <button class="page-btn">→</button>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Titulares</h4>
+      <a href="/titulares/articulo.html">Artículo</a>
+      <a href="/titulares/verificacion.html">Verificación</a>
+      <a href="/titulares/boletin.html">Boletín</a>
+      <a href="/titulares/categoria.html">Categorías</a>
+      <a href="/titulares/oportunidades.html">Oportunidades</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Fuentes</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+const CAT_LABELS = {
+  economia:'Economía',tecnologia:'Tecnología',diaspora:'Diáspora',politica:'Política',
+  cultura:'Cultura',emprendimiento:'Emprendimiento',remesas:'Remesas',educacion:'Educación',salud:'Salud'
+};
+document.getElementById('cat-tabs').addEventListener('click',function(e){
+  const tab=e.target.closest('.cat-tab');
+  if(!tab)return;
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  const cat=tab.dataset.cat;
+  const count=tab.querySelector('.cat-count').textContent;
+  document.getElementById('art-count').textContent=`${count} artículos en ${CAT_LABELS[cat]}`;
+});
+document.querySelectorAll('.sub-pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    document.querySelectorAll('.sub-pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+document.querySelectorAll('.page-btn').forEach(b=>{
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.page-btn').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

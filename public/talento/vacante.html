@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vacante — Capital Humano · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #05050A; --ivory: #E8E4DC; --gold: #B8944A; --accent: #F4D03F; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#F4D03F; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#F4D03F; background:rgba(244,208,63,0.10); border:1px solid rgba(244,208,63,0.28); box-shadow:0 0 12px rgba(244,208,63,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#F4D03F; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    .page-content { padding:32px 10vw 80px; position:relative; z-index:10; }
+    .btn-accent { background:#F4D03F; color:#05050A; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#F4D03F; border:1px solid rgba(244,208,63,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(244,208,63,0.08); }
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#F4D03F; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#F4D03F; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    @media(max-width:768px){ .std-fg { grid-template-columns:1fr 1fr; } }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#F4D03F; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+    /* PAGE SPECIFIC */
+    .vacante-layout { display:grid; grid-template-columns:70% 1fr; gap:28px; }
+    @media(max-width:900px){ .vacante-layout { grid-template-columns:1fr; } }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:24px; margin-bottom:20px; }
+    .vac-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    .vac-company { font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px; }
+    .vac-role { font-family:'Bebas Neue',sans-serif; font-size:clamp(2rem,4vw,3.2rem); letter-spacing:0.04em; color:var(--ivory); line-height:0.95; margin-bottom:10px; }
+    .vac-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px; }
+    .vac-location { font-size:12px; color:var(--text-mid); }
+    .pill { display:inline-flex; align-items:center; font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
+    .pill-remote { background:rgba(41,128,185,0.15); border:1px solid rgba(41,128,185,0.30); color:#5DADE2; }
+    .pill-match { background:rgba(244,208,63,0.15); border:1px solid rgba(244,208,63,0.35); color:#F4D03F; font-size:14px; font-weight:700; padding:8px 18px; border-radius:8px; }
+    .match-score { text-align:center; }
+    .match-label { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-top:4px; }
+    .vac-desc { font-size:14px; font-weight:300; color:var(--text-mid); line-height:1.8; margin-bottom:16px; }
+    .section-label { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px; margin-top:24px; }
+    .req-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .req-list li { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ivory); }
+    .req-list li::before { content:'✓'; color:#F4D03F; font-weight:700; flex-shrink:0; }
+    .soft-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .soft-list li { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-mid); }
+    .soft-list li::before { content:'·'; color:#F4D03F; font-weight:700; flex-shrink:0; font-size:18px; line-height:1; }
+    .salary-box { display:flex; align-items:center; gap:14px; margin:20px 0; padding:16px 20px; background:rgba(244,208,63,0.06); border:1px solid rgba(244,208,63,0.18); border-radius:8px; }
+    .salary-amount { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.04em; color:#F4D03F; }
+    .salary-period { font-size:12px; color:var(--text-dim); }
+    .nevado-dice { border-left:3px solid #F4D03F; padding:14px 18px; background:rgba(244,208,63,0.05); border-radius:0 8px 8px 0; margin:20px 0; }
+    .nevado-dice-title { font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#F4D03F; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+    .nevado-dice-text { font-size:13px; color:var(--text-mid); line-height:1.7; }
+    /* SIDEBAR */
+    .sidebar-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:16px; }
+    .sidebar-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; }
+    .company-name { font-size:15px; font-weight:600; color:var(--ivory); margin-bottom:4px; }
+    .company-detail { font-size:12px; color:var(--text-mid); margin-bottom:3px; }
+    .deadline-chip { display:inline-flex; align-items:center; gap:6px; background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.25); color:#E74C3C; font-size:11px; padding:4px 10px; border-radius:6px; margin-top:6px; }
+    .posted-chip { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid var(--border); color:var(--text-mid); font-size:11px; padding:4px 10px; border-radius:6px; margin-top:6px; margin-right:6px; }
+    .similar-vac { display:flex; flex-direction:column; gap:10px; }
+    .sim-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; padding:12px 14px; cursor:none; transition:border-color 0.2s; }
+    .sim-card:hover { border-color:rgba(244,208,63,0.30); }
+    .sim-role { font-size:12px; font-weight:600; color:var(--ivory); margin-bottom:2px; }
+    .sim-co { font-size:11px; color:var(--text-dim); }
+    .sim-sal { font-size:11px; color:#F4D03F; margin-top:4px; }
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.80); z-index:1000; display:none; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:#0E0E16; border:1px solid rgba(255,255,255,0.10); border-radius:12px; padding:36px; max-width:520px; width:90%; }
+    .modal-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.04em; color:var(--ivory); margin-bottom:6px; }
+    .modal-sub { font-size:13px; color:var(--text-mid); margin-bottom:28px; }
+    .form-group { margin-bottom:18px; }
+    .form-label { display:block; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+    .form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ivory); font-family:inherit; outline:none; transition:border-color 0.2s; cursor:none; }
+    .form-input:focus { border-color:#F4D03F; }
+    .form-input::placeholder { color:var(--text-dim); }
+    textarea.form-input { resize:vertical; min-height:80px; }
+    .modal-actions { display:flex; gap:12px; margin-top:24px; }
+    .modal-close { background:transparent; border:1px solid var(--border); color:var(--text-mid); padding:10px 20px; border-radius:6px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; cursor:none; font-family:inherit; transition:all 0.2s; }
+    .modal-close:hover { border-color:rgba(255,255,255,0.20); color:var(--ivory); }
+    .success-msg { display:none; text-align:center; padding:20px; }
+    .success-msg.visible { display:block; }
+    .success-icon { font-size:36px; margin-bottom:12px; }
+    .success-text { font-size:14px; color:var(--text-mid); line-height:1.7; }
+  </style>
+</head>
+<body data-accent="yellow">
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item active" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a href="/talento.html" class="nv-bc-back">← Capital Humano</a>
+  <span class="nv-bc-sep">·</span>
+  <span class="nv-bc-current">Detalle de Vacante</span>
+</div>
+
+<main class="page-content">
+  <div class="vacante-layout">
+
+    <!-- MAIN COLUMN -->
+    <div>
+      <!-- Header Card -->
+      <div class="card">
+        <div class="vac-header">
+          <div>
+            <div class="vac-company">TechRemote VE · Startup · B2B SaaS</div>
+            <div class="vac-role">Desarrollador<br>Frontend Senior</div>
+            <div class="vac-meta">
+              <span class="vac-location">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Remoto · LATAM
+              </span>
+              <span class="pill pill-remote">100% Remoto</span>
+            </div>
+          </div>
+          <div class="match-score">
+            <div class="pill pill-match">92% Match</div>
+            <div class="match-label">Compatibilidad</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="card">
+        <div class="section-label">Descripción del puesto</div>
+        <p class="vac-desc">TechRemote VE es una startup venezolana con operaciones globales que construye herramientas SaaS para equipos distribuidos en América Latina y Europa. Buscamos un Desarrollador Frontend Senior apasionado por crear interfaces excepcionales que escalen a miles de usuarios.</p>
+        <p class="vac-desc">Serás parte de un equipo ágil de 8 personas, trabajando en sprints de 2 semanas con autonomía real para proponer soluciones y liderar decisiones técnicas en tu área. Nuestros ingenieros no son ejecutores — son arquitectos de producto.</p>
+        <p class="vac-desc">Trabajarás directamente con el CTO y el equipo de diseño, implementando nuestra nueva design system y contribuyendo a la migración de nuestra app principal a una arquitectura basada en micro-frontends. El stack es moderno y el equipo está dispuesto a adoptarlo.</p>
+        <p class="vac-desc">Si eres venezolano en el exterior o en el país, con ganas de trabajar con un equipo que entiende tu contexto y te valora por tu talento, esta es tu oportunidad.</p>
+
+        <div class="section-label">Requisitos Técnicos</div>
+        <ul class="req-list">
+          <li>React 18+ y ecosistema (Hooks, Context, Suspense)</li>
+          <li>TypeScript — nivel avanzado</li>
+          <li>Node.js y familiaridad con APIs REST / GraphQL</li>
+          <li>Git y flujos de trabajo colaborativo (PR reviews, branching)</li>
+          <li>Experiencia con design systems y componentes reutilizables</li>
+          <li>Testing: Jest, React Testing Library</li>
+          <li>Deseable: Next.js, Vite, experiencia con Figma</li>
+        </ul>
+
+        <div class="section-label">Soft Skills Valoradas</div>
+        <ul class="soft-list">
+          <li>Comunicación asíncrona efectiva (equipo en 4 zonas horarias)</li>
+          <li>Autonomía y proactividad para resolver bloqueos sin esperar</li>
+          <li>Resolución de problemas con enfoque en impacto al usuario</li>
+          <li>Disposición para dar y recibir feedback directo</li>
+        </ul>
+
+        <div class="salary-box">
+          <div>
+            <div class="salary-amount">$2,800 – $3,500</div>
+            <div class="salary-period">USD por mes · según experiencia comprobada</div>
+          </div>
+        </div>
+
+        <div class="nevado-dice">
+          <div class="nevado-dice-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4D03F" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            NEVADO dice
+          </div>
+          <p class="nevado-dice-text">Los candidatos con portafolio público tienen 3× más respuestas en este tipo de empresa. Asegúrate de incluir tu GitHub y al menos 2 proyectos con descripción clara. Si puedes añadir una demo en vivo, mejor aún.</p>
+        </div>
+
+        <button class="btn-accent" onclick="document.getElementById('apply-modal').classList.add('open')">Aplicar a esta vacante</button>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+      <div class="sidebar-card">
+        <div class="sidebar-title">Empresa</div>
+        <div class="company-name">TechRemote VE</div>
+        <div class="company-detail">Industria: B2B SaaS / HRTech</div>
+        <div class="company-detail">Tamaño: 10–50 personas</div>
+        <div class="company-detail">Fundada: 2021</div>
+        <div class="company-detail">Sede: Caracas + Remoto global</div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Publicación</div>
+        <span class="posted-chip">Publicada hace 3 días</span>
+        <span class="deadline-chip">Cierra en 12 días</span>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">Vacantes similares</div>
+        <div class="similar-vac">
+          <div class="sim-card">
+            <div class="sim-role">React Developer · Mid</div>
+            <div class="sim-co">Arepas Digital · Remoto</div>
+            <div class="sim-sal">$1,800 – $2,200 / mes</div>
+          </div>
+          <div class="sim-card">
+            <div class="sim-role">Frontend Engineer</div>
+            <div class="sim-co">Guaire Labs · LATAM</div>
+            <div class="sim-sal">$2,500 – $3,000 / mes</div>
+          </div>
+          <div class="sim-card">
+            <div class="sim-role">Vue.js / Nuxt Developer</div>
+            <div class="sim-co">CaraFull · Colombia</div>
+            <div class="sim-sal">$2,000 – $2,800 / mes</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-title">¿No te convence?</div>
+        <p style="font-size:12px;color:var(--text-mid);line-height:1.6;margin-bottom:14px;">Explora más de 200 vacantes activas en la red NEVADO, filtradas para talento venezolano.</p>
+        <a href="/talento.html" class="btn-outline" style="display:block;text-align:center;">Ver todas las vacantes</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- APPLY MODAL -->
+<div class="modal-overlay" id="apply-modal">
+  <div class="modal-box">
+    <div id="modal-form-content">
+      <div class="modal-title">Aplicar a la vacante</div>
+      <p class="modal-sub">Desarrollador Frontend Senior · TechRemote VE</p>
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" type="text" placeholder="Tu nombre completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email de contacto</label>
+        <input class="form-input" type="email" placeholder="tu@correo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">LinkedIn o Portfolio</label>
+        <input class="form-input" type="text" placeholder="linkedin.com/in/tu-perfil">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mensaje de presentación</label>
+        <textarea class="form-input" rows="4" placeholder="Cuéntanos por qué eres el candidato ideal y qué te emociona de este rol..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-accent" onclick="submitApplication()">Enviar aplicación</button>
+        <button class="modal-close" onclick="document.getElementById('apply-modal').classList.remove('open')">Cancelar</button>
+      </div>
+    </div>
+    <div class="success-msg" id="success-msg">
+      <div class="success-icon">✓</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--ivory);margin-bottom:10px;">Aplicación enviada</div>
+      <p class="success-text">Tu aplicación fue registrada en el ecosistema NEVADO. El equipo de TechRemote VE la revisará en los próximos 3–5 días hábiles.</p>
+      <button class="btn-outline" style="margin-top:20px" onclick="document.getElementById('apply-modal').classList.remove('open');document.getElementById('success-msg').classList.remove('visible');document.getElementById('modal-form-content').style.display='block'">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N·EVADO</a>
+      <p class="std-fl-desc">Red de talento venezolano para el mercado global.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Capital Humano</div>
+      <a class="std-fl" href="/talento/cv.html">Constructor de CV</a>
+      <a class="std-fl" href="/talento/profesionales.html">Profesionales</a>
+      <a class="std-fl" href="/talento/mentorias.html">Mentorías</a>
+      <a class="std-fl" href="/talento/aplicaciones.html">Mis Aplicaciones</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · Capital Humano · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+<script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+  function submitApplication(){
+    document.getElementById('modal-form-content').style.display='none';
+    document.getElementById('success-msg').classList.add('visible');
+  }
+  document.getElementById('apply-modal').addEventListener('click',function(e){
+    if(e.target===this) this.classList.remove('open');
+  });
+</script>
+</body>
+</html>

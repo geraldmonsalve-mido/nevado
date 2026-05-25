@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Reto 28 Días · ÁVILA · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#F4D03F;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#F4D03F}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+
+    /* HERO */
+    .reto-hero{display:grid;grid-template-columns:1fr 320px;gap:32px;margin-bottom:40px;align-items:start}
+    .reto-hero-left h1{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .reto-hero-left p{color:var(--text-dim);font-size:13px;max-width:480px;margin-bottom:20px}
+    .reto-hero-cta{display:inline-flex;gap:10px}
+    .btn-start{font-size:11px;letter-spacing:0.10em;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:none;background:color-mix(in srgb,var(--page-accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s}
+    .btn-start:hover{background:color-mix(in srgb,var(--page-accent) 22%,transparent)}
+    .btn-share{font-size:11px;letter-spacing:0.10em;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:none;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:inherit;transition:all 0.2s}
+    .btn-share:hover{border-color:rgba(255,255,255,0.15);color:var(--text)}
+    .reto-stats-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+    .reto-stat{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .reto-stat:last-child{border-bottom:none}
+    .reto-stat-k{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)}
+    .reto-stat-v{font-size:13px;font-weight:500;color:var(--text)}
+
+    /* CALENDAR */
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .cal-title{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim)}
+    .cal-legend{display:flex;gap:16px}
+    .cal-leg-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-muted)}
+    .cal-leg-dot{width:8px;height:8px;border-radius:50%}
+    .cal-leg-dot.done{background:var(--page-accent)}
+    .cal-leg-dot.current{background:#5dade2}
+    .cal-leg-dot.locked{background:rgba(255,255,255,0.10)}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:40px}
+    .day-cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:none;transition:all 0.2s}
+    .day-cell.done{background:color-mix(in srgb,var(--page-accent) 10%,transparent);border-color:color-mix(in srgb,var(--page-accent) 30%,transparent)}
+    .day-cell.done:hover{background:color-mix(in srgb,var(--page-accent) 16%,transparent)}
+    .day-cell.current{background:rgba(41,128,185,0.10);border-color:rgba(41,128,185,0.35);animation:pulse-day 2s ease-in-out infinite}
+    @keyframes pulse-day{0%,100%{box-shadow:0 0 0 0 rgba(41,128,185,0.20)}50%{box-shadow:0 0 0 6px rgba(41,128,185,0)}}
+    .day-cell.locked{opacity:0.4}
+    .day-num{font-size:13px;font-weight:500;color:var(--text)}
+    .day-cell.done .day-num{color:var(--page-accent)}
+    .day-cell.current .day-num{color:#5dade2}
+    .day-cell.locked .day-num{color:var(--text-muted)}
+    .day-check{font-size:12px;position:absolute;bottom:4px;right:6px}
+    .day-streak{position:absolute;top:4px;right:6px;width:6px;height:6px;border-radius:50%;background:#E74C3C}
+
+    /* WEEK LABELS */
+    .week-labels{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:8px}
+    .week-lbl{font-size:9px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-muted);text-align:center}
+
+    /* TODAY TASK */
+    .today-section{margin-bottom:40px}
+    .today-card{background:rgba(41,128,185,0.06);border:1px solid rgba(41,128,185,0.20);border-radius:12px;padding:24px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+    .today-label{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#5dade2;margin-bottom:4px}
+    .today-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:4px}
+    .today-desc{font-size:12px;color:var(--text-dim);max-width:520px}
+    .today-actions{display:flex;flex-direction:column;gap:8px}
+    .btn-complete{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 20px;border-radius:7px;cursor:none;background:rgba(41,128,185,0.15);border:1px solid rgba(41,128,185,0.35);color:#5dade2;font-family:inherit;transition:all 0.2s;white-space:nowrap}
+    .btn-complete:hover{background:rgba(41,128,185,0.25)}
+    .btn-ai-motivate{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 20px;border-radius:7px;cursor:none;background:color-mix(in srgb,var(--page-accent) 08%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s;white-space:nowrap}
+    .btn-ai-motivate:hover{background:color-mix(in srgb,var(--page-accent) 14%,transparent)}
+
+    /* STREAKS & ACHIEVEMENTS */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+    .mini-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+    .mini-card-title{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+    .streak-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+    .streak-flame{font-size:16px}
+    .streak-count{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--page-accent)}
+    .streak-label{font-size:11px;color:var(--text-dim)}
+    .badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .badge-item{text-align:center;padding:8px 4px}
+    .badge-emoji{font-size:22px;display:block;margin-bottom:4px}
+    .badge-name{font-size:9px;letter-spacing:0.06em;color:var(--text-dim)}
+    .badge-item.locked-badge{opacity:0.25}
+
+    /* AI MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(5,5,10,0.88);backdrop-filter:blur(12px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s}
+    .modal-overlay.open{opacity:1;pointer-events:auto}
+    .modal{width:480px;background:#0C0C14;border:1px solid rgba(244,208,63,0.18);border-radius:14px;padding:28px;position:relative}
+    .modal-close{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);cursor:none;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all 0.2s}
+    .modal-close:hover{background:rgba(255,255,255,0.10);color:var(--text)}
+    .modal-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:16px}
+    .ai-response{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;color:var(--text-dim);line-height:1.7;min-height:80px}
+    .ai-loading{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:12px}
+    .ai-dot{width:5px;height:5px;border-radius:50%;background:var(--page-accent);animation:ai-pulse 1s ease-in-out infinite}
+    .ai-dot:nth-child(2){animation-delay:0.2s}
+    .ai-dot:nth-child(3){animation-delay:0.4s}
+    @keyframes ai-pulse{0%,100%{opacity:0.3}50%{opacity:1}}
+
+    /* DAY MODAL */
+    .day-modal{width:420px;background:#0C0C14;border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:28px;position:relative}
+    .day-num-big{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--page-accent);line-height:1;margin-bottom:4px}
+    .day-modal-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px}
+    .day-modal-task{font-size:15px;font-weight:500;color:var(--text);margin-bottom:8px}
+    .day-modal-desc{font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:20px}
+    .day-modal-meta{display:flex;gap:12px;margin-bottom:20px}
+    .day-tag{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:4px;border:1px solid var(--border);color:var(--text-muted)}
+    .btn-mark-done{width:100%;padding:10px;border-radius:8px;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent);font-size:10px;letter-spacing:0.10em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .btn-mark-done:hover{background:color-mix(in srgb,var(--page-accent) 20%,transparent)}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item active" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/avila.html">← ÁVILA</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Reto 28 Días</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="reto-hero">
+    <div class="reto-hero-left">
+      <h1>Reto 28 Días</h1>
+      <p>Un desafío diario de crecimiento profesional. Completa cada tarea para mantener tu racha y desbloquear certificados exclusivos.</p>
+      <div class="reto-hero-cta">
+        <button class="btn-start">Continuar reto</button>
+        <button class="btn-share">Compartir progreso</button>
+      </div>
+    </div>
+    <div class="reto-stats-card">
+      <div class="reto-stat"><span class="reto-stat-k">Día actual</span><span class="reto-stat-v">Día 14 / 28</span></div>
+      <div class="reto-stat"><span class="reto-stat-k">Racha actual</span><span class="reto-stat-v">🔥 14 días</span></div>
+      <div class="reto-stat"><span class="reto-stat-k">Mejor racha</span><span class="reto-stat-v">🏆 14 días</span></div>
+      <div class="reto-stat"><span class="reto-stat-k">Puntos ganados</span><span class="reto-stat-v">280 pts</span></div>
+      <div class="reto-stat"><span class="reto-stat-k">Participantes</span><span class="reto-stat-v">1,204 activos</span></div>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="cal-header">
+    <span class="cal-title">Calendario del Reto</span>
+    <div class="cal-legend">
+      <div class="cal-leg-item"><div class="cal-leg-dot done"></div>Completado</div>
+      <div class="cal-leg-item"><div class="cal-leg-dot current"></div>Hoy</div>
+      <div class="cal-leg-item"><div class="cal-leg-dot locked"></div>Pendiente</div>
+    </div>
+  </div>
+  <div class="week-labels">
+    <div class="week-lbl">L</div><div class="week-lbl">M</div><div class="week-lbl">M</div>
+    <div class="week-lbl">J</div><div class="week-lbl">V</div><div class="week-lbl">S</div><div class="week-lbl">D</div>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+
+  <!-- TODAY TASK -->
+  <div class="today-section">
+    <div class="cal-header" style="margin-bottom:12px">
+      <span class="cal-title">Tarea de hoy</span>
+    </div>
+    <div class="today-card">
+      <div>
+        <div class="today-label">Día 14 · Portafolio</div>
+        <div class="today-title">Publica un proyecto en tu perfil NODO</div>
+        <div class="today-desc">Sube capturas o un enlace a uno de tus proyectos. Incluye descripción breve del impacto y las tecnologías usadas. Mínimo 120 palabras.</div>
+      </div>
+      <div class="today-actions">
+        <button class="btn-complete">Marcar completada</button>
+        <button class="btn-ai-motivate" onclick="openAiModal()">✦ Motivación IA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="two-col">
+    <div class="mini-card">
+      <div class="mini-card-title">Tu racha</div>
+      <div class="streak-row">
+        <span class="streak-flame">🔥</span>
+        <span class="streak-count">14</span>
+        <span class="streak-label">días consecutivos</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted)">Mejor racha: 14 días · Comenzaste el 1 May 2025</div>
+    </div>
+    <div class="mini-card">
+      <div class="mini-card-title">Logros desbloqueados</div>
+      <div class="badges-grid">
+        <div class="badge-item"><span class="badge-emoji">🌱</span><div class="badge-name">Primer día</div></div>
+        <div class="badge-item"><span class="badge-emoji">🔥</span><div class="badge-name">7 días</div></div>
+        <div class="badge-item"><span class="badge-emoji">⚡</span><div class="badge-name">Consistente</div></div>
+        <div class="badge-item locked-badge"><span class="badge-emoji">🏆</span><div class="badge-name">28 días</div></div>
+        <div class="badge-item locked-badge"><span class="badge-emoji">💎</span><div class="badge-name">Perfecto</div></div>
+        <div class="badge-item locked-badge"><span class="badge-emoji">🌟</span><div class="badge-name">Top 10</div></div>
+        <div class="badge-item locked-badge"><span class="badge-emoji">🎖️</span><div class="badge-name">3 retos</div></div>
+        <div class="badge-item locked-badge"><span class="badge-emoji">🦅</span><div class="badge-name">Leyenda</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- AI MOTIVATION MODAL -->
+<div class="modal-overlay" id="ai-modal" onclick="if(event.target===this)closeAiModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAiModal()">✕</button>
+    <div class="modal-title">✦ Motivación personalizada</div>
+    <div class="ai-response" id="ai-response">
+      <div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Generando motivación...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DAY DETAIL MODAL -->
+<div class="modal-overlay" id="day-modal" onclick="if(event.target===this)closeDayModal()">
+  <div class="day-modal">
+    <button class="modal-close" onclick="closeDayModal()">✕</button>
+    <div class="day-num-big" id="dm-num">1</div>
+    <div class="day-modal-label">Tarea del día</div>
+    <div class="day-modal-task" id="dm-task">—</div>
+    <div class="day-modal-desc" id="dm-desc">—</div>
+    <div class="day-modal-meta">
+      <span class="day-tag" id="dm-area">Área</span>
+      <span class="day-tag" id="dm-points">20 pts</span>
+    </div>
+    <button class="btn-mark-done" id="dm-btn">Marcar completada</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>ÁVILA</h4>
+      <a href="/avila/laboratorio.html">Laboratorio</a>
+      <a href="/avila/cursos.html">Cursos</a>
+      <a href="/avila/rutas.html">Rutas</a>
+      <a href="/avila/certificados.html">Certificados</a>
+      <a href="/avila/reto.html">Reto 28 Días</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Comunidad</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+const TASKS = [
+  {task:'Define tu objetivo profesional',desc:'Escribe en 150 palabras cuál es tu meta para los próximos 6 meses en tu carrera.',area:'Estrategia',pts:20},
+  {task:'Actualiza tu perfil NODO',desc:'Completa bio, habilidades y foto de perfil en tu espacio NODO.',area:'Perfil',pts:20},
+  {task:'Lee un artículo de tu industria',desc:'Comparte el resumen en Titulares con tu análisis personal (mín. 100 palabras).',area:'Conocimiento',pts:20},
+  {task:'Conecta con 3 venezolanos',desc:'Envía solicitudes de conexión con mensajes personalizados.',area:'Red',pts:20},
+  {task:'Practica inglés técnico 30 min',desc:'Graba un video corto explicando un concepto de tu área en inglés.',area:'Idiomas',pts:20},
+  {task:'Revisa tu CV',desc:'Actualiza al menos una sección de tu hoja de vida y solicita feedback.',area:'CV',pts:20},
+  {task:'Comparte un tip profesional',desc:'Publica en NODO un consejo de tu área con ejemplos concretos.',area:'Comunidad',pts:20},
+  {task:'Investiga una empresa target',desc:'Analiza una empresa donde te gustaría trabajar y guarda notas en tu perfil.',area:'Investigación',pts:20},
+  {task:'Practica una entrevista',desc:'Simula 10 preguntas frecuentes de tu industria con respuestas grabadas.',area:'Entrevistas',pts:20},
+  {task:'Aprende una herramienta nueva',desc:'Dedica 1 hora a un tutorial de una herramienta clave en tu sector.',area:'Skills',pts:20},
+  {task:'Contribuye a un debate',desc:'Participa activamente en un hilo de NODO con al menos 2 respuestas elaboradas.',area:'Comunidad',pts:20},
+  {task:'Actualiza tu portafolio',desc:'Agrega o mejora al menos un proyecto en tu portafolio público.',area:'Portafolio',pts:20},
+  {task:'Contacta a un mentor',desc:'Escribe a un mentor del programa con una pregunta específica.',area:'Mentoría',pts:20},
+  {task:'Publica un proyecto en tu perfil',desc:'Sube capturas o enlace a uno de tus proyectos con descripción de impacto y tecnologías.',area:'Portafolio',pts:20},
+  {task:'Crea contenido educativo',desc:'Escribe un mini-tutorial o hilo sobre algo que dominas en tu área.',area:'Contenido',pts:20},
+  {task:'Optimiza tu LinkedIn',desc:'Actualiza el headline, summary y 3 experiencias con palabras clave del sector.',area:'Marca personal',pts:20},
+  {task:'Busca oportunidades activas',desc:'Revisa Servicios y Titulares: aplica o guarda al menos 3 oportunidades relevantes.',area:'Empleo',pts:20},
+  {task:'Participa en un evento',desc:'Regístrate o asiste a un evento de NODO presencial o virtual esta semana.',area:'Networking',pts:20},
+  {task:'Documenta una lección aprendida',desc:'Escribe sobre un error o aprendizaje reciente y qué harías diferente.',area:'Reflexión',pts:20},
+  {task:'Practica negociación salarial',desc:'Investiga rangos salariales de tu rol en 3 países y practica cómo presentarlo.',area:'Finanzas',pts:20},
+  {task:'Colabora en un proyecto',desc:'Ofrece tu ayuda a alguien en NODO que esté buscando colaboradores.',area:'Colaboración',pts:20},
+  {task:'Aprende sobre finanzas personales',desc:'Usa la calculadora de Servicios para proyectar tus ingresos en USD a 6 meses.',area:'Finanzas',pts:20},
+  {task:'Refuerza una habilidad técnica',desc:'Completa un ejercicio práctico o proyecto corto con una tecnología de tu ruta.',area:'Skills',pts:20},
+  {task:'Escribe tu propuesta de valor',desc:'Redacta en 100 palabras qué te hace único y cómo lo comunicarías a un reclutador.',area:'Marca personal',pts:20},
+  {task:'Revisa tu red de contactos',desc:'Identifica 5 contactos estratégicos y planifica cómo fortalecer esa relación.',area:'Red',pts:20},
+  {task:'Prueba una IA para productividad',desc:'Usa una herramienta de IA en una tarea real de trabajo y comparte el resultado.',area:'Productividad',pts:20},
+  {task:'Crea un plan de 90 días',desc:'Escribe objetivos concretos y medibles para los próximos 3 meses.',area:'Estrategia',pts:20},
+  {task:'Celebra y comparte tu logro',desc:'Has completado el Reto 28 Días. Comparte tu experiencia en NODO e inspira a otros.',area:'Comunidad',pts:40},
+];
+
+const CURRENT_DAY = 14;
+const grid = document.getElementById('cal-grid');
+for(let d=1;d<=28;d++){
+  const cell=document.createElement('div');
+  let cls='day-cell';
+  if(d<CURRENT_DAY) cls+=' done';
+  else if(d===CURRENT_DAY) cls+=' current';
+  else cls+=' locked';
+  cell.className=cls;
+  cell.innerHTML=`<span class="day-num">${d}</span>${d<CURRENT_DAY?'<span class="day-check">✓</span>':''}`;
+  cell.addEventListener('click',()=>openDayModal(d));
+  grid.appendChild(cell);
+}
+
+function openDayModal(d){
+  const t=TASKS[d-1];
+  document.getElementById('dm-num').textContent=d;
+  document.getElementById('dm-task').textContent=t.task;
+  document.getElementById('dm-desc').textContent=t.desc;
+  document.getElementById('dm-area').textContent=t.area;
+  document.getElementById('dm-points').textContent=t.pts+' pts';
+  const btn=document.getElementById('dm-btn');
+  if(d<CURRENT_DAY){btn.textContent='✓ Completada';btn.disabled=true;btn.style.opacity='0.5'}
+  else if(d===CURRENT_DAY){btn.textContent='Marcar completada';btn.disabled=false;btn.style.opacity='1'}
+  else{btn.textContent='Bloqueada — completa los días anteriores';btn.disabled=true;btn.style.opacity='0.4'}
+  document.getElementById('day-modal').classList.add('open');
+}
+function closeDayModal(){document.getElementById('day-modal').classList.remove('open')}
+
+function openAiModal(){
+  document.getElementById('ai-modal').classList.add('open');
+  const el=document.getElementById('ai-response');
+  el.innerHTML='<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Generando motivación...</span></div>';
+  const key=window.__NVD_KEY;
+  if(!key){el.textContent='La clave de API no está disponible.';return}
+  const ctrl=new AbortController();
+  setTimeout(()=>ctrl.abort(),20000);
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',signal:ctrl.signal,
+    headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:`Eres un coach de la plataforma NEVADO. El usuario está en el Día 14 de 28 del reto. Su tarea de hoy: "Publica un proyecto en tu perfil NODO". Lleva 14 días de racha. Dale una motivación breve (3-4 oraciones), personalizada y directa. Sin markdown.`}]})
+  }).then(r=>r.json()).then(d=>{
+    el.textContent=d.content?.[0]?.text||'No se pudo generar motivación.';
+  }).catch(()=>{
+    el.textContent='No se pudo conectar con la IA. Revisa tu conexión e intenta de nuevo.';
+  });
+}
+function closeAiModal(){document.getElementById('ai-modal').classList.remove('open')}
+
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

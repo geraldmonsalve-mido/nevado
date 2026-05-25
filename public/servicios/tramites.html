@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Trámites · Servicios · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#E74C3C;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#E74C3C}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+    .page-header{margin-bottom:32px}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:520px}
+
+    /* COUNTRY TABS */
+    .country-tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
+    .country-tab{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit;display:flex;align-items:center;gap:6px}
+    .country-tab.active{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+    .country-tab:hover:not(.active){border-color:rgba(255,255,255,0.12);color:var(--text)}
+    .flag{font-size:14px}
+    .tab-actions{margin-left:auto;display:flex;gap:8px}
+    .btn-export{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:5px;cursor:none;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:inherit;transition:all 0.2s}
+    .btn-export:hover{border-color:rgba(255,255,255,0.15);color:var(--text)}
+
+    /* CHECKLIST LAYOUT */
+    .checklist-layout{display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:start}
+
+    /* CHECKLIST */
+    .checklist-section{margin-bottom:28px}
+    .checklist-section-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+    .checklist-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .checklist-items{display:flex;flex-direction:column;gap:6px}
+    .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:none;transition:border-color 0.2s}
+    .check-item.done{border-color:color-mix(in srgb,var(--page-accent) 20%,transparent);background:color-mix(in srgb,var(--page-accent) 03%,transparent)}
+    .check-box{width:18px;height:18px;border-radius:4px;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all 0.2s;margin-top:1px;cursor:none}
+    .check-item.done .check-box{background:color-mix(in srgb,var(--page-accent) 15%,transparent);border-color:color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent)}
+    .check-content{flex:1}
+    .check-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:1px}
+    .check-item.done .check-title{color:var(--text-dim)}
+    .check-desc{font-size:10px;color:var(--text-dim)}
+    .check-note{font-size:10px;color:var(--text-muted);font-style:italic;margin-top:3px}
+    .check-add-note{font-size:9px;letter-spacing:0.07em;text-transform:uppercase;color:var(--page-accent);cursor:none;background:none;border:none;font-family:inherit;padding:0;margin-top:4px}
+    .note-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;margin-top:4px;cursor:none;display:none}
+    .note-input:focus{border-color:color-mix(in srgb,var(--page-accent) 35%,transparent)}
+
+    /* SIDEBAR */
+    .sidebar-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:sticky;top:88px}
+    .sidebar-title{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
+    .progress-ring-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:16px}
+    .progress-circle{width:80px;height:80px}
+    .prog-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:6}
+    .prog-fg{fill:none;stroke:var(--page-accent);stroke-width:6;stroke-linecap:round;stroke-dasharray:220;stroke-dashoffset:220;transition:stroke-dashoffset 0.5s;transform:rotate(-90deg);transform-origin:50% 50%}
+    .prog-label{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;fill:var(--page-accent)}
+    .prog-sub{font-size:9px;fill:var(--text-muted)}
+    .progress-meta{font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:14px}
+    .sidebar-checks{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+    .sc-row{display:flex;justify-content:space-between;font-size:10px}
+    .sc-key{color:var(--text-muted)}
+    .sc-val{color:var(--text-dim)}
+    .btn-export-full{width:100%;padding:9px;border-radius:7px;background:color-mix(in srgb,var(--page-accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 28%,transparent);color:var(--page-accent);font-size:9px;letter-spacing:0.09em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .btn-export-full:hover{background:color-mix(in srgb,var(--page-accent) 18%,transparent)}
+    .btn-reset{width:100%;padding:7px;border-radius:7px;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-size:9px;letter-spacing:0.09em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s;margin-top:6px}
+    .btn-reset:hover{border-color:rgba(255,255,255,0.12);color:var(--text-dim)}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item active" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/servicios.html">← Servicios</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Trámites</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Guías de Trámites</h1>
+    <p>Checklists guardados localmente para documentación de residencia, trabajo y regularización en los principales destinos de la diáspora.</p>
+  </div>
+
+  <div class="country-tabs">
+    <button class="country-tab active" onclick="switchCountry('co')"><span class="flag">🇨🇴</span>Colombia</button>
+    <button class="country-tab" onclick="switchCountry('es')"><span class="flag">🇪🇸</span>España</button>
+    <button class="country-tab" onclick="switchCountry('cl')"><span class="flag">🇨🇱</span>Chile</button>
+    <button class="country-tab" onclick="switchCountry('pe')"><span class="flag">🇵🇪</span>Perú</button>
+    <button class="country-tab" onclick="switchCountry('us')"><span class="flag">🇺🇸</span>USA</button>
+    <button class="country-tab" onclick="switchCountry('de')"><span class="flag">🇩🇪</span>Alemania</button>
+    <div class="tab-actions">
+      <button class="btn-export" onclick="exportChecklist()">Exportar PDF</button>
+    </div>
+  </div>
+
+  <div class="checklist-layout">
+    <div id="checklist-main"></div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-title">Progreso</div>
+      <div class="progress-ring-wrap">
+        <svg class="progress-circle" viewBox="0 0 80 80">
+          <circle class="prog-bg" cx="40" cy="40" r="35"/>
+          <circle class="prog-fg" id="prog-ring" cx="40" cy="40" r="35"/>
+          <text class="prog-label" x="40" y="44" text-anchor="middle" id="prog-pct-text">0%</text>
+          <text class="prog-sub" x="40" y="56" text-anchor="middle">completado</text>
+        </svg>
+        <div class="progress-meta" id="prog-meta">0 de 0 documentos</div>
+      </div>
+      <div class="sidebar-checks" id="sidebar-stats"></div>
+      <button class="btn-export-full" onclick="exportChecklist()">Exportar lista</button>
+      <button class="btn-reset" onclick="resetChecklist()">Reiniciar progreso</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Servicios</h4>
+      <a href="/servicios/cambio.html">Cambio de divisas</a>
+      <a href="/servicios/freelance.html">Calculadora freelance</a>
+      <a href="/servicios/tramites.html">Trámites</a>
+      <a href="/servicios/seguridad.html">Seguridad</a>
+      <a href="/servicios/directorio.html">Directorio</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Guías</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+const CHECKLISTS = {
+  co:{name:'Colombia',flag:'🇨🇴',sections:[
+    {title:'Documentos de identidad',items:[
+      {id:'co1',t:'Pasaporte venezolano vigente',d:'Mínimo 6 meses de vigencia restante',note:''},
+      {id:'co2',t:'PEP o PPT vigente',d:'Permiso Especial de Permanencia o Permiso de Protección Temporal',note:''},
+      {id:'co3',t:'Apostilla del pasaporte (si aplica)',d:'Para trámites que requieran documentos legalizado',note:''},
+    ]},
+    {title:'Residencia',items:[
+      {id:'co4',t:'Contrato de arrendamiento',d:'Mínimo 6 meses',note:''},
+      {id:'co5',t:'Certificado de depósito bancario',d:'Saldo mínimo requerido varía según tipo de visa',note:''},
+      {id:'co6',t:'Póliza de salud vigente',d:'Cobertura mínima de USD 30,000',note:''},
+    ]},
+    {title:'Trabajo formal',items:[
+      {id:'co7',t:'Carta de oferta laboral',d:'Con salario y cargo especificados',note:''},
+      {id:'co8',t:'Registro en Migración Colombia',d:'Para actualizar estatus con empleador',note:''},
+      {id:'co9',t:'RUT (Registro Único Tributario)',d:'Tramitar en DIAN para facturar',note:''},
+    ]},
+    {title:'Educación y homologación',items:[
+      {id:'co10',t:'Título apostillado',d:'Si deseas homologar tu carrera profesional',note:''},
+      {id:'co11',t:'Traducción oficial (si aplica)',d:'Para documentos en otro idioma',note:''},
+    ]},
+  ]},
+  es:{name:'España',flag:'🇪🇸',sections:[
+    {title:'Documentos de entrada',items:[
+      {id:'es1',t:'Pasaporte vigente',d:'Mínimo 1 año de vigencia',note:''},
+      {id:'es2',t:'Visado de trabajo o residencia',d:'Tramitar en consulado español en Venezuela o país de residencia',note:''},
+      {id:'es3',t:'Fotografías recientes',d:'2 fotos tamaño carnet fondo blanco',note:''},
+    ]},
+    {title:'Residencia y empadronamiento',items:[
+      {id:'es4',t:'Empadronamiento municipal',d:'Registro en el ayuntamiento de tu municipio',note:''},
+      {id:'es5',t:'NIE (Número de Identidad Extranjero)',d:'Imprescindible para trabajo, banco y trámites',note:''},
+      {id:'es6',t:'Tarjeta de residencia (TIE)',d:'Tras aprobación de residencia legal',note:''},
+      {id:'es7',t:'Seguro médico privado',d:'Requerido para solicitar residencia sin actividad laboral',note:''},
+    ]},
+    {title:'Trabajo por cuenta ajena',items:[
+      {id:'es8',t:'Contrato de trabajo firmado',d:'Con empresa española',note:''},
+      {id:'es9',t:'Afiliación a la Seguridad Social',d:'El empleador debe gestionar el alta',note:''},
+      {id:'es10',t:'Alta en Hacienda (IRPF)',d:'Para declaración de impuestos',note:''},
+    ]},
+    {title:'Autónomo / Freelance',items:[
+      {id:'es11',t:'Alta en Hacienda como autónomo',d:'Modelo 036 o 037',note:''},
+      {id:'es12',t:'Alta en la Seguridad Social',d:'Cuota de autónomo mensual',note:''},
+    ]},
+  ]},
+  cl:{name:'Chile',flag:'🇨🇱',sections:[
+    {title:'Documentos',items:[
+      {id:'cl1',t:'Pasaporte vigente',d:'Mínimo 6 meses de vigencia',note:''},
+      {id:'cl2',t:'Visa temporaria o de residencia',d:'Según actividad: trabajo, estudio, familia',note:''},
+      {id:'cl3',t:'Antecedentes penales apostillados',d:'Del país de origen y de residencias previas',note:''},
+    ]},
+    {title:'Residencia',items:[
+      {id:'cl4',t:'RUT chileno',d:'Registro de identificación tributaria',note:''},
+      {id:'cl5',t:'Contrato de arriendo legalizado',d:'Ante notario',note:''},
+      {id:'cl6',t:'Inscripción en FONASA o ISAPRE',d:'Sistema de salud obligatorio con empleo formal',note:''},
+    ]},
+    {title:'Trabajo',items:[
+      {id:'cl7',t:'Contrato de trabajo firmado',d:'Por empleador chileno',note:''},
+      {id:'cl8',t:'Inscripción AFP',d:'Sistema de pensiones obligatorio',note:''},
+      {id:'cl9',t:'Inicio de actividades en SII',d:'Para trabajo independiente',note:''},
+    ]},
+  ]},
+  pe:{name:'Perú',flag:'🇵🇪',sections:[
+    {title:'Documentos',items:[
+      {id:'pe1',t:'Pasaporte vigente',d:'Mínimo 6 meses',note:''},
+      {id:'pe2',t:'Permiso Temporal de Permanencia (PTP)',d:'Para venezolanos con pasaporte',note:''},
+      {id:'pe3',t:'Carné de Extranjería',d:'Tras aprobación de residencia',note:''},
+    ]},
+    {title:'Trabajo',items:[
+      {id:'pe4',t:'RUC (Registro Único de Contribuyentes)',d:'Tramitar en SUNAT',note:''},
+      {id:'pe5',t:'Contrato de trabajo',d:'Con empresa peruana registrada',note:''},
+      {id:'pe6',t:'Afiliación a EsSalud',d:'Seguro de salud laboral',note:''},
+      {id:'pe7',t:'AFP o ONP',d:'Sistema de pensiones',note:''},
+    ]},
+  ]},
+  us:{name:'USA',flag:'🇺🇸',sections:[
+    {title:'Documentos',items:[
+      {id:'us1',t:'Pasaporte vigente',d:'Mínimo 6 meses',note:''},
+      {id:'us2',t:'Visa válida (B1/B2, H1-B, etc.)',d:'Según categoría migratoria',note:''},
+      {id:'us3',t:'I-94 (Admisión)',d:'Registro digital de entrada',note:''},
+    ]},
+    {title:'Estatus y trabajo',items:[
+      {id:'us4',t:'Social Security Number (SSN)',d:'Requerido para trabajar legalmente',note:''},
+      {id:'us5',t:'Employment Authorization Document (EAD)',d:'Para categorías que lo permiten',note:''},
+      {id:'us6',t:'Green Card (si aplica)',d:'Residencia permanente',note:''},
+    ]},
+    {title:'Impuestos y finanzas',items:[
+      {id:'us7',t:'ITIN (si no tienes SSN)',d:'Individual Taxpayer Identification Number',note:''},
+      {id:'us8',t:'Cuenta bancaria local',d:'Requerida para muchos empleadores',note:''},
+      {id:'us9',t:'Declaración de impuestos (IRS)',d:'Anual, aplica aunque sea extranjero',note:''},
+    ]},
+  ]},
+  de:{name:'Alemania',flag:'🇩🇪',sections:[
+    {title:'Entrada y registro',items:[
+      {id:'de1',t:'Pasaporte vigente',d:'Mínimo 1 año de vigencia',note:''},
+      {id:'de2',t:'Visado de trabajo o de búsqueda de empleo',d:'Tramitar en embajada alemana',note:''},
+      {id:'de3',t:'Anmeldung (Registro de residencia)',d:'En el Bürgeramt de tu ciudad al llegar',note:''},
+    ]},
+    {title:'Documentos clave',items:[
+      {id:'de4',t:'Aufenthaltstitel (Permiso de residencia)',d:'Tarjeta de residencia temporal o permanente',note:''},
+      {id:'de5',t:'Steueridentifikationsnummer',d:'Número de identificación fiscal, llega por correo',note:''},
+      {id:'de6',t:'Krankenversicherung (Seguro médico)',d:'Obligatorio · GKV (público) o PKV (privado)',note:''},
+    ]},
+    {title:'Trabajo',items:[
+      {id:'de7',t:'Arbeitsvertrag (Contrato de trabajo)',d:'Firmado con empleador alemán',note:''},
+      {id:'de8',t:'Sozialversicherungsnummer',d:'Número de seguro social',note:''},
+      {id:'de9',t:'Homologación de título (si profesión regulada)',d:'Vía Anabin o IHK',note:''},
+    ]},
+  ]},
+};
+
+let currentCountry='co';
+const STATE_KEY='nvd_tramites_state';
+
+function getState(){
+  try{return JSON.parse(localStorage.getItem(STATE_KEY)||'{}')}catch{return{}}
+}
+function setState(country,id,done,note){
+  const s=getState();
+  if(!s[country])s[country]={};
+  s[country][id]={done,note};
+  localStorage.setItem(STATE_KEY,JSON.stringify(s));
+}
+function getItemState(country,id){
+  const s=getState();
+  return s[country]?.[id]||{done:false,note:''};
+}
+
+function renderChecklist(country){
+  const data=CHECKLISTS[country];
+  const main=document.getElementById('checklist-main');
+  main.innerHTML='';
+  let totalItems=0,doneItems=0;
+  data.sections.forEach(sec=>{
+    const secDiv=document.createElement('div');
+    secDiv.className='checklist-section';
+    secDiv.innerHTML=`<div class="checklist-section-title">${sec.title}</div><div class="checklist-items" id="sec-${sec.title.replace(/\s/g,'_')}"></div>`;
+    main.appendChild(secDiv);
+    const itemsContainer=secDiv.querySelector('.checklist-items');
+    sec.items.forEach(item=>{
+      totalItems++;
+      const st=getItemState(country,item.id);
+      if(st.done)doneItems++;
+      const div=document.createElement('div');
+      div.className='check-item'+(st.done?' done':'');
+      div.dataset.id=item.id;
+      div.innerHTML=`
+        <div class="check-box">${st.done?'✓':''}</div>
+        <div class="check-content">
+          <div class="check-title">${item.t}</div>
+          <div class="check-desc">${item.d}</div>
+          ${st.note?`<div class="check-note">${st.note}</div>`:''}
+          <button class="check-add-note" onclick="toggleNote(event,'${item.id}')">+ Nota</button>
+          <input class="note-input" id="note-${item.id}" placeholder="Agrega una nota..." value="${st.note||''}" onchange="saveNote('${country}','${item.id}',this.value)"/>
+        </div>`;
+      div.querySelector('.check-box').addEventListener('click',()=>toggleItem(country,item.id,div));
+      itemsContainer.appendChild(div);
+    });
+  });
+  updateProgress(doneItems,totalItems);
+}
+
+function toggleItem(country,id,el){
+  const isDone=el.classList.contains('done');
+  const newDone=!isDone;
+  el.classList.toggle('done',newDone);
+  const box=el.querySelector('.check-box');
+  box.textContent=newDone?'✓':'';
+  const st=getItemState(country,id);
+  setState(country,id,newDone,st.note||'');
+  updateProgressFromDOM();
+}
+
+function toggleNote(e,id){
+  e.stopPropagation();
+  const inp=document.getElementById('note-'+id);
+  inp.style.display=inp.style.display==='block'?'none':'block';
+  if(inp.style.display==='block')inp.focus();
+}
+
+function saveNote(country,id,note){
+  const st=getItemState(country,id);
+  setState(country,id,st.done,note);
+}
+
+function updateProgressFromDOM(){
+  const items=document.querySelectorAll('.check-item');
+  const total=items.length;
+  const done=document.querySelectorAll('.check-item.done').length;
+  updateProgress(done,total);
+}
+
+function updateProgress(done,total){
+  const pct=total>0?Math.round(done/total*100):0;
+  const circumference=220;
+  const offset=circumference-(pct/100*circumference);
+  document.getElementById('prog-ring').style.strokeDashoffset=offset;
+  document.getElementById('prog-pct-text').textContent=pct+'%';
+  document.getElementById('prog-meta').textContent=done+' de '+total+' documentos';
+  document.getElementById('sidebar-stats').innerHTML=`
+    <div class="sc-row"><span class="sc-key">Completados</span><span class="sc-val">${done}</span></div>
+    <div class="sc-row"><span class="sc-key">Pendientes</span><span class="sc-val">${total-done}</span></div>
+    <div class="sc-row"><span class="sc-key">Total</span><span class="sc-val">${total}</span></div>
+  `;
+}
+
+function switchCountry(c){
+  currentCountry=c;
+  document.querySelectorAll('.country-tab').forEach((t,i)=>{
+    const cs=['co','es','cl','pe','us','de'];
+    t.classList.toggle('active',cs[i]===c);
+  });
+  renderChecklist(c);
+}
+
+function resetChecklist(){
+  const s=getState();
+  s[currentCountry]={};
+  localStorage.setItem(STATE_KEY,JSON.stringify(s));
+  renderChecklist(currentCountry);
+}
+
+function exportChecklist(){
+  const data=CHECKLISTS[currentCountry];
+  let txt=`Checklist de Trámites — ${data.flag} ${data.name}\nNEVADO Servicios · v3.0\n\n`;
+  data.sections.forEach(sec=>{
+    txt+=`## ${sec.title}\n`;
+    sec.items.forEach(item=>{
+      const st=getItemState(currentCountry,item.id);
+      txt+=`${st.done?'[x]':'[ ]'} ${item.t}\n    ${item.d}\n`;
+      if(st.note)txt+=`    Nota: ${st.note}\n`;
+    });
+    txt+='\n';
+  });
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`tramites-${currentCountry}-nevado.txt`;
+  a.click();
+}
+
+renderChecklist('co');
+
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

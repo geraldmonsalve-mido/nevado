@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Transparencia · Corazón · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#2980B9;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+    .page-header{margin-bottom:40px}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:540px}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--page-accent)}
+    .stat-lbl{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-top:4px}
+
+    /* SECTION */
+    .section-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+    /* AUDIT PROCESS */
+    .audit-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px}
+    .audit-step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+    .audit-step-num{width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);color:var(--page-accent);font-size:11px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+    .audit-step-title{font-size:11px;font-weight:500;color:var(--text);margin-bottom:4px}
+    .audit-step-desc{font-size:10px;color:var(--text-dim);line-height:1.5}
+
+    /* CAMPAIGNS TABLE */
+    .camps-table{width:100%;border-collapse:collapse;margin-bottom:40px;font-size:12px}
+    .camps-table thead th{font-size:9px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+    .camps-table tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;cursor:none}
+    .camps-table tbody tr:hover{background:rgba(255,255,255,0.02)}
+    .camps-table td{padding:12px}
+    .camp-name-cell{color:var(--text);font-weight:500}
+    .camp-org-sub{font-size:10px;color:var(--text-dim);margin-top:1px}
+    .status-badge{font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid}
+    .status-badge.active{border-color:color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent)}
+    .status-badge.completed{border-color:rgba(46,204,113,0.30);color:#2ecc71}
+    .status-badge.audited{border-color:rgba(244,208,63,0.30);color:#F4D03F}
+    .prog-mini{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;min-width:80px;margin-top:4px}
+    .prog-mini-fill{height:100%;border-radius:2px;background:var(--page-accent)}
+    .table-link{font-size:10px;color:var(--page-accent);text-decoration:none;cursor:none}
+    .table-link:hover{text-decoration:underline}
+
+    /* PUBLIC LOGS */
+    .logs-grid{display:grid;gap:8px;margin-bottom:40px}
+    .log-row{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:14px}
+    .log-date{font-size:10px;color:var(--text-muted);white-space:nowrap;min-width:90px}
+    .log-camp{font-size:11px;color:var(--page-accent);min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .log-action{font-size:11px;color:var(--text-dim);flex:1}
+    .log-amount{font-size:11px;font-weight:500;color:var(--text);white-space:nowrap}
+    .log-receipt{font-size:9px;letter-spacing:0.07em;text-transform:uppercase;color:var(--page-accent);text-decoration:none;cursor:none;white-space:nowrap}
+
+    /* ACCORDION */
+    .accordion{margin-bottom:40px}
+    .acc-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:6px}
+    .acc-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:none;transition:background 0.2s}
+    .acc-header:hover{background:rgba(255,255,255,0.02)}
+    .acc-title{font-size:12px;font-weight:500;color:var(--text)}
+    .acc-arrow{font-size:10px;color:var(--text-muted);transition:transform 0.2s}
+    .acc-item.open .acc-arrow{transform:rotate(180deg)}
+    .acc-body{font-size:12px;color:var(--text-dim);line-height:1.7;padding:0 16px 14px;display:none}
+    .acc-item.open .acc-body{display:block}
+
+    /* REPORT FORM */
+    .report-form{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px}
+    .form-row{margin-bottom:14px}
+    .form-row label{display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
+    .form-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent)}
+    .form-textarea{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:100px;transition:border-color 0.2s;cursor:none;line-height:1.6}
+    .form-textarea:focus{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent)}
+    .btn-report{padding:9px 20px;border-radius:7px;cursor:none;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent);font-size:10px;letter-spacing:0.10em;text-transform:uppercase;font-family:inherit;transition:all 0.2s}
+    .btn-report:hover{background:color-mix(in srgb,var(--page-accent) 20%,transparent)}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item active" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/corazon-tricolor.html">← Corazón</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Transparencia</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Transparencia</h1>
+    <p>Todos los fondos gestionados por NEVADO Corazón son públicos, auditables y verificados trimestralmente por auditores independientes.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">$24,180</div><div class="stat-lbl">Fondos gestionados</div></div>
+    <div class="stat-card"><div class="stat-num">18</div><div class="stat-lbl">Campañas activas</div></div>
+    <div class="stat-card"><div class="stat-num">100%</div><div class="stat-lbl">Auditado</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Auditorías trimestrales</div></div>
+  </div>
+
+  <div class="section-title">Proceso de auditoría</div>
+  <div class="audit-steps">
+    <div class="audit-step">
+      <div class="audit-step-num">1</div>
+      <div class="audit-step-title">Recepción</div>
+      <div class="audit-step-desc">Cada donación queda registrada con timestamp, monto y campaña destino</div>
+    </div>
+    <div class="audit-step">
+      <div class="audit-step-num">2</div>
+      <div class="audit-step-title">Verificación</div>
+      <div class="audit-step-desc">El responsable sube comprobantes de egreso en las 48h posteriores al gasto</div>
+    </div>
+    <div class="audit-step">
+      <div class="audit-step-num">3</div>
+      <div class="audit-step-title">Revisión</div>
+      <div class="audit-step-desc">Auditor externo verifica coincidencia entre ingresos, gastos y evidencias</div>
+    </div>
+    <div class="audit-step">
+      <div class="audit-step-num">4</div>
+      <div class="audit-step-title">Publicación</div>
+      <div class="audit-step-desc">Informe público trimestral con desglose por campaña, donante (anónimo) y beneficiario</div>
+    </div>
+  </div>
+
+  <div class="section-title">Campañas activas y completadas</div>
+  <table class="camps-table">
+    <thead>
+      <tr>
+        <th>Campaña</th>
+        <th>Recaudado</th>
+        <th>Meta</th>
+        <th>Progreso</th>
+        <th>Estado</th>
+        <th>Auditoría</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="camp-name-cell">Becas de Conectividad</div><div class="camp-org-sub">Fundación Conecta Venezuela</div></td>
+        <td>$4,380</td>
+        <td>$6,000</td>
+        <td><div class="prog-mini"><div class="prog-mini-fill" style="width:73%"></div></div><span style="font-size:9px;color:var(--text-muted)">73%</span></td>
+        <td><span class="status-badge active">Activa</span></td>
+        <td><a class="table-link" href="#">Ver →</a></td>
+      </tr>
+      <tr>
+        <td><div class="camp-name-cell">Kits Médicos Táchira</div><div class="camp-org-sub">Médicos por Venezuela</div></td>
+        <td>$3,200</td>
+        <td>$3,200</td>
+        <td><div class="prog-mini"><div class="prog-mini-fill" style="width:100%"></div></div><span style="font-size:9px;color:var(--text-muted)">100%</span></td>
+        <td><span class="status-badge completed">Completada</span></td>
+        <td><a class="table-link" href="#">Ver →</a></td>
+      </tr>
+      <tr>
+        <td><div class="camp-name-cell">Biblioteca Escolar Los Andes</div><div class="camp-org-sub">Educar Venezuela</div></td>
+        <td>$1,800</td>
+        <td>$2,500</td>
+        <td><div class="prog-mini"><div class="prog-mini-fill" style="width:72%"></div></div><span style="font-size:9px;color:var(--text-muted)">72%</span></td>
+        <td><span class="status-badge active">Activa</span></td>
+        <td><a class="table-link" href="#">Ver →</a></td>
+      </tr>
+      <tr>
+        <td><div class="camp-name-cell">Fondo de Emergencia Maracaibo</div><div class="camp-org-sub">Red Comunitaria Zulia</div></td>
+        <td>$5,400</td>
+        <td>$5,000</td>
+        <td><div class="prog-mini"><div class="prog-mini-fill" style="width:100%"></div></div><span style="font-size:9px;color:var(--text-muted)">108%</span></td>
+        <td><span class="status-badge audited">Auditada Q1</span></td>
+        <td><a class="table-link" href="#">PDF →</a></td>
+      </tr>
+      <tr>
+        <td><div class="camp-name-cell">Becas ÁVILA — Ruta Dev</div><div class="camp-org-sub">NEVADO Corazón</div></td>
+        <td>$9,400</td>
+        <td>$10,000</td>
+        <td><div class="prog-mini"><div class="prog-mini-fill" style="width:94%"></div></div><span style="font-size:9px;color:var(--text-muted)">94%</span></td>
+        <td><span class="status-badge active">Activa</span></td>
+        <td><a class="table-link" href="#">Ver →</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">Registro público de movimientos</div>
+  <div class="logs-grid">
+    <div class="log-row">
+      <div class="log-date">15 May 2025</div>
+      <div class="log-camp">Becas Conectividad</div>
+      <div class="log-action">Pago de planes de datos — 80 beneficiarios (Digitel/Movistar)</div>
+      <div class="log-amount">$1,200</div>
+      <a class="log-receipt" href="#">Recibo</a>
+    </div>
+    <div class="log-row">
+      <div class="log-date">10 May 2025</div>
+      <div class="log-camp">Becas ÁVILA Dev</div>
+      <div class="log-action">Transferencia a plataforma ÁVILA — 12 nuevas becas Q2</div>
+      <div class="log-amount">$1,440</div>
+      <a class="log-receipt" href="#">Recibo</a>
+    </div>
+    <div class="log-row">
+      <div class="log-date">02 May 2025</div>
+      <div class="log-camp">Biblioteca Los Andes</div>
+      <div class="log-action">Compra de libros y materiales — proveedor local Mérida</div>
+      <div class="log-amount">$890</div>
+      <a class="log-receipt" href="#">Recibo</a>
+    </div>
+    <div class="log-row">
+      <div class="log-date">28 Abr 2025</div>
+      <div class="log-camp">Kits Médicos Táchira</div>
+      <div class="log-action">Compra de insumos médicos — distribuidor San Cristóbal</div>
+      <div class="log-amount">$3,200</div>
+      <a class="log-receipt" href="#">PDF</a>
+    </div>
+    <div class="log-row">
+      <div class="log-date">15 Abr 2025</div>
+      <div class="log-camp">Becas Conectividad</div>
+      <div class="log-action">Primer lote — 60 beneficiarios activados</div>
+      <div class="log-amount">$900</div>
+      <a class="log-receipt" href="#">Recibo</a>
+    </div>
+  </div>
+
+  <div class="section-title">Preguntas frecuentes</div>
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-title">¿Cómo sé que mi donación llegó al destino correcto?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Cada donación genera un código de transacción único visible en tu historial. En el registro público puedes rastrear el movimiento de fondos desde la recepción hasta el gasto final, con comprobantes adjuntos.</div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-title">¿Quién realiza las auditorías externas?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Contamos con auditores independientes certificados radicados en Venezuela, Colombia y España. Sus informes se publican íntegros en formato PDF al final de cada trimestre y quedan permanentemente en el registro público.</div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-title">¿NEVADO cobra comisión sobre las donaciones?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">NEVADO Corazón opera con comisión cero para el donante y el beneficiario. Los costos operativos de la plataforma son cubiertos por los miembros Nevado Plus y patrocinadores institucionales del ecosistema.</div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-header" onclick="toggleAcc(this)">
+        <span class="acc-title">¿Qué pasa si una campaña no alcanza su meta?</span>
+        <span class="acc-arrow">▼</span>
+      </div>
+      <div class="acc-body">Si la campaña se cierra sin alcanzar la meta, los fondos se destinan al propósito más cercano posible (acordado con el responsable) o se reembolsan íntegramente a los donantes. El reembolso se procesa en un máximo de 5 días hábiles.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Reportar irregularidad</div>
+  <div class="report-form">
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.6">Si detectas alguna inconsistencia en los fondos reportados o tienes evidencia de mal uso de una campaña, reportalo aquí. Todas las denuncias son investigadas en 48 horas.</div>
+    <div class="form-row">
+      <label>Campaña involucrada</label>
+      <input class="form-input" type="text" placeholder="Nombre de la campaña"/>
+    </div>
+    <div class="form-row">
+      <label>Descripción de la irregularidad</label>
+      <textarea class="form-textarea" placeholder="Describe la inconsistencia con el mayor detalle posible..."></textarea>
+    </div>
+    <div class="form-row">
+      <label>Tu correo (opcional — para seguimiento)</label>
+      <input class="form-input" type="email" placeholder="correo@ejemplo.com"/>
+    </div>
+    <button class="btn-report" id="report-btn" onclick="submitReport()">Enviar reporte</button>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Corazón</h4>
+      <a href="/corazon/campana.html">Campaña</a>
+      <a href="/corazon/crear.html">Crear campaña</a>
+      <a href="/corazon/transparencia.html">Transparencia</a>
+      <a href="/corazon/donacion.html">Donar</a>
+      <a href="/corazon/historias.html">Historias</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Auditorías</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+function toggleAcc(header){
+  const item=header.closest('.acc-item');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.acc-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+function submitReport(){
+  const btn=document.getElementById('report-btn');
+  btn.textContent='✓ Reporte enviado';
+  btn.disabled=true;btn.style.opacity='0.5';
+}
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

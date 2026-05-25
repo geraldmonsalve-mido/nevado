@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Aplicaciones — Capital Humano · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #05050A; --ivory: #E8E4DC; --gold: #B8944A; --accent: #F4D03F; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#F4D03F; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#F4D03F; background:rgba(244,208,63,0.10); border:1px solid rgba(244,208,63,0.28); box-shadow:0 0 12px rgba(244,208,63,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#F4D03F; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    .page-content { padding:32px 10vw 80px; position:relative; z-index:10; }
+    .page-header { margin-bottom:32px; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+    .page-tag { font-size:9px; font-weight:600; letter-spacing:0.25em; text-transform:uppercase; color:#F4D03F; margin-bottom:12px; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,7vw,5rem); letter-spacing:0.04em; line-height:0.92; color:var(--ivory); margin-bottom:12px; }
+    .page-desc { font-size:14px; font-weight:300; color:var(--text-mid); line-height:1.7; }
+    .btn-accent { background:#F4D03F; color:#05050A; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#F4D03F; border:1px solid rgba(244,208,63,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(244,208,63,0.08); }
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#F4D03F; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#F4D03F; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    @media(max-width:768px){ .std-fg { grid-template-columns:1fr 1fr; } }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#F4D03F; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+    /* PAGE SPECIFIC */
+    .kpi-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
+    .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px 24px; }
+    .kpi-val { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:0.04em; color:#F4D03F; line-height:1; }
+    .kpi-label { font-size:11px; color:var(--text-dim); margin-top:4px; letter-spacing:0.08em; text-transform:uppercase; }
+    .kpi-card.kpi-green .kpi-val { color:#2ECC71; }
+    .kpi-card.kpi-blue .kpi-val { color:#5DADE2; }
+    .filter-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .filter-chip { background:transparent; border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-mid); cursor:none; transition:all 0.2s; font-family:inherit; }
+    .filter-chip:hover { border-color:rgba(244,208,63,0.30); color:rgba(232,228,220,0.80); }
+    .filter-chip.active { border-color:#F4D03F; color:#F4D03F; background:rgba(244,208,63,0.08); }
+    .apps-table { background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+    .apps-thead { display:grid; grid-template-columns:2fr 2fr 1fr 1.2fr 1fr; gap:0; padding:12px 20px; border-bottom:1px solid var(--border); }
+    .apps-th { font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); }
+    .app-row-wrap { border-bottom:1px solid rgba(255,255,255,0.04); }
+    .app-row { display:grid; grid-template-columns:2fr 2fr 1fr 1.2fr 1fr; gap:0; padding:14px 20px; cursor:none; transition:background 0.15s; align-items:center; }
+    .app-row:hover { background:rgba(255,255,255,0.03); }
+    .app-company { font-size:13px; font-weight:600; color:var(--ivory); }
+    .app-role { font-size:12px; color:var(--text-mid); margin-top:2px; }
+    .app-date { font-size:12px; color:var(--text-dim); }
+    /* STATUS BADGES */
+    .badge { display:inline-flex; align-items:center; font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; padding:3px 10px; border-radius:20px; }
+    .badge-gray { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:rgba(232,228,220,0.55); }
+    .badge-yellow { background:rgba(244,208,63,0.12); border:1px solid rgba(244,208,63,0.28); color:#F4D03F; }
+    .badge-blue { background:rgba(41,128,185,0.12); border:1px solid rgba(41,128,185,0.28); color:#5DADE2; }
+    .badge-green { background:rgba(46,204,113,0.12); border:1px solid rgba(46,204,113,0.28); color:#2ECC71; }
+    .badge-red { background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.28); color:#E74C3C; }
+    .app-actions { display:flex; gap:8px; }
+    .act-btn { background:transparent; border:1px solid var(--border); border-radius:5px; padding:4px 10px; font-size:10px; color:var(--text-dim); cursor:none; font-family:inherit; transition:all 0.2s; }
+    .act-btn:hover { border-color:rgba(244,208,63,0.30); color:#F4D03F; }
+    /* EXPANDED ROW */
+    .app-expand { display:none; padding:16px 20px 20px; border-top:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.015); }
+    .app-expand.open { display:block; }
+    .timeline { display:flex; flex-direction:column; gap:0; margin-bottom:16px; }
+    .tl-item { display:flex; gap:14px; align-items:flex-start; }
+    .tl-line-wrap { display:flex; flex-direction:column; align-items:center; }
+    .tl-dot { width:10px; height:10px; border-radius:50%; background:#F4D03F; flex-shrink:0; margin-top:2px; }
+    .tl-dot.past { background:rgba(244,208,63,0.35); }
+    .tl-connector { width:1px; flex:1; min-height:20px; background:rgba(255,255,255,0.08); margin:3px 0; }
+    .tl-content { flex:1; margin-bottom:12px; }
+    .tl-status { font-size:12px; font-weight:600; color:var(--ivory); }
+    .tl-date { font-size:11px; color:var(--text-dim); margin-top:1px; }
+    .tl-note { font-size:12px; color:var(--text-mid); margin-top:4px; line-height:1.5; }
+    .notes-area { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; padding:10px 12px; font-size:12px; color:var(--text-mid); width:100%; font-family:inherit; resize:vertical; min-height:60px; outline:none; cursor:none; }
+    .notes-area:focus { border-color:#F4D03F; }
+    .expand-label { font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+    /* NEW APP MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.80); z-index:1000; display:none; align-items:center; justify-content:center; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:#0E0E16; border:1px solid rgba(255,255,255,0.10); border-radius:12px; padding:36px; max-width:480px; width:90%; }
+    .modal-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.04em; color:var(--ivory); margin-bottom:6px; }
+    .modal-sub { font-size:13px; color:var(--text-mid); margin-bottom:24px; }
+    .form-group { margin-bottom:16px; }
+    .form-label { display:block; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+    .form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ivory); font-family:inherit; outline:none; transition:border-color 0.2s; cursor:none; }
+    .form-input:focus { border-color:#F4D03F; }
+    .form-input::placeholder { color:var(--text-dim); }
+    .modal-actions { display:flex; gap:12px; margin-top:20px; }
+    .modal-close { background:transparent; border:1px solid var(--border); color:var(--text-mid); padding:10px 20px; border-radius:6px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; cursor:none; font-family:inherit; }
+    @media(max-width:768px){ .apps-thead,.app-row { grid-template-columns:1fr 1fr; } .apps-th:nth-child(3),.apps-th:nth-child(5),.app-date,.app-actions { display:none; } }
+  </style>
+</head>
+<body data-accent="yellow">
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item active" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a href="/talento.html" class="nv-bc-back">← Capital Humano</a>
+  <span class="nv-bc-sep">·</span>
+  <span class="nv-bc-current">Mis Aplicaciones</span>
+</div>
+
+<main class="page-content">
+  <div class="page-header">
+    <div>
+      <div class="page-tag">Capital Humano</div>
+      <h1 class="page-title">MIS<br>APLICACIONES</h1>
+      <p class="page-desc">Seguimiento completo de tus postulaciones en el ecosistema NEVADO.</p>
+    </div>
+    <button class="btn-accent" onclick="document.getElementById('new-app-modal').classList.add('open')" style="align-self:flex-end">+ Registrar Aplicación</button>
+  </div>
+
+  <!-- KPI BAR -->
+  <div class="kpi-bar">
+    <div class="kpi-card">
+      <div class="kpi-val">28</div>
+      <div class="kpi-label">Enviadas</div>
+    </div>
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-val">6</div>
+      <div class="kpi-label">En proceso</div>
+    </div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-val">2</div>
+      <div class="kpi-label">Ofertas recibidas</div>
+    </div>
+  </div>
+
+  <!-- FILTER ROW -->
+  <div class="filter-row">
+    <button class="filter-chip active" onclick="filterApps('all',this)">Todas</button>
+    <button class="filter-chip" onclick="filterApps('Enviada',this)">Enviada</button>
+    <button class="filter-chip" onclick="filterApps('En revisión',this)">En revisión</button>
+    <button class="filter-chip" onclick="filterApps('Entrevista',this)">Entrevista</button>
+    <button class="filter-chip" onclick="filterApps('Oferta',this)">Oferta</button>
+    <button class="filter-chip" onclick="filterApps('Rechazada',this)">Rechazada</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="apps-table">
+    <div class="apps-thead">
+      <div class="apps-th">Empresa</div>
+      <div class="apps-th">Cargo</div>
+      <div class="apps-th">Fecha</div>
+      <div class="apps-th">Estado</div>
+      <div class="apps-th">Acciones</div>
+    </div>
+
+    <!-- ROW 1 -->
+    <div class="app-row-wrap" data-status="Entrevista">
+      <div class="app-row" onclick="toggleExpand('exp-1')">
+        <div><div class="app-company">TechRemote VE</div><div class="app-role">Frontend Senior</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">Desarrollador Frontend Senior</div>
+        <div class="app-date">12 may 2026</div>
+        <div><span class="badge badge-blue">Entrevista</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-1">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">12 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">En revisión</div><div class="tl-date">15 may 2026</div><div class="tl-note">El equipo de RR.HH. confirmó recepción vía email.</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">Entrevista técnica agendada</div><div class="tl-date">20 may 2026</div><div class="tl-note">Entrevista de 45 min con el CTO. Zoom link enviado.</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas sobre esta aplicación...">Preguntaron sobre experiencia con micro-frontends. Estudiar Module Federation.</textarea>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="app-row-wrap" data-status="Oferta">
+      <div class="app-row" onclick="toggleExpand('exp-2')">
+        <div><div class="app-company">Guaire Labs</div><div class="app-role">Full Stack Engineer</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">Full Stack Engineer · Node/React</div>
+        <div class="app-date">5 may 2026</div>
+        <div><span class="badge badge-green">Oferta</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-2">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">5 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">En revisión</div><div class="tl-date">7 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Entrevista técnica</div><div class="tl-date">13 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">Oferta recibida</div><div class="tl-date">22 may 2026</div><div class="tl-note">Oferta: $2,400 USD/mes. Plazo de respuesta: 5 días.</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas...">Analizar compensación vs trabajo remoto full. Pedir detalles de beneficios.</textarea>
+      </div>
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="app-row-wrap" data-status="En revisión">
+      <div class="app-row" onclick="toggleExpand('exp-3')">
+        <div><div class="app-company">Arepas Digital</div><div class="app-role">React Developer Mid</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">React Developer · Mid Level</div>
+        <div class="app-date">18 may 2026</div>
+        <div><span class="badge badge-yellow">En revisión</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-3">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">18 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">En revisión</div><div class="tl-date">20 may 2026</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas..."></textarea>
+      </div>
+    </div>
+
+    <!-- ROW 4 -->
+    <div class="app-row-wrap" data-status="Rechazada">
+      <div class="app-row" onclick="toggleExpand('exp-4')">
+        <div><div class="app-company">LATAM SaaS Co</div><div class="app-role">Backend Engineer</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">Backend Engineer · Python/Django</div>
+        <div class="app-date">2 may 2026</div>
+        <div><span class="badge badge-red">Rechazada</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-4">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">2 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">En revisión</div><div class="tl-date">5 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div></div><div class="tl-content"><div class="tl-status">Rechazada</div><div class="tl-date">10 may 2026</div><div class="tl-note">Buscaban perfil con 5+ años en Django. Recomendaron volver en 6 meses.</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas...">Profundizar Django REST Framework. Estudiar deployment en AWS.</textarea>
+      </div>
+    </div>
+
+    <!-- ROW 5 -->
+    <div class="app-row-wrap" data-status="Enviada">
+      <div class="app-row" onclick="toggleExpand('exp-5')">
+        <div><div class="app-company">Nodo Global VE</div><div class="app-role">UI/UX Engineer</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">UI/UX Engineer · Figma+React</div>
+        <div class="app-date">22 may 2026</div>
+        <div><span class="badge badge-gray">Enviada</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-5">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">22 may 2026</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas..."></textarea>
+      </div>
+    </div>
+
+    <!-- ROW 6 -->
+    <div class="app-row-wrap" data-status="Entrevista">
+      <div class="app-row" onclick="toggleExpand('exp-6')">
+        <div><div class="app-company">CaraFull Studio</div><div class="app-role">Product Designer</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">Senior Product Designer</div>
+        <div class="app-date">8 may 2026</div>
+        <div><span class="badge badge-blue">Entrevista</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-6">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">8 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">En revisión</div><div class="tl-date">11 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">Entrevista de cultura</div><div class="tl-date">19 may 2026</div><div class="tl-note">Entrevista informal con el equipo creativo. Muy buena impresión.</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas...">Preparar case study de redesign de onboarding. Mostrar proceso completo.</textarea>
+      </div>
+    </div>
+
+    <!-- ROW 7 -->
+    <div class="app-row-wrap" data-status="Oferta">
+      <div class="app-row" onclick="toggleExpand('exp-7')">
+        <div><div class="app-company">Orinoco Tech</div><div class="app-role">DevOps Engineer</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">DevOps / Cloud Engineer · AWS</div>
+        <div class="app-date">28 abr 2026</div>
+        <div><span class="badge badge-green">Oferta</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-7">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">28 abr 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot past"></div><div class="tl-connector"></div></div><div class="tl-content"><div class="tl-status">Entrevista + prueba técnica</div><div class="tl-date">9 may 2026</div></div></div>
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">Oferta extendida</div><div class="tl-date">21 may 2026</div><div class="tl-note">Oferta: $3,100 USD/mes + equipamiento. Responder antes del 28 may.</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas...">¡Excelente oferta! Evaluar vs Guaire Labs. Preguntar sobre crecimiento interno.</textarea>
+      </div>
+    </div>
+
+    <!-- ROW 8 -->
+    <div class="app-row-wrap" data-status="Enviada">
+      <div class="app-row" onclick="toggleExpand('exp-8')">
+        <div><div class="app-company">MercadoNube VE</div><div class="app-role">Data Analyst</div></div>
+        <div style="font-size:13px;color:var(--text-mid)">Data Analyst · Python/SQL</div>
+        <div class="app-date">24 may 2026</div>
+        <div><span class="badge badge-gray">Enviada</span></div>
+        <div class="app-actions"><button class="act-btn">Ver</button><button class="act-btn">Notas</button></div>
+      </div>
+      <div class="app-expand" id="exp-8">
+        <div class="expand-label">Historial de estado</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-line-wrap"><div class="tl-dot"></div></div><div class="tl-content"><div class="tl-status">Aplicación enviada</div><div class="tl-date">24 may 2026</div></div></div>
+        </div>
+        <div class="expand-label">Mis notas</div>
+        <textarea class="notes-area" placeholder="Agrega notas..."></textarea>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- NEW APP MODAL -->
+<div class="modal-overlay" id="new-app-modal">
+  <div class="modal-box">
+    <div class="modal-title">Nueva Aplicación</div>
+    <p class="modal-sub">Registra una postulación manual en tu seguimiento.</p>
+    <div class="form-group">
+      <label class="form-label">Empresa</label>
+      <input class="form-input" type="text" placeholder="Nombre de la empresa">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cargo</label>
+      <input class="form-input" type="text" placeholder="Título del puesto">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Fecha de aplicación</label>
+      <input class="form-input" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Estado inicial</label>
+      <select class="form-input">
+        <option>Enviada</option><option>En revisión</option><option>Entrevista</option><option>Oferta</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL de la vacante</label>
+      <input class="form-input" type="url" placeholder="https://...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-accent" onclick="alert('Aplicación registrada (modo demo)');document.getElementById(\'new-app-modal\').classList.remove(\'open\')">Guardar</button>
+      <button class="modal-close" onclick="document.getElementById('new-app-modal').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N·EVADO</a>
+      <p class="std-fl-desc">Red de talento venezolano para el mercado global.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Capital Humano</div>
+      <a class="std-fl" href="/talento/cv.html">Constructor de CV</a>
+      <a class="std-fl" href="/talento/profesionales.html">Profesionales</a>
+      <a class="std-fl" href="/talento/mentorias.html">Mentorías</a>
+      <a class="std-fl" href="/talento/aplicaciones.html">Mis Aplicaciones</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · Capital Humano · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+<script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+  function toggleExpand(id){
+    const el=document.getElementById(id);
+    el.classList.toggle('open');
+  }
+  function filterApps(status, btn){
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.app-row-wrap').forEach(row=>{
+      if(status==='all'||row.dataset.status===status){
+        row.style.display='';
+      } else {
+        row.style.display='none';
+      }
+    });
+  }
+  document.getElementById('new-app-modal').addEventListener('click',function(e){
+    if(e.target===this) this.classList.remove('open');
+  });
+</script>
+</body>
+</html>

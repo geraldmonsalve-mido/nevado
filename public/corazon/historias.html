@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Historias de Impacto · Corazón · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#2980B9;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+    .page-header{margin-bottom:40px;text-align:center}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:500px;margin:0 auto}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--page-accent)}
+    .stat-lbl{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-top:3px}
+
+    /* FILTER BAR */
+    .filter-bar{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap;justify-content:center}
+    .filter-pill{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit}
+    .filter-pill.active,.filter-pill:hover{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+
+    /* STORIES GRID */
+    .stories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+    .story-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:none;transition:border-color 0.2s,transform 0.2s}
+    .story-card:hover{border-color:color-mix(in srgb,var(--page-accent) 28%,transparent);transform:translateY(-2px)}
+    .story-header{padding:16px 16px 12px;display:flex;align-items:flex-start;gap:12px}
+    .story-avatar{width:44px;height:44px;border-radius:50%;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 22%,transparent);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .story-meta{flex:1}
+    .story-name{font-size:12px;font-weight:500;color:var(--text)}
+    .story-location{font-size:10px;color:var(--text-dim)}
+    .story-category{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);color:var(--page-accent);margin-top:4px;display:inline-block}
+    .story-body{padding:0 16px 16px}
+    .story-quote{font-size:12px;color:var(--text-dim);line-height:1.7;font-style:italic;border-left:2px solid color-mix(in srgb,var(--page-accent) 30%,transparent);padding-left:10px;margin-bottom:12px}
+    .story-outcome{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:10px;color:var(--text-dim);margin-bottom:10px}
+    .story-outcome strong{color:var(--text);display:block;margin-bottom:1px}
+    .story-footer{display:flex;align-items:center;justify-content:space-between}
+    .story-impact{font-size:10px;color:var(--text-muted);display:flex;align-items:center;gap:4px}
+    .story-impact-val{color:var(--page-accent);font-weight:500}
+    .btn-story{font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:5px 12px;border-radius:5px;cursor:none;background:color-mix(in srgb,var(--page-accent) 08%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 22%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s}
+    .btn-story:hover{background:color-mix(in srgb,var(--page-accent) 15%,transparent)}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(5,5,10,0.90);backdrop-filter:blur(12px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s}
+    .modal-overlay.open{opacity:1;pointer-events:auto}
+    .story-modal{width:580px;max-height:88vh;overflow-y:auto;background:#0C0C14;border:1px solid rgba(41,128,185,0.20);border-radius:16px;padding:32px;position:relative}
+    .modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);cursor:none;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all 0.2s}
+    .modal-close:hover{background:rgba(255,255,255,0.10);color:var(--text)}
+    .modal-avatar{width:56px;height:56px;border-radius:50%;background:color-mix(in srgb,var(--page-accent) 14%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px}
+    .modal-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:3px}
+    .modal-location{font-size:12px;color:var(--text-dim);margin-bottom:16px}
+    .modal-story-text{font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:18px}
+    .modal-outcome-box{background:color-mix(in srgb,var(--page-accent) 06%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 18%,transparent);border-radius:8px;padding:14px;margin-bottom:16px}
+    .modal-outcome-label{font-size:9px;letter-spacing:0.10em;text-transform:uppercase;color:var(--page-accent);margin-bottom:4px}
+    .modal-outcome-text{font-size:12px;color:var(--text-dim)}
+    .modal-campaign-link{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:var(--page-accent);text-decoration:none;cursor:none;display:inline-block;margin-top:4px}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item active" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/corazon-tricolor.html">← Corazón</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Historias</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Historias de impacto</h1>
+    <p>Venezolanas y venezolanos que cambiaron su vida gracias al ecosistema NEVADO y la comunidad que los apoya.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">180</div><div class="stat-lbl">Historias</div></div>
+    <div class="stat-card"><div class="stat-num">22</div><div class="stat-lbl">Países</div></div>
+    <div class="stat-card"><div class="stat-num">$24,180</div><div class="stat-lbl">Fondos movilizados</div></div>
+    <div class="stat-card"><div class="stat-num">642</div><div class="stat-lbl">Donantes</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-pill active">Todas</button>
+    <button class="filter-pill">Educación</button>
+    <button class="filter-pill">Empleo</button>
+    <button class="filter-pill">Salud</button>
+    <button class="filter-pill">Emprendimiento</button>
+    <button class="filter-pill">Familia</button>
+  </div>
+
+  <div class="stories-grid">
+
+    <div class="story-card" onclick="openStory(0)">
+      <div class="story-header">
+        <div class="story-avatar">👩‍💻</div>
+        <div class="story-meta">
+          <div class="story-name">Valentina R.</div>
+          <div class="story-location">Barcelona, España · ex Caracas</div>
+          <span class="story-category">Educación · Empleo</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"La beca ÁVILA me dio acceso a cursos de frontend que no podía costear. Seis meses después tenía mi primer contrato en Europa."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Frontend Developer · €2,800/mes · 2025</div>
+        <div class="story-footer">
+          <div class="story-impact">Beca: <span class="story-impact-val">$480</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(0)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(1)">
+      <div class="story-header">
+        <div class="story-avatar">👨‍⚕️</div>
+        <div class="story-meta">
+          <div class="story-name">Dr. Andrés M.</div>
+          <div class="story-location">Lima, Perú · ex Maracaibo</div>
+          <span class="story-category">Salud · Familia</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"El kit médico de la campaña Corazón llegó a mi familia en Maracaibo cuando más lo necesitaban. No tenía forma de enviarles ayuda desde aquí."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Familia asistida durante emergencia · 4 personas</div>
+        <div class="story-footer">
+          <div class="story-impact">Ayuda: <span class="story-impact-val">$120</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(1)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(2)">
+      <div class="story-header">
+        <div class="story-avatar">🌱</div>
+        <div class="story-meta">
+          <div class="story-name">Luisa C.</div>
+          <div class="story-location">Bogotá, Colombia · ex Mérida</div>
+          <span class="story-category">Emprendimiento</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"El ecosistema NODO me conectó con mis primeros tres clientes. Hoy mi marca de diseño da empleo a otras dos venezolanas."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Estudio de diseño · 3 empleadas · $4,000/mes</div>
+        <div class="story-footer">
+          <div class="story-impact">Comunidad: <span class="story-impact-val">NODO</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(2)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(3)">
+      <div class="story-header">
+        <div class="story-avatar">📚</div>
+        <div class="story-meta">
+          <div class="story-name">Samuel T.</div>
+          <div class="story-location">Caracas, Venezuela</div>
+          <span class="story-category">Educación</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"Gracias a la beca de conectividad pude terminar mi ingeniería online. Estoy postulando a empleos remotos en Latam."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Ingeniero en sistemas graduado · 2024</div>
+        <div class="story-footer">
+          <div class="story-impact">Beca: <span class="story-impact-val">$180</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(3)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(4)">
+      <div class="story-header">
+        <div class="story-avatar">🚀</div>
+        <div class="story-meta">
+          <div class="story-name">Gabriela F.</div>
+          <div class="story-location">Ciudad de México · ex Valencia</div>
+          <span class="story-category">Empleo · Mentoría</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"Mi mentor de Capital Humano me ayudó a reformular mi CV para el mercado mexicano. A los 3 meses entré a una fintech."</div>
+        <div class="story-outcome"><strong>Resultado</strong>UX Designer · $2,400 USD/mes · 2025</div>
+        <div class="story-footer">
+          <div class="story-impact">Mentoría: <span class="story-impact-val">Talento</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(4)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(5)">
+      <div class="story-header">
+        <div class="story-avatar">🏥</div>
+        <div class="story-meta">
+          <div class="story-name">Familia Morales</div>
+          <div class="story-location">Táchira, Venezuela</div>
+          <span class="story-category">Salud · Emergencia</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"La campaña de kits médicos llegó exactamente cuando mi mamá necesitaba tratamiento. No había insumos disponibles en el hospital."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Tratamiento completado · Recuperación total</div>
+        <div class="story-footer">
+          <div class="story-impact">Ayuda: <span class="story-impact-val">$200</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(5)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(6)">
+      <div class="story-header">
+        <div class="story-avatar">💼</div>
+        <div class="story-meta">
+          <div class="story-name">Rafael B.</div>
+          <div class="story-location">Santiago, Chile · ex Barquisimeto</div>
+          <span class="story-category">Empleo · Servicios</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"La calculadora de freelance de Servicios me ayudó a definir mis tarifas. Hoy cobro el triple de lo que cobraba antes."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Freelance PM · $4,200/mes · 22 clientes</div>
+        <div class="story-footer">
+          <div class="story-impact">Herramienta: <span class="story-impact-val">Servicios</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(6)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(7)">
+      <div class="story-header">
+        <div class="story-avatar">🎓</div>
+        <div class="story-meta">
+          <div class="story-name">Daniela S.</div>
+          <div class="story-location">Berlín, Alemania · ex Caracas</div>
+          <span class="story-category">Educación · Beca</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"NEVADO me informó sobre la beca DAAD cuando aún tenía tiempo de aplicar. Comencé mi maestría en Berlin este semestre."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Maestría en Ciencias Ambientales · DAAD 2025</div>
+        <div class="story-footer">
+          <div class="story-impact">Oportunidad: <span class="story-impact-val">Titulares</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(7)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card" onclick="openStory(8)">
+      <div class="story-header">
+        <div class="story-avatar">🌐</div>
+        <div class="story-meta">
+          <div class="story-name">Tomás V.</div>
+          <div class="story-location">Miami, USA · ex Caracas</div>
+          <span class="story-category">Emprendimiento · Comunidad</span>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-quote">"Encontré a mi cofundador en NODO. Hoy nuestra startup tiene 3 empleados venezolanos y facturamos $15K/mes."</div>
+        <div class="story-outcome"><strong>Resultado</strong>Startup SaaS · 3 empleados venezolanos · $15K/mes</div>
+        <div class="story-footer">
+          <div class="story-impact">Comunidad: <span class="story-impact-val">NODO</span></div>
+          <button class="btn-story" onclick="event.stopPropagation();openStory(8)">Leer más</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- STORY MODAL -->
+<div class="modal-overlay" id="story-modal" onclick="if(event.target===this)closeModal()">
+  <div class="story-modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-avatar" id="m-avatar">👩‍💻</div>
+    <div class="modal-name" id="m-name">—</div>
+    <div class="modal-location" id="m-loc">—</div>
+    <div class="modal-story-text" id="m-story">—</div>
+    <div class="modal-outcome-box">
+      <div class="modal-outcome-label">Resultado</div>
+      <div class="modal-outcome-text" id="m-outcome">—</div>
+    </div>
+    <a class="modal-campaign-link" href="/corazon-tricolor.html">Ver campañas relacionadas →</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Corazón</h4>
+      <a href="/corazon/campana.html">Campaña</a>
+      <a href="/corazon/crear.html">Crear campaña</a>
+      <a href="/corazon/transparencia.html">Transparencia</a>
+      <a href="/corazon/donacion.html">Donar</a>
+      <a href="/corazon/historias.html">Historias</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Impacto</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+const STORIES=[
+  {avatar:'👩‍💻',name:'Valentina R.',loc:'Barcelona, España · ex Caracas',story:'Valentina llegó a España en 2022 sin contactos en la industria tech local. Encontró NEVADO a través de un grupo de venezolanos en Madrid. La plataforma ÁVILA le dio acceso a una beca para cursos de React y TypeScript que de otra forma no hubiera podido costear. Dedicó 4 meses estudiando 3 horas diarias después de su trabajo en hostelería. Con el perfil NODO actualizado y su nuevo portafolio, recibió su primera oferta como Frontend Developer en una startup española. "No fue fácil — nadie te dice que lo será. Pero NEVADO me dio la estructura que necesitaba para no rendirme."',outcome:'Frontend Developer en Barcelona · €2,800/mes · Contrato indefinido · 2025'},
+  {avatar:'👨‍⚕️',name:'Dr. Andrés M.',loc:'Lima, Perú · ex Maracaibo',story:'Andrés emigró a Perú en 2019 donde revalidó su título médico y construyó una carrera estable. Pero su familia en Maracaibo enfrentó una emergencia de salud en 2024: su madre necesitaba medicamentos e insumos que no encontraba en los hospitales. A través de la campaña "Kits Médicos Táchira" de NEVADO Corazón, pudo coordinar la ayuda directamente. "Ver que mis donaciones se tradujeron en recibos reales y comprobantes de entrega me dio paz. No más incertidumbre de si el dinero llegó."',outcome:'Familia asistida durante emergencia de salud · 4 personas beneficiadas · Seguimiento auditado'},
+  {avatar:'🌱',name:'Luisa C.',loc:'Bogotá, Colombia · ex Mérida',story:'Luisa llegó a Bogotá con formación en diseño gráfico pero sin red de contactos local. Publicó su portafolio en NODO y comenzó a recibir solicitudes de colaboración de otros miembros del ecosistema. Sus primeros tres clientes vinieron de esa comunidad. "La clave fue que la gente en NODO te conoce antes de contratarte. Hay confianza construida porque compartimos contexto." Hoy su estudio, Caracas Studio, da empleo a otras dos diseñadoras venezolanas en Colombia.',outcome:'Estudio de diseño fundado en 2024 · 3 empleadas · Facturación $4,000 USD/mes'},
+  {avatar:'📚',name:'Samuel T.',loc:'Caracas, Venezuela',story:'Samuel cursaba ingeniería en sistemas de forma semipresencial cuando la pandemia y la crisis de conectividad cortaron su acceso a clases. La beca de internet de NEVADO Corazón le garantizó 6 meses de datos móviles. "Parecerá pequeño, pero esos 6 meses fueron la diferencia entre graduarme o no. Pude presentar mis proyectos finales, defenderlos y obtener mi título." Hoy postula a empleos remotos y tiene dos entrevistas pendientes con empresas de Chile y Colombia.',outcome:'Ingeniería en Sistemas completada · 2024 · En proceso de búsqueda de empleo remoto'},
+  {avatar:'🚀',name:'Gabriela F.',loc:'Ciudad de México · ex Valencia',story:'Gabriela llegó a México con experiencia en diseño UX pero su CV estaba estructurado para el mercado venezolano. Un mentor de Capital Humano la ayudó a reformularlo, preparó con ella 8 entrevistas simuladas y le dio feedback sobre cómo presentar su trayectoria en el contexto latinoamericano. A los 3 meses de trabajo constante recibió dos ofertas. Eligió una fintech en expansión que valora su perspectiva venezolana como activo.',outcome:'UX Designer en fintech mexicana · $2,400 USD/mes · Equity del 0.5% · 2025'},
+  {avatar:'🏥',name:'Familia Morales',loc:'Táchira, Venezuela',story:'La madre de la familia Morales fue diagnosticada con una condición que requería insumos médicos específicos. Su hijo, radicado en Colombia, se enteró de la campaña de kits médicos a través de NEVADO. Los insumos llegaron en 72 horas verificadas con seguimiento fotográfico. "No era solo el medicamento — era saber que había un sistema que funcionaba. Que podías confiar en que el dinero llegaba donde debía." La madre completó su tratamiento y se recuperó.',outcome:'Tratamiento médico completado · Recuperación total · Fondos 100% verificados'},
+  {avatar:'💼',name:'Rafael B.',loc:'Santiago, Chile · ex Barquisimeto',story:'Rafael trabajaba como freelance pero cobraba tarifas muy por debajo del mercado, sin saber cómo posicionarse. La calculadora de tarifas de Servicios NEVADO le ayudó a entender su valor real según el mercado chileno y latinoamericano. "Ver el número que me correspondía cobrar fue un shock. Empecé a subir mis tarifas gradualmente y, contrario a lo que temía, no perdí clientes — perdí los malos y llegaron mejores." Hoy maneja 22 clientes y factura más de $4,000/mes.',outcome:'Freelance en Product Management · $4,200 USD/mes · 22 clientes activos en 5 países'},
+  {avatar:'🎓',name:'Daniela S.',loc:'Berlín, Alemania · ex Caracas',story:'Daniela tenía el perfil para aplicar a la beca DAAD pero nunca había escuchado de ella hasta que apareció en Titulares NEVADO tres meses antes de cerrar las postulaciones. "El artículo decía exactamente qué documentos necesitaba, dónde aplicar y cuáles eran los errores comunes. Me ahorró semanas de investigación." Aplicó, pasó tres filtros de selección y comenzó su maestría en Ciencias Ambientales en la Technische Universität Berlin.',outcome:'Maestría en Ciencias Ambientales · TU Berlin · Beca DAAD completa · Inicio: Sept 2025'},
+  {avatar:'🌐',name:'Tomás V.',loc:'Miami, USA · ex Caracas',story:'Tomás había intentado varios modelos de negocio en solitario sin éxito. En NODO encontró a otro venezolano con habilidades complementarias — él en ventas, su futuro cofundador en ingeniería. Lanzaron una herramienta SaaS para equipos remotos latinoamericanos. En 8 meses pasaron de $0 a $15,000 MRR y contrataron a 3 venezolanos más. "Lo que NEVADO hace mejor es crear el contexto de confianza. Con un venezolano en Miami hablas diferente que con un desconocido."',outcome:'Cofundador de startup SaaS · $15,000 MRR · 3 empleados venezolanos · Miami, 2025'},
+];
+function openStory(i){
+  const s=STORIES[i];
+  document.getElementById('m-avatar').textContent=s.avatar;
+  document.getElementById('m-name').textContent=s.name;
+  document.getElementById('m-loc').textContent=s.loc;
+  document.getElementById('m-story').textContent=s.story;
+  document.getElementById('m-outcome').textContent=s.outcome;
+  document.getElementById('story-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('story-modal').classList.remove('open')}
+document.querySelectorAll('.filter-pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    document.querySelectorAll('.filter-pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

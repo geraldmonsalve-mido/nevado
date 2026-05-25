@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Constructor de CV — Capital Humano · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #05050A; --ivory: #E8E4DC; --gold: #B8944A; --accent: #F4D03F; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    /* TOPBAR */
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#F4D03F; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#F4D03F; background:rgba(244,208,63,0.10); border:1px solid rgba(244,208,63,0.28); box-shadow:0 0 12px rgba(244,208,63,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    /* BREADCRUMB */
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#F4D03F; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    /* MAIN CONTENT AREA */
+    .page-content { padding:32px 10vw 80px; position:relative; z-index:10; }
+    .page-header { margin-bottom:40px; }
+    .page-tag { font-size:9px; font-weight:600; letter-spacing:0.25em; text-transform:uppercase; color:#F4D03F; margin-bottom:12px; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,7vw,6rem); letter-spacing:0.04em; line-height:0.92; color:var(--ivory); margin-bottom:16px; }
+    .page-desc { font-size:14px; font-weight:300; color:var(--text-mid); max-width:560px; line-height:1.7; }
+    /* CARDS & COMPONENTS */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:24px; }
+    .card-title { font-size:13px; font-weight:600; color:var(--ivory); margin-bottom:8px; }
+    .card-desc { font-size:12px; color:var(--text-mid); line-height:1.6; }
+    .btn-accent { background:#F4D03F; color:#05050A; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#F4D03F; border:1px solid rgba(244,208,63,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(244,208,63,0.08); }
+    @media(max-width:768px){ .cv-layout { flex-direction:column; } }
+    /* FOOTER */
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#F4D03F; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#F4D03F; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    @media(max-width:768px){ .std-fg { grid-template-columns:1fr 1fr; } }
+    /* TICKER */
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#F4D03F; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    /* FORMS */
+    .form-group { margin-bottom:20px; }
+    .form-label { display:block; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+    .form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ivory); font-family:inherit; outline:none; transition:border-color 0.2s; cursor:none; }
+    .form-input:focus { border-color:#F4D03F; }
+    .form-input::placeholder { color:var(--text-dim); }
+    textarea.form-input { resize:vertical; min-height:100px; }
+    /* CURSOR */
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+    /* PAGE SPECIFIC */
+    .cv-layout { display:flex; gap:28px; align-items:flex-start; }
+    .cv-form-col { flex:0 0 60%; min-width:0; }
+    .cv-preview-col { flex:0 0 calc(40% - 28px); min-width:0; position:sticky; top:100px; }
+    .form-section { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:24px; margin-bottom:20px; }
+    .form-section-title { font-size:11px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:#F4D03F; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .template-btns { display:flex; gap:10px; margin-top:8px; }
+    .template-btn { flex:1; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:10px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-mid); cursor:none; transition:all 0.2s; font-family:inherit; }
+    .template-btn.selected { border-color:#F4D03F; color:#F4D03F; background:rgba(244,208,63,0.08); }
+    .skills-container { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; min-height:36px; padding:8px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:6px; }
+    .skill-pill { background:rgba(244,208,63,0.15); border:1px solid rgba(244,208,63,0.30); color:#F4D03F; font-size:11px; padding:3px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:6px; }
+    .skill-pill-remove { cursor:none; opacity:0.6; font-size:10px; }
+    .skill-pill-remove:hover { opacity:1; }
+    .lang-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .lang-checkbox { accent-color:#F4D03F; width:14px; height:14px; cursor:none; }
+    .lang-label { font-size:12px; color:var(--text-mid); flex:1; }
+    .lang-select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:4px; padding:4px 8px; font-size:11px; color:var(--ivory); font-family:inherit; cursor:none; outline:none; }
+    /* CV PREVIEW */
+    .cv-preview-box { background:rgba(255,255,255,0.98); color:#111; border-radius:8px; padding:28px 24px; min-height:500px; font-family:'Inter',sans-serif; }
+    .cv-p-name { font-size:22px; font-weight:700; color:#111; border-bottom:2px solid #F4D03F; padding-bottom:8px; margin-bottom:4px; }
+    .cv-p-role { font-size:13px; color:#555; margin-bottom:14px; }
+    .cv-p-contact { font-size:11px; color:#666; display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .cv-p-contact span::after { content:'·'; margin-left:8px; }
+    .cv-p-contact span:last-child::after { content:''; }
+    .cv-section-head { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#F4D03F; border-bottom:1px solid #eee; padding-bottom:4px; margin-bottom:10px; margin-top:16px; }
+    .cv-exp-title { font-size:13px; font-weight:600; color:#111; }
+    .cv-exp-meta { font-size:11px; color:#777; margin-bottom:6px; }
+    .cv-exp-desc { font-size:12px; color:#444; line-height:1.6; }
+    .cv-skills-list { display:flex; flex-wrap:wrap; gap:6px; }
+    .cv-skill-tag { background:#F4D03F22; border:1px solid #F4D03F44; color:#7a6200; font-size:11px; padding:2px 8px; border-radius:12px; }
+    .cv-copy-btn { margin-top:14px; width:100%; }
+    /* AI SECTION */
+    .ai-section { background:rgba(244,208,63,0.04); border:1px solid rgba(244,208,63,0.18); border-radius:8px; padding:28px; margin-top:28px; }
+    .ai-section-title { font-size:13px; font-weight:600; color:#F4D03F; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+    .ai-section-desc { font-size:12px; color:var(--text-mid); margin-bottom:20px; }
+    .ai-result { margin-top:20px; padding:16px; background:rgba(244,208,63,0.06); border-left:3px solid #F4D03F; border-radius:0 6px 6px 0; font-size:13px; color:var(--ivory); line-height:1.7; white-space:pre-wrap; display:none; }
+    .ai-result.visible { display:block; }
+    .ai-loading { display:none; align-items:center; gap:10px; color:var(--text-dim); font-size:12px; margin-top:12px; }
+    .ai-loading.visible { display:flex; }
+    .spinner { width:16px; height:16px; border:2px solid rgba(244,208,63,0.20); border-top-color:#F4D03F; border-radius:50%; animation:spin 0.8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+  </style>
+</head>
+<body data-accent="yellow">
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item active" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a href="/talento.html" class="nv-bc-back">← Capital Humano</a>
+  <span class="nv-bc-sep">·</span>
+  <span class="nv-bc-current">Constructor de CV</span>
+</div>
+
+<main class="page-content">
+  <div class="page-header">
+    <div class="page-tag">Capital Humano</div>
+    <h1 class="page-title">CONSTRUCTOR<br>DE CV</h1>
+    <p class="page-desc">Crea tu CV profesional optimizado para el mercado global desde el ecosistema NEVADO.</p>
+  </div>
+
+  <div class="cv-layout">
+    <!-- LEFT: FORM -->
+    <div class="cv-form-col">
+
+      <!-- Datos Personales -->
+      <div class="form-section">
+        <div class="form-section-title">Datos Personales</div>
+        <div class="form-group">
+          <label class="form-label">Nombre Completo</label>
+          <input class="form-input" id="cv-name" type="text" placeholder="Ej. Ana Carolina Rodríguez" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cargo Actual</label>
+          <input class="form-input" id="cv-role" type="text" placeholder="Ej. Desarrolladora Full Stack" oninput="updatePreview()">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ciudad / País</label>
+            <input class="form-input" id="cv-location" type="text" placeholder="Caracas, Venezuela" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="cv-email" type="email" placeholder="ana@email.com" oninput="updatePreview()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">LinkedIn</label>
+            <input class="form-input" id="cv-linkedin" type="text" placeholder="linkedin.com/in/ana" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">GitHub / Portfolio</label>
+            <input class="form-input" id="cv-portfolio" type="text" placeholder="github.com/ana" oninput="updatePreview()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Experiencia Laboral -->
+      <div class="form-section">
+        <div class="form-section-title">Experiencia Laboral</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Empresa</label>
+            <input class="form-input" id="cv-company" type="text" placeholder="TechRemote Corp" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cargo</label>
+            <input class="form-input" id="cv-job-title" type="text" placeholder="Frontend Developer" oninput="updatePreview()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Fecha Inicio</label>
+            <input class="form-input" id="cv-date-from" type="text" placeholder="Ene 2023" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha Fin</label>
+            <input class="form-input" id="cv-date-to" type="text" placeholder="Presente" oninput="updatePreview()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción de funciones</label>
+          <textarea class="form-input" id="cv-job-desc" rows="4" placeholder="Describe tus logros y responsabilidades principales..." oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+
+      <!-- Educación -->
+      <div class="form-section">
+        <div class="form-section-title">Educación</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Institución</label>
+            <input class="form-input" id="cv-edu-inst" type="text" placeholder="USB / UCAB / UCV" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Año</label>
+            <input class="form-input" id="cv-edu-year" type="text" placeholder="2021" oninput="updatePreview()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Título obtenido</label>
+          <input class="form-input" id="cv-edu-title" type="text" placeholder="Ing. en Computación" oninput="updatePreview()">
+        </div>
+      </div>
+
+      <!-- Habilidades -->
+      <div class="form-section">
+        <div class="form-section-title">Habilidades Técnicas</div>
+        <div class="form-group">
+          <label class="form-label">Agregar habilidades (separadas por coma + Enter)</label>
+          <input class="form-input" id="cv-skills-input" type="text" placeholder="React, TypeScript, Node.js...">
+        </div>
+        <div class="skills-container" id="skills-container"></div>
+      </div>
+
+      <!-- Idiomas -->
+      <div class="form-section">
+        <div class="form-section-title">Idiomas</div>
+        <div class="lang-row">
+          <input type="checkbox" class="lang-checkbox" id="lang-es" checked>
+          <label class="lang-label" for="lang-es">Español</label>
+          <select class="lang-select">
+            <option>Nativo</option><option>Avanzado</option>
+          </select>
+        </div>
+        <div class="lang-row">
+          <input type="checkbox" class="lang-checkbox" id="lang-en">
+          <label class="lang-label" for="lang-en">Inglés</label>
+          <select class="lang-select">
+            <option>Básico</option><option>Intermedio</option><option>Avanzado</option><option>Fluido</option>
+          </select>
+        </div>
+        <div class="lang-row">
+          <input type="checkbox" class="lang-checkbox" id="lang-pt">
+          <label class="lang-label" for="lang-pt">Portugués</label>
+          <select class="lang-select">
+            <option>Básico</option><option>Intermedio</option><option>Avanzado</option>
+          </select>
+        </div>
+        <div class="lang-row">
+          <input type="checkbox" class="lang-checkbox" id="lang-fr">
+          <label class="lang-label" for="lang-fr">Francés</label>
+          <select class="lang-select">
+            <option>Básico</option><option>Intermedio</option><option>Avanzado</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Plantilla -->
+      <div class="form-section">
+        <div class="form-section-title">Plantilla</div>
+        <div class="template-btns">
+          <button class="template-btn selected" onclick="selectTemplate('clasico',this)">Clásico</button>
+          <button class="template-btn" onclick="selectTemplate('moderno',this)">Moderno</button>
+          <button class="template-btn" onclick="selectTemplate('minimal',this)">Minimal</button>
+        </div>
+      </div>
+
+      <!-- AI Section -->
+      <div class="ai-section">
+        <div class="ai-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4D03F" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Optimizar con IA
+        </div>
+        <p class="ai-section-desc">Pega tu experiencia laboral y Nevado te sugiere cómo presentarla de forma más impactante para empleadores remotos.</p>
+        <div class="form-group">
+          <label class="form-label">Tu experiencia (texto libre)</label>
+          <textarea class="form-input" id="ai-experience" rows="5" placeholder="Ej: Trabajé en TechCorp por 3 años como desarrollador, hacía apps con React y también ayudaba al equipo de backend..."></textarea>
+        </div>
+        <button class="btn-accent" onclick="optimizeWithAI()">Optimizar con Nevado</button>
+        <div class="ai-loading" id="ai-loading">
+          <div class="spinner"></div>
+          <span>Analizando tu perfil...</span>
+        </div>
+        <div class="ai-result" id="ai-result"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: PREVIEW -->
+    <div class="cv-preview-col">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;">Vista Previa</div>
+      <div class="cv-preview-box" id="cv-preview">
+        <div class="cv-p-name" id="p-name">Tu Nombre</div>
+        <div class="cv-p-role" id="p-role">Cargo Actual</div>
+        <div class="cv-p-contact">
+          <span id="p-location">Ciudad, País</span>
+          <span id="p-email">email@correo.com</span>
+          <span id="p-linkedin">linkedin.com/in/tu-perfil</span>
+          <span id="p-portfolio">github.com/tu-usuario</span>
+        </div>
+        <div class="cv-section-head">Experiencia</div>
+        <div class="cv-exp-title" id="p-job-title">Cargo en la empresa</div>
+        <div class="cv-exp-meta" id="p-job-meta">Empresa · Fecha inicio – Fecha fin</div>
+        <div class="cv-exp-desc" id="p-job-desc">Descripción de tus funciones y logros principales...</div>
+        <div class="cv-section-head">Educación</div>
+        <div class="cv-exp-title" id="p-edu-title">Título</div>
+        <div class="cv-exp-meta" id="p-edu-meta">Institución · Año</div>
+        <div class="cv-section-head">Habilidades</div>
+        <div class="cv-skills-list" id="p-skills"></div>
+      </div>
+      <button class="btn-outline cv-copy-btn" onclick="copyCV()">Copiar como texto</button>
+    </div>
+  </div>
+</main>
+
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N·EVADO</a>
+      <p class="std-fl-desc">Red de talento venezolano para el mercado global.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Capital Humano</div>
+      <a class="std-fl" href="/talento/cv.html">Constructor de CV</a>
+      <a class="std-fl" href="/talento/profesionales.html">Profesionales</a>
+      <a class="std-fl" href="/talento/mentorias.html">Mentorías</a>
+      <a class="std-fl" href="/talento/aplicaciones.html">Mis Aplicaciones</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · Capital Humano · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+<script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+  // Skills chip system
+  const skills = [];
+  const skillsInput = document.getElementById('cv-skills-input');
+  skillsInput.addEventListener('keydown', function(e){
+    if(e.key==='Enter'||e.key===','){
+      e.preventDefault();
+      const val = this.value.replace(',','').trim();
+      if(val && !skills.includes(val)){
+        skills.push(val);
+        renderSkills();
+        updatePreview();
+      }
+      this.value='';
+    }
+  });
+
+  function renderSkills(){
+    const c=document.getElementById('skills-container');
+    c.innerHTML=skills.map((s,i)=>`<span class="skill-pill">${s}<span class="skill-pill-remove" onclick="removeSkill(${i})">×</span></span>`).join('');
+  }
+  function removeSkill(i){ skills.splice(i,1); renderSkills(); updatePreview(); }
+
+  function selectTemplate(t, btn){
+    document.querySelectorAll('.template-btn').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function updatePreview(){
+    const g=(id,fb)=>{const v=document.getElementById(id)?.value||'';return v||fb;};
+    document.getElementById('p-name').textContent=g('cv-name','Tu Nombre');
+    document.getElementById('p-role').textContent=g('cv-role','Cargo Actual');
+    document.getElementById('p-location').textContent=g('cv-location','Ciudad, País');
+    document.getElementById('p-email').textContent=g('cv-email','email@correo.com');
+    document.getElementById('p-linkedin').textContent=g('cv-linkedin','linkedin.com/in/tu-perfil');
+    document.getElementById('p-portfolio').textContent=g('cv-portfolio','github.com/tu-usuario');
+    const jt=g('cv-job-title','Cargo en la empresa');
+    const co=g('cv-company','Empresa');
+    const df=g('cv-date-from','Fecha inicio');
+    const dt=g('cv-date-to','Fecha fin');
+    document.getElementById('p-job-title').textContent=jt;
+    document.getElementById('p-job-meta').textContent=`${co} · ${df} – ${dt}`;
+    document.getElementById('p-job-desc').textContent=g('cv-job-desc','Descripción de tus funciones y logros principales...');
+    document.getElementById('p-edu-title').textContent=g('cv-edu-title','Título');
+    document.getElementById('p-edu-meta').textContent=`${g('cv-edu-inst','Institución')} · ${g('cv-edu-year','Año')}`;
+    const skillsEl=document.getElementById('p-skills');
+    skillsEl.innerHTML=skills.length?skills.map(s=>`<span class="cv-skill-tag">${s}</span>`).join(''):'<span style="font-size:12px;color:#aaa;">Agrega tus habilidades...</span>';
+  }
+
+  function copyCV(){
+    const box=document.getElementById('cv-preview');
+    const text=box.innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=event.target;
+      btn.textContent='¡Copiado!';
+      setTimeout(()=>{btn.textContent='Copiar como texto';},2000);
+    });
+  }
+
+  async function optimizeWithAI(){
+    const exp=document.getElementById('ai-experience').value.trim();
+    if(!exp){alert('Por favor escribe tu experiencia primero.');return;}
+    const key=window.__NVD_KEY;
+    if(!key){document.getElementById('ai-result').textContent='API Key no disponible. Configura tu clave NEVADO.';document.getElementById('ai-result').classList.add('visible');return;}
+    document.getElementById('ai-loading').classList.add('visible');
+    document.getElementById('ai-result').classList.remove('visible');
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':key},
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:'Eres experto en CVs para el mercado laboral internacional. Analiza esta experiencia y sugiere cómo presentarla de forma más impactante para empleadores remotos. Responde en español. Sin markdown.',messages:[{role:'user',content:exp}]})
+      });
+      const data=await res.json();
+      document.getElementById('ai-result').textContent=data.content?.[0]?.text||'Sin respuesta.';
+      document.getElementById('ai-result').classList.add('visible');
+    }catch(e){
+      document.getElementById('ai-result').textContent='Error al conectar con la API. Verifica tu conexión.';
+      document.getElementById('ai-result').classList.add('visible');
+    }
+    document.getElementById('ai-loading').classList.remove('visible');
+  }
+</script>
+</body>
+</html>

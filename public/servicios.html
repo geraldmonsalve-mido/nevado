@@ -1,0 +1,1250 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servicios — NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0 }
+    :root {
+      --bg:#05050A; --carbon:#0C0C0B; --ivory:#E8E4DC; --gold:#B8944A;
+      --surface:rgba(15,15,22,0.88); --surface2:rgba(20,20,30,0.95);
+      --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.11);
+      --text-dim:rgba(232,228,220,0.34); --text-mid:rgba(232,228,220,0.60);
+      --c:#E74C3C; --cs:rgba(231,76,60,0.14); --cb:rgba(231,76,60,0.34); --cg:rgba(231,76,60,0.45);
+      --tri-y:#F4D03F; --tri-b:#2980B9; --tri-r:#E74C3C;
+      --green:#27AE60; --amber:#F39C12;
+      --topbar-h:52px;
+      --page-accent:#E74C3C;
+    }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none }
+    a { text-decoration:none; color:inherit }
+    button { font-family:inherit; cursor:none }
+    input, select, textarea { font-family:inherit; cursor:none }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0 }
+
+    /* ── TOPBAR UNIFICADO v3.0 ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      flex-shrink: 0; font-family: 'Cormorant Garamond', serif;
+    }
+    .topbar-logo span { color: var(--page-accent, #B8944A); }
+    .topbar-nav {
+      display: flex; align-items: center; gap: 2px;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .nav-item {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(232,228,220,0.38); text-decoration: none;
+      padding: 5px 12px; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap; cursor: none;
+    }
+    .nav-item:hover {
+      color: rgba(232,228,220,0.75);
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-item.active {
+      color: var(--page-accent, #B8944A);
+      background: color-mix(in srgb, var(--page-accent, #B8944A) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--page-accent, #B8944A) 30%, transparent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--page-accent, #B8944A) 20%, transparent);
+    }
+    .topbar-actions {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .topbar-divider {
+      width: 1px; height: 20px; background: rgba(255,255,255,0.10); margin: 0 2px;
+    }
+    .btn-plus {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 6px; cursor: none;
+      background: transparent; color: #B8944A;
+      border: 1px solid rgba(184,148,74,0.35);
+      transition: all 0.2s; font-family: inherit;
+    }
+    .btn-plus:hover { background: rgba(184,148,74,0.08); }
+    .topbar-user {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; color: rgba(232,228,220,0.45);
+      transition: all 0.2s;
+    }
+    .topbar-user:hover { background: rgba(255,255,255,0.10); color: rgba(232,228,220,0.85); }
+
+    /* Footer logo (legacy class) */
+    .tb-logo { font-family:'Cormorant Garamond',serif; letter-spacing:0.18em; color:var(--ivory); text-decoration:none }
+    .tb-logo span { color:var(--gold) }
+
+    /* HERO */
+    #sv-hero { position:relative; min-height:540px; display:flex; align-items:flex-end; padding:0 10vw 60px; overflow:hidden; z-index:10 }
+    .sv-hero-bg { position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1400&q=80') center/cover no-repeat; z-index:0 }
+    .sv-hero-bg::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom,rgba(5,5,10,0.50) 0%,rgba(5,5,10,0.80) 50%,rgba(5,5,10,0.97) 100%) }
+    .sv-hero-content { position:relative; z-index:2; padding-top:130px; width:100% }
+    .sv-hero-tag { font-size:9px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--c); margin-bottom:12px; display:flex; align-items:center; gap:8px }
+    .sv-hero-tag::before { content:''; width:20px; height:1px; background:var(--c) }
+    .sv-hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(4rem,10vw,8rem); letter-spacing:0.04em; line-height:0.9; margin-bottom:14px }
+    .sv-hero-sub { font-family:'Cormorant Garamond',serif; font-size:clamp(1.1rem,2.5vw,1.4rem); font-style:italic; color:var(--text-mid); margin-bottom:14px }
+    .sv-hero-desc { font-size:13px; color:var(--text-mid); max-width:540px; line-height:1.7; margin-bottom:28px }
+    .sv-hero-metrics { display:flex; gap:32px; margin-bottom:32px; flex-wrap:wrap }
+    .sv-hm-val { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.04em; color:var(--ivory); line-height:1 }
+    .sv-hm-lbl { font-size:9px; letter-spacing:0.10em; text-transform:uppercase; color:var(--text-dim); margin-top:2px }
+    .sv-hero-ctas { display:flex; gap:12px; flex-wrap:wrap }
+    .sv-btn-p { background:var(--c); color:#fff; border:none; padding:12px 24px; font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; border-radius:4px; transition:opacity .2s }
+    .sv-btn-p:hover { opacity:.85 }
+    .sv-btn-s { background:transparent; color:var(--ivory); border:1px solid var(--border2); padding:11px 24px; font-size:12px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; border-radius:4px; transition:border-color .2s,color .2s }
+    .sv-btn-s:hover { border-color:var(--cb); color:var(--c) }
+
+    /* RATES PANEL */
+    #rates-panel { position:sticky; top:var(--topbar-h); z-index:190; background:rgba(5,5,10,0.96); border-bottom:1px solid var(--border); padding:10px 10vw; display:flex; align-items:center; gap:0; overflow-x:auto }
+    #rates-panel::-webkit-scrollbar { display:none }
+    .rate-item { display:flex; align-items:center; gap:10px; padding:4px 20px; border-right:1px solid var(--border); flex-shrink:0 }
+    .rate-item:first-child { padding-left:0 }
+    .rate-item:last-child { border-right:none }
+    .rate-pair { font-size:9px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:2px }
+    .rate-val { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:0.04em; color:var(--ivory); line-height:1 }
+    .rate-badge { font-size:8px; letter-spacing:0.08em; text-transform:uppercase; padding:2px 6px; border-radius:20px; font-weight:600; flex-shrink:0 }
+    .rb-oficial { background:rgba(39,174,96,0.15); color:#27AE60; border:1px solid rgba(39,174,96,0.30) }
+    .rb-demo { background:rgba(243,156,18,0.12); color:#F39C12; border:1px solid rgba(243,156,18,0.25) }
+    .rates-status { margin-left:auto; display:flex; align-items:center; gap:6px; font-size:10px; color:var(--text-dim); flex-shrink:0; padding-left:20px }
+    .rates-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0 }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .rd-live { background:#27AE60; animation:pulse-dot 2s infinite }
+    .rd-demo { background:#F39C12 }
+    .rd-conn { background:#F39C12; animation:pulse-dot .8s infinite }
+
+    /* SECTIONS */
+    .sv-section { position:relative; z-index:10; padding:56px 10vw }
+    .s-tag { font-size:9px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--c); margin-bottom:8px; display:flex; align-items:center; gap:8px }
+    .s-tag::before { content:''; width:20px; height:1px; background:var(--c) }
+    .s-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.2rem,5vw,4rem); letter-spacing:0.04em; line-height:.95; margin-bottom:6px }
+    .s-sub { font-size:13px; color:var(--text-mid); margin-bottom:28px; line-height:1.6; max-width:500px }
+
+    /* WIDGET GRID */
+    .widget-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px }
+    .widget { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; transition:border-color .25s,box-shadow .25s; position:relative }
+    .widget::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--c); transform:scaleX(0); transition:transform .3s; transform-origin:left }
+    .widget:hover { border-color:var(--cb); box-shadow:0 0 28px rgba(231,76,60,0.07) }
+    .widget:hover::after { transform:scaleX(1) }
+    .widget.span2 { grid-column:span 2 }
+    .widget.span3 { grid-column:span 3 }
+    .widget-header { padding:16px 20px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:rgba(231,76,60,0.03) }
+    .widget-title-wrap { display:flex; align-items:center; gap:10px }
+    .widget-icon { font-size:17px; line-height:1 }
+    .widget-title { font-size:13px; font-weight:600 }
+    .widget-sub { font-size:10px; color:var(--text-dim); margin-top:1px }
+    .widget-badge { font-size:8px; font-weight:600; letter-spacing:0.10em; text-transform:uppercase; padding:3px 8px; border-radius:20px; background:var(--cs); color:var(--c); border:1px solid var(--cb) }
+    .widget-body { padding:18px 20px }
+
+    /* FORM ELEMENTS */
+    .sv-label { font-size:10px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); margin-bottom:5px; display:block }
+    .sv-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:5px; padding:9px 12px; font-size:13px; color:var(--ivory); outline:none; transition:border-color .2s,box-shadow .2s }
+    .sv-input:focus { border-color:var(--cb); box-shadow:0 0 0 3px rgba(231,76,60,0.08) }
+    .sv-select { width:100%; background:rgba(5,5,10,0.95); border:1px solid var(--border); border-radius:5px; padding:9px 12px; font-size:13px; color:var(--ivory); outline:none; transition:border-color .2s; appearance:none; background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center }
+    .sv-select:focus { border-color:var(--cb) }
+    .ig { margin-bottom:12px }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+    .row3 { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:end; margin-bottom:12px }
+    .swap-btn { background:rgba(231,76,60,0.10); border:1px solid var(--cb); border-radius:5px; padding:0 12px; color:var(--c); font-size:14px; transition:background .2s; height:38px; display:flex; align-items:center }
+    .swap-btn:hover { background:rgba(231,76,60,0.22) }
+    .calc-btn { width:100%; background:var(--c); color:#fff; border:none; border-radius:5px; padding:11px 20px; font-size:12px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; transition:opacity .2s; margin-top:4px }
+    .calc-btn:hover { opacity:.85 }
+    .calc-btn:active { opacity:.65 }
+
+    /* RESULTS */
+    .sv-result { background:rgba(231,76,60,0.05); border:1px solid rgba(231,76,60,0.16); border-radius:7px; padding:14px; margin-top:14px }
+    .sv-result-label { font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px }
+    .result-big { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:0.04em; color:var(--ivory); line-height:1; margin-bottom:4px }
+    .result-meta { font-size:10px; color:var(--text-dim); line-height:1.5 }
+    .copy-btn { float:right; background:transparent; border:1px solid var(--border); border-radius:4px; padding:3px 8px; font-size:9px; color:var(--text-mid); cursor:none; transition:color .2s,border-color .2s; margin-top:-2px }
+    .copy-btn:hover { color:var(--ivory); border-color:var(--cb) }
+    .r-row { display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--border); font-size:12px }
+    .r-row:last-child { border-bottom:none }
+    .r-key { color:var(--text-mid) }
+    .r-num { font-weight:600; color:var(--ivory) }
+    .r-num.ac { color:var(--c) }
+    .r-num.gr { color:var(--green) }
+    .r-num.am { color:var(--amber) }
+    .sv-disc { font-size:10px; color:var(--text-dim); line-height:1.5; margin-top:10px; padding-top:10px; border-top:1px solid var(--border) }
+
+    /* CONN STATUS */
+    .conn-wrap { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--text-dim) }
+    .conn-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0 }
+    .cd-conn { background:var(--amber); animation:pulse-dot .8s infinite }
+    .cd-live { background:var(--green); animation:pulse-dot 2s infinite }
+    .cd-demo { background:var(--amber) }
+
+    /* RATE CARDS */
+    .rate-card-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px }
+    .rate-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:7px; padding:12px; transition:border-color .2s }
+    .rate-card:hover { border-color:var(--cb) }
+    .rc-pair { font-size:9px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim); margin-bottom:5px }
+    .rc-val { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:0.04em; color:var(--ivory); line-height:1; margin-bottom:4px }
+    .rc-detail { font-size:10px; color:var(--text-dim) }
+
+    /* BUDGET BARS */
+    .budget-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px }
+    .budget-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:7px }
+    .bb-label { font-size:10px; color:var(--text-mid); width:88px; flex-shrink:0 }
+    .bb-track { flex:1; height:5px; background:rgba(255,255,255,0.07); border-radius:3px; overflow:hidden }
+    .bb-fill { height:100%; border-radius:3px; transition:width .5s cubic-bezier(.4,0,.2,1) }
+    .bb-fill.ok { background:var(--c) }
+    .bb-fill.warn { background:var(--amber) }
+    .bb-pct { font-size:10px; color:var(--text-dim); width:30px; text-align:right; flex-shrink:0 }
+    .bud-alert { background:rgba(243,156,18,0.10); border:1px solid rgba(243,156,18,0.25); border-radius:5px; padding:8px 12px; font-size:11px; color:var(--amber); margin-top:8px }
+
+    /* CHECKLIST */
+    .cl-tabs { display:flex; gap:0; margin-bottom:14px; overflow-x:auto; border-bottom:1px solid var(--border) }
+    .cl-tabs::-webkit-scrollbar { display:none }
+    .cl-tab { background:transparent; border:none; border-bottom:2px solid transparent; padding:8px 14px; font-size:11px; font-weight:500; color:var(--text-dim); transition:color .2s,border-color .2s; white-space:nowrap }
+    .cl-tab.active { color:var(--c); border-bottom-color:var(--c) }
+    .cl-items { display:flex; flex-direction:column; gap:6px }
+    .cl-item { display:flex; align-items:center; gap:10px; padding:9px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; transition:background .2s; cursor:none }
+    .cl-item.checked { background:rgba(39,174,96,0.07); border-color:rgba(39,174,96,0.20) }
+    .cl-check { width:16px; height:16px; border:1px solid var(--border); border-radius:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:11px; transition:background .2s,border-color .2s }
+    .cl-item.checked .cl-check { background:var(--green); border-color:var(--green); color:#fff }
+    .cl-text { font-size:12px; color:var(--text-mid); transition:color .2s }
+    .cl-item.checked .cl-text { color:var(--text-dim); text-decoration:line-through }
+    .cl-progress { display:flex; align-items:center; gap:10px; margin-bottom:12px; font-size:11px; color:var(--text-dim) }
+    .cl-prog-bar { flex:1; height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden }
+    .cl-prog-fill { height:100%; background:var(--green); border-radius:2px; transition:width .4s }
+
+    /* LINK CHECKER */
+    .signal-item { display:flex; align-items:flex-start; gap:10px; padding:9px 12px; border-radius:6px; margin-bottom:6px; font-size:12px; line-height:1.5 }
+    .signal-item.ok { background:rgba(39,174,96,0.07); border:1px solid rgba(39,174,96,0.15) }
+    .signal-item.warn { background:rgba(243,156,18,0.08); border:1px solid rgba(243,156,18,0.20) }
+    .signal-item.danger { background:rgba(231,76,60,0.08); border:1px solid rgba(231,76,60,0.20) }
+    .signal-icon { flex-shrink:0 }
+    .signal-text { color:var(--text-mid) }
+
+    /* ALERTS */
+    .alert-card { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:7px; margin-bottom:8px; transition:border-color .2s }
+    .alert-card:hover { border-color:var(--cb) }
+    .alert-card:last-child { margin-bottom:0 }
+    .ac-icon { font-size:15px; flex-shrink:0; margin-top:1px }
+    .ac-title { font-size:12px; font-weight:600; color:var(--ivory); margin-bottom:2px }
+    .ac-text { font-size:11px; color:var(--text-mid); line-height:1.5 }
+
+    /* DIRECTORY */
+    .dir-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px }
+    .dir-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; padding:16px 12px; text-align:center; transition:border-color .25s,background .25s; cursor:none; display:block }
+    .dir-card:hover { border-color:var(--cb); background:rgba(231,76,60,0.05) }
+    .dc-icon { font-size:22px; margin-bottom:7px }
+    .dc-title { font-size:11px; font-weight:600; color:var(--ivory); margin-bottom:3px }
+    .dc-desc { font-size:10px; color:var(--text-dim) }
+
+    /* NEVADO TIP */
+    .nv-tip { display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(231,76,60,0.05); border:1px solid rgba(231,76,60,0.14); border-radius:6px; margin-top:12px; font-size:11px; color:var(--text-mid) }
+    .nv-tip-n { font-weight:700; color:var(--c); flex-shrink:0 }
+
+    /* FAQ */
+    #sv-faq { border-top:1px solid var(--border) }
+    .faq-list { max-width:680px; display:flex; flex-direction:column; gap:8px }
+    .faq-item { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:7px; overflow:hidden; transition:border-color .2s }
+    .faq-item:hover { border-color:var(--cb) }
+    .faq-q { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; font-size:13px; font-weight:500; line-height:1.45; background:transparent; color:var(--ivory); border:none; width:100%; cursor:none; text-align:left }
+    .faq-ico { font-size:14px; color:var(--c); transition:transform .25s; flex-shrink:0; margin-left:12px }
+    .faq-item.open .faq-ico { transform:rotate(45deg) }
+    .faq-a { max-height:0; overflow:hidden; transition:max-height .35s ease; font-size:12px; color:var(--text-mid); line-height:1.75 }
+    .faq-item.open .faq-a { max-height:240px }
+    .faq-a-inner { padding:0 20px 16px }
+
+    /* FOOTER */
+    #sv-footer { border-top:1px solid var(--border); padding:48px 10vw 80px; position:relative; z-index:10 }
+    .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:32px }
+    .footer-brand-desc { font-size:12px; color:var(--text-dim); line-height:1.7; max-width:280px; margin-top:12px }
+    .footer-col-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px }
+    .footer-link { display:block; font-size:12px; color:var(--text-mid); margin-bottom:8px; transition:color .2s; cursor:none }
+    .footer-link:hover { color:var(--ivory) }
+    .footer-disc { font-size:10px; color:var(--text-dim); line-height:1.6; padding:16px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin-bottom:20px }
+    .footer-bottom { display:flex; align-items:center; justify-content:space-between }
+    .footer-copy { font-size:11px; color:var(--text-dim) }
+    .footer-tricolor { display:flex; gap:3px }
+    .ft-s { width:16px; height:4px; border-radius:2px }
+
+    /* ANIMATIONS */
+    @keyframes num-pop { 0%{transform:scale(1)} 50%{transform:scale(1.04)} 100%{transform:scale(1)} }
+    .num-pop { animation:num-pop .3s ease }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px) {
+      .widget-grid { grid-template-columns:repeat(2,1fr) }
+      .widget.span3 { grid-column:span 2 }
+      .dir-grid { grid-template-columns:repeat(3,1fr) }
+      .footer-grid { grid-template-columns:1fr 1fr }
+    }
+    @media(max-width:640px) {
+      .widget-grid { grid-template-columns:1fr }
+      .widget.span2, .widget.span3 { grid-column:span 1 }
+      .budget-fields { grid-template-columns:1fr }
+      .rate-card-grid { grid-template-columns:1fr }
+      .dir-grid { grid-template-columns:repeat(2,1fr) }
+      .footer-grid { grid-template-columns:1fr }
+      .topbar-nav .nav-item:not(.active) { display:none }
+      .sv-hero-metrics { gap:20px }
+    }
+    html, body { padding-bottom:28px }
+    #ticker{position:fixed;bottom:0;left:0;right:0;height:28px;overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);z-index:9000;background:rgba(5,5,10,0.96)}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 32s linear infinite}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.60);height:28px}
+    .ticker-val{color:var(--c);font-weight:500}
+    .ticker-sep{color:rgba(232,228,220,0.34)}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  </style>
+</head>
+<body data-accent="red">
+
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item " href="/talento.html">Capital Humano</a>
+      <a class="nav-item " href="/avila.html">ÁVILA</a>
+      <a class="nav-item " href="/nodo.html">NODO</a>
+      <a class="nav-item " href="/enterate.html">Titulares</a>
+      <a class="nav-item " href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item active" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <section id="sv-hero" aria-label="Servicios NEVADO">
+    <div class="sv-hero-bg" role="img" aria-label="Trabajo remoto venezolano"></div>
+    <div class="sv-hero-content">
+      <div class="sv-hero-tag">Herramientas del ecosistema</div>
+      <div class="sv-hero-title">SERVICIOS</div>
+      <p class="sv-hero-sub">Utilidades prácticas para venezolanos.</p>
+      <p class="sv-hero-desc">Calcula, compara, verifica y organiza decisiones cotidianas con herramientas simples dentro del ecosistema NEVADO.</p>
+      <div class="sv-hero-metrics">
+        <div><div class="sv-hm-val">12</div><div class="sv-hm-lbl">Widgets activos</div></div>
+        <div><div class="sv-hm-val">4</div><div class="sv-hm-lbl">Monedas conectadas</div></div>
+        <div><div class="sv-hm-val">7</div><div class="sv-hm-lbl">Calculadoras útiles</div></div>
+        <div><div class="sv-hm-val">24/7</div><div class="sv-hm-lbl">Modo consulta</div></div>
+      </div>
+      <div class="sv-hero-ctas">
+        <button class="sv-btn-p" onclick="document.getElementById('w1-amount').focus();document.getElementById('sv-widgets').scrollIntoView({behavior:'smooth'})">Abrir calculadora</button>
+        <button class="sv-btn-s" onclick="document.getElementById('sv-widgets').scrollIntoView({behavior:'smooth'})">Ver herramientas</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="rates-panel" role="complementary" aria-label="Panel de tasas" data-nevado-context="servicios">
+    <div class="rate-item">
+      <div><div class="rate-pair">USD / VES</div><div class="rate-val" id="rp-usdves">—</div></div>
+      <span class="rate-badge" id="rp-usdves-badge">…</span>
+    </div>
+    <div class="rate-item">
+      <div><div class="rate-pair">EUR / VES</div><div class="rate-val" id="rp-eurves">—</div></div>
+      <span class="rate-badge rb-demo">demo</span>
+    </div>
+    <div class="rate-item">
+      <div><div class="rate-pair">USD / COP</div><div class="rate-val" id="rp-usdcop">—</div></div>
+      <span class="rate-badge rb-demo">demo</span>
+    </div>
+    <div class="rate-item">
+      <div><div class="rate-pair">COP / VES</div><div class="rate-val" id="rp-copves">—</div></div>
+      <span class="rate-badge rb-demo">demo</span>
+    </div>
+    <div class="rates-status">
+      <div class="rates-dot rd-conn" id="rd"></div>
+      <span id="rs-txt">Conectando…</span>
+    </div>
+  </div>
+
+  <section id="sv-widgets" class="sv-section" aria-label="Herramientas y calculadoras">
+    <div class="s-tag">Herramientas</div>
+    <h2 class="s-title">Tablero de Widgets</h2>
+    <p class="s-sub">Todas las calculadoras del ecosistema en un solo lugar.</p>
+
+    <div class="widget-grid">
+
+      <!-- W1: CAMBIO RÁPIDO (span 2) -->
+      <div class="widget span2" data-nevado-context="servicios" data-nevado-tool="calculadora-cambio" data-nevado-action="calcular">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">⇄</span>
+            <div><div class="widget-title">Cambio Rápido</div><div class="widget-sub">USD · VES · COP · EUR</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="conn-wrap"><div class="conn-dot cd-conn" id="w1-dot"></div><span id="w1-st">Conectando…</span></div>
+            <span class="widget-badge" id="w1-badge">demo</span>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div>
+              <div class="ig">
+                <label class="sv-label" for="w1-amount">Monto</label>
+                <input class="sv-input" id="w1-amount" type="number" min="0" placeholder="100" oninput="convertCurrency()" />
+              </div>
+              <div class="row3">
+                <div>
+                  <label class="sv-label" for="w1-from">De</label>
+                  <select class="sv-select" id="w1-from" onchange="convertCurrency()">
+                    <option value="USD">USD — Dólar</option>
+                    <option value="VES">VES — Bolívar</option>
+                    <option value="COP">COP — Peso</option>
+                    <option value="EUR">EUR — Euro</option>
+                  </select>
+                </div>
+                <button class="swap-btn" onclick="swapCurrencies()" aria-label="Intercambiar monedas">⇄</button>
+                <div>
+                  <label class="sv-label" for="w1-to">A</label>
+                  <select class="sv-select" id="w1-to" onchange="convertCurrency()">
+                    <option value="VES">VES — Bolívar</option>
+                    <option value="USD">USD — Dólar</option>
+                    <option value="COP">COP — Peso</option>
+                    <option value="EUR">EUR — Euro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="sv-result">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div class="sv-result-label">Resultado</div>
+                  <button class="copy-btn" onclick="copyResult('w1-rv')">Copiar</button>
+                </div>
+                <div class="result-big" id="w1-rv">—</div>
+                <div class="result-meta" id="w1-meta">Ingresa un monto para calcular</div>
+              </div>
+              <div class="sv-disc">Las tasas son referenciales y pueden variar según banco, plataforma, horario y disponibilidad.</div>
+            </div>
+          </div>
+          <div class="nv-tip"><span class="nv-tip-n">N</span> Nevado puede ayudarte a comparar tasas.</div>
+        </div>
+      </div>
+
+      <!-- W3: COMPARADOR -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="comparador-tasas">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">⊕</span>
+            <div><div class="widget-title">Comparador de Tasas</div><div class="widget-sub">Oficial vs alternativa</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="ig">
+            <label class="sv-label" for="w3-amount">Monto en USD</label>
+            <input class="sv-input" id="w3-amount" type="number" min="0" placeholder="500" oninput="compareRates()" />
+          </div>
+          <div class="ig">
+            <label class="sv-label" for="w3-of">Tasa oficial (USD/VES)</label>
+            <input class="sv-input" id="w3-of" type="number" step="0.01" placeholder="36.50" oninput="compareRates()" />
+          </div>
+          <div class="ig">
+            <label class="sv-label" for="w3-alt">Tasa alternativa (USD/VES)</label>
+            <input class="sv-input" id="w3-alt" type="number" step="0.01" placeholder="40.00" oninput="compareRates()" />
+          </div>
+          <div id="w3-res" style="display:none" class="sv-result">
+            <div class="r-row"><span class="r-key">En tasa oficial</span><span class="r-num" id="w3-rof">—</span></div>
+            <div class="r-row"><span class="r-key">En tasa alternativa</span><span class="r-num" id="w3-ralt">—</span></div>
+            <div class="r-row"><span class="r-key">Diferencia en VES</span><span class="r-num ac" id="w3-rdiff">—</span></div>
+            <div class="r-row"><span class="r-key">Brecha %</span><span class="r-num" id="w3-rpct">—</span></div>
+          </div>
+          <div id="w3-alert" style="display:none" class="bud-alert">⚠ Brecha mayor al 10%. Considera la tasa antes de operar.</div>
+          <div class="sv-disc">Tasas referenciales. Consulta tu banco para tasas vigentes.</div>
+        </div>
+      </div>
+
+      <!-- W2: PANEL DE TASAS -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="panel-tasas">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">◈</span>
+            <div><div class="widget-title">Panel de Tasas</div><div class="widget-sub">Referencia del ecosistema</div></div>
+          </div>
+          <span class="widget-badge" id="w2-badge">demo</span>
+        </div>
+        <div class="widget-body">
+          <div class="rate-card-grid" id="w2-grid"></div>
+          <div class="sv-disc" style="margin-top:12px">Actualización estimada: horaria. Fuente: BCV / referencial.</div>
+        </div>
+      </div>
+
+      <!-- W4: REMESAS -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="calculadora-remesas">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">✦</span>
+            <div><div class="widget-title">Calculadora de Remesas</div><div class="widget-sub">¿Cuánto recibe mi familia?</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="ig">
+            <label class="sv-label" for="w4-amount">Monto enviado (USD)</label>
+            <input class="sv-input" id="w4-amount" type="number" min="0" placeholder="200" />
+          </div>
+          <div class="row2">
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w4-ffee">Comisión fija (USD)</label>
+              <input class="sv-input" id="w4-ffee" type="number" min="0" step="0.01" placeholder="2.99" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w4-pfee">Comisión %</label>
+              <input class="sv-input" id="w4-pfee" type="number" min="0" max="100" step="0.1" placeholder="1.5" />
+            </div>
+          </div>
+          <div class="ig" style="margin-top:10px">
+            <label class="sv-label" for="w4-cur">Moneda recibida</label>
+            <select class="sv-select" id="w4-cur">
+              <option value="VES">VES — Bolívares</option>
+              <option value="USD">USD — Dólares</option>
+              <option value="COP">COP — Pesos</option>
+            </select>
+          </div>
+          <button class="calc-btn" onclick="calculateRemittance()">Calcular remesa</button>
+          <div id="w4-res" style="display:none" class="sv-result">
+            <div class="r-row"><span class="r-key">Total en comisiones</span><span class="r-num am" id="w4-rfee">—</span></div>
+            <div class="r-row"><span class="r-key">Monto neto</span><span class="r-num" id="w4-rnet">—</span></div>
+            <div class="r-row"><span class="r-key">Familia recibe</span><span class="r-num gr" id="w4-rrecv">—</span></div>
+            <div class="r-row"><span class="r-key">Costo efectivo</span><span class="r-num ac" id="w4-rcost">—</span></div>
+          </div>
+          <div class="sv-disc">Costos reales dependen de la plataforma de envío.</div>
+        </div>
+      </div>
+
+      <!-- W5: SALARIO REAL -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="calculadora-salario">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">◉</span>
+            <div><div class="widget-title">Salario Real</div><div class="widget-sub">Convierte tu ingreso</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="row2">
+            <div class="ig">
+              <label class="sv-label" for="w5-income">Ingreso mensual</label>
+              <input class="sv-input" id="w5-income" type="number" min="0" placeholder="800" />
+            </div>
+            <div class="ig">
+              <label class="sv-label" for="w5-cur">Moneda</label>
+              <select class="sv-select" id="w5-cur">
+                <option value="USD">USD</option>
+                <option value="VES">VES</option>
+                <option value="COP">COP</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w5-days">Días/mes</label>
+              <input class="sv-input" id="w5-days" type="number" min="1" max="31" placeholder="22" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w5-hours">Horas/día</label>
+              <input class="sv-input" id="w5-hours" type="number" min="1" max="24" placeholder="8" />
+            </div>
+          </div>
+          <button class="calc-btn" style="margin-top:12px" onclick="calculateSalary()">Calcular</button>
+          <div id="w5-res" style="display:none" class="sv-result">
+            <div class="r-row"><span class="r-key">Por día</span><span class="r-num" id="w5-rday">—</span></div>
+            <div class="r-row"><span class="r-key">Por hora</span><span class="r-num" id="w5-rhr">—</span></div>
+            <div class="r-row"><span class="r-key">En USD/mes</span><span class="r-num gr" id="w5-rusd">—</span></div>
+            <div class="r-row"><span class="r-key">En VES/mes</span><span class="r-num" id="w5-rves">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- W6: PRESUPUESTO FAMILIAR -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="presupuesto">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">▦</span>
+            <div><div class="widget-title">Presupuesto Familiar</div><div class="widget-sub">Gastos mensuales en USD</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="budget-fields">
+            <div><label class="sv-label" for="w6-food">Comida</label><input class="sv-input" id="w6-food" type="number" min="0" placeholder="150" /></div>
+            <div><label class="sv-label" for="w6-trans">Transporte</label><input class="sv-input" id="w6-trans" type="number" min="0" placeholder="50" /></div>
+            <div><label class="sv-label" for="w6-serv">Servicios</label><input class="sv-input" id="w6-serv" type="number" min="0" placeholder="40" /></div>
+            <div><label class="sv-label" for="w6-rent">Alquiler</label><input class="sv-input" id="w6-rent" type="number" min="0" placeholder="300" /></div>
+            <div><label class="sv-label" for="w6-health">Salud</label><input class="sv-input" id="w6-health" type="number" min="0" placeholder="30" /></div>
+            <div><label class="sv-label" for="w6-edu">Educación</label><input class="sv-input" id="w6-edu" type="number" min="0" placeholder="20" /></div>
+            <div style="grid-column:span 2"><label class="sv-label" for="w6-other">Otros</label><input class="sv-input" id="w6-other" type="number" min="0" placeholder="60" /></div>
+          </div>
+          <button class="calc-btn" onclick="calculateBudget()">Analizar presupuesto</button>
+          <div id="w6-res" style="display:none">
+            <div class="sv-result" style="margin-bottom:10px">
+              <div class="r-row"><span class="r-key">Total mensual</span><span class="r-num ac" id="w6-rtot">—</span></div>
+              <div class="r-row"><span class="r-key">En USD</span><span class="r-num gr" id="w6-rusd">—</span></div>
+            </div>
+            <div id="w6-bars"></div>
+            <div id="w6-alert" style="display:none" class="bud-alert"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- W7: FREELANCE -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="calculadora-freelance" data-nevado-action="calcular">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">◎</span>
+            <div><div class="widget-title">Calculadora Freelance</div><div class="widget-sub">Precio mínimo por hora o proyecto</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="ig">
+            <label class="sv-label" for="w7-income">Ingreso deseado mensual (USD)</label>
+            <input class="sv-input" id="w7-income" type="number" min="0" placeholder="1200" />
+          </div>
+          <div class="row2">
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w7-days">Días facturables</label>
+              <input class="sv-input" id="w7-days" type="number" min="1" placeholder="20" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w7-hours">Horas/día</label>
+              <input class="sv-input" id="w7-hours" type="number" min="1" placeholder="6" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w7-taxes">Impuestos / comisiones %</label>
+              <input class="sv-input" id="w7-taxes" type="number" min="0" max="100" placeholder="15" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w7-sav">Margen ahorro %</label>
+              <input class="sv-input" id="w7-sav" type="number" min="0" max="100" placeholder="20" />
+            </div>
+          </div>
+          <button class="calc-btn" style="margin-top:10px" onclick="calculateFreelanceRate()">Calcular tarifa</button>
+          <div id="w7-res" style="display:none" class="sv-result">
+            <div class="r-row"><span class="r-key">Tarifa mínima/hora</span><span class="r-num gr" id="w7-rhr">—</span></div>
+            <div class="r-row"><span class="r-key">Por proyecto (40h)</span><span class="r-num" id="w7-rproj">—</span></div>
+            <div class="r-row"><span class="r-key">Ingreso bruto necesario</span><span class="r-num ac" id="w7-rgross">—</span></div>
+            <div class="r-row"><span class="r-key">Equivalente VES/mes</span><span class="r-num am" id="w7-rves">—</span></div>
+          </div>
+          <div class="nv-tip"><span class="nv-tip-n">N</span> Nevado puede ayudarte a calcular tu tarifa freelance.</div>
+        </div>
+      </div>
+
+      <!-- W8: DELIVERY -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="calculadora-delivery">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">▣</span>
+            <div><div class="widget-title">Delivery y Comisiones</div><div class="widget-sub">Precio de venta sugerido</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="row2">
+            <div class="ig">
+              <label class="sv-label" for="w8-price">Precio del producto</label>
+              <input class="sv-input" id="w8-price" type="number" min="0" placeholder="25.00" />
+            </div>
+            <div class="ig">
+              <label class="sv-label" for="w8-plat">Comisión plataforma %</label>
+              <input class="sv-input" id="w8-plat" type="number" min="0" max="100" placeholder="18" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w8-pack">Costo empaque</label>
+              <input class="sv-input" id="w8-pack" type="number" min="0" placeholder="1.50" />
+            </div>
+            <div class="ig" style="margin:0">
+              <label class="sv-label" for="w8-del">Costo delivery</label>
+              <input class="sv-input" id="w8-del" type="number" min="0" placeholder="3.00" />
+            </div>
+          </div>
+          <div class="ig" style="margin-top:10px">
+            <label class="sv-label" for="w8-margin">Margen deseado %</label>
+            <input class="sv-input" id="w8-margin" type="number" min="0" max="100" placeholder="30" />
+          </div>
+          <button class="calc-btn" onclick="calculateDelivery()">Calcular</button>
+          <div id="w8-res" style="display:none" class="sv-result">
+            <div class="r-row"><span class="r-key">Precio sugerido</span><span class="r-num ac" id="w8-rprice">—</span></div>
+            <div class="r-row"><span class="r-key">Utilidad neta</span><span class="r-num gr" id="w8-rprofit">—</span></div>
+            <div class="r-row"><span class="r-key">Margen real</span><span class="r-num" id="w8-rmargin">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- W10: VERIFICADOR -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="verificador-senales" data-nevado-verify="true">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">◬</span>
+            <div><div class="widget-title">Verificador de Señales</div><div class="widget-sub">Detecta indicios de fraude</div></div>
+          </div>
+          <span class="widget-badge">demo</span>
+        </div>
+        <div class="widget-body">
+          <div class="ig">
+            <label class="sv-label" for="w10-inp">Enlace o mensaje sospechoso</label>
+            <textarea class="sv-input" id="w10-inp" rows="3" placeholder="Pega aquí el enlace o texto que quieres revisar…" style="resize:vertical;line-height:1.6"></textarea>
+          </div>
+          <button class="calc-btn" onclick="runLinkCheck()">Revisar señales</button>
+          <div id="w10-res" style="display:none;margin-top:12px"></div>
+          <div class="nv-tip"><span class="nv-tip-n">N</span> Nevado puede ayudarte a revisar señales de fraude.</div>
+          <div class="sv-disc">No reemplaza revisión profesional ni consulta con expertos en seguridad.</div>
+        </div>
+      </div>
+
+      <!-- W9: CHECKLIST (span 2) -->
+      <div class="widget span2" data-nevado-context="servicios" data-nevado-tool="checklist">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">☑</span>
+            <div><div class="widget-title">Checklist de Trámites</div><div class="widget-sub">Progreso guardado en tu navegador</div></div>
+          </div>
+          <span class="widget-badge">localStorage</span>
+        </div>
+        <div class="widget-body">
+          <div class="cl-tabs" role="tablist" id="cl-tabs"></div>
+          <div class="cl-progress">
+            <span id="cl-prog-txt">0 de 0 completados</span>
+            <div class="cl-prog-bar"><div class="cl-prog-fill" id="cl-prog-fill" style="width:0%"></div></div>
+          </div>
+          <div class="cl-items" id="cl-items"></div>
+        </div>
+      </div>
+
+      <!-- W11: ALERTAS -->
+      <div class="widget" data-nevado-context="servicios" data-nevado-tool="alertas">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">⚑</span>
+            <div><div class="widget-title">Alertas Útiles</div><div class="widget-sub">Recordatorios del ecosistema</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="alert-card"><span class="ac-icon">📊</span><div><div class="ac-title">Actualiza tasas antes de pagar</div><div class="ac-text">Las tasas pueden variar durante el día. Verifica siempre antes de operar.</div></div></div>
+          <div class="alert-card"><span class="ac-icon">🔍</span><div><div class="ac-title">Verifica ofertas de empleo remoto</div><div class="ac-text">Confirma la empresa en LinkedIn y revisa reseñas antes de aceptar una oferta.</div></div></div>
+          <div class="alert-card"><span class="ac-icon">🔒</span><div><div class="ac-title">No compartas códigos bancarios</div><div class="ac-text">Ninguna entidad legítima pide OTP, PIN o contraseñas por chat o llamada.</div></div></div>
+          <div class="alert-card"><span class="ac-icon">💸</span><div><div class="ac-title">Revisa comisiones antes de enviar</div><div class="ac-text">Compara al menos 2 plataformas. Las comisiones pueden variar hasta un 5%.</div></div></div>
+          <div class="alert-card"><span class="ac-icon">🗂</span><div><div class="ac-title">Guarda soporte de pagos</div><div class="ac-text">Conserva confirmaciones de todas tus transacciones por al menos 90 días.</div></div></div>
+        </div>
+      </div>
+
+      <!-- W12: DIRECTORIO (span 2) -->
+      <div class="widget span2" data-nevado-context="servicios" data-nevado-tool="directorio">
+        <div class="widget-header">
+          <div class="widget-title-wrap">
+            <span class="widget-icon">⬡</span>
+            <div><div class="widget-title">Directorio Útil</div><div class="widget-sub">Recursos verificados para venezolanos</div></div>
+          </div>
+        </div>
+        <div class="widget-body">
+          <div class="dir-grid">
+            <a class="dir-card" href="javascript:void(0)"><div class="dc-icon">🏛</div><div class="dc-title">Embajadas y Consulados</div><div class="dc-desc">Próximamente</div></a>
+            <a class="dir-card" href="javascript:void(0)"><div class="dc-icon">📋</div><div class="dc-title">Trámites Migratorios</div><div class="dc-desc">Próximamente</div></a>
+            <a class="dir-card" href="javascript:void(0)"><div class="dc-icon">🏦</div><div class="dc-title">Bancos y Pagos</div><div class="dc-desc">Próximamente</div></a>
+            <a class="dir-card" href="/avila.html"><div class="dc-icon">📚</div><div class="dc-title">Formación Digital</div><div class="dc-desc">ÁVILA — 340 rutas</div></a>
+            <a class="dir-card" href="/nodo.html"><div class="dc-icon">🤝</div><div class="dc-title">Ayuda Comunitaria</div><div class="dc-desc">NODO — 18,340 miembros</div></a>
+            <a class="dir-card" href="/talento.html"><div class="dc-icon">💼</div><div class="dc-title">Oportunidades Laborales</div><div class="dc-desc">Capital Humano — 847 vacantes</div></a>
+            <a class="dir-card" href="javascript:void(0)"><div class="dc-icon">🏥</div><div class="dc-title">Salud y Orientación</div><div class="dc-desc">Próximamente</div></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="sv-faq" class="sv-section" aria-label="Preguntas frecuentes">
+    <div class="s-tag">FAQ</div>
+    <h2 class="s-title">Preguntas Frecuentes</h2>
+    <p class="s-sub">Todo lo que necesitas saber sobre las herramientas.</p>
+    <div class="faq-list" id="faq-list" role="list"></div>
+  </section>
+
+  <footer id="sv-footer" aria-label="Pie de página">
+    <div class="footer-grid">
+      <div>
+        <a class="tb-logo" href="/" style="font-size:22px">N<span>·</span>EVADO</a>
+        <p class="footer-brand-desc">Servicios es la capa de utilidades prácticas del ecosistema venezolano NEVADO. Calculadoras, comparadores y directorios verificados.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Plataforma</div>
+        <a class="footer-link" href="/talento.html">Capital Humano</a>
+        <a class="footer-link" href="/avila.html">ÁVILA</a>
+        <a class="footer-link" href="/nodo.html">NODO</a>
+        <a class="footer-link" href="/enterate.html">Titulares</a>
+        <a class="footer-link" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Herramientas</div>
+        <a class="footer-link" href="javascript:void(0)" onclick="document.getElementById('w1-amount').focus();document.getElementById('sv-widgets').scrollIntoView({behavior:'smooth'})">Cambio Rápido</a>
+        <a class="footer-link" href="javascript:void(0)" onclick="document.getElementById('sv-widgets').scrollIntoView({behavior:'smooth'})">Calculadoras</a>
+        <a class="footer-link" href="javascript:void(0)" onclick="document.getElementById('sv-faq').scrollIntoView({behavior:'smooth'})">Preguntas frecuentes</a>
+        <a class="footer-link" href="/transparencia.html">Transparencia</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Info</div>
+        <a class="footer-link" href="javascript:void(0)">Cómo funciona</a>
+        <a class="footer-link" href="/transparencia.html">Transparencia</a>
+        <a class="footer-link" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="footer-disc">⚠ Las tasas de cambio mostradas son referenciales e informativas. No representan tasas oficiales del BCV ni de ninguna institución financiera. No uses estas calculadoras como base única para decisiones financieras. Consulta siempre fuentes oficiales y asesores certificados.</div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 NEVADO · Servicios · Modo demostración</p>
+      <div class="footer-tricolor">
+        <div class="ft-s" style="background:var(--tri-y)"></div>
+        <div class="ft-s" style="background:var(--tri-b)"></div>
+        <div class="ft-s" style="background:var(--tri-r)"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  /* ====================================================
+     NEVADO SERVICIOS — Core Logic
+  ==================================================== */
+
+  const rates = { USD_VES:36.50, EUR_VES:39.80, USD_COP:4150, COP_VES:0 };
+  let rateSource = 'demo';
+  let rateTimestamp = null;
+  let rateStatus = 'demo';
+
+  function setFallbackRates() {
+    rates.USD_VES = 36.50;
+    rates.EUR_VES = 39.80;
+    rates.USD_COP = 4150;
+    rates.COP_VES = rates.USD_VES / rates.USD_COP;
+    rateSource = 'demo';
+    rateStatus = 'demo';
+  }
+
+  async function fetchExchangeRates() {
+    updateStatusDots('conn');
+    try {
+      const res = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (data && data.promedio) {
+        rates.USD_VES = parseFloat(data.promedio);
+        rates.COP_VES = rates.USD_VES / rates.USD_COP;
+        rateSource = 'oficial';
+        rateTimestamp = data.fechaActualizacion || new Date().toISOString();
+        rateStatus = 'live';
+      } else {
+        setFallbackRates();
+      }
+    } catch(e) {
+      setFallbackRates();
+    }
+    rates.COP_VES = rates.USD_VES / rates.USD_COP;
+    updateRatesUI();
+    autoFillComparator();
+  }
+
+  function updateStatusDots(status) {
+    const rd = document.getElementById('rd');
+    const rst = document.getElementById('rs-txt');
+    const w1dot = document.getElementById('w1-dot');
+    const w1st = document.getElementById('w1-st');
+    const w1badge = document.getElementById('w1-badge');
+    const w2badge = document.getElementById('w2-badge');
+    const badge = document.getElementById('rp-usdves-badge');
+    if (status === 'live') {
+      rd.className = 'rates-dot rd-live';
+      rst.textContent = 'Actualizado';
+      if (w1dot) { w1dot.className = 'conn-dot cd-live'; w1st.textContent = 'Actualizado'; w1badge.textContent = 'oficial'; }
+      if (w2badge) w2badge.textContent = 'oficial';
+      if (badge) { badge.className = 'rate-badge rb-oficial'; badge.textContent = 'oficial'; }
+    } else if (status === 'conn') {
+      rd.className = 'rates-dot rd-conn';
+      rst.textContent = 'Conectando…';
+      if (w1dot) { w1dot.className = 'conn-dot cd-conn'; w1st.textContent = 'Conectando…'; }
+    } else {
+      rd.className = 'rates-dot rd-demo';
+      rst.textContent = 'Modo demo';
+      if (w1dot) { w1dot.className = 'conn-dot cd-demo'; w1st.textContent = 'Modo demo'; }
+      if (badge) { badge.className = 'rate-badge rb-demo'; badge.textContent = 'demo'; }
+    }
+  }
+
+  function updateRatesUI() {
+    document.getElementById('rp-usdves').textContent = rates.USD_VES.toFixed(2);
+    document.getElementById('rp-eurves').textContent = rates.EUR_VES.toFixed(2);
+    document.getElementById('rp-usdcop').textContent = rates.USD_COP.toLocaleString('es');
+    document.getElementById('rp-copves').textContent = rates.COP_VES.toFixed(5);
+    updateStatusDots(rateStatus);
+    renderRateCards();
+    convertCurrency();
+  }
+
+  function renderRateCards() {
+    const grid = document.getElementById('w2-grid');
+    if (!grid) return;
+    const items = [
+      { pair:'USD / VES', val:rates.USD_VES.toFixed(2), detail:'Fuente: ' + (rateSource==='oficial'?'BCV oficial':'referencial demo'), type:rateStatus==='live'?'oficial':'demo' },
+      { pair:'EUR / VES', val:rates.EUR_VES.toFixed(2), detail:'Fuente: referencial demo', type:'demo' },
+      { pair:'USD / COP', val:rates.USD_COP.toLocaleString('es'), detail:'Fuente: referencial demo', type:'demo' },
+      { pair:'COP / VES', val:rates.COP_VES.toFixed(5), detail:'USD_VES ÷ USD_COP', type:'demo' },
+    ];
+    grid.innerHTML = items.map(i => `
+      <div class="rate-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <div class="rc-pair">${i.pair}</div>
+          <span class="rate-badge rb-${i.type}">${i.type}</span>
+        </div>
+        <div class="rc-val">${i.val}</div>
+        <div class="rc-detail">${i.detail}</div>
+      </div>`).join('');
+  }
+
+  /* --- CURRENCY UTILS --- */
+  function toUSD(amount, cur) {
+    switch(cur) {
+      case 'USD': return amount;
+      case 'VES': return amount / rates.USD_VES;
+      case 'COP': return amount / rates.USD_COP;
+      case 'EUR': return amount / (rates.EUR_VES / rates.USD_VES);
+      default: return amount;
+    }
+  }
+  function fromUSD(amount, cur) {
+    switch(cur) {
+      case 'USD': return amount;
+      case 'VES': return amount * rates.USD_VES;
+      case 'COP': return amount * rates.USD_COP;
+      case 'EUR': return amount * (rates.EUR_VES / rates.USD_VES);
+      default: return amount;
+    }
+  }
+  function fmtNum(n) { return n.toLocaleString('es', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+  const SYM = { USD:'$', VES:'Bs.', COP:'$', EUR:'€' };
+
+  /* --- WIDGET 1: CAMBIO RÁPIDO --- */
+  function convertCurrency() {
+    const amount = parseFloat(document.getElementById('w1-amount').value);
+    const from   = document.getElementById('w1-from').value;
+    const to     = document.getElementById('w1-to').value;
+    const rv     = document.getElementById('w1-rv');
+    const meta   = document.getElementById('w1-meta');
+    if (isNaN(amount) || amount <= 0) { rv.textContent = '—'; meta.textContent = 'Ingresa un monto para calcular'; return; }
+    const result = fromUSD(toUSD(amount, from), to);
+    rv.textContent = SYM[to] + ' ' + fmtNum(result);
+    rv.classList.add('num-pop');
+    setTimeout(() => rv.classList.remove('num-pop'), 350);
+    const rate = result / amount;
+    const ts = rateTimestamp ? new Date(rateTimestamp).toLocaleTimeString('es-VE',{hour:'2-digit',minute:'2-digit'}) : 'N/D';
+    meta.textContent = `1 ${from} = ${rate.toFixed(4)} ${to} · ${rateSource} · ${ts}`;
+  }
+
+  function swapCurrencies() {
+    const from = document.getElementById('w1-from');
+    const to   = document.getElementById('w1-to');
+    const tmp  = from.value; from.value = to.value; to.value = tmp;
+    convertCurrency();
+  }
+
+  function copyResult(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    navigator.clipboard.writeText(el.textContent).then(() => {
+      const btn = el.closest('.sv-result')?.querySelector('.copy-btn');
+      if (btn) { const orig = btn.textContent; btn.textContent = '✓'; setTimeout(() => btn.textContent = orig, 1400); }
+    }).catch(() => {});
+  }
+
+  /* --- WIDGET 3: COMPARADOR --- */
+  function autoFillComparator() {
+    const el = document.getElementById('w3-of');
+    if (el && !el.value) el.value = rates.USD_VES.toFixed(2);
+  }
+
+  function compareRates() {
+    const amount = parseFloat(document.getElementById('w3-amount').value);
+    const ofVal  = parseFloat(document.getElementById('w3-of').value);
+    const altVal = parseFloat(document.getElementById('w3-alt').value);
+    const res    = document.getElementById('w3-res');
+    const alertEl= document.getElementById('w3-alert');
+    if (isNaN(amount) || isNaN(ofVal) || isNaN(altVal) || amount <= 0) { res.style.display = 'none'; alertEl.style.display = 'none'; return; }
+    const inOf  = amount * ofVal;
+    const inAlt = amount * altVal;
+    const diff  = Math.abs(inAlt - inOf);
+    const pct   = Math.abs((altVal - ofVal) / ofVal * 100);
+    document.getElementById('w3-rof').textContent   = 'Bs. ' + fmtNum(inOf);
+    document.getElementById('w3-ralt').textContent  = 'Bs. ' + fmtNum(inAlt);
+    document.getElementById('w3-rdiff').textContent = 'Bs. ' + fmtNum(diff);
+    const pctEl = document.getElementById('w3-rpct');
+    pctEl.textContent = pct.toFixed(2) + '%';
+    pctEl.className = 'r-num ' + (pct > 10 ? 'ac' : pct > 5 ? 'am' : 'gr');
+    res.style.display = 'block';
+    alertEl.style.display = pct > 10 ? 'block' : 'none';
+  }
+
+  /* --- WIDGET 4: REMESAS --- */
+  function calculateRemittance() {
+    const amount  = parseFloat(document.getElementById('w4-amount').value);
+    const ffee    = parseFloat(document.getElementById('w4-ffee').value) || 0;
+    const pfee    = parseFloat(document.getElementById('w4-pfee').value) || 0;
+    const cur     = document.getElementById('w4-cur').value;
+    if (isNaN(amount) || amount <= 0) return;
+    const totalFee  = ffee + amount * pfee / 100;
+    const net       = amount - totalFee;
+    const received  = fromUSD(net, cur);
+    const costPct   = (totalFee / amount * 100).toFixed(2);
+    document.getElementById('w4-rfee').textContent  = '$ ' + fmtNum(totalFee) + ' USD';
+    document.getElementById('w4-rnet').textContent  = '$ ' + fmtNum(net) + ' USD';
+    document.getElementById('w4-rrecv').textContent = SYM[cur] + ' ' + fmtNum(received) + ' ' + cur;
+    document.getElementById('w4-rcost').textContent = costPct + '% del envío';
+    document.getElementById('w4-res').style.display = 'block';
+  }
+
+  /* --- WIDGET 5: SALARIO --- */
+  function calculateSalary() {
+    const income = parseFloat(document.getElementById('w5-income').value);
+    const cur    = document.getElementById('w5-cur').value;
+    const days   = parseFloat(document.getElementById('w5-days').value) || 22;
+    const hours  = parseFloat(document.getElementById('w5-hours').value) || 8;
+    if (isNaN(income) || income <= 0) return;
+    const inUSD   = toUSD(income, cur);
+    const perDay  = income / days;
+    const perHour = income / (days * hours);
+    const sym     = SYM[cur];
+    document.getElementById('w5-rday').textContent  = sym + ' ' + fmtNum(perDay) + ' ' + cur;
+    document.getElementById('w5-rhr').textContent   = sym + ' ' + fmtNum(perHour) + ' ' + cur;
+    document.getElementById('w5-rusd').textContent  = '$ ' + fmtNum(inUSD) + ' USD';
+    document.getElementById('w5-rves').textContent  = 'Bs. ' + fmtNum(fromUSD(inUSD,'VES')) + ' VES';
+    document.getElementById('w5-res').style.display = 'block';
+  }
+
+  /* --- WIDGET 6: PRESUPUESTO --- */
+  function calculateBudget() {
+    const keys   = ['food','trans','serv','rent','health','edu','other'];
+    const labels = ['Comida','Transporte','Servicios','Alquiler','Salud','Educación','Otros'];
+    const vals   = keys.map(k => parseFloat(document.getElementById('w6-' + k).value) || 0);
+    const total  = vals.reduce((a,b) => a + b, 0);
+    if (total === 0) return;
+    document.getElementById('w6-rtot').textContent = 'Bs. ' + fmtNum(total * rates.USD_VES);
+    document.getElementById('w6-rusd').textContent = '$ ' + fmtNum(total) + ' USD';
+    let alertText = '';
+    document.getElementById('w6-bars').innerHTML = vals.map((v, i) => {
+      const pct = total > 0 ? v / total * 100 : 0;
+      const cls = pct > 40 ? 'ok' : 'warn';
+      if (pct > 40) alertText = labels[i] + ' supera el 40% del presupuesto total.';
+      return `<div class="budget-bar-row"><div class="bb-label">${labels[i]}</div><div class="bb-track"><div class="bb-fill ${cls}" style="width:${pct.toFixed(1)}%"></div></div><div class="bb-pct">${pct.toFixed(0)}%</div></div>`;
+    }).join('');
+    const alertEl = document.getElementById('w6-alert');
+    if (alertText) { alertEl.textContent = '⚠ ' + alertText; alertEl.style.display = 'block'; }
+    else alertEl.style.display = 'none';
+    document.getElementById('w6-res').style.display = 'block';
+  }
+
+  /* --- WIDGET 7: FREELANCE --- */
+  function calculateFreelanceRate() {
+    const income  = parseFloat(document.getElementById('w7-income').value);
+    const days    = parseFloat(document.getElementById('w7-days').value) || 20;
+    const hours   = parseFloat(document.getElementById('w7-hours').value) || 6;
+    const taxes   = parseFloat(document.getElementById('w7-taxes').value) || 0;
+    const savings = parseFloat(document.getElementById('w7-sav').value) || 0;
+    if (isNaN(income) || income <= 0) return;
+    const gross   = income / (1 - (taxes + savings) / 100);
+    const hrRate  = gross / (days * hours);
+    const prjRate = hrRate * 40;
+    document.getElementById('w7-rhr').textContent    = '$ ' + hrRate.toFixed(2) + ' USD/h';
+    document.getElementById('w7-rproj').textContent  = '$ ' + fmtNum(prjRate) + ' USD';
+    document.getElementById('w7-rgross').textContent = '$ ' + fmtNum(gross) + ' USD/mes';
+    document.getElementById('w7-rves').textContent   = 'Bs. ' + fmtNum(gross * rates.USD_VES) + '/mes';
+    document.getElementById('w7-res').style.display  = 'block';
+  }
+
+  /* --- WIDGET 8: DELIVERY --- */
+  function calculateDelivery() {
+    const price    = parseFloat(document.getElementById('w8-price').value);
+    const plat     = parseFloat(document.getElementById('w8-plat').value) || 0;
+    const pack     = parseFloat(document.getElementById('w8-pack').value) || 0;
+    const del      = parseFloat(document.getElementById('w8-del').value) || 0;
+    const margin   = parseFloat(document.getElementById('w8-margin').value) || 0;
+    if (isNaN(price) || price <= 0) return;
+    const costBase    = price + pack + del;
+    const commFee     = costBase * plat / 100;
+    const totalCost   = costBase + commFee;
+    const suggested   = totalCost * (1 + margin / 100);
+    const profit      = suggested - totalCost;
+    const realMargin  = (profit / suggested * 100).toFixed(1);
+    document.getElementById('w8-rprice').textContent  = '$ ' + fmtNum(suggested);
+    document.getElementById('w8-rprofit').textContent = '$ ' + fmtNum(profit);
+    document.getElementById('w8-rmargin').textContent = realMargin + '%';
+    document.getElementById('w8-res').style.display = 'block';
+  }
+
+  /* --- WIDGET 10: VERIFICADOR --- */
+  function runLinkCheck() {
+    const text = document.getElementById('w10-inp').value.trim();
+    const res  = document.getElementById('w10-res');
+    if (!text) return;
+    const checks = [
+      { re:/urgente|URGENTE|¡¡|ahora mismo|solo hoy|últimas horas|actúa ya/i, label:'Urgencia extrema', msg:'El mensaje usa urgencia artificial para presionar.', type:'danger' },
+      { re:/bit\.ly|tinyurl|goo\.gl|t\.co\/|ow\.ly|is\.gd/i, label:'URL acortada sospechosa', msg:'Las URLs acortadas ocultan el destino real del enlace.', type:'warn' },
+      { re:/gana[r]?\s+\$?\d+|dinero fácil|ingresos garantizados|trabajo desde casa.*ganar/i, label:'Promesa irreal', msg:'Las promesas de ganancias fáciles o garantizadas son señal de alerta.', type:'danger' },
+      { re:/envía|transfiere|deposita|zelle|paypal|binance/i, label:'Solicitud de pago', msg:'Solicitudes de pago en mensajes no solicitados son un riesgo.', type:'warn' },
+      { re:/contraseña|clave|número de tarjeta|CVV|cédula|datos personales/i, label:'Solicitud de datos sensibles', msg:'Ninguna entidad legítima pide datos personales por chat.', type:'danger' },
+      { re:/\.(ru|cn|tk|ml|ga|cf)\//i, label:'Dominio inusual', msg:'Extensiones de dominio poco comunes están asociadas a phishing.', type:'warn' },
+      { re:/gmail\.com|hotmail\.com|yahoo\.com/i, label:'Email corporativo sospechoso', msg:'Empresas legítimas usan dominios propios, no Gmail o Hotmail.', type:'warn' },
+    ];
+    const found = checks.filter(c => c.re.test(text));
+    let html = '';
+    if (found.length === 0) {
+      html = `<div class="signal-item ok"><span class="signal-icon">✓</span><span class="signal-text">No se detectaron señales obvias de alerta. Sin embargo, siempre verifica el origen antes de actuar.</span></div>`;
+    } else {
+      html = found.map(s => `<div class="signal-item ${s.type}"><span class="signal-icon">${s.type==='danger'?'⚠':'◉'}</span><span class="signal-text"><strong>${s.label}:</strong> ${s.msg}</span></div>`).join('');
+    }
+    res.innerHTML = html;
+    res.style.display = 'block';
+  }
+
+  /* --- WIDGET 9: CHECKLIST --- */
+  const CL_DATA = {
+    'Colombia': [
+      { id:'co_id', text:'Documento de identidad (pasaporte o cédula)' },
+      { id:'co_rut', text:'Tramitar RUT ante la DIAN' },
+      { id:'co_bank', text:'Certificado bancario o carta de referencia' },
+      { id:'co_addr', text:'Soporte de domicilio (contrato o recibo)' },
+      { id:'co_bg', text:'Antecedentes penales apostillados' },
+      { id:'co_ppt', text:'Permiso de Protección Temporal (PPT)' },
+      { id:'co_cv', text:'CV actualizado' },
+    ],
+    'Venezuela': [
+      { id:'ve_id', text:'Cédula de identidad vigente' },
+      { id:'ve_pass', text:'Pasaporte vigente (mín. 6 meses de validez)' },
+      { id:'ve_rif', text:'RIF actualizado' },
+      { id:'ve_apos', text:'Apostilla de documentos académicos' },
+      { id:'ve_birth', text:'Acta de nacimiento apostillada' },
+      { id:'ve_health', text:'Certificado de salud si aplica' },
+    ],
+    'Perú': [
+      { id:'pe_id', text:'Pasaporte o cédula de identidad' },
+      { id:'pe_ptp', text:'Permiso Temporal de Permanencia vigente' },
+      { id:'pe_bg', text:'Antecedentes penales del país de origen' },
+      { id:'pe_addr', text:'Constancia de domicilio' },
+      { id:'pe_bank', text:'Cuenta bancaria local' },
+      { id:'pe_cv', text:'CV en formato peruano' },
+    ],
+    'Chile': [
+      { id:'cl_pass', text:'Pasaporte vigente' },
+      { id:'cl_vis', text:'Visa de trabajo o responsabilidad democrática' },
+      { id:'cl_rut', text:'RUT chileno (trámite en PDI)' },
+      { id:'cl_bg', text:'Antecedentes penales apostillados' },
+      { id:'cl_bank', text:'Cuenta bancaria (Banco Estado acepta migrantes)' },
+      { id:'cl_cv', text:'CV y carta de presentación' },
+    ],
+    'España': [
+      { id:'es_nie', text:'NIE (Número de Identificación de Extranjero)' },
+      { id:'es_empa', text:'Empadronamiento municipal' },
+      { id:'es_seg', text:'Número de Seguridad Social' },
+      { id:'es_bg', text:'Antecedentes penales con Apostilla de La Haya' },
+      { id:'es_titles', text:'Títulos académicos homologados o en proceso' },
+      { id:'es_bank', text:'Cuenta bancaria española' },
+    ],
+    'EE. UU.': [
+      { id:'us_pass', text:'Pasaporte venezolano vigente' },
+      { id:'us_i94', text:'I-94 o TPS/parole activo' },
+      { id:'us_ssn', text:'Social Security Number (SSN) si aplica' },
+      { id:'us_id', text:'State ID o Driver License' },
+      { id:'us_tax', text:'ITIN para declarar impuestos (sin SSN)' },
+      { id:'us_cv', text:'Resume en formato americano' },
+    ],
+  };
+  let activeTab = 'Colombia';
+
+  function renderChecklist(country) {
+    activeTab = country;
+    document.querySelectorAll('.cl-tab').forEach(t => t.classList.toggle('active', t.dataset.c === country));
+    const items  = CL_DATA[country] || [];
+    const saved  = loadLS('cl_' + country) || {};
+    let checked  = 0;
+    document.getElementById('cl-items').innerHTML = items.map(item => {
+      const ok = !!saved[item.id];
+      if (ok) checked++;
+      return `<div class="cl-item ${ok?'checked':''}" id="ci-${item.id}" onclick="toggleChecklistItem('${item.id}','${country}')"><div class="cl-check">${ok?'✓':''}</div><div class="cl-text">${item.text}</div></div>`;
+    }).join('');
+    setClProg(checked, items.length);
+  }
+
+  function toggleChecklistItem(id, country) {
+    const el   = document.getElementById('ci-' + id);
+    const saved= loadLS('cl_' + country) || {};
+    if (el.classList.contains('checked')) { el.classList.remove('checked'); el.querySelector('.cl-check').textContent = ''; delete saved[id]; }
+    else { el.classList.add('checked'); el.querySelector('.cl-check').textContent = '✓'; saved[id] = true; }
+    saveLS('cl_' + country, saved);
+    setClProg(Object.keys(saved).length, (CL_DATA[country]||[]).length);
+  }
+
+  function setClProg(done, total) {
+    document.getElementById('cl-prog-txt').textContent = done + ' de ' + total + ' completados';
+    document.getElementById('cl-prog-fill').style.width = (total > 0 ? done/total*100 : 0) + '%';
+  }
+
+  function initChecklist() {
+    const tabs = document.getElementById('cl-tabs');
+    Object.keys(CL_DATA).forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'cl-tab' + (c === activeTab ? ' active' : '');
+      btn.dataset.c = c;
+      btn.textContent = c;
+      btn.onclick = () => renderChecklist(c);
+      tabs.appendChild(btn);
+    });
+    renderChecklist(activeTab);
+  }
+
+  function saveLS(key, val) { try { localStorage.setItem('nvd_' + key, JSON.stringify(val)); } catch(e) {} }
+  function loadLS(key) { try { const v = localStorage.getItem('nvd_' + key); return v ? JSON.parse(v) : null; } catch(e) { return null; } }
+
+  /* --- FAQ --- */
+  const FAQS = [
+    { q:'¿Las tasas son en tiempo real?', a:'Intentamos conectar con la API de DolarAPI Venezuela para obtener la tasa BCV oficial. Si falla por CORS u otro error, mostramos tasas referenciales demo claramente marcadas. El estado de conexión aparece en el panel superior.' },
+    { q:'¿Cómo se calcula la tasa referencial?', a:'En modo demo usamos: USD/VES = 36.50, EUR/VES = 39.80, USD/COP = 4,150. Son valores estimados para propósitos demostrativos y no reflejan necesariamente la tasa vigente del BCV.' },
+    { q:'¿Puedo usar estas calculadoras para decisiones financieras importantes?', a:'No. Estas herramientas son orientativas e informativas. Para decisiones de cambio, transferencia o inversión, consulta siempre fuentes oficiales como el BCV y asesores financieros certificados.' },
+    { q:'¿Qué es el modo demo?', a:'El modo demo indica que la herramienta opera con datos de referencia, no en tiempo real. Todas las tasas y cálculos son aproximaciones para demostrar las capacidades del ecosistema NEVADO.' },
+    { q:'¿Cómo funciona el verificador de señales?', a:'Analiza el texto o enlace en busca de patrones comunes de fraude: urgencia artificial, URLs acortadas, promesas de dinero fácil, solicitudes de datos personales o de pago. No es infalible y no reemplaza la revisión humana.' },
+    { q:'¿Puedo guardar mi checklist de trámites?', a:'Sí. El checklist guarda tu progreso automáticamente en el localStorage de tu navegador. Los datos persisten entre sesiones en el mismo dispositivo y navegador, pero no se sincronizan entre dispositivos.' },
+  ];
+
+  function initFAQ() {
+    document.getElementById('faq-list').innerHTML = FAQS.map((f,i) => `
+      <div class="faq-item" id="fq-${i}" role="listitem">
+        <button class="faq-q" onclick="toggleFAQ(${i})">${f.q}<span class="faq-ico">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">${f.a}</div></div>
+      </div>`).join('');
+  }
+
+  function toggleFAQ(i) {
+    const item   = document.getElementById('fq-' + i);
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  function openWidget(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior:'smooth', block:'center' }); }
+  function closeWidget() {}
+
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchExchangeRates();
+    initChecklist();
+    initFAQ();
+  });
+  </script>
+
+  <div id="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+</body>
+</html>

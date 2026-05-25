@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artículo — Titulares · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #05050A; --ivory: #E8E4DC; --accent: #2980B9; --gold: #B8944A; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#2980B9; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#2980B9; background:rgba(41,128,185,0.10); border:1px solid rgba(41,128,185,0.28); box-shadow:0 0 12px rgba(41,128,185,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#2980B9; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    .page-content { padding:32px 10vw 80px; position:relative; z-index:10; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:24px; }
+    .btn-accent { background:#2980B9; color:#fff; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#2980B9; border:1px solid rgba(41,128,185,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(41,128,185,0.08); }
+    .form-group { margin-bottom:20px; }
+    .form-label { display:block; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+    .form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ivory); font-family:inherit; outline:none; transition:border-color 0.2s; cursor:none; }
+    .form-input:focus { border-color:#2980B9; }
+    .form-input::placeholder { color:var(--text-dim); }
+    textarea.form-input { resize:vertical; min-height:80px; }
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#2980B9; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#2980B9; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#2980B9; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+    @media(max-width:768px){ .std-fg { grid-template-columns:1fr 1fr; } }
+
+    /* ── Article Layout ── */
+    .article-layout { display:grid; grid-template-columns:1fr 320px; gap:40px; max-width:1200px; }
+    @media(max-width:960px){ .article-layout { grid-template-columns:1fr; } }
+
+    /* ── Article ── */
+    .article-category-badge { display:inline-block; font-size:9px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#2980B9; background:rgba(41,128,185,0.12); border:1px solid rgba(41,128,185,0.30); padding:3px 10px; border-radius:20px; margin-bottom:10px; }
+    .article-verify-badge { display:inline-flex; align-items:center; gap:5px; font-size:10px; color:#27AE60; background:rgba(39,174,96,0.10); border:1px solid rgba(39,174,96,0.22); padding:3px 10px; border-radius:20px; margin-bottom:10px; margin-left:8px; }
+    .article-title { font-family:'Cormorant Garamond',serif; font-size:clamp(1.8rem,4vw,2.8rem); font-weight:600; line-height:1.15; color:var(--ivory); margin-bottom:14px; letter-spacing:-0.01em; }
+    .article-meta { font-size:11px; color:var(--text-mid); margin-bottom:24px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .article-meta span + span::before { content:'·'; margin-right:12px; }
+    .article-divider { height:1px; background:var(--border); margin-bottom:28px; }
+    .article-body { font-size:15px; line-height:1.85; color:rgba(232,228,220,0.82); }
+    .article-body p + p { margin-top:20px; }
+    .article-body p:first-child::first-letter { font-family:'Cormorant Garamond',serif; font-size:3.6rem; font-weight:600; float:left; line-height:0.85; margin-right:8px; margin-top:4px; color:#2980B9; }
+    .article-sources { margin-top:36px; padding-top:20px; border-top:1px solid var(--border); }
+    .article-sources-title { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px; }
+    .article-source-item { font-size:12px; color:rgba(232,228,220,0.55); padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:center; gap:8px; }
+    .article-source-item::before { content:'→'; color:#2980B9; font-size:11px; }
+    .article-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:28px; padding-top:20px; border-top:1px solid var(--border); }
+    .action-btn { display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--text-mid); background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:7px 14px; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .action-btn:hover { color:var(--ivory); border-color:rgba(255,255,255,0.15); }
+    .action-btn.nodo { color:#2980B9; background:rgba(41,128,185,0.08); border-color:rgba(41,128,185,0.28); }
+    .action-btn.nodo:hover { background:rgba(41,128,185,0.14); }
+    .action-count { font-size:10px; color:var(--text-dim); margin-left:2px; }
+
+    /* ── AI Resume ── */
+    .ai-section { margin-top:32px; background:rgba(41,128,185,0.05); border:1px solid rgba(41,128,185,0.20); border-radius:10px; padding:20px; }
+    .ai-section-label { font-size:9px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#2980B9; margin-bottom:12px; }
+    .ai-result-box { margin-top:14px; padding:16px; background:rgba(41,128,185,0.08); border:1px solid rgba(41,128,185,0.28); border-radius:8px; font-size:13px; color:rgba(232,228,220,0.82); line-height:1.7; min-height:60px; display:none; }
+    .ai-result-box.visible { display:block; }
+    .ai-loading { color:#2980B9; font-style:italic; }
+
+    /* ── Sidebar ── */
+    .sidebar-section { margin-bottom:28px; }
+    .sidebar-label { font-size:9px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; }
+    .related-card { padding:14px 0; border-bottom:1px solid var(--border); }
+    .related-card:last-child { border-bottom:none; }
+    .related-cat { font-size:9px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#2980B9; margin-bottom:5px; }
+    .related-title { font-size:13px; font-weight:500; color:var(--ivory); line-height:1.35; margin-bottom:4px; }
+    .related-meta { font-size:10px; color:var(--text-dim); }
+    .newsletter-mini { background:var(--surface); border:1px solid var(--border); border-top:2px solid #2980B9; border-radius:8px; padding:18px; }
+    .newsletter-mini p { font-size:12px; color:var(--text-mid); margin-bottom:14px; line-height:1.6; }
+    .verify-info-box { background:rgba(41,128,185,0.06); border:1px solid rgba(41,128,185,0.18); border-radius:8px; padding:16px; }
+    .verify-info-box p { font-size:11px; color:var(--text-mid); line-height:1.65; }
+    .verify-badge-item { display:flex; align-items:center; gap:8px; font-size:11px; color:rgba(232,228,220,0.65); padding:4px 0; }
+    .vb-icon { font-size:12px; }
+  </style>
+</head>
+<body>
+
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item" href="/nodo.html">NODO</a>
+      <a class="nav-item active" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="nv-breadcrumb">
+    <a href="/enterate.html" class="nv-bc-back">← Titulares</a>
+    <span class="nv-bc-sep">·</span>
+    <span class="nv-bc-current">Artículo</span>
+  </div>
+
+  <div class="page-content">
+    <div class="article-layout">
+
+      <!-- ARTICLE MAIN -->
+      <article>
+        <div>
+          <span class="article-category-badge">Economía</span>
+          <span class="article-verify-badge">✓ Verificado por NEVADO</span>
+        </div>
+
+        <h1 class="article-title">Venezuela registra cifras récord de diáspora cualificada: qué significa para 2026</h1>
+
+        <div class="article-meta">
+          <span>Editorial NEVADO</span>
+          <span>15 mayo 2026</span>
+          <span>6 min de lectura</span>
+        </div>
+
+        <div class="article-divider"></div>
+
+        <div class="article-body">
+          <p>Los datos del primer trimestre de 2026 confirman una tendencia que lleva años configurándose pero que ahora alcanza una dimensión sin precedentes: Venezuela ha perdido más del 38% de su población universitaria en la última década, posicionándose como el país latinoamericano con mayor proporción de emigración cualificada en términos relativos. El Observatorio de la Diáspora Venezolana estima que actualmente 7.9 millones de venezolanos residen fuera del país, de los cuales aproximadamente 2.4 millones cuentan con educación superior completa.</p>
+
+          <p>Lo que hace singular este momento en 2026 es la transformación cualitativa de esa diáspora. Si en los primeros años de la migración masiva (2015–2019) el perfil dominante era el de personas buscando estabilidad económica básica, los datos actuales muestran una diáspora que ha madurado, se ha organizado, y empieza a operar como actor económico y social con influencia real en el país de acogida y, progresivamente, en Venezuela misma. Las remesas enviadas en 2025 superaron los 2.400 millones de dólares, y la tasa de informalidad laboral entre venezolanos con cinco o más años en el exterior cayó al 18%, frente al 54% que registraba en 2020.</p>
+
+          <p>El mercado de trabajo remoto es uno de los vectores más significativos de esta transformación. Plataformas como Toptal, Deel y Remote.com reportan que los profesionales venezolanos registran la tasa de contratación en remoto más alta de América Latina, con un 34% más de probabilidad de ser seleccionados en el primer proceso comparado con el promedio regional. La combinación de formación técnica, dominio del inglés, adaptabilidad extrema y familiaridad con herramientas digitales —adquirida por necesidad durante los años de crisis— crea un perfil que las empresas globales buscan activamente en sus equipos distribuidos.</p>
+
+          <p>La CEPAL señala que Venezuela representa un caso de estudio único en la región: la adversidad sistémica actuó como acelerador involuntario de competencias digitales. El venezolano promedio que emigró entre 2017 y 2022 llegó a su país de destino manejando criptomonedas, VPNs, plataformas de freelance y múltiples herramientas de comunicación remota, habilidades que muchos de sus pares locales aún no dominaban. Esta brecha de competencia digital se convierte hoy en ventaja competitiva medible en el mercado laboral global.</p>
+
+          <p>Sin embargo, el cuadro no es unívocamente positivo. La ENCOVI 2025 documenta el impacto sistémico de la pérdida de capital humano en sectores críticos de Venezuela: el sistema de salud opera con apenas el 41% del personal médico que tenía en 2014, las universidades reportan una pérdida del 62% de su planta docente de investigación, y sectores como la ingeniería de infraestructura enfrentan escasez severa de especialistas. El costo de oportunidad para Venezuela es inconmensurable, y ningún flujo de remesas puede compensar la pérdida de institucionalidad y capacidad técnica acumulada.</p>
+
+          <p>Para 2026, el debate de política pública ha comenzado a girar en torno a un concepto emergente: la "diáspora productiva" como actor de desarrollo. Organismos como la OIM y el BID financian programas piloto que buscan canalizar la expertise y los recursos de la diáspora venezolana hacia proyectos de impacto en el país. NEVADO, como plataforma de ecosistema, documenta y apoya estas iniciativas a través de sus módulos de Capital Humano y NODO, conectando profesionales en el exterior con oportunidades de contribución remota al desarrollo venezolano. El reto de 2026 no es solo cuántos venezolanos hay fuera, sino cómo sus capacidades pueden construir algo duradero, dentro o desde fuera.</p>
+        </div>
+
+        <!-- SOURCES -->
+        <div class="article-sources">
+          <div class="article-sources-title">Fuentes consultadas</div>
+          <div class="article-source-item">Organización Internacional para las Migraciones (OIM) — Informe de movilidad venezolana 2025</div>
+          <div class="article-source-item">CEPAL — Panorama Social de América Latina 2025</div>
+          <div class="article-source-item">ENCOVI 2025 — Encuesta Nacional de Condiciones de Vida</div>
+        </div>
+
+        <!-- ACTION BAR -->
+        <div class="article-actions">
+          <button class="action-btn" id="reactBtn" onclick="toggleReact()">
+            <span>❤️</span> <span>Reacciones</span> <span class="action-count" id="reactCount">312</span>
+          </button>
+          <button class="action-btn" onclick="scrollToComments()">
+            <span>💬</span> <span>Comentarios</span> <span class="action-count">44</span>
+          </button>
+          <button class="action-btn" id="saveBtn" onclick="toggleSave()">
+            <span>🔖</span> <span id="saveTxt">Guardar</span>
+          </button>
+          <button class="action-btn" onclick="shareArticle()">
+            <span>↗</span> <span>Compartir</span>
+          </button>
+          <a class="action-btn nodo" href="/nodo.html">Conversar en NODO →</a>
+        </div>
+
+        <!-- AI RESUME -->
+        <div class="ai-section">
+          <div class="ai-section-label">Nevado IA · Resumen inteligente</div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <textarea class="form-input" id="aiInput" rows="2">Venezuela registra cifras récord de diáspora cualificada: qué significa para 2026</textarea>
+          </div>
+          <button class="btn-accent" id="aiBtn" onclick="resumirConIA()">Resumir con Nevado IA</button>
+          <div class="ai-result-box" id="aiResult"></div>
+        </div>
+
+        <!-- COMMENTS anchor -->
+        <div id="comments" style="margin-top:40px;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;">44 Comentarios</div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;font-size:13px;color:var(--text-mid);text-align:center;">Los comentarios están disponibles en NODO. <a href="/nodo.html" style="color:#2980B9;text-decoration:none;">Ir a NODO →</a></div>
+        </div>
+      </article>
+
+      <!-- SIDEBAR -->
+      <aside>
+        <!-- RELATED ARTICLES -->
+        <div class="sidebar-section">
+          <div class="sidebar-label">Artículos relacionados</div>
+          <div class="related-card">
+            <div class="related-cat">Trabajo</div>
+            <div class="related-title">Venezolanos en remoto lideran adopción digital en América Latina</div>
+            <div class="related-meta">12 mayo 2026 · 8 min</div>
+          </div>
+          <div class="related-card">
+            <div class="related-cat">Diáspora</div>
+            <div class="related-title">Madrid consolida su posición como hub venezolano europeo</div>
+            <div class="related-meta">8 mayo 2026 · 5 min</div>
+          </div>
+          <div class="related-card">
+            <div class="related-cat">Economía</div>
+            <div class="related-title">Remesas digitales superan $2.400M: el cambio de canal importa</div>
+            <div class="related-meta">3 mayo 2026 · 6 min</div>
+          </div>
+          <div class="related-card">
+            <div class="related-cat">Tecnología</div>
+            <div class="related-title">El caso venezolano: cripto como infraestructura económica</div>
+            <div class="related-meta">28 abril 2026 · 11 min</div>
+          </div>
+        </div>
+
+        <!-- NEWSLETTER MINI -->
+        <div class="sidebar-section">
+          <div class="sidebar-label">Boletín NEVADO</div>
+          <div class="newsletter-mini">
+            <p>Recibe los mejores análisis cada semana directamente en tu bandeja.</p>
+            <div class="form-group">
+              <input type="email" class="form-input" id="sideEmailInput" placeholder="tu@correo.com" />
+            </div>
+            <button class="btn-accent" style="width:100%;" onclick="sideSubscribe()">Suscribirme</button>
+            <div id="sideSubMsg" style="font-size:11px;color:#27AE60;margin-top:8px;min-height:16px;"></div>
+          </div>
+        </div>
+
+        <!-- VERIFICATION INFO -->
+        <div class="sidebar-section">
+          <div class="sidebar-label">Verificación</div>
+          <div class="verify-info-box">
+            <div class="verify-badge-item"><span class="vb-icon">✓</span> <strong style="color:#27AE60;">Verificado</strong> — Fuentes primarias confirmadas</div>
+            <div class="verify-badge-item"><span class="vb-icon">⟳</span> <strong style="color:#F4D03F;">En revisión</strong> — Pendiente de confirmación</div>
+            <div class="verify-badge-item"><span class="vb-icon">◐</span> <strong style="color:#2980B9;">Fuente revisada</strong> — Origen auditado</div>
+            <p style="margin-top:12px;">Este artículo fue verificado por el equipo editorial de NEVADO Titulares con fuentes primarias y secundarias independientes.</p>
+            <a href="/titulares/verificacion.html" style="display:block;margin-top:12px;font-size:11px;color:#2980B9;text-decoration:none;">Ver Centro de Verificación →</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div>
+        <a class="std-fl-logo" href="/">N·EVADO</a>
+        <p class="std-fl-desc">Información verificada para la diáspora venezolana global.</p>
+      </div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Titulares</div>
+        <a class="std-fl" href="/titulares/articulo.html">Artículos</a>
+        <a class="std-fl" href="/titulares/verificacion.html">Verificación</a>
+        <a class="std-fl" href="/titulares/boletin.html">Boletín</a>
+        <a class="std-fl" href="/titulares/oportunidades.html">Oportunidades</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · Titulares · Modo demostración</span>
+      <div class="std-tri">
+        <div style="background:#F4D03F"></div>
+        <div style="background:#2980B9"></div>
+        <div style="background:#E74C3C"></div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <div class="cursor-dot" id="cursor-dot"></div>
+
+  <script>
+    // React toggle
+    let reacted = false;
+    function toggleReact() {
+      reacted = !reacted;
+      const btn = document.getElementById('reactBtn');
+      const count = document.getElementById('reactCount');
+      count.textContent = reacted ? '313' : '312';
+      btn.style.color = reacted ? '#E74C3C' : '';
+      btn.style.borderColor = reacted ? 'rgba(231,76,60,0.4)' : '';
+    }
+
+    // Save toggle
+    let saved = false;
+    function toggleSave() {
+      saved = !saved;
+      document.getElementById('saveTxt').textContent = saved ? 'Guardado ✓' : 'Guardar';
+      document.getElementById('saveBtn').style.color = saved ? '#27AE60' : '';
+    }
+
+    // Share
+    function shareArticle() {
+      if (navigator.share) {
+        navigator.share({ title: 'Venezuela registra cifras récord de diáspora cualificada', url: location.href });
+      } else {
+        navigator.clipboard?.writeText(location.href);
+        alert('Enlace copiado al portapapeles');
+      }
+    }
+
+    // Scroll to comments
+    function scrollToComments() {
+      document.getElementById('comments')?.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Side newsletter
+    function sideSubscribe() {
+      const email = document.getElementById('sideEmailInput').value.trim();
+      const msg = document.getElementById('sideSubMsg');
+      if (!email || !email.includes('@')) { msg.style.color='#E74C3C'; msg.textContent='Ingresa un correo válido.'; return; }
+      msg.style.color = '#27AE60';
+      msg.textContent = '¡Suscrito! Revisa tu bandeja.';
+      document.getElementById('sideEmailInput').disabled = true;
+    }
+
+    // AI Resume using Claude
+    async function resumirConIA() {
+      const btn = document.getElementById('aiBtn');
+      const result = document.getElementById('aiResult');
+      const input = document.getElementById('aiInput').value.trim();
+      if (!input) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Analizando…';
+      result.className = 'ai-result-box visible';
+      result.innerHTML = '<span class="ai-loading">Nevado IA está resumiendo el artículo…</span>';
+
+      const key = window.__NVD_KEY || '';
+      if (!key) {
+        result.innerHTML = '<em style="color:var(--text-dim);">Clave API no disponible en este entorno de demostración.</em>';
+        btn.disabled = false; btn.textContent = 'Resumir con Nevado IA';
+        return;
+      }
+
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5',
+            max_tokens: 400,
+            system: 'Eres un asistente editorial. Resume este artículo en 3 puntos clave en español. Sin markdown.',
+            messages: [{ role: 'user', content: input }]
+          })
+        });
+        const data = await res.json();
+        const text = data.content?.[0]?.text || 'No se pudo obtener respuesta.';
+        result.innerHTML = text.replace(/\n/g, '<br>');
+      } catch(e) {
+        result.innerHTML = '<em style="color:#E74C3C;">Error al conectar con Nevado IA. Inténtalo de nuevo.</em>';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Resumir con Nevado IA';
+    }
+  </script>
+</body>
+</html>

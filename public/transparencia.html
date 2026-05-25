@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transparencia — NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --carbon: #080810; --ivory: #E8E4DC; --gold: #B8944A;
+      --surface: rgba(14,14,24,0.80); --border: rgba(255,255,255,0.07);
+      --text-dim: rgba(232,228,220,0.35); --text-mid: rgba(232,228,220,0.60);
+      --page-accent: #B8944A; --topbar-h: 52px;
+    }
+    html, body { width: 100%; min-height: 100%; background: var(--carbon); color: var(--ivory); font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; cursor: none; padding-bottom: 28px; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 90% 80% at 50% 30%, black 30%, transparent 100%); pointer-events: none; z-index: 0; }
+
+    /* ── TOPBAR v3.0 ── */
+    #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; background: rgba(5,5,10,0.97); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; color: rgba(232,228,220,0.88); text-decoration: none; flex-shrink: 0; font-family: 'Cormorant Garamond', serif; }
+    .topbar-logo span { color: var(--page-accent); }
+    .topbar-nav { display: flex; align-items: center; gap: 2px; position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-item { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(232,228,220,0.38); text-decoration: none; padding: 5px 12px; border-radius: 6px; transition: color 0.2s, background 0.2s; white-space: nowrap; cursor: none; }
+    .nav-item:hover { color: rgba(232,228,220,0.75); background: rgba(255,255,255,0.05); }
+    .nav-item.active { color: var(--page-accent); background: color-mix(in srgb, var(--page-accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--page-accent) 30%, transparent); box-shadow: 0 0 12px color-mix(in srgb, var(--page-accent) 20%, transparent); }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .topbar-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.10); margin: 0 2px; }
+    .btn-plus { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px; border-radius: 6px; cursor: none; background: transparent; color: #B8944A; border: 1px solid rgba(184,148,74,0.35); transition: all 0.2s; font-family: inherit; }
+    .btn-plus:hover { background: rgba(184,148,74,0.08); }
+
+    /* ── LAYOUT ── */
+    .tr-wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 10; }
+
+    /* ── HERO ── */
+    .tr-hero { padding: 108px 0 64px; }
+    .tr-breadcrumb { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 20px; }
+    .tr-breadcrumb span { color: var(--gold); }
+    .tr-hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 300; letter-spacing: 0.04em; line-height: 1.05; color: var(--ivory); margin-bottom: 16px; }
+    .tr-hero-title strong { color: var(--gold); font-weight: 400; }
+    .tr-hero-line { width: 48px; height: 2px; background: var(--gold); margin-bottom: 20px; }
+    .tr-hero-desc { font-size: 15px; font-weight: 300; color: var(--text-mid); max-width: 560px; line-height: 1.75; }
+    .tr-hero-meta { display: flex; gap: 32px; margin-top: 32px; }
+    .tr-hero-meta-item { font-size: 11px; color: var(--text-dim); }
+    .tr-hero-meta-item span { display: block; font-size: 18px; font-weight: 600; color: var(--gold); margin-bottom: 2px; }
+
+    /* ── SECTION HEADER ── */
+    .tr-section { padding: 64px 0; }
+    .tr-section + .tr-section { border-top: 1px solid var(--border); }
+    .tr-section-tag { font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .tr-section-title { font-size: 22px; font-weight: 600; color: var(--ivory); margin-bottom: 8px; }
+    .tr-section-desc { font-size: 13px; color: var(--text-mid); line-height: 1.7; max-width: 600px; margin-bottom: 32px; }
+
+    /* ── METRICS GRID ── */
+    .tr-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media(max-width:900px) { .tr-metrics { grid-template-columns: repeat(2,1fr); } }
+    .tr-metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px 20px; position: relative; overflow: hidden; }
+    .tr-metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gold); opacity: 0.5; }
+    .tr-metric-label { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+    .tr-metric-val { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 300; color: var(--ivory); line-height: 1; margin-bottom: 6px; }
+    .tr-metric-val strong { color: var(--gold); }
+    .tr-metric-desc { font-size: 11px; color: var(--text-mid); line-height: 1.6; }
+    .tr-metric-trend { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; color: #27AE60; margin-top: 8px; background: rgba(39,174,96,0.12); padding: 2px 8px; border-radius: 100px; }
+
+    /* ── SYSTEM STATUS ── */
+    .tr-status-grid { display: flex; flex-direction: column; gap: 10px; }
+    .tr-status-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; }
+    .tr-status-left { display: flex; align-items: center; gap: 12px; }
+    .tr-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .tr-status-dot.green { background: #27AE60; box-shadow: 0 0 8px rgba(39,174,96,0.5); }
+    .tr-status-dot.yellow { background: #F4D03F; box-shadow: 0 0 8px rgba(244,208,63,0.5); }
+    .tr-status-dot.red { background: #E74C3C; box-shadow: 0 0 8px rgba(231,76,60,0.5); }
+    .tr-status-name { font-size: 13px; font-weight: 500; color: var(--ivory); }
+    .tr-status-sub { font-size: 11px; color: var(--text-dim); }
+    .tr-status-right { display: flex; align-items: center; gap: 16px; }
+    .tr-status-uptime { font-size: 12px; font-weight: 600; color: var(--gold); }
+    .tr-status-badge { font-size: 10px; padding: 3px 10px; border-radius: 100px; font-weight: 600; }
+    .tr-status-badge.operational { background: rgba(39,174,96,0.15); color: #27AE60; border: 1px solid rgba(39,174,96,0.25); }
+    .tr-status-badge.degraded { background: rgba(244,208,63,0.12); color: #F4D03F; border: 1px solid rgba(244,208,63,0.25); }
+    .tr-status-uptime-bar { height: 28px; display: flex; align-items: center; gap: 2px; margin-top: 16px; }
+    .tr-status-uptime-bar .bar { flex: 1; height: 20px; border-radius: 2px; background: rgba(39,174,96,0.25); }
+    .tr-status-uptime-bar .bar.ok { background: rgba(39,174,96,0.65); }
+    .tr-status-uptime-bar .bar.inc { background: rgba(244,208,63,0.55); }
+
+    /* ── TIMELINE ── */
+    .tr-timeline { position: relative; padding-left: 28px; }
+    .tr-timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold), transparent); }
+    .tr-timeline-item { position: relative; margin-bottom: 32px; }
+    .tr-timeline-item::before { content: ''; position: absolute; left: -25px; top: 6px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); border: 2px solid var(--carbon); }
+    .tr-timeline-item.future::before { background: transparent; border-color: var(--gold); }
+    .tr-timeline-date { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+    .tr-timeline-title { font-size: 14px; font-weight: 600; color: var(--ivory); margin-bottom: 4px; }
+    .tr-timeline-desc { font-size: 12px; color: var(--text-mid); line-height: 1.65; }
+
+    /* ── COMMITMENTS ── */
+    .tr-commitments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media(max-width:768px) { .tr-commitments { grid-template-columns: 1fr; } }
+    .tr-commit-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+    .tr-commit-icon { font-size: 24px; margin-bottom: 14px; }
+    .tr-commit-title { font-size: 14px; font-weight: 600; color: var(--ivory); margin-bottom: 8px; }
+    .tr-commit-desc { font-size: 12px; color: var(--text-mid); line-height: 1.7; }
+    .tr-commit-check { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #27AE60; margin-top: 12px; }
+
+    /* ── REPORTS ── */
+    .tr-reports-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:768px) { .tr-reports-grid { grid-template-columns: 1fr; } }
+    .tr-report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .tr-report-left { display: flex; align-items: center; gap: 14px; }
+    .tr-report-icon { width: 40px; height: 40px; border-radius: 8px; background: rgba(184,148,74,0.10); border: 1px solid rgba(184,148,74,0.20); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .tr-report-name { font-size: 13px; font-weight: 600; color: var(--ivory); margin-bottom: 3px; }
+    .tr-report-meta { font-size: 11px; color: var(--text-dim); }
+    .tr-report-dl { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 14px; border-radius: 6px; border: 1px solid rgba(184,148,74,0.35); color: var(--gold); background: rgba(184,148,74,0.06); cursor: none; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
+    .tr-report-dl:hover { background: rgba(184,148,74,0.14); }
+
+    /* ── REPORT FORM ── */
+    .tr-report-section { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    @media(max-width:768px) { .tr-report-section { grid-template-columns: 1fr; } }
+    .tr-form { display: flex; flex-direction: column; gap: 14px; }
+    .tr-form-group { display: flex; flex-direction: column; gap: 6px; }
+    .tr-form-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+    .tr-form-input, .tr-form-select, .tr-form-textarea { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--ivory); font-family: inherit; transition: border-color 0.2s; outline: none; cursor: none; }
+    .tr-form-input:focus, .tr-form-select:focus, .tr-form-textarea:focus { border-color: rgba(184,148,74,0.50); }
+    .tr-form-textarea { resize: vertical; min-height: 100px; }
+    .tr-form-select option { background: #0C0C14; }
+    .tr-form-submit { align-self: flex-start; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 22px; border-radius: 8px; background: rgba(184,148,74,0.14); border: 1px solid rgba(184,148,74,0.40); color: var(--gold); font-family: inherit; cursor: none; transition: all 0.2s; }
+    .tr-form-submit:hover { background: rgba(184,148,74,0.24); }
+    .tr-form-note { font-size: 11px; color: var(--text-dim); line-height: 1.65; padding: 14px; border-radius: 8px; background: rgba(184,148,74,0.05); border: 1px solid rgba(184,148,74,0.12); }
+
+    /* ── CHANNELS ── */
+    .tr-channels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media(max-width:768px) { .tr-channels { grid-template-columns: 1fr; } }
+    .tr-channel-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; }
+    .tr-channel-icon { font-size: 28px; margin-bottom: 12px; }
+    .tr-channel-name { font-size: 14px; font-weight: 600; color: var(--ivory); margin-bottom: 6px; }
+    .tr-channel-desc { font-size: 12px; color: var(--text-mid); line-height: 1.6; margin-bottom: 14px; }
+    .tr-channel-link { font-size: 11px; font-weight: 600; color: var(--gold); text-decoration: none; letter-spacing: 0.08em; }
+    .tr-channel-link:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    #std-footer { background: #050508; border-top: 1px solid rgba(255,255,255,0.06); padding: 48px 10vw 56px; position: relative; z-index: 10; }
+    .std-fg { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; margin-bottom: 28px; }
+    @media(max-width:768px) { .std-fg { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:480px) { .std-fg { grid-template-columns: 1fr; } }
+    .std-fl-logo { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.16em; color: var(--gold); text-decoration: none; }
+    .std-fl-desc { font-size: 12px; color: rgba(232,228,220,0.45); line-height: 1.7; max-width: 220px; margin-top: 10px; }
+    .std-fc-title { font-size: 9px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(232,228,220,0.30); margin-bottom: 12px; }
+    .std-fl { display: block; font-size: 12px; color: rgba(232,228,220,0.45); margin-bottom: 8px; text-decoration: none; transition: color 0.2s; cursor: none; }
+    .std-fl:hover { color: var(--gold); }
+    .std-fb { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size: 11px; color: rgba(232,228,220,0.30); }
+    .std-tri { display: flex; flex-direction: column; gap: 3px; }
+    .std-tri div { width: 28px; height: 4px; border-radius: 2px; }
+
+    /* ── TICKER ── */
+    #ticker { position: fixed; bottom: 0; left: 0; right: 0; height: 28px; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.06); z-index: 90; background: rgba(5,5,10,0.95); }
+    .ticker-track { display: flex; white-space: nowrap; animation: ticker-scroll 38s linear infinite; }
+    .ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 28px; font-size: 10px; letter-spacing: 0.08em; color: rgba(232,228,220,0.45); height: 28px; }
+    .ticker-val { color: var(--gold); font-weight: 600; }
+    .ticker-sep { color: rgba(232,228,220,0.20); }
+    @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* ── MODAL ── */
+    .tr-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 800; backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+    .tr-modal-overlay.open { display: flex; }
+    .tr-modal { background: #0C0C18; border: 1px solid rgba(184,148,74,0.25); border-radius: 14px; padding: 32px; max-width: 460px; width: 90%; position: relative; }
+    .tr-modal-close { position: absolute; top: 16px; right: 16px; font-size: 18px; color: var(--text-mid); background: none; border: none; cursor: none; }
+    .tr-modal-title { font-size: 17px; font-weight: 600; color: var(--ivory); margin-bottom: 8px; }
+    .tr-modal-body { font-size: 13px; color: var(--text-mid); line-height: 1.7; }
+    .tr-modal-success { font-size: 13px; color: #27AE60; margin-top: 12px; display: none; }
+
+    /* ── SUCCESS TOAST ── */
+    #tr-toast { display: none; position: fixed; bottom: 48px; right: 24px; z-index: 9999; background: rgba(8,8,16,0.97); border: 1px solid rgba(184,148,74,0.30); border-radius: 12px; padding: 12px 18px; font-size: 13px; color: var(--gold); box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: tr-slide-in 0.3s ease; }
+    @keyframes tr-slide-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  </style>
+</head>
+<body>
+
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item" href="/nodo.html">NODO</a>
+      <a class="nav-item" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+      <a class="nav-item active" href="/transparencia.html">Transparencia</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ── HERO ── -->
+    <section class="tr-wrap tr-hero">
+      <div class="tr-breadcrumb">NEVADO <span>›</span> Transparencia</div>
+      <h1 class="tr-hero-title">Rendición de<br><strong>Cuentas</strong></h1>
+      <div class="tr-hero-line"></div>
+      <p class="tr-hero-desc">Cada recurso del ecosistema auditado públicamente. Informes abiertos, trazabilidad total y cero opacidad — porque la confianza de la comunidad venezolana no se negocia.</p>
+      <div class="tr-hero-meta">
+        <div class="tr-hero-meta-item"><span>$24,180</span>USD gestionados Q1 2026</div>
+        <div class="tr-hero-meta-item"><span>48</span>Informes públicos</div>
+        <div class="tr-hero-meta-item"><span>99.7%</span>Uptime plataforma</div>
+        <div class="tr-hero-meta-item"><span>22</span>Países alcanzados</div>
+      </div>
+    </section>
+
+    <!-- ── 1. MÉTRICAS CLAVE ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Métricas clave</div>
+        <div class="tr-section-title">Cifras auditadas · Trimestre Q1 2026</div>
+        <p class="tr-section-desc">Actualizadas semanalmente. Auditadas por terceros independientes. Código de verificación disponible en cada informe.</p>
+        <div class="tr-metrics">
+          <div class="tr-metric-card">
+            <div class="tr-metric-label">Usuarios activos</div>
+            <div class="tr-metric-val">48,<strong>291</strong></div>
+            <div class="tr-metric-desc">Venezolanos con cuenta activa en el ecosistema.</div>
+            <div class="tr-metric-trend">▲ 18% vs Q4 2025</div>
+          </div>
+          <div class="tr-metric-card">
+            <div class="tr-metric-label">Fondos auditados</div>
+            <div class="tr-metric-val"><strong>$</strong>24,180</div>
+            <div class="tr-metric-desc">USD gestionados este trimestre con registro público.</div>
+            <div class="tr-metric-trend">▲ 11% vs Q4 2025</div>
+          </div>
+          <div class="tr-metric-card">
+            <div class="tr-metric-label">Proyectos activos</div>
+            <div class="tr-metric-val">1,<strong>204</strong></div>
+            <div class="tr-metric-desc">Iniciativas en ejecución con métricas de avance abiertas.</div>
+            <div class="tr-metric-trend">▲ 6% vs Q4 2025</div>
+          </div>
+          <div class="tr-metric-card">
+            <div class="tr-metric-label">Historias publicadas</div>
+            <div class="tr-metric-val"><strong>180</strong></div>
+            <div class="tr-metric-desc">Testimonios verificados de impacto real en la comunidad.</div>
+            <div class="tr-metric-trend">▲ 34% vs Q4 2025</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. ESTADO DEL SISTEMA ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Estado del sistema</div>
+        <div class="tr-section-title">Todos los servicios operativos</div>
+        <p class="tr-section-desc">Monitoreo en tiempo real de cada componente de la plataforma. Incidencias publicadas dentro de los 15 minutos de detección.</p>
+        <div class="tr-status-grid">
+          <div class="tr-status-item">
+            <div class="tr-status-left">
+              <div class="tr-status-dot green"></div>
+              <div>
+                <div class="tr-status-name">Capital Humano — Bolsa de trabajo</div>
+                <div class="tr-status-sub">talento.nevado.app</div>
+              </div>
+            </div>
+            <div class="tr-status-right">
+              <div class="tr-status-uptime">99.8%</div>
+              <div class="tr-status-badge operational">Operativo</div>
+            </div>
+          </div>
+          <div class="tr-status-item">
+            <div class="tr-status-left">
+              <div class="tr-status-dot green"></div>
+              <div>
+                <div class="tr-status-name">ÁVILA — Formación y rutas</div>
+                <div class="tr-status-sub">avila.nevado.app</div>
+              </div>
+            </div>
+            <div class="tr-status-right">
+              <div class="tr-status-uptime">99.9%</div>
+              <div class="tr-status-badge operational">Operativo</div>
+            </div>
+          </div>
+          <div class="tr-status-item">
+            <div class="tr-status-left">
+              <div class="tr-status-dot green"></div>
+              <div>
+                <div class="tr-status-name">NODO — Red comunitaria</div>
+                <div class="tr-status-sub">nodo.nevado.app</div>
+              </div>
+            </div>
+            <div class="tr-status-right">
+              <div class="tr-status-uptime">99.5%</div>
+              <div class="tr-status-badge operational">Operativo</div>
+            </div>
+          </div>
+          <div class="tr-status-item">
+            <div class="tr-status-left">
+              <div class="tr-status-dot green"></div>
+              <div>
+                <div class="tr-status-name">Titulares — Noticias verificadas</div>
+                <div class="tr-status-sub">titulares.nevado.app</div>
+              </div>
+            </div>
+            <div class="tr-status-right">
+              <div class="tr-status-uptime">99.7%</div>
+              <div class="tr-status-badge operational">Operativo</div>
+            </div>
+          </div>
+          <div class="tr-status-item">
+            <div class="tr-status-left">
+              <div class="tr-status-dot yellow"></div>
+              <div>
+                <div class="tr-status-name">Corazón Tricolor — Donaciones</div>
+                <div class="tr-status-sub">corazon.nevado.app · latencia levemente elevada</div>
+              </div>
+            </div>
+            <div class="tr-status-right">
+              <div class="tr-status-uptime">98.2%</div>
+              <div class="tr-status-badge degraded">Degradado</div>
+            </div>
+          </div>
+          <div class="tr-status-item">
+            <div class="tr-status-left">
+              <div class="tr-status-dot green"></div>
+              <div>
+                <div class="tr-status-name">Servicios — Directorio y herramientas</div>
+                <div class="tr-status-sub">servicios.nevado.app</div>
+              </div>
+            </div>
+            <div class="tr-status-right">
+              <div class="tr-status-uptime">99.9%</div>
+              <div class="tr-status-badge operational">Operativo</div>
+            </div>
+          </div>
+        </div>
+        <div class="tr-status-uptime-bar" style="margin-top:20px;">
+          <!-- last 30 days uptime visualization -->
+          <div style="font-size:10px;color:var(--text-dim);margin-right:12px;white-space:nowrap;">últimos 30 días</div>
+          <script>
+            (function(){
+              const bar=document.currentScript.parentElement;
+              for(let i=0;i<30;i++){
+                const d=document.createElement('div');
+                d.className='bar '+(Math.random()>0.06?'ok':'inc');
+                d.style.flex='1';d.style.height='20px';d.style.borderRadius='2px';
+                d.style.background=d.className.includes('ok')?'rgba(39,174,96,0.55)':'rgba(244,208,63,0.55)';
+                bar.appendChild(d);
+              }
+            })();
+          </script>
+          <div style="font-size:10px;color:var(--text-dim);margin-left:12px;white-space:nowrap;">hoy</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. CRONOLOGÍA ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Cronología</div>
+        <div class="tr-section-title">Historia de NEVADO</div>
+        <p class="tr-section-desc">Cada hito documentado. Los compromisos futuros son públicos y verificables.</p>
+        <div class="tr-timeline">
+          <div class="tr-timeline-item">
+            <div class="tr-timeline-date">Enero 2025</div>
+            <div class="tr-timeline-title">Fundación del ecosistema</div>
+            <div class="tr-timeline-desc">Primera versión del sistema NEVADO con módulo Capital Humano y 230 usuarios registrados en la primera semana.</div>
+          </div>
+          <div class="tr-timeline-item">
+            <div class="tr-timeline-date">Marzo 2025</div>
+            <div class="tr-timeline-title">Lanzamiento ÁVILA y NODO</div>
+            <div class="tr-timeline-desc">Expansión a formación profesional y red comunitaria. Primera cohorte de 45 mentores activos.</div>
+          </div>
+          <div class="tr-timeline-item">
+            <div class="tr-timeline-date">Junio 2025</div>
+            <div class="tr-timeline-title">Primer informe de auditoría pública</div>
+            <div class="tr-timeline-desc">Publicación del informe Q1-Q2 2025 con detalles de ingresos, gastos e impacto. Auditado por firma independiente.</div>
+          </div>
+          <div class="tr-timeline-item">
+            <div class="tr-timeline-date">Octubre 2025</div>
+            <div class="tr-timeline-title">Titulares y Corazón Tricolor</div>
+            <div class="tr-timeline-desc">Lanzamiento de noticias verificadas y plataforma de donaciones con trazabilidad blockchain de cada contribución.</div>
+          </div>
+          <div class="tr-timeline-item">
+            <div class="tr-timeline-date">Enero 2026</div>
+            <div class="tr-timeline-title">NEVADO v3.0 — Ecosistema completo</div>
+            <div class="tr-timeline-desc">Integración total de los 7 módulos, lanzamiento del sistema de Croquetas y primera alianza institucional con organismo internacional.</div>
+          </div>
+          <div class="tr-timeline-item future">
+            <div class="tr-timeline-date">Q3 2026 · Planificado</div>
+            <div class="tr-timeline-title">App móvil y modo offline</div>
+            <div class="tr-timeline-desc">Aplicación nativa iOS/Android con funcionalidad sin conexión para zonas con conectividad limitada.</div>
+          </div>
+          <div class="tr-timeline-item future">
+            <div class="tr-timeline-date">2027 · En estudio</div>
+            <div class="tr-timeline-title">Expansión regional latinoamericana</div>
+            <div class="tr-timeline-desc">Adaptación del modelo NEVADO para comunidades de diáspora colombiana, ecuatoriana y peruana.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. COMPROMISOS ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Principios</div>
+        <div class="tr-section-title">Nuestros compromisos contigo</div>
+        <p class="tr-section-desc">Compromisos vinculantes con la comunidad. No son aspiraciones — son estándares mínimos exigibles.</p>
+        <div class="tr-commitments">
+          <div class="tr-commit-card">
+            <div class="tr-commit-icon">🔍</div>
+            <div class="tr-commit-title">Auditoría permanente</div>
+            <div class="tr-commit-desc">Todos los flujos financieros son auditados trimestralmente por terceros independientes. Informes publicados en 72h.</div>
+            <div class="tr-commit-check">✓ Auditado · Q1 2026 completo</div>
+          </div>
+          <div class="tr-commit-card">
+            <div class="tr-commit-icon">🔒</div>
+            <div class="tr-commit-title">Datos bajo tu control</div>
+            <div class="tr-commit-desc">Tu información personal no se vende, no se comparte con terceros y puedes exportarla o eliminarla en cualquier momento.</div>
+            <div class="tr-commit-check">✓ GDPR conforme · exportación en 24h</div>
+          </div>
+          <div class="tr-commit-card">
+            <div class="tr-commit-icon">📢</div>
+            <div class="tr-commit-title">Incidencias en 15 minutos</div>
+            <div class="tr-commit-desc">Cualquier caída o degradación de servicio es publicada públicamente en un máximo de 15 minutos desde su detección.</div>
+            <div class="tr-commit-check">✓ Media actual: 8 min</div>
+          </div>
+          <div class="tr-commit-card">
+            <div class="tr-commit-icon">💰</div>
+            <div class="tr-commit-title">Trazabilidad de donaciones</div>
+            <div class="tr-commit-desc">Cada contribución recibida por Corazón Tricolor tiene un identificador público que permite rastrear su destino final.</div>
+            <div class="tr-commit-check">✓ Blockchain · 100% trazables</div>
+          </div>
+          <div class="tr-commit-card">
+            <div class="tr-commit-icon">🗳️</div>
+            <div class="tr-commit-title">Gobierno participativo</div>
+            <div class="tr-commit-desc">La comunidad vota en decisiones de producto trimestralmente. Los resultados y su implementación son públicos.</div>
+            <div class="tr-commit-check">✓ Próxima votación: Jun 2026</div>
+          </div>
+          <div class="tr-commit-card">
+            <div class="tr-commit-icon">🌐</div>
+            <div class="tr-commit-title">Código abierto parcial</div>
+            <div class="tr-commit-desc">Los algoritmos de verificación de noticias, los contratos de donación y el sistema de ranking son de código abierto.</div>
+            <div class="tr-commit-check">✓ github.com/nevado-ve</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5. INFORMES DESCARGABLES ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Documentación</div>
+        <div class="tr-section-title">Informes públicos descargables</div>
+        <p class="tr-section-desc">Todos los informes son generados automáticamente desde la base de datos y firmados digitalmente. Sin edición humana posterior.</p>
+        <div class="tr-reports-grid">
+          <div class="tr-report-card">
+            <div class="tr-report-left">
+              <div class="tr-report-icon">📊</div>
+              <div>
+                <div class="tr-report-name">Informe Q1 2026 — Completo</div>
+                <div class="tr-report-meta">PDF · 2.4 MB · Publicado 15 Apr 2026 · Auditado</div>
+              </div>
+            </div>
+            <a class="tr-report-dl" href="#" onclick="showDownloadModal('Q1 2026'); return false;">Descargar</a>
+          </div>
+          <div class="tr-report-card">
+            <div class="tr-report-left">
+              <div class="tr-report-icon">📊</div>
+              <div>
+                <div class="tr-report-name">Informe Q4 2025 — Completo</div>
+                <div class="tr-report-meta">PDF · 2.1 MB · Publicado 15 Jan 2026 · Auditado</div>
+              </div>
+            </div>
+            <a class="tr-report-dl" href="#" onclick="showDownloadModal('Q4 2025'); return false;">Descargar</a>
+          </div>
+          <div class="tr-report-card">
+            <div class="tr-report-left">
+              <div class="tr-report-icon">🛡️</div>
+              <div>
+                <div class="tr-report-name">Seguridad y privacidad 2025</div>
+                <div class="tr-report-meta">PDF · 860 KB · Publicado 28 Feb 2026</div>
+              </div>
+            </div>
+            <a class="tr-report-dl" href="#" onclick="showDownloadModal('Seguridad 2025'); return false;">Descargar</a>
+          </div>
+          <div class="tr-report-card">
+            <div class="tr-report-left">
+              <div class="tr-report-icon">💳</div>
+              <div>
+                <div class="tr-report-name">Donaciones Corazón Tricolor Q1</div>
+                <div class="tr-report-meta">PDF · 1.2 MB · Publicado 10 Apr 2026 · Blockchain-verificado</div>
+              </div>
+            </div>
+            <a class="tr-report-dl" href="#" onclick="showDownloadModal('Donaciones Q1 2026'); return false;">Descargar</a>
+          </div>
+          <div class="tr-report-card">
+            <div class="tr-report-left">
+              <div class="tr-report-icon">📈</div>
+              <div>
+                <div class="tr-report-name">Métricas de impacto 2025 — Anual</div>
+                <div class="tr-report-meta">PDF · 3.8 MB · Publicado 31 Jan 2026 · Auditado</div>
+              </div>
+            </div>
+            <a class="tr-report-dl" href="#" onclick="showDownloadModal('Impacto Anual 2025'); return false;">Descargar</a>
+          </div>
+          <div class="tr-report-card">
+            <div class="tr-report-left">
+              <div class="tr-report-icon">📋</div>
+              <div>
+                <div class="tr-report-name">Términos y condiciones v4.1</div>
+                <div class="tr-report-meta">PDF · 340 KB · Vigente desde 1 Mar 2026</div>
+              </div>
+            </div>
+            <a class="tr-report-dl" href="#" onclick="showDownloadModal('Términos v4.1'); return false;">Descargar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6. REPORTE + SEGURIDAD ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Seguridad y reporte</div>
+        <div class="tr-section-title">Reportar un problema</div>
+        <p class="tr-section-desc">¿Encontraste una vulnerabilidad, un uso indebido de datos o una irregularidad? Todos los reportes son investigados en 48 horas.</p>
+        <div class="tr-report-section">
+          <form class="tr-form" id="tr-report-form" onsubmit="submitReport(event)">
+            <div class="tr-form-group">
+              <label class="tr-form-label" for="rpt-type">Tipo de reporte</label>
+              <select class="tr-form-select" id="rpt-type">
+                <option value="">Seleccionar...</option>
+                <option>Vulnerabilidad de seguridad</option>
+                <option>Irregularidad financiera</option>
+                <option>Contenido inapropiado</option>
+                <option>Uso indebido de datos</option>
+                <option>Error crítico del sistema</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div class="tr-form-group">
+              <label class="tr-form-label" for="rpt-desc">Descripción</label>
+              <textarea class="tr-form-textarea" id="rpt-desc" placeholder="Describe el problema con el mayor detalle posible. Incluye pasos para reproducirlo si aplica."></textarea>
+            </div>
+            <div class="tr-form-group">
+              <label class="tr-form-label" for="rpt-email">Tu correo (opcional — para seguimiento)</label>
+              <input class="tr-form-input" type="email" id="rpt-email" placeholder="correo@ejemplo.com">
+            </div>
+            <button type="submit" class="tr-form-submit">Enviar reporte →</button>
+          </form>
+          <div>
+            <div class="tr-form-note" style="margin-bottom:20px;">
+              <strong style="color:var(--gold);display:block;margin-bottom:8px;">Política de divulgación responsable</strong>
+              Todos los reportes de seguridad son tratados con confidencialidad. Los investigadores que reporten vulnerabilidades válidas serán reconocidos públicamente (con su consentimiento). No tomamos acciones legales contra reportes de buena fe.
+            </div>
+            <div class="tr-form-note">
+              <strong style="color:var(--gold);display:block;margin-bottom:8px;">Tiempos de respuesta</strong>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-mid)">Vulnerabilidad crítica</span><span style="color:var(--gold);font-weight:600;">4 horas</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-mid)">Irregularidad financiera</span><span style="color:var(--gold);font-weight:600;">24 horas</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text-mid)">Otros reportes</span><span style="color:var(--gold);font-weight:600;">48 horas</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. CANALES ── -->
+    <section class="tr-section">
+      <div class="tr-wrap">
+        <div class="tr-section-tag">Contacto</div>
+        <div class="tr-section-title">Canales de transparencia</div>
+        <p class="tr-section-desc">Múltiples canales para garantizar que la información te llegue sin filtros y que tu voz sea escuchada.</p>
+        <div class="tr-channels">
+          <div class="tr-channel-card">
+            <div class="tr-channel-icon">📧</div>
+            <div class="tr-channel-name">Correo público</div>
+            <div class="tr-channel-desc">Para consultas formales sobre informes, auditorías y uso de datos. Respuesta garantizada en 48h.</div>
+            <a class="tr-channel-link" href="mailto:transparencia@nevado.app">transparencia@nevado.app</a>
+          </div>
+          <div class="tr-channel-card">
+            <div class="tr-channel-icon">💬</div>
+            <div class="tr-channel-name">Canal comunitario</div>
+            <div class="tr-channel-desc">Telegram público donde se publican actualizaciones en tiempo real e incidencias del sistema.</div>
+            <a class="tr-channel-link" href="#" onclick="openChannelModal(); return false;">t.me/nevado_status</a>
+          </div>
+          <div class="tr-channel-card">
+            <div class="tr-channel-icon">🌐</div>
+            <div class="tr-channel-name">Repositorio público</div>
+            <div class="tr-channel-desc">Código abierto de los componentes verificables. Historial de cambios completo y auditores bienvenidos.</div>
+            <a class="tr-channel-link" href="#" onclick="openChannelModal(); return false;">github.com/nevado-ve</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div>
+        <a class="std-fl-logo" href="/">N<span style="color:var(--gold)">·</span>EVADO</a>
+        <p class="std-fl-desc">Transparencia institucional del ecosistema venezolano. Todos los datos auditados y públicos.</p>
+      </div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Transparencia</div>
+        <a class="std-fl" href="#" onclick="document.querySelector('.tr-metrics').scrollIntoView({behavior:'smooth'});return false;">Métricas clave</a>
+        <a class="std-fl" href="#" onclick="document.querySelector('.tr-status-grid').scrollIntoView({behavior:'smooth'});return false;">Estado del sistema</a>
+        <a class="std-fl" href="#" onclick="document.querySelector('.tr-reports-grid').scrollIntoView({behavior:'smooth'});return false;">Informes públicos</a>
+        <a class="std-fl" href="#" onclick="document.getElementById('tr-report-form').scrollIntoView({behavior:'smooth'});return false;">Reportar problema</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Legal</div>
+        <a class="std-fl" href="#" onclick="openChannelModal(); return false;">Términos de uso</a>
+        <a class="std-fl" href="#" onclick="openChannelModal(); return false;">Política de privacidad</a>
+        <a class="std-fl" href="mailto:transparencia@nevado.app">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · Transparencia pública · Todos los datos verificables</span>
+      <div class="std-tri">
+        <div style="background:#F4D03F"></div>
+        <div style="background:#2980B9"></div>
+        <div style="background:#E74C3C"></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TICKER -->
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+  <!-- MODALES -->
+  <div class="tr-modal-overlay" id="download-modal">
+    <div class="tr-modal">
+      <button class="tr-modal-close" onclick="document.getElementById('download-modal').classList.remove('open')">✕</button>
+      <div class="tr-modal-title">Descarga disponible próximamente</div>
+      <p class="tr-modal-body">El informe <strong id="dl-report-name"></strong> estará disponible para descarga directa en el lanzamiento de la plataforma completa.<br><br>Mientras tanto, escríbenos a <a href="mailto:transparencia@nevado.app" style="color:var(--gold);">transparencia@nevado.app</a> para solicitar el documento.</p>
+    </div>
+  </div>
+  <div class="tr-modal-overlay" id="channel-modal">
+    <div class="tr-modal">
+      <button class="tr-modal-close" onclick="document.getElementById('channel-modal').classList.remove('open')">✕</button>
+      <div class="tr-modal-title">Próximamente</div>
+      <p class="tr-modal-body">Este canal estará activo con el lanzamiento oficial de NEVADO. Suscríbete a Titulares para recibir la notificación cuando esté disponible.</p>
+      <div style="margin-top:16px;">
+        <a href="/enterate.html" style="font-size:13px;color:var(--gold);text-decoration:none;font-weight:600;">Ver Titulares →</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="tr-toast"></div>
+
+  <script>
+    // Ticker
+    const ITEMS = [
+      {val:'48,291',l:'Venezolanos Activos'},{val:'$24,180',l:'Fondos Auditados'},
+      {val:'99.7%',l:'Uptime'},{val:'1,204',l:'Proyectos Activos'},
+      {val:'48',l:'Informes Públicos'},{val:'180',l:'Historias Verificadas'},
+      {val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'15 min',l:'Respuesta Incidencias'},
+      {val:'Q1 2026',l:'Último Informe'},{val:'v3.0',l:'NEVADO'},
+    ];
+    const html = ITEMS.map(i => `<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+    document.getElementById('ticker-track').innerHTML = html + html;
+
+    // Download modal
+    function showDownloadModal(name) {
+      document.getElementById('dl-report-name').textContent = name;
+      document.getElementById('download-modal').classList.add('open');
+    }
+
+    // Channel modal
+    function openChannelModal() {
+      document.getElementById('channel-modal').classList.add('open');
+    }
+
+    // Close modals on overlay click
+    document.querySelectorAll('.tr-modal-overlay').forEach(ov => {
+      ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+    });
+
+    // Report form
+    function submitReport(e) {
+      e.preventDefault();
+      const type = document.getElementById('rpt-type').value;
+      const desc = document.getElementById('rpt-desc').value;
+      if (!type || !desc.trim()) {
+        showToast('Completa el tipo y la descripción.');
+        return;
+      }
+      document.getElementById('tr-report-form').reset();
+      showToast('✓ Reporte recibido — responderemos en 48h.');
+      if (window.NEVADO_CROQUETAS) window.NEVADO_CROQUETAS.agregar(3, 'Reporte de transparencia enviado');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('tr-toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .4s'; setTimeout(() => { t.style.display = 'none'; t.style.opacity = ''; t.style.transition = ''; }, 400); }, 3000);
+    }
+
+    // Footer scroll links
+    document.querySelectorAll('a[onclick]').forEach(a => a.style.cursor = 'none');
+  </script>
+
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/croquetas.js"></script>
+  <script src="/mini-nevado.js"></script>
+</body>
+</html>

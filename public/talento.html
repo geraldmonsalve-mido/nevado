@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capital Humano — NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/capital-humano.css" />
+  <style>
+    :root { --topbar-h: 52px; --page-accent: #F4D03F; }
+    /* ── TOPBAR UNIFICADO v3.0 ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      flex-shrink: 0; font-family: 'Cormorant Garamond', serif;
+    }
+    .topbar-logo span { color: var(--page-accent, #B8944A); }
+    .topbar-nav {
+      display: flex; align-items: center; gap: 2px;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .nav-item {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(232,228,220,0.38); text-decoration: none;
+      padding: 5px 12px; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap; cursor: none;
+    }
+    .nav-item:hover {
+      color: rgba(232,228,220,0.75);
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-item.active {
+      color: var(--page-accent, #B8944A);
+      background: color-mix(in srgb, var(--page-accent, #B8944A) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--page-accent, #B8944A) 30%, transparent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--page-accent, #B8944A) 20%, transparent);
+    }
+    .topbar-actions {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .topbar-divider {
+      width: 1px; height: 20px; background: rgba(255,255,255,0.10); margin: 0 2px;
+    }
+    .btn-plus {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 6px; cursor: none;
+      background: transparent; color: #B8944A;
+      border: 1px solid rgba(184,148,74,0.35);
+      transition: all 0.2s; font-family: inherit;
+    }
+    .btn-plus:hover { background: rgba(184,148,74,0.08); }
+    .topbar-user {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; color: rgba(232,228,220,0.45);
+      transition: all 0.2s;
+    }
+    .topbar-user:hover { background: rgba(255,255,255,0.10); color: rgba(232,228,220,0.85); }
+  </style>
+</head>
+<body data-accent="blue">
+
+  <!-- ── Topbar ── -->
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item active" href="/talento.html">Capital Humano</a>
+      <a class="nav-item " href="/avila.html">ÁVILA</a>
+      <a class="nav-item " href="/nodo.html">NODO</a>
+      <a class="nav-item " href="/enterate.html">Titulares</a>
+      <a class="nav-item " href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item " href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Subheader ── -->
+  <div id="ch-subheader">
+    <div class="ch-subheader-left">
+      <div class="ch-subheader-tag">Capital Humano</div>
+      <div class="ch-subheader-title">Red de Talento</div>
+    </div>
+    <div class="ch-subheader-metrics">
+      <span>12,430 profesionales</span>
+      <span class="ch-metric-sep">·</span>
+      <span>847 vacantes activas</span>
+      <span class="ch-metric-sep">·</span>
+      <span>89 nodos globales</span>
+    </div>
+    <button class="ch-subheader-cta">Crear mi perfil</button>
+  </div>
+
+  <!-- ── Layout ── -->
+  <div id="ch-layout">
+
+    <!-- ════════════════════════════
+         SIDEBAR
+    ════════════════════════════ -->
+    <aside id="ch-sidebar">
+
+      <div class="sidebar-section">
+        <a class="sidebar-item" href="/">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 8.5L8 2.5l6 6M3.5 7v7h3.5v-4h2v4H12.5V7"/>
+          </svg>
+          Ecosistema
+        </a>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Mi Perfil</div>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="5.5" r="2.8"/>
+            <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+          </svg>
+          Mi identidad profesional
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="8,1.5 10,6 14.5,6 11,9 12.5,13.5 8,11 3.5,13.5 5,9 1.5,6 6,6"/>
+          </svg>
+          Mi reputación
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="2" width="5" height="5" rx="1"/>
+            <rect x="9" y="2" width="5" height="5" rx="1"/>
+            <rect x="2" y="9" width="5" height="5" rx="1"/>
+            <rect x="9" y="9" width="5" height="5" rx="1"/>
+          </svg>
+          Mi portafolio
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Oportunidades</div>
+        <a class="sidebar-item active" href="#" data-view="jobs">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1.5" y="4.5" width="13" height="9" rx="1"/>
+            <path d="M5 4.5V3.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 11 3.5v1"/>
+          </svg>
+          Explorar vacantes
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 4.5h12M5 8h6M7 11.5h2"/>
+          </svg>
+          Mis aplicaciones
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M11.5 2H4.5a1 1 0 0 0-1 1v10.5l4.5-2.5 4.5 2.5V3a1 1 0 0 0-1-1z"/>
+          </svg>
+          Guardadas
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Herramientas</div>
+        <a class="sidebar-item" href="#ch-cv-builder" data-view="cv">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="1" width="10" height="14" rx="1"/>
+            <line x1="6" y1="5" x2="10" y2="5"/>
+            <line x1="6" y1="8" x2="10" y2="8"/>
+            <line x1="6" y1="11" x2="8" y2="11"/>
+          </svg>
+          Constructor de CV
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="8" r="6"/>
+            <polyline points="8,5 8,8 10,10"/>
+          </svg>
+          Análisis de perfil
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="1,12 5,7 9,9.5 15,3"/>
+            <polyline points="11,3 15,3 15,7"/>
+          </svg>
+          Comparar salarios
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Red</div>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="5" r="2.2"/>
+            <circle cx="3" cy="12" r="1.8"/>
+            <circle cx="13" cy="12" r="1.8"/>
+            <line x1="8" y1="7.2" x2="3" y2="10.2"/>
+            <line x1="8" y1="7.2" x2="13" y2="10.2"/>
+          </svg>
+          Profesionales
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1.5" y="4.5" width="13" height="9" rx="1"/>
+            <path d="M5 4.5V3.5A1.5 1.5 0 0 1 6.5 2h3A1.5 1.5 0 0 1 11 3.5v1"/>
+            <circle cx="8" cy="9" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+          Empresas verificadas
+        </a>
+        <a class="sidebar-item" href="#">
+          <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="5.5" cy="5" r="3"/>
+            <circle cx="12" cy="5" r="2"/>
+            <path d="M1 14c0-2.5 2-4.5 4.5-4.5S10 11.5 10 14"/>
+            <path d="M12 7c1.7 0 3 1.4 3 3"/>
+          </svg>
+          Mentores
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- ════════════════════════════
+         MAIN CONTENT
+    ════════════════════════════ -->
+    <main id="ch-main">
+
+      <!-- Jobs view -->
+      <div id="view-jobs">
+
+        <div class="ch-tabs">
+          <div class="ch-tab active">Destacadas</div>
+          <div class="ch-tab">Recientes</div>
+          <div class="ch-tab">Mejor match</div>
+          <div class="ch-tab">Remotas</div>
+          <div class="ch-tab">Venezuela</div>
+        </div>
+
+        <div class="ch-search-wrap">
+          <svg class="ch-search-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="7.5" cy="7.5" r="5"/>
+            <line x1="11.5" y1="11.5" x2="16" y2="16"/>
+          </svg>
+          <input class="ch-search-input" type="text" placeholder="Busca por cargo, habilidad, empresa o ciudad…" />
+          <button class="ch-filter-btn">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="1" y1="3" x2="11" y2="3"/>
+              <line x1="3" y1="6" x2="9" y2="6"/>
+              <line x1="5" y1="9" x2="7" y2="9"/>
+            </svg>
+            Filtrar
+          </button>
+        </div>
+
+        <div class="ch-chips" id="ch-chips">
+          <div class="ch-chip active">Remoto</div>
+          <div class="ch-chip">Tiempo completo</div>
+          <div class="ch-chip">Senior</div>
+          <div class="ch-chip">Sin experiencia</div>
+          <div class="ch-chip">USD</div>
+          <div class="ch-chip">+$2M COP</div>
+          <div class="ch-chip">Tech</div>
+          <div class="ch-chip">Diseño</div>
+          <div class="ch-chip">Marketing</div>
+        </div>
+
+        <div class="ch-jobs-grid">
+
+          <a class="ch-job-card" href="#">
+            <div class="ch-job-top">
+              <div class="ch-company-logo">TK</div>
+              <div class="ch-company-name">TechKarma · Caracas</div>
+              <div class="ch-verified-badge">Verificada</div>
+            </div>
+            <div class="ch-job-title">Senior Frontend Developer</div>
+            <div class="ch-job-tags">
+              <span class="ch-tag remote">Remoto 100%</span>
+              <span class="ch-tag level">Senior</span>
+              <span class="ch-tag skill">React</span>
+              <span class="ch-tag skill">TypeScript</span>
+              <span class="ch-tag currency">USD</span>
+            </div>
+            <div class="ch-job-salary">$3,500 – $5,000 USD/mes</div>
+            <div class="ch-job-desc">Lidera el desarrollo de interfaces críticas en plataforma SaaS. Equipo de 8 personas, cultura asíncrona y foco en calidad de código.</div>
+            <div class="ch-job-footer">
+              <span class="ch-job-time">Hace 2 horas</span>
+              <span class="ch-job-cta">Ver oportunidad →</span>
+            </div>
+          </a>
+
+          <a class="ch-job-card" href="#">
+            <div class="ch-job-top">
+              <div class="ch-company-logo">SX</div>
+              <div class="ch-company-name">Startupex · Medellín</div>
+              <div class="ch-verified-badge">Verificada</div>
+            </div>
+            <div class="ch-job-title">Diseñadora UX/UI</div>
+            <div class="ch-job-tags">
+              <span class="ch-tag remote">Híbrido</span>
+              <span class="ch-tag level">Mid-Senior</span>
+              <span class="ch-tag skill">Figma</span>
+              <span class="ch-tag skill">Design System</span>
+            </div>
+            <div class="ch-job-salary">$3,200,000 COP/mes</div>
+            <div class="ch-job-desc">Startup de fintech en expansión busca diseñadora para liderar la experiencia de usuario en app móvil con +100K usuarios activos en Colombia.</div>
+            <div class="ch-job-footer">
+              <span class="ch-job-time">Hace 5 horas</span>
+              <span class="ch-job-cta">Ver oportunidad →</span>
+            </div>
+          </a>
+
+          <a class="ch-job-card" href="#">
+            <div class="ch-job-top">
+              <div class="ch-company-logo">DI</div>
+              <div class="ch-company-name">DataInc · Estados Unidos</div>
+              <div class="ch-verified-badge">Verificada</div>
+            </div>
+            <div class="ch-job-title">Desarrollador Python</div>
+            <div class="ch-job-tags">
+              <span class="ch-tag remote">Remoto 100%</span>
+              <span class="ch-tag level">Senior</span>
+              <span class="ch-tag skill">Python</span>
+              <span class="ch-tag skill">FastAPI</span>
+              <span class="ch-tag currency">USD</span>
+            </div>
+            <div class="ch-job-salary">$4,500 – $5,500 USD/mes</div>
+            <div class="ch-job-desc">Empresa americana de análisis de datos busca developer para construir pipelines y APIs internas. Zona horaria EST flexible, equipo 100% remoto desde 2018.</div>
+            <div class="ch-job-footer">
+              <span class="ch-job-time">Hace 8 horas</span>
+              <span class="ch-job-cta">Ver oportunidad →</span>
+            </div>
+          </a>
+
+          <a class="ch-job-card" href="#">
+            <div class="ch-job-top">
+              <div class="ch-company-logo" style="font-family:'Georgia',serif;font-size:15px;color:#B8944A;">N</div>
+              <div class="ch-company-name">NEVADO · Global</div>
+              <div class="ch-verified-badge">Verificada</div>
+            </div>
+            <div class="ch-job-title">Coordinador de Comunidad</div>
+            <div class="ch-job-tags">
+              <span class="ch-tag remote">Venezuela / Global</span>
+              <span class="ch-tag level">Mid</span>
+              <span class="ch-tag skill">Comunidades</span>
+              <span class="ch-tag currency">USD</span>
+            </div>
+            <div class="ch-job-salary">$1,500 – $1,800 USD/mes</div>
+            <div class="ch-job-desc">Gestiona nodos locales del ecosistema NEVADO, organiza eventos y conecta profesionales venezolanos en el exterior con oportunidades reales.</div>
+            <div class="ch-job-footer">
+              <span class="ch-job-time">Ayer</span>
+              <span class="ch-job-cta">Ver oportunidad →</span>
+            </div>
+          </a>
+
+          <a class="ch-job-card" href="#">
+            <div class="ch-job-top">
+              <div class="ch-company-logo">BD</div>
+              <div class="ch-company-name">BancoDigital · Bogotá</div>
+              <div class="ch-verified-badge">Verificada</div>
+            </div>
+            <div class="ch-job-title">Analista de Datos</div>
+            <div class="ch-job-tags">
+              <span class="ch-tag remote">Bogotá / Remoto</span>
+              <span class="ch-tag level">Mid</span>
+              <span class="ch-tag skill">SQL</span>
+              <span class="ch-tag skill">Tableau</span>
+            </div>
+            <div class="ch-job-salary">$4,000,000 – $4,500,000 COP/mes</div>
+            <div class="ch-job-desc">Fintech líder busca analista para reportería ejecutiva y dashboards de negocio. Análisis de comportamiento de 500K+ usuarios en plataforma digital colombiana.</div>
+            <div class="ch-job-footer">
+              <span class="ch-job-time">Ayer</span>
+              <span class="ch-job-cta">Ver oportunidad →</span>
+            </div>
+          </a>
+
+          <a class="ch-job-card" href="#">
+            <div class="ch-job-top">
+              <div class="ch-company-logo">AC</div>
+              <div class="ch-company-name">Agencia Creativa · Freelance</div>
+            </div>
+            <div class="ch-job-title">Motion Designer</div>
+            <div class="ch-job-tags">
+              <span class="ch-tag remote">Remoto 100%</span>
+              <span class="ch-tag level">Mid-Senior</span>
+              <span class="ch-tag skill">After Effects</span>
+              <span class="ch-tag skill">Cinema 4D</span>
+              <span class="ch-tag currency">USD</span>
+            </div>
+            <div class="ch-job-salary">$2,500 USD / proyecto</div>
+            <div class="ch-job-desc">Agencia creativa boutique busca motion designer freelance para proyectos de branding y contenido audiovisual para marcas latinoamericanas de primer nivel.</div>
+            <div class="ch-job-footer">
+              <span class="ch-job-time">Hace 2 días</span>
+              <span class="ch-job-cta">Ver oportunidad →</span>
+            </div>
+          </a>
+
+        </div>
+
+        <div class="ch-pagination">
+          <button class="ch-page-btn disabled">← Anterior</button>
+          <button class="ch-page-btn active">1</button>
+          <button class="ch-page-btn">2</button>
+          <button class="ch-page-btn">3</button>
+          <span class="ch-page-dots">…</span>
+          <button class="ch-page-btn">Siguiente →</button>
+        </div>
+
+      </div><!-- /view-jobs -->
+
+      <!-- Profiles -->
+      <section id="ch-profiles-section">
+        <div class="ch-section-header">
+          <div class="ch-section-tag">Talento Venezolano</div>
+          <div class="ch-section-title">Profesionales verificados</div>
+        </div>
+        <div class="ch-profiles-scroll">
+
+          <div class="ch-profile-card">
+            <div class="ch-avatar">MG</div>
+            <div class="ch-profile-name">María González</div>
+            <div class="ch-profile-role">Product Designer</div>
+            <div class="ch-profile-location">Caracas · Remoto</div>
+            <div class="ch-profile-skills">
+              <span class="ch-skill-tag">UX</span>
+              <span class="ch-skill-tag">Figma</span>
+              <span class="ch-skill-tag">Research</span>
+            </div>
+            <div class="ch-availability available">Disponible</div>
+            <button class="ch-view-profile">Ver perfil</button>
+          </div>
+
+          <div class="ch-profile-card">
+            <div class="ch-avatar">CP</div>
+            <div class="ch-profile-name">Carlos Pérez</div>
+            <div class="ch-profile-role">Full Stack Dev</div>
+            <div class="ch-profile-location">Medellín</div>
+            <div class="ch-profile-skills">
+              <span class="ch-skill-tag">React</span>
+              <span class="ch-skill-tag">Node</span>
+              <span class="ch-skill-tag">Python</span>
+            </div>
+            <div class="ch-availability available">Disponible</div>
+            <button class="ch-view-profile">Ver perfil</button>
+          </div>
+
+          <div class="ch-profile-card">
+            <div class="ch-avatar">VR</div>
+            <div class="ch-profile-name">Valentina Ríos</div>
+            <div class="ch-profile-role">Marketing Digital</div>
+            <div class="ch-profile-location">Miami</div>
+            <div class="ch-profile-skills">
+              <span class="ch-skill-tag">SEO</span>
+              <span class="ch-skill-tag">Paid Media</span>
+              <span class="ch-skill-tag">Analytics</span>
+            </div>
+            <div class="ch-availability open">Abierto a ofertas</div>
+            <button class="ch-view-profile">Ver perfil</button>
+          </div>
+
+          <div class="ch-profile-card">
+            <div class="ch-avatar">AM</div>
+            <div class="ch-profile-name">Andrés Mora</div>
+            <div class="ch-profile-role">DevOps Engineer</div>
+            <div class="ch-profile-location">Madrid</div>
+            <div class="ch-profile-skills">
+              <span class="ch-skill-tag">AWS</span>
+              <span class="ch-skill-tag">Docker</span>
+              <span class="ch-skill-tag">K8s</span>
+            </div>
+            <div class="ch-availability open">Abierto a ofertas</div>
+            <button class="ch-view-profile">Ver perfil</button>
+          </div>
+
+          <div class="ch-profile-card">
+            <div class="ch-avatar">SH</div>
+            <div class="ch-profile-name">Sofía Hernández</div>
+            <div class="ch-profile-role">Data Analyst</div>
+            <div class="ch-profile-location">Bogotá</div>
+            <div class="ch-profile-skills">
+              <span class="ch-skill-tag">SQL</span>
+              <span class="ch-skill-tag">Python</span>
+              <span class="ch-skill-tag">Tableau</span>
+            </div>
+            <div class="ch-availability available">Disponible</div>
+            <button class="ch-view-profile">Ver perfil</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CV Builder -->
+      <section id="ch-cv-builder">
+        <div class="ch-section-header">
+          <div class="ch-section-tag">Herramientas</div>
+          <div class="ch-section-title">Constructor de CV</div>
+        </div>
+
+        <div class="ch-cv-layout">
+
+          <!-- Form -->
+          <div class="ch-cv-form">
+
+            <div class="ch-accordion open">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Información personal</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Nombre completo</label>
+                    <input class="ch-input" id="cv-name" type="text" placeholder="Tu nombre" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Cargo / Título</label>
+                    <input class="ch-input" id="cv-role" type="text" placeholder="Ej: Product Designer" />
+                  </div>
+                </div>
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Email</label>
+                    <input class="ch-input" id="cv-email" type="email" placeholder="tu@email.com" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Teléfono</label>
+                    <input class="ch-input" type="tel" placeholder="+1 000 000 0000" />
+                  </div>
+                </div>
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Ubicación</label>
+                    <input class="ch-input" type="text" placeholder="Ciudad, País" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">LinkedIn</label>
+                    <input class="ch-input" type="url" placeholder="linkedin.com/in/..." />
+                  </div>
+                </div>
+                <div class="ch-input-group">
+                  <label class="ch-input-label">Portfolio / Web</label>
+                  <input class="ch-input" type="url" placeholder="tuportafolio.com" />
+                </div>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Resumen profesional</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <textarea class="ch-textarea" id="cv-summary" placeholder="Describe tu trayectoria, especialización y propuesta de valor en 2-3 oraciones…" rows="4"></textarea>
+                <div class="ch-char-count"><span id="summary-count">0</span> / 300 caracteres</div>
+                <div class="ch-ai-hint">✦ NEVADO puede sugerirte un resumen basado en tu experiencia</div>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Experiencia laboral</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Cargo</label>
+                    <input class="ch-input" type="text" placeholder="Senior Designer" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Empresa</label>
+                    <input class="ch-input" type="text" placeholder="Empresa S.A." />
+                  </div>
+                </div>
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Desde</label>
+                    <input class="ch-input" type="text" placeholder="Ene 2022" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Hasta</label>
+                    <input class="ch-input" type="text" placeholder="Presente" />
+                  </div>
+                </div>
+                <textarea class="ch-textarea" placeholder="Describe tus logros y responsabilidades…" rows="3"></textarea>
+                <button class="ch-add-entry" type="button">＋ Agregar otra experiencia</button>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Educación</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Título</label>
+                    <input class="ch-input" type="text" placeholder="Lic. en Diseño Gráfico" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Institución</label>
+                    <input class="ch-input" type="text" placeholder="Universidad Central" />
+                  </div>
+                </div>
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Año inicio</label>
+                    <input class="ch-input" type="text" placeholder="2016" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Año fin</label>
+                    <input class="ch-input" type="text" placeholder="2021" />
+                  </div>
+                </div>
+                <button class="ch-add-entry" type="button">＋ Agregar otra educación</button>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Habilidades</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-group">
+                  <label class="ch-input-label">Agrega tus habilidades</label>
+                  <input class="ch-input" id="skills-input" type="text" placeholder="Ej: Figma, React, Python… (Enter para agregar)" />
+                </div>
+                <div class="ch-chips" id="skills-chips" style="margin-bottom:0;min-height:0;flex-wrap:wrap;"></div>
+                <div class="ch-ai-hint">✦ Haz clic en un chip para eliminarlo</div>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Idiomas</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Idioma</label>
+                    <input class="ch-input" type="text" placeholder="Español" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Nivel</label>
+                    <select class="ch-input ch-select">
+                      <option value="">Seleccionar</option>
+                      <option>Nativo</option>
+                      <option>Avanzado</option>
+                      <option>Intermedio</option>
+                      <option>Básico</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="ch-add-entry" type="button">＋ Agregar idioma</button>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Certificaciones</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-group">
+                  <label class="ch-input-label">Nombre de la certificación</label>
+                  <input class="ch-input" type="text" placeholder="AWS Solutions Architect" />
+                </div>
+                <div class="ch-input-row">
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Emisor</label>
+                    <input class="ch-input" type="text" placeholder="Amazon Web Services" />
+                  </div>
+                  <div class="ch-input-group">
+                    <label class="ch-input-label">Año</label>
+                    <input class="ch-input" type="text" placeholder="2026" />
+                  </div>
+                </div>
+                <button class="ch-add-entry" type="button">＋ Agregar certificación</button>
+              </div>
+            </div>
+
+            <div class="ch-accordion">
+              <div class="ch-accordion-head">
+                <span class="ch-accordion-title">Proyectos</span>
+                <span class="ch-accordion-arrow">▾</span>
+              </div>
+              <div class="ch-accordion-body">
+                <div class="ch-input-group">
+                  <label class="ch-input-label">Nombre del proyecto</label>
+                  <input class="ch-input" type="text" placeholder="Plataforma de e-commerce" />
+                </div>
+                <textarea class="ch-textarea" placeholder="Describe el proyecto, tu rol y el impacto…" rows="3"></textarea>
+                <div class="ch-input-group">
+                  <label class="ch-input-label">URL (opcional)</label>
+                  <input class="ch-input" type="url" placeholder="proyecto.com" />
+                </div>
+                <button class="ch-add-entry" type="button">＋ Agregar proyecto</button>
+              </div>
+            </div>
+
+          </div><!-- /cv-form -->
+
+          <!-- Preview -->
+          <div class="ch-cv-preview-wrap">
+            <div class="ch-template-selector">
+              <button class="ch-template-btn active" data-template="ejecutivo">Ejecutivo</button>
+              <button class="ch-template-btn" data-template="moderno">Moderno</button>
+              <button class="ch-template-btn" data-template="minimal">Minimal</button>
+            </div>
+            <div class="ch-cv-paper" id="cv-preview">
+              <div class="cv-name"    id="preview-name">Tu Nombre</div>
+              <div class="cv-role"    id="preview-role">Cargo Profesional</div>
+              <div class="cv-contact" id="preview-contact">email@ejemplo.com</div>
+              <div class="cv-section-label">Perfil profesional</div>
+              <div class="cv-body-text cv-placeholder" id="preview-summary">Tu resumen profesional aparecerá aquí…</div>
+              <div class="cv-section-label">Experiencia</div>
+              <div class="cv-body-text cv-placeholder">Completa el formulario para continuar construyendo tu CV…</div>
+            </div>
+            <button class="ch-export-btn" type="button">Exportar PDF</button>
+          </div>
+
+        </div><!-- /cv-layout -->
+      </section><!-- /cv-builder -->
+
+      <footer id="std-footer">
+        <div class="std-fg">
+          <div>
+            <a class="std-fl-logo" href="/">N<span>·</span>EVADO</a>
+            <p class="std-fl-desc">Red de talento venezolano. Profesionales verificados, vacantes activas y construcción de carrera desde la diáspora.</p>
+          </div>
+          <div>
+            <div class="std-fc-title">Ecosistema</div>
+            <a class="std-fl" href="/talento.html">Capital Humano</a>
+            <a class="std-fl" href="/avila.html">ÁVILA</a>
+            <a class="std-fl" href="/nodo.html">NODO</a>
+            <a class="std-fl" href="/enterate.html">Titulares</a>
+            <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+            <a class="std-fl" href="/servicios.html">Servicios</a>
+          </div>
+          <div>
+            <div class="std-fc-title">Capital Humano</div>
+            <a class="std-fl" href="javascript:void(0)">Explorar vacantes</a>
+            <a class="std-fl" href="javascript:void(0)">Constructor de CV</a>
+            <a class="std-fl" href="javascript:void(0)">Mentorías</a>
+            <a class="std-fl" href="javascript:void(0)">Perfiles</a>
+          </div>
+          <div>
+            <div class="std-fc-title">Info</div>
+            <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+            <a class="std-fl" href="/transparencia.html">Transparencia</a>
+            <a class="std-fl" href="javascript:void(0)">Contacto</a>
+          </div>
+        </div>
+        <div class="std-fb">
+          <span class="std-fc-copy">© 2026 NEVADO · Capital Humano · Modo demostración</span>
+          <div class="std-tri">
+            <div style="background:#F4D03F"></div>
+            <div style="background:#2980B9"></div>
+            <div style="background:#E74C3C"></div>
+          </div>
+        </div>
+      </footer>
+
+    </main><!-- /ch-main -->
+
+    <!-- ════════════════════════════
+         RIGHT PANEL
+    ════════════════════════════ -->
+    <aside id="ch-right-panel">
+
+      <div class="ch-panel-section">
+        <div class="ch-panel-label">Mi perfil</div>
+        <div class="perfil-rango-wrap" style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:16px;">
+          <img id="perfil-rango-img"
+            src="/rangos/rango1-cachorro-bronce.png"
+            alt="Rango Cachorro"
+            style="width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(184,148,74,0.3));"
+          />
+          <div id="perfil-rango-nombre" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#B8944A;font-family:'Geist',sans-serif;">Cachorro</div>
+          <div id="perfil-croquetas-count" style="font-size:12px;color:rgba(232,228,220,0.4);font-family:'Geist',sans-serif;">🦴 0 Croquetas</div>
+        </div>
+        <div class="ch-progress-label">
+          <span>Completitud del perfil</span>
+          <span style="color:#B8944A;font-weight:500;">45%</span>
+        </div>
+        <div class="ch-progress-bar">
+          <div class="ch-progress-fill" style="width:45%"></div>
+        </div>
+        <a class="ch-complete-link" href="#">Completar perfil →</a>
+      </div>
+
+      <div class="ch-panel-section">
+        <div class="ch-panel-label">NEVADO recomienda</div>
+        <div class="ch-match-card">
+          <div class="ch-match-score">
+            <div class="ch-match-pct">92%</div>
+            <div class="ch-match-label">match</div>
+          </div>
+          <div class="ch-match-body">
+            <div class="ch-match-title">Senior Frontend Developer</div>
+            <div class="ch-match-company">TechKarma · Remoto · $4,000 USD</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ch-panel-section">
+        <div class="ch-panel-label">Actividad del ecosistema</div>
+        <div class="ch-activity-list">
+          <div class="ch-activity-item">
+            <div class="ch-activity-dot blue"></div>
+            <span>847 vacantes activas hoy</span>
+          </div>
+          <div class="ch-activity-item">
+            <div class="ch-activity-dot gold"></div>
+            <span>312 profesionales conectados</span>
+          </div>
+          <div class="ch-activity-item">
+            <div class="ch-activity-dot green"></div>
+            <span>23 empresas publicaron hoy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ch-panel-section">
+        <div class="ch-panel-label">Nevado dice</div>
+        <div class="ch-nevado-says">
+          <p>Tu perfil tiene más fuerza cuando incluye portafolio. Los reclutadores pasan 3× más tiempo en perfiles con proyectos visibles.</p>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /ch-layout -->
+
+  <div class="cursor-dot" id="cursor-dot"></div>
+
+  <script>
+    // Cursor
+    // Tabs
+    document.querySelectorAll('.ch-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    // Filter chips
+    document.querySelectorAll('#ch-chips .ch-chip').forEach(chip => {
+      chip.addEventListener('click', () => chip.classList.toggle('active'));
+    });
+
+    // Accordion
+    document.querySelectorAll('.ch-accordion-head').forEach(head => {
+      head.addEventListener('click', () => {
+        head.closest('.ch-accordion').classList.toggle('open');
+      });
+    });
+
+    // Skills chip input
+    const skillsInput = document.getElementById('skills-input');
+    const skillsChips = document.getElementById('skills-chips');
+    if (skillsInput && skillsChips) {
+      skillsInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const val = skillsInput.value.trim();
+          if (!val) return;
+          const chip = document.createElement('div');
+          chip.className = 'ch-chip active';
+          chip.textContent = val;
+          chip.style.cursor = 'pointer';
+          chip.title = 'Clic para eliminar';
+          chip.addEventListener('click', () => chip.remove());
+          skillsChips.appendChild(chip);
+          skillsInput.value = '';
+        }
+      });
+    }
+
+    // CV live preview
+    function updatePreview() {
+      const n = document.getElementById('cv-name')?.value.trim();
+      const r = document.getElementById('cv-role')?.value.trim();
+      const e = document.getElementById('cv-email')?.value.trim();
+      const s = document.getElementById('cv-summary')?.value.trim();
+      document.getElementById('preview-name').textContent    = n || 'Tu Nombre';
+      document.getElementById('preview-role').textContent    = r || 'Cargo Profesional';
+      document.getElementById('preview-contact').textContent = e || 'email@ejemplo.com';
+      const sumEl = document.getElementById('preview-summary');
+      sumEl.textContent = s || 'Tu resumen profesional aparecerá aquí…';
+      sumEl.classList.toggle('cv-placeholder', !s);
+    }
+    ['cv-name','cv-role','cv-email','cv-summary'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', updatePreview);
+    });
+
+    // Summary char count
+    const summaryEl = document.getElementById('cv-summary');
+    summaryEl?.addEventListener('input', () => {
+      if (summaryEl.value.length > 300) summaryEl.value = summaryEl.value.slice(0, 300);
+      document.getElementById('summary-count').textContent = summaryEl.value.length;
+    });
+
+    // Template switcher
+    const templateAccents = { ejecutivo:'#1a1a1a', moderno:'#2980B9', minimal:'#777' };
+    document.querySelectorAll('.ch-template-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ch-template-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const color = templateAccents[btn.dataset.template] || '#1a1a1a';
+        document.querySelectorAll('#cv-preview .cv-section-label').forEach(el => el.style.color = color);
+        const contact = document.querySelector('#cv-preview .cv-contact');
+        if (contact) contact.style.borderBottomColor = color;
+      });
+    });
+
+    // Sidebar CV link
+    document.querySelector('.sidebar-item[data-view="cv"]')?.addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('ch-cv-builder')?.scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+    });
+
+    // Pagination
+    document.querySelectorAll('.ch-page-btn:not(.disabled)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ch-page-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Rango badge
+    function actualizarPerfil() {
+      if (!window.NEVADO_CROQUETAS) return;
+      const pts = window.NEVADO_CROQUETAS.puntos;
+      const rango = window.NEVADO_CROQUETAS.getRango(pts);
+      const img = document.getElementById('perfil-rango-img');
+      const nom = document.getElementById('perfil-rango-nombre');
+      const cnt = document.getElementById('perfil-croquetas-count');
+      if (img) { img.src = rango.img; img.alt = 'Rango ' + rango.nombre; }
+      if (nom) nom.textContent = rango.nombre;
+      if (cnt) cnt.textContent = '🦴 ' + pts.toLocaleString('es') + ' Croqueta' + (pts !== 1 ? 's' : '');
+    }
+    document.addEventListener('DOMContentLoaded', actualizarPerfil);
+  </script>
+  <div id="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/croquetas.js"></script>
+  <script src="/mini-nevado.js"></script>
+</body>
+</html>

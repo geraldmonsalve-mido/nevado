@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio — ÁVILA · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0C0C0B; --ivory: #E8E4DC; --accent: #F4D03F; --gold: #B8944A; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#F4D03F; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#F4D03F; background:rgba(244,208,63,0.10); border:1px solid rgba(244,208,63,0.28); box-shadow:0 0 12px rgba(244,208,63,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#F4D03F; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    .page-tag { font-size:9px; font-weight:600; letter-spacing:0.25em; text-transform:uppercase; color:#F4D03F; margin-bottom:12px; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,7vw,6rem); letter-spacing:0.04em; line-height:0.92; color:var(--ivory); margin-bottom:16px; }
+    .page-desc { font-size:14px; font-weight:300; color:var(--text-mid); max-width:560px; line-height:1.7; margin-bottom:40px; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:24px; }
+    .btn-accent { background:#F4D03F; color:#0C0C0B; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#F4D03F; border:1px solid rgba(244,208,63,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(244,208,63,0.08); }
+    .form-group { margin-bottom:20px; }
+    .form-label { display:block; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+    .form-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:13px; color:var(--ivory); font-family:inherit; outline:none; transition:border-color 0.2s; cursor:none; }
+    .form-input:focus { border-color:#F4D03F; }
+    .form-input::placeholder { color:var(--text-dim); }
+    textarea.form-input { resize:vertical; min-height:160px; }
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#F4D03F; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#F4D03F; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#F4D03F; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+
+    /* LAB SPECIFIC */
+    .lab-layout { display:flex; gap:0; min-height:calc(100vh - 80px - 28px); position:relative; z-index:10; }
+    .lab-sidebar { width:260px; flex-shrink:0; border-right:1px solid var(--border); padding:32px 0; background:rgba(8,8,12,0.60); }
+    .lab-sidebar-header { padding:0 20px 20px; border-bottom:1px solid var(--border); margin-bottom:12px; }
+    .lab-sidebar-title { font-size:9px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-dim); }
+    .lab-tool-item { display:flex; align-items:center; gap:12px; padding:12px 20px; cursor:none; transition:all 0.2s; border-left:2px solid transparent; }
+    .lab-tool-item:hover { background:rgba(255,255,255,0.04); border-left-color:rgba(244,208,63,0.30); }
+    .lab-tool-item.active { background:rgba(244,208,63,0.08); border-left-color:#F4D03F; }
+    .lab-tool-icon { font-size:18px; width:28px; text-align:center; }
+    .lab-tool-name { font-size:12px; color:rgba(232,228,220,0.65); transition:color 0.2s; }
+    .lab-tool-item.active .lab-tool-name { color:var(--ivory); font-weight:500; }
+    .lab-tool-item:hover .lab-tool-name { color:rgba(232,228,220,0.85); }
+    .lab-main { flex:1; padding:40px 48px; overflow-y:auto; }
+    .tool-panel { display:none; }
+    .tool-panel.active { display:block; }
+    .tool-title { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:0.06em; color:var(--ivory); margin-bottom:8px; }
+    .tool-desc { font-size:13px; color:var(--text-mid); max-width:500px; line-height:1.65; margin-bottom:28px; }
+    .result-box { border-left:3px solid #F4D03F; background:rgba(244,208,63,0.05); border-radius:0 6px 6px 0; padding:20px 24px; margin-top:24px; display:none; }
+    .result-box.visible { display:block; }
+    .result-label { font-size:9px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:#F4D03F; margin-bottom:12px; }
+    .result-text { font-size:13px; color:var(--ivory); line-height:1.75; white-space:pre-wrap; }
+    .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(12,12,11,0.3); border-top-color:#0C0C0B; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:8px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading-msg { display:none; align-items:center; gap:8px; font-size:12px; color:var(--text-mid); margin-top:16px; }
+    .loading-msg.visible { display:flex; }
+    @media(max-width:768px){ .lab-layout { flex-direction:column; } .lab-sidebar { width:100%; border-right:none; border-bottom:1px solid var(--border); padding:16px 0; } .lab-main { padding:24px 20px; } .std-fg { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body data-accent="yellow">
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item active" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a href="/avila.html" class="nv-bc-back">← ÁVILA</a>
+  <span class="nv-bc-sep">·</span>
+  <span class="nv-bc-current">Laboratorio IA</span>
+</div>
+
+<div class="lab-layout">
+  <!-- SIDEBAR -->
+  <aside class="lab-sidebar">
+    <div class="lab-sidebar-header">
+      <div class="lab-sidebar-title">Herramientas IA</div>
+    </div>
+    <div class="lab-tool-item active" data-tool="cv">
+      <span class="lab-tool-icon">📄</span>
+      <span class="lab-tool-name">Constructor CV</span>
+    </div>
+    <div class="lab-tool-item" data-tool="carta">
+      <span class="lab-tool-icon">✉️</span>
+      <span class="lab-tool-name">Carta de Presentación</span>
+    </div>
+    <div class="lab-tool-item" data-tool="entrevista">
+      <span class="lab-tool-icon">🎤</span>
+      <span class="lab-tool-name">Simulador Entrevista</span>
+    </div>
+    <div class="lab-tool-item" data-tool="gap">
+      <span class="lab-tool-icon">📊</span>
+      <span class="lab-tool-name">Gap Analysis</span>
+    </div>
+    <div class="lab-tool-item" data-tool="portfolio">
+      <span class="lab-tool-icon">💼</span>
+      <span class="lab-tool-name">Portfolio Check</span>
+    </div>
+    <div class="lab-tool-item" data-tool="salario">
+      <span class="lab-tool-icon">💰</span>
+      <span class="lab-tool-name">Negociación Salarial</span>
+    </div>
+    <div class="lab-tool-item" data-tool="linkedin">
+      <span class="lab-tool-icon">🔗</span>
+      <span class="lab-tool-name">Perfil LinkedIn</span>
+    </div>
+  </aside>
+
+  <!-- MAIN PANEL -->
+  <main class="lab-main">
+
+    <div class="tool-panel active" id="panel-cv">
+      <div class="page-tag">Constructor CV</div>
+      <div class="tool-title">Optimiza tu Currículum</div>
+      <p class="tool-desc">Pega tu experiencia o CV actual y Nevado IA lo analizará para mejorar la presentación ante empleadores internacionales y clientes remotos.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-cv">Tu información / CV actual</label>
+        <textarea class="form-input" id="input-cv" placeholder="Ej: Tengo 3 años de experiencia en desarrollo web con React y Node.js. Trabajé en empresa X como desarrollador frontend. También hice proyectos freelance de e-commerce..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('cv')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-cv"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-cv">
+        <div class="result-label">Análisis Nevado IA</div>
+        <div class="result-text" id="result-text-cv"></div>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="panel-carta">
+      <div class="page-tag">Carta de Presentación</div>
+      <div class="tool-title">Carta de Presentación</div>
+      <p class="tool-desc">Describe tu perfil, la posición a la que aplicas y tus logros más relevantes. Nevado IA redactará una carta impactante y profesional.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-carta">Tu información</label>
+        <textarea class="form-input" id="input-carta" placeholder="Ej: Soy diseñadora UX con 4 años de experiencia. Aplico para una posición remota en startup de fintech. Mis principales logros incluyen rediseñar la app principal de mi empresa aumentando retención 30%..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('carta')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-carta"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-carta">
+        <div class="result-label">Carta generada por Nevado IA</div>
+        <div class="result-text" id="result-text-carta"></div>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="panel-entrevista">
+      <div class="page-tag">Simulador Entrevista</div>
+      <div class="tool-title">Prepara tu Entrevista</div>
+      <p class="tool-desc">Comparte tu perfil y el tipo de posición. Nevado IA generará 5 preguntas típicas de entrevista con respuestas modelo para practicar.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-entrevista">Tu perfil y posición objetivo</label>
+        <textarea class="form-input" id="input-entrevista" placeholder="Ej: Soy desarrollador backend con Python y Django, 2 años de experiencia. Busco trabajo remoto en empresas de Europa o Norteamérica. Me entrevistarán para un puesto de mid-level backend developer..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('entrevista')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-entrevista"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-entrevista">
+        <div class="result-label">Preguntas y respuestas modelo</div>
+        <div class="result-text" id="result-text-entrevista"></div>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="panel-gap">
+      <div class="page-tag">Gap Analysis</div>
+      <div class="tool-title">Análisis de Brechas</div>
+      <p class="tool-desc">Describe tu perfil actual y tu objetivo profesional. Nevado IA identificará las brechas de habilidades más críticas para cerrar la distancia.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-gap">Tu perfil actual y objetivo</label>
+        <textarea class="form-input" id="input-gap" placeholder="Ej: Tengo experiencia en contabilidad y manejo Excel avanzado. Mi objetivo es pasarme al área de Data Analytics. Sé algo de Python básico pero no tengo experiencia con bases de datos o visualización..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('gap')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-gap"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-gap">
+        <div class="result-label">Brechas identificadas</div>
+        <div class="result-text" id="result-text-gap"></div>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="panel-portfolio">
+      <div class="page-tag">Portfolio Check</div>
+      <div class="tool-title">Revisa tu Portfolio</div>
+      <p class="tool-desc">Describe tu portfolio actual: qué proyectos incluye, cómo está estructurado y a qué tipo de cliente o empleador está dirigido.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-portfolio">Descripción de tu portfolio</label>
+        <textarea class="form-input" id="input-portfolio" placeholder="Ej: Mi portfolio en Behance tiene 8 proyectos de branding, 3 de diseño web y 2 de motion graphics. No tiene descripción de proceso, solo imágenes finales. Quiero atraer clientes de startups de LATAM..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('portfolio')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-portfolio"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-portfolio">
+        <div class="result-label">Recomendaciones de mejora</div>
+        <div class="result-text" id="result-text-portfolio"></div>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="panel-salario">
+      <div class="page-tag">Negociación Salarial</div>
+      <div class="tool-title">Negocia tu Salario</div>
+      <p class="tool-desc">Comparte tu perfil, experiencia y el tipo de posición. Nevado IA te dará estrategias concretas y rangos salariales para el mercado remoto.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-salario">Tu perfil y posición</label>
+        <textarea class="form-input" id="input-salario" placeholder="Ej: Soy product manager con 5 años de experiencia en startups venezolanas. Tengo una oferta de trabajo remoto de empresa colombiana que me ofrece $1,500/mes. Quiero saber si es justo y cómo negociar..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('salario')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-salario"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-salario">
+        <div class="result-label">Estrategia salarial</div>
+        <div class="result-text" id="result-text-salario"></div>
+      </div>
+    </div>
+
+    <div class="tool-panel" id="panel-linkedin">
+      <div class="page-tag">Perfil LinkedIn</div>
+      <div class="tool-title">Optimiza tu LinkedIn</div>
+      <p class="tool-desc">Pega tu headline y resumen actual de LinkedIn. Nevado IA los optimizará para maximizar tu visibilidad ante reclutadores internacionales.</p>
+      <div class="form-group">
+        <label class="form-label" for="input-linkedin">Headline y resumen actual de LinkedIn</label>
+        <textarea class="form-input" id="input-linkedin" placeholder="Ej: Headline actual: 'Desarrollador Web | Python | React'. Resumen: 'Soy desarrollador con experiencia en tecnologías web buscando nuevas oportunidades en el área de tecnología'..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="runTool('linkedin')">Analizar con Nevado IA</button>
+      <div class="loading-msg" id="loading-linkedin"><span class="spinner"></span> Analizando con Nevado IA...</div>
+      <div class="result-box" id="result-linkedin">
+        <div class="result-label">Optimización LinkedIn</div>
+        <div class="result-text" id="result-text-linkedin"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N·EVADO</a>
+      <p class="std-fl-desc">Rutas de aprendizaje para venezolanos en el mundo.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">ÁVILA</div>
+      <a class="std-fl" href="/avila/cursos.html">Catálogo de Cursos</a>
+      <a class="std-fl" href="/avila/rutas.html">Rutas de Aprendizaje</a>
+      <a class="std-fl" href="/avila/laboratorio.html">Laboratorio IA</a>
+      <a class="std-fl" href="/avila/certificados.html">Certificados</a>
+      <a class="std-fl" href="/avila/reto.html">Reto 28 Días</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · ÁVILA · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+<script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+  const toolKeys = ['cv','carta','entrevista','gap','portfolio','salario','linkedin'];
+
+  // Sidebar switching
+  document.querySelectorAll('.lab-tool-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const tool = item.dataset.tool;
+      document.querySelectorAll('.lab-tool-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById('panel-' + tool).classList.add('active');
+    });
+  });
+
+  async function callNevadoAI(userText, toolName) {
+    const systemPrompts = {
+      'cv': 'Eres experto en CVs para el mercado laboral internacional. Analiza esta experiencia y sugiere cómo mejorar la presentación para empleadores remotos. Responde en español concisamente.',
+      'carta': 'Eres experto en comunicación profesional. Redacta una carta de presentación impactante basada en la información dada. Responde en español.',
+      'entrevista': 'Eres coach de entrevistas. Genera 5 preguntas típicas de entrevista con respuestas modelo basadas en el perfil dado. Responde en español.',
+      'gap': 'Eres consultor de carrera. Analiza este perfil e identifica las brechas de habilidades más críticas para el objetivo dado. Responde en español.',
+      'portfolio': 'Eres experto en portfolios digitales. Revisa esta descripción de portfolio y da recomendaciones concretas de mejora. Responde en español.',
+      'salario': 'Eres experto en negociación salarial para el mercado remoto LATAM. Da estrategias y rangos basados en el perfil dado. Responde en español.',
+      'linkedin': 'Eres experto en LinkedIn. Optimiza el resumen/headline de LinkedIn dado para mayor visibilidad. Responde en español.'
+    };
+    const key = window.__NVD_KEY;
+    if (!key) { return 'Configura tu API key en Nevado Plus para usar esta función.'; }
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':key},
+      body: JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:systemPrompts[toolName],messages:[{role:'user',content:userText}]})
+    });
+    const data = await resp.json();
+    return data.content?.[0]?.text || 'Error al procesar.';
+  }
+
+  async function runTool(tool) {
+    const input = document.getElementById('input-' + tool);
+    const loading = document.getElementById('loading-' + tool);
+    const resultBox = document.getElementById('result-' + tool);
+    const resultText = document.getElementById('result-text-' + tool);
+    const userText = input.value.trim();
+    if (!userText) { input.focus(); return; }
+    loading.classList.add('visible');
+    resultBox.classList.remove('visible');
+    try {
+      const result = await callNevadoAI(userText, tool);
+      resultText.textContent = result;
+      resultBox.classList.add('visible');
+    } catch(e) {
+      resultText.textContent = 'Error de conexión. Verifica tu API key e intenta nuevamente.';
+      resultBox.classList.add('visible');
+    }
+    loading.classList.remove('visible');
+  }
+</script>
+</body>
+</html>

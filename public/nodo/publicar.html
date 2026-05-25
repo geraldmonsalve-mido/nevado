@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Publicar Aporte — NODO · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#05050A;--ivory:#E8E4DC;--accent:#E74C3C;--gold:#B8944A;--border:rgba(255,255,255,0.07);--text-dim:rgba(232,228,220,0.34);--text-mid:rgba(232,228,220,0.60);--surface:rgba(22,22,20,0.88)}
+    html,body{width:100%;min-height:100%;background:var(--bg);color:var(--ivory);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;cursor:none;padding-top:80px;padding-bottom:28px}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);pointer-events:none;z-index:0}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:#E74C3C}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:#E74C3C;background:rgba(231,76,60,0.10);border:1px solid rgba(231,76,60,0.28);box-shadow:0 0 12px rgba(231,76,60,0.18)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;cursor:none}
+    .nv-bc-back:hover{color:#E74C3C}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    .page-content{padding:40px 10vw 80px;position:relative;z-index:10;max-width:1200px}
+    .page-tag{font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:#E74C3C;margin-bottom:12px}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,4rem);letter-spacing:0.04em;line-height:0.92;color:var(--ivory);margin-bottom:32px}
+    .editor-layout{display:grid;grid-template-columns:1fr 380px;gap:24px}
+    .editor-main{}
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+    .form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--ivory);font-family:inherit;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:#E74C3C}
+    .form-input::placeholder{color:var(--text-dim)}
+    select.form-input option{background:#1a1a1a}
+    .title-input{font-size:18px;padding:14px;font-weight:600}
+    .toolbar{display:flex;gap:8px;margin-bottom:8px}
+    .tb-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-mid);cursor:none;font-family:inherit;transition:all 0.15s}
+    .tb-btn:hover{background:rgba(255,255,255,0.10);color:var(--ivory)}
+    textarea.body-input{resize:vertical;min-height:280px;font-size:14px;line-height:1.7}
+    .view-toggle{display:flex;gap:0;margin-bottom:8px}
+    .vt-btn{flex:1;padding:7px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-family:inherit;cursor:none;border:1px solid var(--border);background:transparent;color:var(--text-dim);transition:all 0.2s}
+    .vt-btn.active{background:#E74C3C;color:#fff;border-color:#E74C3C}
+    .vt-btn:first-child{border-radius:6px 0 0 6px}
+    .vt-btn:last-child{border-radius:0 6px 6px 0}
+    .preview-box{min-height:280px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:16px;font-size:14px;color:var(--text-mid);line-height:1.7;display:none}
+    .tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .tag-pill{background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.3);border-radius:20px;padding:4px 12px;font-size:11px;color:#E74C3C;cursor:none;transition:background 0.2s}
+    .tag-pill:hover{background:rgba(231,76,60,0.2)}
+    .ai-btn{background:transparent;border:1px solid rgba(231,76,60,0.35);color:#E74C3C;padding:8px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;font-family:inherit;transition:all 0.2s;margin-top:8px}
+    .ai-btn:hover{background:rgba(231,76,60,0.08)}
+    .ai-loading{font-size:12px;color:var(--text-dim);margin-top:8px}
+    .btn-publish{background:#E74C3C;color:#fff;border:none;padding:12px 28px;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;transition:opacity 0.2s;font-family:inherit;width:100%}
+    .btn-publish:hover{opacity:0.85}
+    .preview-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;position:sticky;top:92px}
+    .preview-title{font-size:11px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px}
+    .preview-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:16px}
+    .prev-space{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#E74C3C;margin-bottom:6px}
+    .prev-title{font-size:14px;font-weight:600;color:var(--ivory);margin-bottom:8px;line-height:1.4}
+    .prev-body{font-size:12px;color:var(--text-mid);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .prev-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+    .prev-tag{background:rgba(255,255,255,0.05);border-radius:3px;padding:2px 7px;font-size:10px;color:var(--text-dim)}
+    .checklist{display:flex;flex-direction:column;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+    .check-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-mid)}
+    .check-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.15);flex-shrink:0}
+    .check-dot.done{background:#27AE60}
+    .toast{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);background:#27AE60;color:#fff;padding:12px 28px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;display:none;animation:fadeUp 0.3s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+    #std-footer{background:#080810;border-top:1px solid rgba(255,255,255,0.06);padding:48px 10vw 56px;position:relative;z-index:10}
+    .std-fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
+    .std-fl-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.18em;color:#E74C3C;text-decoration:none}
+    .std-fl-desc{font-size:12px;color:rgba(232,228,220,0.50);line-height:1.7;max-width:240px;margin-top:12px}
+    .std-fc-title{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,228,220,0.34);margin-bottom:12px}
+    .std-fl{display:block;font-size:12px;color:rgba(232,228,220,0.50);margin-bottom:8px;text-decoration:none;transition:color .2s;cursor:none}
+    .std-fl:hover{color:#E74C3C}
+    .std-fb{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)}
+    .std-fc-copy{font-size:11px;color:rgba(232,228,220,0.34)}
+    .std-tri{display:flex;flex-direction:column;gap:3px}
+    .std-tri div{width:28px;height:4px;border-radius:2px}
+    #ticker{position:fixed;bottom:0;left:0;right:0;height:28px;overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);z-index:90;background:rgba(5,5,10,0.96)}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 32s linear infinite}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55);height:28px}
+    .ticker-val{color:#E74C3C;font-weight:500}
+    .ticker-sep{color:rgba(232,228,220,0.30)}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .cursor-dot{position:fixed;top:0;left:0;width:7px;height:7px;border-radius:50%;background:var(--ivory);pointer-events:none;z-index:9999;mix-blend-mode:difference}
+    @media(max-width:900px){.editor-layout{grid-template-columns:1fr}.std-fg{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body data-accent="red">
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item active" href="/nodo.html">NODO</a>
+      <a class="nav-item" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="nv-breadcrumb">
+    <a href="/nodo.html" class="nv-bc-back">← NODO</a>
+    <span class="nv-bc-sep">·</span>
+    <span class="nv-bc-current">Publicar Aporte</span>
+  </div>
+
+  <main class="page-content">
+    <div class="page-tag">NODO · NEVADO</div>
+    <div class="page-title">PUBLICAR APORTE</div>
+
+    <div class="editor-layout">
+      <div class="editor-main">
+        <div class="form-group">
+          <label class="form-label">Título</label>
+          <input class="form-input title-input" type="text" id="postTitle" placeholder="Escribe un título claro y descriptivo..." oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Espacio(s)</label>
+          <select class="form-input" id="postSpace" multiple size="4">
+            <option selected>Programadores VE</option>
+            <option>Diseñadores</option>
+            <option>Freelancers</option>
+            <option>Economía VE</option>
+            <option>Trabajo Remoto</option>
+            <option>Emprendedores</option>
+            <option>Diáspora</option>
+            <option>Open Source VE</option>
+          </select>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:6px">Mantén Ctrl/Cmd para seleccionar varios</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select class="form-input">
+            <option>Experiencia personal</option>
+            <option>Tutorial</option>
+            <option>Pregunta</option>
+            <option>Recurso</option>
+            <option>Noticia</option>
+            <option>Debate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contenido</label>
+          <div class="view-toggle">
+            <button class="vt-btn active" id="editBtn" onclick="switchView('edit')">Editar</button>
+            <button class="vt-btn" id="prevBtn" onclick="switchView('preview')">Vista previa</button>
+          </div>
+          <div class="toolbar" id="toolbar">
+            <button class="tb-btn" onclick="insertFormat('**','**')"><strong>B</strong></button>
+            <button class="tb-btn" onclick="insertFormat('*','*')"><em>I</em></button>
+            <button class="tb-btn" onclick="insertFormat('\n- ','')">Lista</button>
+            <button class="tb-btn" onclick="insertFormat('[texto](','url)')">Enlace</button>
+          </div>
+          <textarea class="form-input body-input" id="postBody" placeholder="Comparte tu experiencia, conocimiento o recurso con la comunidad venezolana..." oninput="updatePreview()"></textarea>
+          <div class="preview-box" id="previewBox"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Etiquetas</label>
+          <input class="form-input" type="text" id="tagsInput" placeholder="remoto, trabajo, Venezuela, consejos..." oninput="updatePreview()">
+          <div class="tags-row" id="aiTagsRow"></div>
+          <button class="ai-btn" onclick="suggestTags()">✨ Sugerir etiquetas con IA</button>
+          <div class="ai-loading" id="aiTagsLoading" style="display:none">Analizando con Nevado IA...</div>
+        </div>
+        <button class="btn-publish" onclick="publishPost()">Publicar en el ecosistema</button>
+      </div>
+
+      <div class="preview-panel">
+        <div class="preview-title">Vista previa del aporte</div>
+        <div class="preview-card">
+          <div class="prev-space" id="prevSpace">Programadores VE</div>
+          <div class="prev-title" id="prevTitle">El título aparecerá aquí...</div>
+          <div class="prev-body" id="prevBody">El contenido de tu aporte se mostrará aquí en vista previa...</div>
+          <div class="prev-tags" id="prevTags"></div>
+        </div>
+        <div class="checklist">
+          <div class="check-item"><div class="check-dot done" id="chk1"></div><span>Título claro y descriptivo</span></div>
+          <div class="check-item"><div class="check-dot" id="chk2"></div><span>Contenido de al menos 50 palabras</span></div>
+          <div class="check-item"><div class="check-dot" id="chk3"></div><span>Etiquetas añadidas</span></div>
+          <div class="check-item"><div class="check-dot" id="chk4"></div><span>Espacio seleccionado</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">🎉 ¡Aporte publicado en modo demo!</div>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div><a class="std-fl-logo" href="/">N·EVADO</a><p class="std-fl-desc">Inteligencia colectiva del ecosistema venezolano global.</p></div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">NODO</div>
+        <a class="std-fl" href="/nodo/espacio.html">Espacios</a>
+        <a class="std-fl" href="/nodo/publicar.html">Publicar Aporte</a>
+        <a class="std-fl" href="/nodo/eventos.html">Eventos</a>
+        <a class="std-fl" href="/nodo/perfil.html">Mi Perfil</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · NODO · Modo demostración</span>
+      <div class="std-tri"><div style="background:#F4D03F"></div><div style="background:#2980B9"></div><div style="background:#E74C3C"></div></div>
+    </div>
+  </footer>
+
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <script>
+    function updatePreview(){
+      const title=document.getElementById('postTitle').value;
+      const body=document.getElementById('postBody').value;
+      const tags=document.getElementById('tagsInput').value;
+      document.getElementById('prevTitle').textContent=title||'El título aparecerá aquí...';
+      document.getElementById('prevBody').textContent=body||'El contenido de tu aporte se mostrará aquí...';
+      const tagList=tags.split(',').map(t=>t.trim()).filter(Boolean);
+      document.getElementById('prevTags').innerHTML=tagList.map(t=>`<span class="prev-tag">${t}</span>`).join('');
+      document.getElementById('chk1').className='check-dot'+(title.length>10?' done':'');
+      document.getElementById('chk2').className='check-dot'+(body.split(' ').length>50?' done':'');
+      document.getElementById('chk3').className='check-dot'+(tagList.length>0?' done':'');
+      document.getElementById('chk4').className='check-dot done';
+    }
+    function switchView(mode){
+      const body=document.getElementById('postBody').value;
+      document.getElementById('postBody').style.display=mode==='edit'?'block':'none';
+      document.getElementById('toolbar').style.display=mode==='edit'?'flex':'none';
+      document.getElementById('previewBox').style.display=mode==='preview'?'block':'none';
+      document.getElementById('previewBox').textContent=body;
+      document.getElementById('editBtn').className='vt-btn'+(mode==='edit'?' active':'');
+      document.getElementById('prevBtn').className='vt-btn'+(mode==='preview'?' active':'');
+    }
+    function insertFormat(before,after){const ta=document.getElementById('postBody');const s=ta.selectionStart;const e=ta.selectionEnd;const sel=ta.value.substring(s,e);ta.value=ta.value.substring(0,s)+before+sel+after+ta.value.substring(e);ta.focus();updatePreview();}
+    async function suggestTags(){
+      const body=document.getElementById('postBody').value+' '+document.getElementById('postTitle').value;
+      const loading=document.getElementById('aiTagsLoading');
+      const row=document.getElementById('aiTagsRow');
+      const key=window.__NVD_KEY;
+      if(!key){row.innerHTML='<span style="font-size:11px;color:var(--text-dim)">Configura tu API key en Nevado Plus para usar esta función.</span>';return;}
+      loading.style.display='block';
+      try{
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':key},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:100,system:'Sugiere 5 etiquetas relevantes en español para este post de comunidad venezolana. Solo devuelve las etiquetas separadas por coma, sin explicaciones.',messages:[{role:'user',content:body}]})});
+        const data=await resp.json();
+        const suggestions=(data.content?.[0]?.text||'').split(',').map(t=>t.trim()).filter(Boolean);
+        row.innerHTML=suggestions.map(t=>`<span class="tag-pill" onclick="addTag('${t}')">${t}</span>`).join('');
+      }catch(e){row.innerHTML='<span style="font-size:11px;color:var(--text-dim)">Error al conectar con la IA.</span>';}
+      loading.style.display='none';
+    }
+    function addTag(tag){const input=document.getElementById('tagsInput');const existing=input.value.trim();input.value=existing?(existing+', '+tag):tag;updatePreview();}
+    function publishPost(){const toast=document.getElementById('toast');toast.style.display='block';setTimeout(()=>toast.style.display='none',3500);}
+  </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Seguridad Digital · Servicios · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#E74C3C;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#E74C3C}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+    .page-header{margin-bottom:32px}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:520px}
+
+    /* LAYOUT */
+    .seg-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+
+    /* FRAUD CHECKER */
+    .checker-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px}
+    .checker-title{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .checker-textarea{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;resize:none;min-height:100px;transition:border-color 0.2s;cursor:none;line-height:1.6;margin-bottom:12px}
+    .checker-textarea:focus{border-color:color-mix(in srgb,var(--page-accent) 35%,transparent)}
+    .checker-actions{display:flex;gap:8px}
+    .btn-check{flex:1;padding:10px;border-radius:7px;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent);font-size:10px;letter-spacing:0.10em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .btn-check:hover{background:color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .btn-ai-check{flex:1;padding:10px;border-radius:7px;background:rgba(244,208,63,0.08);border:1px solid rgba(244,208,63,0.25);color:#F4D03F;font-size:10px;letter-spacing:0.10em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .btn-ai-check:hover{background:rgba(244,208,63,0.14)}
+    .checker-result{margin-top:14px;display:none}
+    .checker-result.show{display:block}
+    .risk-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:5px;border:1px solid;margin-bottom:10px}
+    .risk-badge.high{border-color:rgba(231,76,60,0.35);color:#e74c3c;background:rgba(231,76,60,0.08)}
+    .risk-badge.medium{border-color:rgba(244,208,63,0.35);color:#F4D03F;background:rgba(244,208,63,0.08)}
+    .risk-badge.low{border-color:rgba(46,204,113,0.35);color:#2ecc71;background:rgba(46,204,113,0.08)}
+    .signal-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .signal-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--text-dim)}
+    .signal-icon{flex-shrink:0;margin-top:1px}
+    .ai-analysis{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:7px;padding:12px;font-size:11px;color:var(--text-dim);line-height:1.7;margin-top:10px;white-space:pre-wrap}
+    .ai-loading{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:11px}
+    .ai-dot{width:4px;height:4px;border-radius:50%;background:var(--page-accent);animation:ai-p 1s ease-in-out infinite}
+    .ai-dot:nth-child(2){animation-delay:0.2s}
+    .ai-dot:nth-child(3){animation-delay:0.4s}
+    @keyframes ai-p{0%,100%{opacity:0.3}50%{opacity:1}}
+
+    /* CHECKLIST */
+    .section-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .sec-checklist{display:flex;flex-direction:column;gap:6px;margin-bottom:28px}
+    .sec-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:7px}
+    .sec-icon{font-size:14px;flex-shrink:0}
+    .sec-text{font-size:11px;color:var(--text-dim);flex:1}
+    .sec-status{font-size:9px;letter-spacing:0.07em;text-transform:uppercase;padding:2px 7px;border-radius:3px;border:1px solid}
+    .sec-status.ok{border-color:rgba(46,204,113,0.25);color:#2ecc71}
+    .sec-status.warn{border-color:rgba(244,208,63,0.25);color:#F4D03F}
+    .sec-status.critical{border-color:rgba(231,76,60,0.25);color:#e74c3c}
+
+    /* ACCORDION */
+    .accordion{margin-bottom:32px}
+    .acc-item{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:6px}
+    .acc-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:none;transition:background 0.2s}
+    .acc-header:hover{background:rgba(255,255,255,0.02)}
+    .acc-left{display:flex;align-items:center;gap:10px}
+    .acc-emoji{font-size:15px}
+    .acc-title{font-size:12px;font-weight:500;color:var(--text)}
+    .acc-arrow{font-size:10px;color:var(--text-muted);transition:transform 0.2s}
+    .acc-item.open .acc-arrow{transform:rotate(180deg)}
+    .acc-body{font-size:11px;color:var(--text-dim);line-height:1.7;padding:0 16px 14px;display:none}
+    .acc-body ul{padding-left:14px;margin-top:6px}
+    .acc-body li{margin-bottom:4px}
+    .acc-item.open .acc-body{display:block}
+    .acc-risk{font-size:9px;letter-spacing:0.07em;padding:2px 7px;border-radius:3px;border:1px solid;margin-left:auto;margin-right:8px}
+    .acc-risk.high{border-color:rgba(231,76,60,0.25);color:#e74c3c}
+    .acc-risk.medium{border-color:rgba(244,208,63,0.25);color:#F4D03F}
+
+    /* SIDEBAR RESOURCES */
+    .resource-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:sticky;top:88px}
+    .resource-title{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
+    .resource-list{display:flex;flex-direction:column;gap:8px}
+    .resource-item{padding:10px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:7px}
+    .resource-name{font-size:11px;font-weight:500;color:var(--text);margin-bottom:2px}
+    .resource-desc{font-size:10px;color:var(--text-dim);line-height:1.5;margin-bottom:5px}
+    .resource-link{font-size:9px;letter-spacing:0.07em;text-transform:uppercase;color:var(--page-accent);cursor:none;text-decoration:none}
+    .emergency-card{background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.18);border-radius:10px;padding:14px;margin-top:14px}
+    .emergency-title{font-size:10px;letter-spacing:0.09em;text-transform:uppercase;color:#e74c3c;margin-bottom:8px}
+    .emergency-text{font-size:10px;color:var(--text-dim);line-height:1.6}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item active" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/servicios.html">← Servicios</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Seguridad Digital</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Seguridad Digital</h1>
+    <p>Detecta estafas, verifica señales de fraude y protege tu información con IA y checklists actualizados.</p>
+  </div>
+
+  <div class="seg-layout">
+    <div>
+      <!-- FRAUD CHECKER -->
+      <div class="checker-card">
+        <div class="checker-title">Verificador de señales de fraude</div>
+        <textarea class="checker-textarea" id="fraud-text" placeholder="Pega aquí el texto de un mensaje, correo, oferta de trabajo o propuesta sospechosa. La herramienta analizará señales de fraude comunes..."></textarea>
+        <div class="checker-actions">
+          <button class="btn-check" onclick="checkFraud()">Analizar señales</button>
+          <button class="btn-ai-check" onclick="aiAnalyze()">✦ Análisis IA</button>
+        </div>
+        <div class="checker-result" id="fraud-result">
+          <div class="risk-badge" id="fraud-badge">— Sin analizar</div>
+          <div class="signal-list" id="signal-list"></div>
+          <div class="ai-analysis" id="ai-analysis" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- SECURITY CHECKLIST -->
+      <div class="section-title">Checklist de seguridad personal</div>
+      <div class="sec-checklist">
+        <div class="sec-item"><span class="sec-icon">🔐</span><span class="sec-text">Contraseñas únicas para cada cuenta importante</span><span class="sec-status ok">OK</span></div>
+        <div class="sec-item"><span class="sec-icon">📱</span><span class="sec-text">Autenticación de dos factores (2FA) activada en correo y banco</span><span class="sec-status warn">Revisar</span></div>
+        <div class="sec-item"><span class="sec-icon">🔑</span><span class="sec-text">Gestor de contraseñas instalado (Bitwarden, 1Password, etc.)</span><span class="sec-status ok">OK</span></div>
+        <div class="sec-item"><span class="sec-icon">🌐</span><span class="sec-text">VPN activa al conectarse a redes públicas o sin contraseña</span><span class="sec-status warn">Revisar</span></div>
+        <div class="sec-item"><span class="sec-icon">📧</span><span class="sec-text">Correo alternativo desechable para registros no esenciales</span><span class="sec-status ok">OK</span></div>
+        <div class="sec-item"><span class="sec-icon">💳</span><span class="sec-text">Alertas de transacciones activadas en tu banco/plataforma de pago</span><span class="sec-status critical">Urgente</span></div>
+        <div class="sec-item"><span class="sec-icon">🖥️</span><span class="sec-text">Sistema operativo y apps actualizadas</span><span class="sec-status ok">OK</span></div>
+        <div class="sec-item"><span class="sec-icon">📋</span><span class="sec-text">Copia de documentos en lugar seguro (nube cifrada)</span><span class="sec-status warn">Revisar</span></div>
+      </div>
+
+      <!-- FRAUD PATTERNS ACCORDION -->
+      <div class="section-title">Patrones de fraude frecuentes</div>
+      <div class="accordion">
+        <div class="acc-item">
+          <div class="acc-header" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-emoji">💼</span><span class="acc-title">Falsas ofertas de empleo remoto</span></div>
+            <span class="acc-risk high">Alto</span>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">Te ofrecen trabajo con salario muy alto sin entrevista. Piden que compres equipos "de la empresa" que ellos te reembolsarán. Señales: sueldo desproporcionado, urgencia extrema, pago en cripto o giftcards, no tienen web verificable.<ul><li>Nunca pagues para conseguir un trabajo</li><li>Busca la empresa en LinkedIn antes de continuar</li><li>Si el correo es @gmail o @yahoo para una "empresa grande", desconfía</li></ul></div>
+        </div>
+        <div class="acc-item">
+          <div class="acc-header" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-emoji">💸</span><span class="acc-title">Estafas de cambio de divisas ("el boletín")</span></div>
+            <span class="acc-risk high">Alto</span>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">Te ofrecen tasas de cambio muy superiores al mercado. Piden que envíes el dinero primero con promesa de recibir más. Luego desaparecen o inventan "problemas" para no devolver.<ul><li>Nunca uses cambiadores sin reputación verificada</li><li>Busca referencias en la comunidad NEVADO antes de cambiar montos grandes</li><li>Una tasa imposiblemente buena ES la estafa</li></ul></div>
+        </div>
+        <div class="acc-item">
+          <div class="acc-header" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-emoji">🏠</span><span class="acc-title">Fraude de arriendos online</span></div>
+            <span class="acc-risk high">Alto</span>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">Publican apartamentos con fotos robadas de internet a precios irresistibles. Piden depósito sin permitir visita presencial. "El dueño está en el exterior".<ul><li>Visita siempre presencialmente antes de pagar</li><li>Busca las fotos en Google Images para ver si son robadas</li><li>Paga depósitos solo con contrato firmado ante notario</li></ul></div>
+        </div>
+        <div class="acc-item">
+          <div class="acc-header" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-emoji">📱</span><span class="acc-title">Phishing y suplantación de identidad</span></div>
+            <span class="acc-risk medium">Medio</span>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">Correos o mensajes que imitan a bancos, Migración, NEVADO u otros servicios pidiendo que "actualices tus datos" o "confirmes tu cuenta".<ul><li>Nunca hagas clic en enlaces de correos no solicitados</li><li>Verifica la URL completa antes de ingresar datos</li><li>NEVADO nunca pedirá tu contraseña por correo</li></ul></div>
+        </div>
+        <div class="acc-item">
+          <div class="acc-header" onclick="toggleAcc(this)">
+            <div class="acc-left"><span class="acc-emoji">🎁</span><span class="acc-title">Becas y visas fraudulentas</span></div>
+            <span class="acc-risk medium">Medio</span>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">Prometen visa express o beca "garantizada" por un pago. Explotan el deseo de emigrar de venezolanos.<ul><li>Las visas legítimas se tramitan en embajadas/consulados oficiales</li><li>Ningún trámite oficial garantiza aprobación con pago previo</li><li>Consulta abogados de migración certificados</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="resource-card">
+      <div class="resource-title">Recursos de ayuda</div>
+      <div class="resource-list">
+        <div class="resource-item">
+          <div class="resource-name">Interpol — Fraudes online</div>
+          <div class="resource-desc">Reportes y alertas de fraudes internacionales actualizados</div>
+          <a class="resource-link" href="#">Ver recursos →</a>
+        </div>
+        <div class="resource-item">
+          <div class="resource-name">Bitwarden (gratuito)</div>
+          <div class="resource-desc">Gestor de contraseñas open-source recomendado</div>
+          <a class="resource-link" href="#">Instalar →</a>
+        </div>
+        <div class="resource-item">
+          <div class="resource-name">Have I Been Pwned</div>
+          <div class="resource-desc">Verifica si tu correo aparece en filtraciones de datos</div>
+          <a class="resource-link" href="#">Verificar →</a>
+        </div>
+        <div class="resource-item">
+          <div class="resource-name">ProtonVPN (gratuito)</div>
+          <div class="resource-desc">VPN sin registro de datos, plan gratuito disponible</div>
+          <a class="resource-link" href="#">Descargar →</a>
+        </div>
+        <div class="resource-item">
+          <div class="resource-name">Grupo NEVADO Seguridad</div>
+          <div class="resource-desc">Comunidad en NODO para reportar estafas activas</div>
+          <a class="resource-link" href="/nodo.html">Ir a NODO →</a>
+        </div>
+      </div>
+      <div class="emergency-card">
+        <div class="emergency-title">⚠️ Si fuiste estafado</div>
+        <div class="emergency-text">1. Congela tus cuentas bancarias inmediatamente<br>2. Cambia contraseñas desde un dispositivo seguro<br>3. Reporta a Interpol y autoridades locales<br>4. Documenta todo: capturas, correos, montos<br>5. Reporta en NEVADO NODO para alertar a otros</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Servicios</h4>
+      <a href="/servicios/cambio.html">Cambio de divisas</a>
+      <a href="/servicios/freelance.html">Calculadora freelance</a>
+      <a href="/servicios/tramites.html">Trámites</a>
+      <a href="/servicios/seguridad.html">Seguridad</a>
+      <a href="/servicios/directorio.html">Directorio</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Reportar fraude</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+const FRAUD_SIGNALS=[
+  {pattern:/gratis|sin costo|100%|garantizado|gana.*dinero|dinero fácil/i,label:'Promesas irrealistas de dinero fácil',risk:'high'},
+  {pattern:/urgente|inmediatamente|hoy mismo|ahora mismo|última oportunidad/i,label:'Urgencia artificial para presionar',risk:'high'},
+  {pattern:/giftcard|bitcoin|cripto|binance|paypal regalo/i,label:'Método de pago inusual o anónimo',risk:'high'},
+  {pattern:/envía.*primero|deposita.*primero|pago.*anticipado|anticipo/i,label:'Solicitud de pago anticipado',risk:'high'},
+  {pattern:/visa.*express|visa.*garantizada|beca.*garantizada|trabajo.*garantizado/i,label:'Garantías imposibles en trámites oficiales',risk:'high'},
+  {pattern:/clave|contraseña|pin|password|datos bancarios|número de cuenta/i,label:'Solicitud de credenciales o datos sensibles',risk:'high'},
+  {pattern:/doble|triple|x10|x5.*inversión|multiply/i,label:'Promesa de duplicar o multiplicar dinero',risk:'high'},
+  {pattern:/haga clic aquí|click aquí|actualiza.*datos|confirma.*cuenta/i,label:'Enlace de phishing potencial',risk:'medium'},
+  {pattern:/gmail\.com|yahoo\.com|hotmail\.com.*empresa|corporación|s\.?a\./i,label:'Empresa "grande" con correo gratuito',risk:'medium'},
+  {pattern:/no lo cuentes|es confidencial|solo para ti|oferta exclusiva personal/i,label:'Petición de secretismo',risk:'medium'},
+];
+
+function checkFraud(){
+  const text=document.getElementById('fraud-text').value;
+  if(!text.trim())return;
+  const matches=[];
+  FRAUD_SIGNALS.forEach(s=>{if(s.pattern.test(text))matches.push(s);});
+  const highCount=matches.filter(m=>m.risk==='high').length;
+  const result=document.getElementById('fraud-result');
+  result.classList.add('show');
+  const badge=document.getElementById('fraud-badge');
+  if(highCount>=2){badge.className='risk-badge high';badge.textContent='⚠️ Riesgo ALTO — '+matches.length+' señales detectadas';}
+  else if(matches.length>=1){badge.className='risk-badge medium';badge.textContent='⚡ Riesgo MEDIO — '+matches.length+' señal(es)';}
+  else{badge.className='risk-badge low';badge.textContent='✓ Sin señales detectadas';}
+  const list=document.getElementById('signal-list');
+  list.innerHTML=matches.map(m=>`<div class="signal-item"><span class="signal-icon">${m.risk==='high'?'🔴':'🟡'}</span>${m.label}</div>`).join('')||'<div style="font-size:11px;color:var(--text-muted)">No se encontraron señales automáticas. Usa el análisis IA para una revisión más profunda.</div>';
+}
+
+async function aiAnalyze(){
+  const text=document.getElementById('fraud-text').value;
+  if(!text.trim())return;
+  checkFraud();
+  const analysisEl=document.getElementById('ai-analysis');
+  analysisEl.style.display='block';
+  analysisEl.innerHTML='<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Analizando con IA...</span></div>';
+  const key=window.__NVD_KEY;
+  if(!key){analysisEl.textContent='La clave de API no está disponible.';return;}
+  const ctrl=new AbortController();
+  setTimeout(()=>ctrl.abort(),20000);
+  const prompt=`Eres un experto en seguridad digital especializado en proteger a venezolanos de la diáspora. Analiza este texto y determina si es una estafa o tiene señales sospechosas. Responde en español con: 1) Veredicto (Legítimo/Sospechoso/Muy probablemente fraude), 2) 2-3 señales específicas del texto analizado, 3) Qué hacer. Sé directo. Sin markdown. Texto: "${text.slice(0,500)}"`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',signal:ctrl.signal,
+      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    analysisEl.textContent=d.content?.[0]?.text||'No se pudo generar análisis.';
+  }catch(e){analysisEl.textContent='No se pudo conectar con la IA.';}
+}
+
+function toggleAcc(header){
+  const item=header.closest('.acc-item');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.acc-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

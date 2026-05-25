@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TITULARES — NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/titulares.css" />
+  <style>
+    :root { --topbar-h: 52px; --page-accent: #2980B9; }
+    /* ── TOPBAR UNIFICADO v3.0 ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      flex-shrink: 0; font-family: 'Cormorant Garamond', serif;
+    }
+    .topbar-logo span { color: var(--page-accent, #B8944A); }
+    .topbar-nav {
+      display: flex; align-items: center; gap: 2px;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .nav-item {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(232,228,220,0.38); text-decoration: none;
+      padding: 5px 12px; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap; cursor: none;
+    }
+    .nav-item:hover {
+      color: rgba(232,228,220,0.75);
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-item.active {
+      color: var(--page-accent, #B8944A);
+      background: color-mix(in srgb, var(--page-accent, #B8944A) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--page-accent, #B8944A) 30%, transparent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--page-accent, #B8944A) 20%, transparent);
+    }
+    .topbar-actions {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .topbar-divider {
+      width: 1px; height: 20px; background: rgba(255,255,255,0.10); margin: 0 2px;
+    }
+    .btn-plus {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 6px; cursor: none;
+      background: transparent; color: #B8944A;
+      border: 1px solid rgba(184,148,74,0.35);
+      transition: all 0.2s; font-family: inherit;
+    }
+    .btn-plus:hover { background: rgba(184,148,74,0.08); }
+    .topbar-user {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; color: rgba(232,228,220,0.45);
+      transition: all 0.2s;
+    }
+    .topbar-user:hover { background: rgba(255,255,255,0.10); color: rgba(232,228,220,0.85); }
+
+    /* READING MODE — Titulares */
+    body.reading-mode .tit-sidebar,
+    body.reading-mode aside { display: none !important; }
+    body.reading-mode .tit-feed,
+    body.reading-mode main {
+      max-width: 800px !important;
+      margin: 0 auto !important;
+      padding: 0 48px !important;
+      width: 100% !important;
+      grid-column: 1 / -1 !important;
+    }
+    body.reading-mode .tit-layout,
+    body.reading-mode [class*="layout"],
+    body.reading-mode [class*="grid"] { display: block !important; }
+    body.reading-mode p,
+    body.reading-mode [class*="article"],
+    body.reading-mode [class*="text"],
+    body.reading-mode .card-desc {
+      font-size: 17px !important;
+      line-height: 1.9 !important;
+      color: rgba(232,228,220,0.85) !important;
+    }
+
+    /* READING BAR */
+    #reading-mode-bar {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 8000;
+      animation: reading-bar-in 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes reading-bar-in {
+      from { opacity:0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    #exit-reading-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(41,128,185,0.12);
+      border: 1px solid rgba(41,128,185,0.35);
+      border-radius: 100px;
+      color: #2980B9;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      font-family: 'Geist', sans-serif;
+      backdrop-filter: blur(12px);
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    #exit-reading-btn:hover {
+      background: rgba(41,128,185,0.22);
+      box-shadow: 0 4px 24px rgba(41,128,185,0.15);
+    }
+    @keyframes toast-in {
+      from { opacity:0; transform:translateX(-50%) translateY(6px); }
+      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
+  </style>
+</head>
+<body class="tit-body" data-accent="blue">
+
+  <!-- TOPBAR -->
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item " href="/talento.html">Capital Humano</a>
+      <a class="nav-item " href="/avila.html">ÁVILA</a>
+      <a class="nav-item " href="/nodo.html">NODO</a>
+      <a class="nav-item active" href="/enterate.html">Titulares</a>
+      <a class="nav-item " href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item " href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- SUBHEADER -->
+  <div class="tit-subheader">
+    <div class="tit-subheader-inner">
+      <div class="tit-search-wrap">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M8.5 8.5L11.5 11.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <input class="tit-search" type="text" placeholder="Buscar artículos, temas, fuentes…" />
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="tit-metrics">
+        <span><strong>180</strong> artículos</span>
+        <span><strong>42</strong> fuentes</span>
+        <span><strong>18</strong> oportunidades</span>
+        <span><strong>12</strong> verificaciones</span>
+      </div>
+      <span class="tit-live-badge">● EDITORIAL VIVO</span>
+      <button class="tit-verify-btn" id="verifyBtn">Verificar información</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="tit-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="tit-sidebar">
+      <div class="tit-sidebar-section">
+        <div class="tit-sidebar-label">Navegación</div>
+        <nav style="display:flex;flex-direction:column;gap:1px;">
+          <button class="tit-sidebar-item active" data-scroll="hero">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="1" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M4 12h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            Portada
+          </button>
+          <button class="tit-sidebar-item" data-scroll="breaking">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6.5 3.5v3.5l2 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            En desarrollo
+            <span class="tit-sidebar-badge">5</span>
+          </button>
+          <button class="tit-sidebar-item" data-scroll="articlesGrid">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 3h11M1 7h7M1 11h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            Lo más relevante
+          </button>
+          <button class="tit-sidebar-item" data-scroll="context">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6.5 5.5v4M6.5 3.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Contexto
+          </button>
+          <button class="tit-sidebar-item" data-scroll="explainers">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 2h9v9H2z" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M5 5h3M5 8h2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            En 3 minutos
+          </button>
+          <button class="tit-sidebar-item" data-scroll="opportunities">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1L8 4.5l4 .5-3 2.5.9 4L6.5 9.5l-3.4 2 .9-4L1 5l4-.5L6.5 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+            Oportunidades
+            <span class="tit-sidebar-badge">18</span>
+          </button>
+          <button class="tit-sidebar-item" data-scroll="verifySection">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L11 3.5v4c0 2.5-2 4.5-4.5 5C4 12 2 10 2 7.5v-4L6.5 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+            Verificación
+          </button>
+          <button class="tit-sidebar-item" data-scroll="newsletter">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="3" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M1 3l5.5 4.5L12 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+            Boletín
+          </button>
+          <button class="tit-sidebar-item" id="tit-reading-link" onclick="toggleReadingMode()" style="cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" stroke-width="1.1"/></svg>
+            Modo lectura
+          </button>
+        </nav>
+      </div>
+
+      <div class="tit-sidebar-section">
+        <div class="tit-sidebar-label">Categorías</div>
+        <div style="display:flex;flex-direction:column;gap:1px;">
+          <button class="tit-category-item active" data-filter="all"><span class="tit-category-dot"></span>Todo</button>
+          <button class="tit-category-item" data-filter="Venezuela"><span class="tit-category-dot"></span>Venezuela</button>
+          <button class="tit-category-item" data-filter="Diáspora"><span class="tit-category-dot"></span>Diáspora</button>
+          <button class="tit-category-item" data-filter="Trabajo"><span class="tit-category-dot"></span>Trabajo</button>
+          <button class="tit-category-item" data-filter="Educación"><span class="tit-category-dot"></span>Educación</button>
+          <button class="tit-category-item" data-filter="Economía"><span class="tit-category-dot"></span>Economía</button>
+          <button class="tit-category-item" data-filter="Tecnología"><span class="tit-category-dot"></span>Tecnología</button>
+          <button class="tit-category-item" data-filter="Comunidad"><span class="tit-category-dot"></span>Comunidad</button>
+          <button class="tit-category-item" data-filter="Oportunidades"><span class="tit-category-dot"></span>Oportunidades</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- FEED -->
+    <main class="tit-feed">
+
+      <!-- HERO -->
+      <section class="tit-hero" id="hero">
+        <div class="tit-hero-card">
+          <div class="tit-hero-top">
+            <span class="tit-hero-badge">TRABAJO REMOTO</span>
+            <span class="tit-hero-status">Fuente revisada</span>
+          </div>
+          <h1 class="tit-hero-title">Venezolanos en el exterior lideran adopción de trabajo remoto en América Latina</h1>
+          <p class="tit-hero-excerpt">El talento venezolano en la diáspora registra la tasa más alta de inserción en empleo remoto de la región, según análisis de 14 plataformas globales. La resiliencia construida en la adversidad se convierte en ventaja competitiva real en el mercado digital global.</p>
+          <div class="tit-hero-meta">
+            <span>NEVADO Editorial</span>
+            <span>24 mayo 2026</span>
+            <span>8 min lectura</span>
+            <span>Actualizado hace 2h</span>
+          </div>
+          <div class="tit-hero-actions">
+            <button class="tit-btn-primary" onclick="openArticle(0)">Leer análisis</button>
+            <button class="tit-btn-ghost">Conversar en NODO</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTROS -->
+      <div class="tit-filters">
+        <button class="tit-chip active" data-category="all">Todo</button>
+        <button class="tit-chip" data-category="Venezuela">Venezuela</button>
+        <button class="tit-chip" data-category="Diáspora">Diáspora</button>
+        <button class="tit-chip" data-category="Trabajo">Trabajo</button>
+        <button class="tit-chip" data-category="Educación">Educación</button>
+        <button class="tit-chip" data-category="Economía">Economía</button>
+        <button class="tit-chip" data-category="Tecnología">Tecnología</button>
+        <button class="tit-chip" data-category="Comunidad">Comunidad</button>
+        <button class="tit-chip" data-category="Oportunidades">Oportunidades</button>
+        <button class="tit-chip" data-category="Mundo">Mundo</button>
+        <button class="tit-chip" data-category="Verificación">Verificación</button>
+      </div>
+
+      <!-- ARTÍCULOS -->
+      <div class="tit-section-title" id="articlesGrid">Lo más relevante</div>
+      <section class="tit-articles">
+
+        <div class="tit-article-card" data-category="Economía" data-title="Remesas digitales venezolanas superan los $2.400 millones en 2025" data-summary="Las transferencias digitales de venezolanos en el exterior rompen récord histórico" data-article-id="1">
+          <div class="tit-article-cat">Economía</div>
+          <div class="tit-article-title">Remesas digitales venezolanas superan los $2.400 millones en 2025</div>
+          <div class="tit-article-excerpt">Las transferencias digitales de venezolanos en el exterior rompen récord histórico impulsadas por adopción cripto y plataformas remesas como Zelle, Binance Pay y nuevas fintech latinas.</div>
+          <div class="tit-article-footer">
+            <span class="tit-article-status verified">✓ Verificado</span>
+            <span class="tit-article-read">6 min</span>
+          </div>
+          <div class="tit-article-actions">
+            <button class="tit-article-btn primary" onclick="openArticle(1)">Leer</button>
+            <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
+            <button class="tit-article-btn">NODO</button>
+          </div>
+        </div>
+
+        <div class="tit-article-card" data-category="Trabajo" data-title="Nueva ola de talentos venezolanos lidera el sector tecnológico europeo" data-summary="Desarrolladores y diseñadores venezolanos ocupan posiciones clave en startups de Madrid, Lisboa y Berlín" data-article-id="2">
+          <div class="tit-article-cat">Trabajo</div>
+          <div class="tit-article-title">Nueva ola de talentos venezolanos lidera el sector tecnológico europeo</div>
+          <div class="tit-article-excerpt">Desarrolladores y diseñadores venezolanos ocupan posiciones clave en startups de Madrid, Lisboa y Berlín. El patrón revela concentración en IA, fintech y producto.</div>
+          <div class="tit-article-footer">
+            <span class="tit-article-status developing">⟳ En verificación</span>
+            <span class="tit-article-read">5 min</span>
+          </div>
+          <div class="tit-article-actions">
+            <button class="tit-article-btn primary" onclick="openArticle(2)">Leer</button>
+            <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
+            <button class="tit-article-btn">NODO</button>
+          </div>
+        </div>
+
+        <div class="tit-article-card" data-category="Diáspora" data-title="Venezuela registra récord histórico de emigración universitaria en una década" data-summary="El 34% de egresados universitarios entre 2015–2025 reside fuera del país" data-article-id="3">
+          <div class="tit-article-cat">Diáspora</div>
+          <div class="tit-article-title">Venezuela registra récord histórico de emigración universitaria en una década</div>
+          <div class="tit-article-excerpt">El 34% de egresados universitarios entre 2015–2025 reside fuera del país, según datos del Observatorio de la Diáspora Venezolana. El impacto y los mecanismos de retención de talento, en debate.</div>
+          <div class="tit-article-footer">
+            <span class="tit-article-status verified">✓ Verificado</span>
+            <span class="tit-article-read">9 min</span>
+          </div>
+          <div class="tit-article-actions">
+            <button class="tit-article-btn primary" onclick="openArticle(3)">Leer</button>
+            <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
+            <button class="tit-article-btn">NODO</button>
+          </div>
+        </div>
+
+        <div class="tit-article-card" data-category="Educación" data-title="Convocatorias abiertas: 18 becas internacionales para venezolanos en 2025" data-summary="Universidades en España, Canadá y Chile abren programas con cupo especial para la diáspora venezolana" data-article-id="4">
+          <div class="tit-article-cat">Educación</div>
+          <div class="tit-article-title">Convocatorias abiertas: 18 becas internacionales para venezolanos en 2025</div>
+          <div class="tit-article-excerpt">Universidades en España, Canadá y Chile abren programas con cupo especial para la diáspora venezolana. Fechas límite, requisitos y enlaces directos a las convocatorias.</div>
+          <div class="tit-article-footer">
+            <span class="tit-article-status opportunity">★ Oportunidad</span>
+            <span class="tit-article-read">7 min</span>
+          </div>
+          <div class="tit-article-actions">
+            <button class="tit-article-btn primary" onclick="openArticle(4)">Leer</button>
+            <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
+            <button class="tit-article-btn">NODO</button>
+          </div>
+        </div>
+
+        <div class="tit-article-card" data-category="Comunidad" data-title="Comunidades venezolanas en Madrid superan 150,000 residentes activos" data-summary="Madrid consolida su posición como el mayor hub venezolano fuera de América" data-article-id="5">
+          <div class="tit-article-cat">Comunidad</div>
+          <div class="tit-article-title">Comunidades venezolanas en Madrid superan 150,000 residentes activos</div>
+          <div class="tit-article-excerpt">Madrid consolida su posición como el mayor hub venezolano fuera de América. El análisis revela concentración en 4 distritos, integración laboral exitosa y mantenimiento de identidad cultural.</div>
+          <div class="tit-article-footer">
+            <span class="tit-article-status verified">✓ Verificado</span>
+            <span class="tit-article-read">5 min</span>
+          </div>
+          <div class="tit-article-actions">
+            <button class="tit-article-btn primary" onclick="openArticle(5)">Leer</button>
+            <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
+            <button class="tit-article-btn">NODO</button>
+          </div>
+        </div>
+
+        <div class="tit-article-card" data-category="Tecnología" data-title="Cripto como infraestructura económica: el caso venezolano como modelo global" data-summary="Venezuela lidera adopción cripto per cápita en América Latina por quinto año consecutivo" data-article-id="6">
+          <div class="tit-article-cat">Tecnología</div>
+          <div class="tit-article-title">Cripto como infraestructura económica: el caso venezolano como modelo global</div>
+          <div class="tit-article-excerpt">Venezuela lidera adopción cripto per cápita en América Latina por quinto año consecutivo. El análisis estudia cómo la necesidad forjó competencia digital que ahora exporta al mundo.</div>
+          <div class="tit-article-footer">
+            <span class="tit-article-status analysis">◈ Análisis</span>
+            <span class="tit-article-read">11 min</span>
+          </div>
+          <div class="tit-article-actions">
+            <button class="tit-article-btn primary" onclick="openArticle(6)">Leer</button>
+            <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
+            <button class="tit-article-btn">NODO</button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- EN 3 MINUTOS -->
+      <section class="tit-explainers" id="explainers">
+        <div class="tit-section-title">En 3 minutos</div>
+        <div class="tit-explainer-grid">
+
+          <div class="tit-explainer-card">
+            <div class="tit-explainer-num">01 · EXPLICADOR</div>
+            <div class="tit-explainer-title">¿Qué es la visa D7 y cómo aplica un venezolano?</div>
+            <div class="tit-explainer-desc">La visa de nómada digital portuguesa: requisitos, ingresos mínimos, documentación y tiempos reales de procesamiento para la diáspora venezolana.</div>
+            <div class="tit-explainer-time">3 min lectura</div>
+          </div>
+
+          <div class="tit-explainer-card">
+            <div class="tit-explainer-num">02 · EXPLICADOR</div>
+            <div class="tit-explainer-title">¿Qué es el NIE y por qué lo necesitas en España?</div>
+            <div class="tit-explainer-desc">El Número de Identificación de Extranjero: proceso, citas, documentos y diferencia entre NIE residencial y de no residente. Guía actualizada 2025.</div>
+            <div class="tit-explainer-time">3 min lectura</div>
+          </div>
+
+          <div class="tit-explainer-card">
+            <div class="tit-explainer-num">03 · EXPLICADOR</div>
+            <div class="tit-explainer-title">¿Cómo funcionan las remesas cripto a Venezuela?</div>
+            <div class="tit-explainer-desc">Comparativa de plataformas, tasas reales, comisiones ocultas y el camino del dinero desde tu banco en Europa hasta bolívares o dólares en Venezuela.</div>
+            <div class="tit-explainer-time">3 min lectura</div>
+          </div>
+
+          <div class="tit-explainer-card">
+            <div class="tit-explainer-num">04 · EXPLICADOR</div>
+            <div class="tit-explainer-title">¿Qué es la homologación de título universitario venezolano?</div>
+            <div class="tit-explainer-desc">Proceso de reconocimiento académico en España, Chile y Colombia: organismos responsables, tiempos promedio, costos y alternativas para ejercer profesionalmente.</div>
+            <div class="tit-explainer-time">3 min lectura</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CONTEXTO -->
+      <section class="tit-context-section" id="context">
+        <div class="tit-section-title">Contexto</div>
+        <div class="tit-context-list">
+          <div class="tit-context-card">
+            <div class="tit-context-num">01</div>
+            <div class="tit-context-body">
+              <div class="tit-context-title">La diáspora venezolana en cifras: 7.7 millones fuera del país</div>
+              <div class="tit-context-desc">Venezuela representa el mayor desplazamiento humano en la historia contemporánea de América Latina. El 24% de la población total ha emigrado en la última década, con concentración en Colombia (2.9M), Perú (1.5M) y España (500K).</div>
+            </div>
+          </div>
+          <div class="tit-context-card">
+            <div class="tit-context-num">02</div>
+            <div class="tit-context-body">
+              <div class="tit-context-title">¿Por qué Venezuela lidera adopción tecnológica en la diáspora?</div>
+              <div class="tit-context-desc">La adversidad económica forzó alfabetización digital temprana. El venezolano promedio en la diáspora adopta nuevas herramientas 2.3 veces más rápido que el promedio latinoamericano, según datos de plataformas de trabajo remoto.</div>
+            </div>
+          </div>
+          <div class="tit-context-card">
+            <div class="tit-context-num">03</div>
+            <div class="tit-context-body">
+              <div class="tit-context-title">El rol de las redes comunitarias en la integración exitosa</div>
+              <div class="tit-context-desc">Venezolanos con acceso a redes organizadas como NEVADO muestran 68% más de probabilidad de inserción laboral formal en los primeros 6 meses, comparado con venezolanos sin red de apoyo estructurada.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OPORTUNIDADES -->
+      <section class="tit-opportunities" id="opportunities">
+        <div class="tit-section-title">Oportunidades</div>
+        <div class="tit-opp-list">
+
+          <div class="tit-opp-card">
+            <div class="tit-opp-icon">🎓</div>
+            <div class="tit-opp-info">
+              <div class="tit-opp-type">Beca · España</div>
+              <div class="tit-opp-title">Beca Carolina — Posgrado en España 2025-2026</div>
+              <div class="tit-opp-meta">Universidades públicas · Cierre: 15 junio 2026 · Cubre matrícula + estipendio</div>
+            </div>
+            <span class="tit-opp-status open">Abierta</span>
+            <button class="tit-opp-btn">Ver detalles</button>
+          </div>
+
+          <div class="tit-opp-card">
+            <div class="tit-opp-icon">💻</div>
+            <div class="tit-opp-info">
+              <div class="tit-opp-type">Empleo Remoto · Global</div>
+              <div class="tit-opp-title">Desarrollador Full Stack — Startup Lisboa (remoto)</div>
+              <div class="tit-opp-meta">React + Node · $2,800–$3,400/mes · Incorporación inmediata</div>
+            </div>
+            <span class="tit-opp-status open">Abierta</span>
+            <button class="tit-opp-btn">Aplicar</button>
+          </div>
+
+          <div class="tit-opp-card">
+            <div class="tit-opp-icon">📋</div>
+            <div class="tit-opp-info">
+              <div class="tit-opp-type">Programa · Canadá</div>
+              <div class="tit-opp-title">Express Entry — Convocatoria Tech Workers 2026</div>
+              <div class="tit-opp-meta">Residencia permanente · Prioridad a perfiles STEM · Cierre: 30 junio</div>
+            </div>
+            <span class="tit-opp-status soon">Próxima</span>
+            <button class="tit-opp-btn">Más info</button>
+          </div>
+
+          <div class="tit-opp-card">
+            <div class="tit-opp-icon">🎨</div>
+            <div class="tit-opp-info">
+              <div class="tit-opp-type">Freelance · Remoto</div>
+              <div class="tit-opp-title">UX/UI Designer — Plataforma EdTech LATAM</div>
+              <div class="tit-opp-meta">Figma + Diseño de sistemas · $1,800–$2,400/mes · Proyecto 4 meses</div>
+            </div>
+            <span class="tit-opp-status open">Abierta</span>
+            <button class="tit-opp-btn">Ver perfil</button>
+          </div>
+
+          <div class="tit-opp-card">
+            <div class="tit-opp-icon">🏛️</div>
+            <div class="tit-opp-info">
+              <div class="tit-opp-type">Subvención · Chile</div>
+              <div class="tit-opp-title">CORFO — Apoyo a emprendedores migrantes 2026</div>
+              <div class="tit-opp-meta">Hasta $12,000 USD · Empresas &lt;2 años · Cierre: 31 julio</div>
+            </div>
+            <span class="tit-opp-status soon">Próxima</span>
+            <button class="tit-opp-btn">Detalles</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VERIFICAR INFORMACIÓN -->
+      <section class="tit-verify-section" id="verifySection">
+        <div class="tit-section-title">Verificar Información</div>
+        <p class="tit-verify-desc">Envía una información que hayas visto circular sobre Venezuela, la diáspora o el ecosistema. El equipo editorial de TITULARES analiza su procedencia y contexto real.</p>
+        <div class="tit-verify-form">
+          <textarea class="tit-verify-input" rows="3" placeholder="Pega aquí el texto, titular o afirmación que quieres verificar…"></textarea>
+          <div class="tit-verify-row">
+            <input class="tit-verify-source" type="text" placeholder="Fuente o link de donde proviene (opcional)" />
+            <select class="tit-verify-type">
+              <option value="">Tipo de información…</option>
+              <option value="noticia">Noticia / Titular</option>
+              <option value="estadistica">Estadística / Dato</option>
+              <option value="foto">Foto / Imagen</option>
+              <option value="video">Video</option>
+              <option value="declaracion">Declaración pública</option>
+            </select>
+            <button class="tit-verify-submit" id="verifySubmit">Analizar información</button>
+          </div>
+        </div>
+        <div class="tit-verify-result" id="verifyResult" hidden>
+          <div class="tit-verify-result-title">Análisis editorial preliminar</div>
+          <div class="tit-verify-result-body" id="verifyResultBody"></div>
+        </div>
+        <p class="tit-verify-disclaimer">TITULARES no reemplaza una verificación periodística formal. Este servicio identifica señales de alerta y contexto disponible. La verificación completa puede tomar hasta 48 horas hábiles.</p>
+      </section>
+
+      <!-- BOLETÍN -->
+      <section class="tit-newsletter" id="newsletter">
+        <div class="tit-newsletter-title">El pulso semanal</div>
+        <div class="tit-newsletter-desc">Lo más relevante de la semana para venezolanos en el mundo, sin ruido. Cada domingo.</div>
+        <div class="tit-newsletter-row">
+          <input class="tit-newsletter-input" type="email" id="newsletterInput" placeholder="tu@correo.com" />
+          <button class="tit-newsletter-btn" id="newsletterBtn">Suscribirme</button>
+        </div>
+        <div class="tit-newsletter-msg" id="newsletterMsg"></div>
+      </section>
+
+    </main>
+
+    <!-- PANEL DERECHO -->
+    <aside class="tit-panel">
+
+      <div class="tit-panel-block" id="breaking">
+        <div class="tit-panel-title">En desarrollo</div>
+        <div class="tit-breaking-list">
+          <div class="tit-breaking-item">
+            <span class="tit-breaking-dot live"></span>
+            <div class="tit-breaking-meta">
+              <div class="tit-breaking-time">hace 23 min</div>
+              <div class="tit-breaking-cat">Economía</div>
+              <div class="tit-breaking-text">BCV anuncia nueva mecánica de tipo de cambio oficial para el segundo semestre</div>
+              <button class="tit-breaking-follow">Seguir</button>
+            </div>
+          </div>
+          <div class="tit-breaking-item">
+            <span class="tit-breaking-dot active"></span>
+            <div class="tit-breaking-meta">
+              <div class="tit-breaking-time">hace 1h</div>
+              <div class="tit-breaking-cat">Diáspora</div>
+              <div class="tit-breaking-text">España aprueba nueva circular sobre regularización de migrantes venezolanos con arraigo</div>
+              <button class="tit-breaking-follow">Seguir</button>
+            </div>
+          </div>
+          <div class="tit-breaking-item">
+            <span class="tit-breaking-dot pending"></span>
+            <div class="tit-breaking-meta">
+              <div class="tit-breaking-time">hace 3h</div>
+              <div class="tit-breaking-cat">Trabajo</div>
+              <div class="tit-breaking-text">OIT publica informe sobre inserción laboral de migrantes venezolanos en LATAM 2025</div>
+              <button class="tit-breaking-follow">Seguir</button>
+            </div>
+          </div>
+          <div class="tit-breaking-item">
+            <span class="tit-breaking-dot active"></span>
+            <div class="tit-breaking-meta">
+              <div class="tit-breaking-time">hace 4h</div>
+              <div class="tit-breaking-cat">Tecnología</div>
+              <div class="tit-breaking-text">OpenAI lanza programa de becas para desarrolladores de países en desarrollo</div>
+              <button class="tit-breaking-follow">Seguir</button>
+            </div>
+          </div>
+          <div class="tit-breaking-item">
+            <span class="tit-breaking-dot pending"></span>
+            <div class="tit-breaking-meta">
+              <div class="tit-breaking-time">ayer</div>
+              <div class="tit-breaking-cat">Educación</div>
+              <div class="tit-breaking-text">Universidad Complutense amplia cupo para venezolanos en posgrados de ciencias sociales</div>
+              <button class="tit-breaking-follow">Seguir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tit-panel-block">
+        <div class="tit-panel-title">Termómetro Editorial</div>
+        <div class="tit-signal-list">
+          <div class="tit-signal-item">
+            <span class="tit-signal-arrow" style="color:#27AE60">↑</span>
+            <span class="tit-signal-label">Inserción laboral diáspora</span>
+            <span class="tit-signal-state" style="color:#27AE60">Positivo</span>
+          </div>
+          <div class="tit-signal-item">
+            <span class="tit-signal-arrow" style="color:#E74C3C">↓</span>
+            <span class="tit-signal-label">Tipo de cambio VES/USD</span>
+            <span class="tit-signal-state" style="color:#E74C3C">Crítico</span>
+          </div>
+          <div class="tit-signal-item">
+            <span class="tit-signal-arrow" style="color:#27AE60">↑</span>
+            <span class="tit-signal-label">Becas disponibles LATAM</span>
+            <span class="tit-signal-state" style="color:#27AE60">Alto</span>
+          </div>
+          <div class="tit-signal-item">
+            <span class="tit-signal-arrow" style="color:#F4D03F">→</span>
+            <span class="tit-signal-label">Remesas cripto</span>
+            <span class="tit-signal-state" style="color:#F4D03F">Estable</span>
+          </div>
+          <div class="tit-signal-item">
+            <span class="tit-signal-arrow" style="color:#27AE60">↑</span>
+            <span class="tit-signal-label">Empleos remotos LATAM</span>
+            <span class="tit-signal-state" style="color:#27AE60">Creciendo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tit-panel-block">
+        <div class="tit-panel-title">Nevado Recomienda</div>
+        <div class="tit-nevado-box">
+          <div class="tit-nevado-box-label">Principios editoriales</div>
+          <div class="tit-nevado-box-text">TITULARES no persigue el ruido. Organiza señales. Cada artículo publicado tiene fuente verificada, contexto y utilidad práctica para la comunidad.</div>
+          <div class="tit-nevado-box-rule">Una fuente no es suficiente</div>
+          <div class="tit-nevado-box-rule">El contexto importa más que el titular</div>
+          <div class="tit-nevado-box-rule">La verificación no tiene deadline</div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- MODAL ARTÍCULO -->
+  <div class="tit-article-modal" id="articleModal" hidden>
+    <div class="tit-modal-inner">
+      <button class="tit-modal-close" id="modalClose">✕</button>
+      <div class="tit-modal-header">
+        <div class="tit-modal-top">
+          <span class="tit-modal-cat" id="modalCat">Economía</span>
+          <span class="tit-modal-status" id="modalStatus">✓ Verificado</span>
+        </div>
+        <h2 class="tit-modal-title" id="modalTitle"></h2>
+        <p class="tit-modal-excerpt" id="modalExcerpt"></p>
+        <div class="tit-modal-meta">
+          <span>NEVADO Editorial</span>
+          <span id="modalReadTime"></span>
+          <span>24 mayo 2026</span>
+        </div>
+      </div>
+      <div class="tit-modal-body" id="modalBody"></div>
+      <div class="tit-modal-sources">
+        <div class="tit-modal-sources-title">Fuentes consultadas</div>
+        <div id="modalSources"></div>
+      </div>
+      <div class="tit-modal-actions">
+        <button class="tit-modal-action primary" id="saveArticleBtn" onclick="toggleSaveArticle(this)">Guardar</button>
+        <button class="tit-modal-action" onclick="navigator.share?.({title:document.getElementById('modalTitle').textContent})">Compartir</button>
+        <button class="tit-modal-action">Conversar en NODO</button>
+        <button class="tit-modal-action" onclick="toggleReadingMode()">Modo lectura</button>
+        <button class="tit-modal-action" id="sourcesBtn">Ver fuentes</button>
+      </div>
+      <p class="tit-modal-disclaimer">Este artículo fue preparado por el equipo editorial de NEVADO TITULARES. Las fuentes están disponibles para revisión pública. Si detectas un error o tienes información adicional, escríbenos a editorial@nevado.io.</p>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="tit-ticker">
+    <div class="tit-ticker-track" id="titTickerTrack"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="tit-footer">
+    <div class="tit-footer-brand">
+      <div class="tit-footer-logo">N<span>·</span>EVADO</div>
+      <div class="tit-footer-copy">Centro editorial venezolano. Información verificada, narrativa honesta, ecosistema activo.</div>
+    </div>
+    <div>
+      <div class="tit-footer-col-title">Ecosistema</div>
+      <a class="tit-footer-link" href="/talento.html">Capital Humano</a>
+      <a class="tit-footer-link" href="/avila.html">ÁVILA</a>
+      <a class="tit-footer-link" href="/nodo.html">NODO</a>
+      <a class="tit-footer-link" href="/enterate.html">Titulares</a>
+      <a class="tit-footer-link" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="tit-footer-link" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="tit-footer-col-title">Titulares</div>
+      <a class="tit-footer-link" href="javascript:void(0)">Portada</a>
+      <a class="tit-footer-link" href="javascript:void(0)">Verificación</a>
+      <a class="tit-footer-link" href="javascript:void(0)">En desarrollo</a>
+      <a class="tit-footer-link" href="javascript:void(0)">Boletín</a>
+    </div>
+    <div>
+      <div class="tit-footer-col-title">Info</div>
+      <a class="tit-footer-link" href="javascript:void(0)">Cómo funciona</a>
+      <a class="tit-footer-link" href="/transparencia.html">Transparencia</a>
+      <a class="tit-footer-link" href="javascript:void(0)">Contacto</a>
+    </div>
+    <div style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);margin-top:8px">
+      <span style="font-size:11px;color:rgba(232,228,220,0.34)">© 2026 NEVADO · Titulares · Modo demostración</span>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <div style="width:28px;height:4px;border-radius:2px;background:#F4D03F"></div>
+        <div style="width:28px;height:4px;border-radius:2px;background:#2980B9"></div>
+        <div style="width:28px;height:4px;border-radius:2px;background:#E74C3C"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/cursor.js"></script>
+  <script>
+  // ─── Data ──────────────────────────────────────────────────────────────────
+  const articles = [
+    {
+      id: 0, category: 'Trabajo', readTime: '8 min',
+      title: 'Venezolanos en el exterior lideran adopción de trabajo remoto en América Latina',
+      excerpt: 'El talento venezolano en la diáspora registra la tasa más alta de inserción en empleo remoto de la región, según análisis de 14 plataformas globales.',
+      status: '✓ Fuente revisada',
+      body: [
+        'Un análisis conjunto de 14 plataformas de trabajo remoto globales — incluyendo Toptal, Deel, Remote.com y Workana — revela que los profesionales venezolanos registran la tasa de inserción más alta de América Latina en posiciones de trabajo distribuido, con un 34% más de probabilidad de ser contratados en el primer intento comparado con el promedio regional.',
+        'La resiliencia construida en años de adversidad económica se convierte en ventaja competitiva real: adaptabilidad, manejo de múltiples herramientas digitales, y una disposición al trabajo autónomo que las empresas globales valoran cada vez más en equipos distribuidos.',
+        'Los sectores con mayor concentración son tecnología (42%), diseño y creatividad (28%) y finanzas y análisis de datos (18%). Lisboa, Miami, Madrid y Bogotá emergen como los principales nodos de coordinación de estos profesionales remotos.',
+        'El fenómeno no es casual. La necesidad forzó una alfabetización digital acelerada que ahora se traduce en competitividad internacional. Venezolanos que adoptaron herramientas cripto para recibir remesas, VPNs para acceder a servicios bloqueados, y plataformas freelance para generar ingresos alternativos, hoy manejan estas herramientas con una fluidez que otros profesionales no tienen.',
+        'NEVADO registra un aumento del 67% en la cantidad de venezolanos que encontraron empleo remoto estable después de conectarse con el ecosistema en los últimos 12 meses, lo que confirma el rol de las redes organizadas en la aceleración de este proceso de inserción.',
+      ],
+      sources: ['Toptal Global Report 2025', 'Observatorio de la Diáspora Venezolana', 'NEVADO Capital Humano — Datos internos Q1 2026'],
+    },
+    {
+      id: 1, category: 'Economía', readTime: '6 min',
+      title: 'Remesas digitales venezolanas superan los $2.400 millones en 2025',
+      excerpt: 'Las transferencias digitales de venezolanos en el exterior rompen récord histórico impulsadas por adopción cripto y nuevas plataformas fintech.',
+      status: '✓ Verificado',
+      body: [
+        'Las remesas enviadas por venezolanos en el exterior superaron los $2.400 millones de dólares en 2025, representando un incremento del 31% respecto al año anterior, según datos del Banco Interamericano de Desarrollo y el Observatorio de la Diáspora Venezolana.',
+        'El dato más relevante no es el volumen total, sino el cambio en los canales: por primera vez, más del 40% del total fue enviado a través de plataformas cripto o fintech como Binance Pay, Zelle regional y nuevas aplicaciones como Remitly y Wise, desplazando a los tradicionales operadores de cambio.',
+        'Este cambio tiene implicaciones profundas: las comisiones promedio cayeron del 8.4% al 3.1% en dos años, lo que representa aproximadamente $180 millones adicionales que llegaron efectivamente a las familias venezolanas en lugar de quedarse en intermediarios.',
+        'La distribución geográfica muestra que Colombia sigue siendo el mayor corredor de remesas ($820M), seguido de España ($340M), Estados Unidos ($290M) y Perú ($210M). Chile y Argentina muestran el crecimiento más acelerado.',
+        'El reto pendiente es la "última milla": la conversión a dólares físicos o bolívares sigue siendo costosa y poco transparente en muchas regiones de Venezuela. Proyectos como NEVADO Servicios trabajan en reducir esta brecha.',
+      ],
+      sources: ['BID — Remesas 2025', 'Observatorio de la Diáspora Venezolana', 'ENCOVI 2024–2025'],
+    },
+    {
+      id: 2, category: 'Trabajo', readTime: '5 min',
+      title: 'Nueva ola de talentos venezolanos lidera el sector tecnológico europeo',
+      excerpt: 'Desarrolladores y diseñadores venezolanos ocupan posiciones clave en startups de Madrid, Lisboa y Berlín.',
+      status: '⟳ En verificación',
+      body: [
+        'Una nueva generación de profesionales venezolanos formados en Europa está ocupando posiciones de liderazgo en el ecosistema startup del continente. El patrón es consistente en Madrid, Lisboa y Berlín: perfiles con formación venezolana + 2 a 4 años de experiencia europea acceden a roles de senior y lead con tasas de éxito superiores a la media del mercado.',
+        'Los sectores con mayor concentración son inteligencia artificial, fintech y diseño de producto. La combinación de formación técnica sólida — herencia de una tradición universitaria venezolana que aún conserva calidad —, adaptabilidad y dominio de inglés y español, crea un perfil especialmente competitivo en entornos multiculturales.',
+        'La verificación de este artículo está en proceso. Estamos consultando con tres cámaras de comercio europeas y con plataformas de reclutamiento para confirmar los datos precisos. Publicaremos la versión final con fuentes completas en las próximas 48 horas.',
+        'Lo que ya podemos confirmar: según datos de LinkedIn, el número de venezolanos con título "Senior" o superior en empresas europeas creció un 89% entre 2022 y 2025. La cifra es significativa aunque la base era pequeña.',
+        'El fenómeno tiene un componente de red: los venezolanos que llegaron antes refieren a los que llegan después. Las comunidades organizadas — como los espacios de NODO en Madrid y Lisboa — actúan como nodos de aceleración de este proceso.',
+      ],
+      sources: ['LinkedIn Talent Insights 2025 (en verificación)', 'NEVADO Capital Humano — Encuesta interna'],
+    },
+    {
+      id: 3, category: 'Diáspora', readTime: '9 min',
+      title: 'Venezuela registra récord histórico de emigración universitaria en una década',
+      excerpt: 'El 34% de egresados universitarios entre 2015–2025 reside fuera del país.',
+      status: '✓ Verificado',
+      body: [
+        'Un estudio del Observatorio de la Diáspora Venezolana, con base en datos de 12 universidades y 6 registros civiles internacionales, confirma que el 34% de los venezolanos que obtuvieron título universitario entre 2015 y 2025 reside actualmente fuera del país. Es el porcentaje más alto registrado en la historia moderna de Venezuela.',
+        'La migración universitaria no es homogénea: las carreras con mayor tasa de emigración son medicina (61%), ingeniería de sistemas (54%) e ingeniería química y civil (47%). Las ciencias sociales y humanidades muestran tasas más bajas, aunque en aumento.',
+        'El impacto en el sistema de salud venezolano es particularmente crítico: Venezuela perdió más de 22,000 médicos en una década. Hospitales que antes operaban con plantillas completas hoy funcionan al 40% de capacidad médica.',
+        'El debate sobre si esto es una "fuga de cerebros" o una "construcción de capital diasporesco" sigue abierto. Los optimistas señalan que la diáspora venezolana envía remesas, construye redes, adquiere experiencia global y eventualmente podría volver o contribuir desde el exterior. Los pesimistas señalan el daño inmediato a sistemas críticos.',
+        'Lo que NEVADO observa: la diferencia entre venezolanos conectados a redes organizadas y los que no lo están es cada vez mayor. Los primeros muestran mejor inserción, mayor bienestar reportado y más capacidad de mantener vínculos significativos con Venezuela.',
+      ],
+      sources: ['Observatorio de la Diáspora Venezolana 2025', 'ENCOVI 2024', 'OPS — Informe de RRHH en salud LATAM'],
+    },
+    {
+      id: 4, category: 'Educación', readTime: '7 min',
+      title: 'Convocatorias abiertas: 18 becas internacionales para venezolanos en 2025',
+      excerpt: 'Universidades en España, Canadá y Chile abren programas con cupo especial para la diáspora venezolana.',
+      status: '★ Oportunidad',
+      body: [
+        'TITULARES ha identificado 18 convocatorias activas de becas para venezuelanos en el exterior con cierre en los próximos 90 días. La concentración geográfica está en España (7 becas), Chile (4), Canadá (3) y Colombia (4).',
+        'Las más significativas por volumen de financiamiento: Beca Carolina (España, cubre matrícula + estipendio mensual + seguro médico), Becas de Excelencia MINEDUC Chile (cubre hasta el 100% de aranceles) y los programas de la Universidad de British Columbia para migrantes de países en crisis.',
+        'Los requisitos comunes: título universitario venezolano, carta de aceptación o postulación a programa de posgrado, prueba de residencia en el país de destino por al menos 6 meses, y en la mayoría de casos, nivel B2 de inglés o idioma local.',
+        'Un dato práctico: las solicitudes con mayor tasa de éxito incluyen una carta de motivación que conecta la experiencia migratoria con el proyecto de formación. Los comités de selección valoran la coherencia narrativa tanto como las calificaciones académicas.',
+        'NEVADO Ávila está preparando talleres de preparación de postulaciones para las becas con cierre antes del 30 de junio. Inscripción disponible en la sección de formación del módulo Ávila.',
+      ],
+      sources: ['Beca Carolina 2025 — convocatoria oficial', 'MINEDUC Chile 2026', 'UBC International Students Office', 'NEVADO Ávila — Base de datos de becas'],
+    },
+    {
+      id: 5, category: 'Comunidad', readTime: '5 min',
+      title: 'Comunidades venezolanas en Madrid superan 150,000 residentes activos',
+      excerpt: 'Madrid consolida su posición como el mayor hub venezolano fuera de América.',
+      status: '✓ Verificado',
+      body: [
+        'Los datos del padrón municipal de Madrid para el primer trimestre de 2026 confirman que 158,340 venezolanos están empadronados en la Comunidad de Madrid, un 12% más que en el mismo período del año anterior. Con residentes no empadronados, las estimaciones de la comunidad sitúan la cifra real entre 180,000 y 200,000.',
+        'La concentración geográfica muestra patrones claros: Carabanchel, Vallecas, Fuenlabrada y Alcorcón acogen al 60% de los venezolanos en Madrid. En los últimos dos años se observa un movimiento hacia zonas con mayor oferta de teletrabajo: Pozuelo, Las Rozas y Alcobendas ganan peso.',
+        'La integración laboral supera la media de otras comunidades inmigrantes: el 71% de venezolanos en Madrid mayores de 25 años está en situación de empleo regular, comparado con el 58% de media para el conjunto de inmigrantes latinoamericanos.',
+        'La identidad cultural se mantiene con fuerza: existen 34 asociaciones venezolanas registradas en la Comunidad de Madrid, y eventos como la Feria Venezolana de Madrid congrega regularmente entre 8,000 y 12,000 personas. Las areperas venezolanas son ya un segmento reconocido en la restauración madrileña.',
+        'El reto más citado por la comunidad: la homologación de títulos profesionales sigue siendo lenta y costosa. El 38% de venezolanos con título universitario trabaja en empleos por debajo de su nivel de cualificación.',
+      ],
+      sources: ['Padrón Municipal de Madrid Q1 2026', 'Comunidad de Madrid — Estadística de extranjeros', 'Asociación de Venezolanos en España'],
+    },
+    {
+      id: 6, category: 'Tecnología', readTime: '11 min',
+      title: 'Cripto como infraestructura económica: el caso venezolano como modelo global',
+      excerpt: 'Venezuela lidera adopción cripto per cápita en América Latina por quinto año consecutivo.',
+      status: '◈ Análisis',
+      body: [
+        'Por quinto año consecutivo, Venezuela lidera la adopción de criptomonedas per cápita en América Latina, según el índice de Chainalysis. Lo que comenzó como una estrategia de supervivencia económica se ha convertido en un caso de estudio global sobre adopción acelerada de tecnología por necesidad.',
+        'El venezolano promedio que usa cripto no es un especulador: es alguien que necesita recibir dinero del exterior sin perder el 15% en comisiones bancarias, o un comerciante que quiere proteger sus ingresos de la inflación. La adopción está impulsada por utilidad práctica, no por especulación.',
+        'El fenómeno tiene efectos secundarios interesantes: Venezuela produce una proporción inusualmente alta de desarrolladores blockchain, analistas cripto y traders con experiencia real que las empresas del sector buscan activamente. La adversidad creó expertise que ahora exporta al mundo.',
+        'Las plataformas más usadas en Venezuela son Binance (dominante, aproximadamente 60% del volumen), USDT sobre TRC-20 para transacciones de valor store, y LocalBitcoins/P2P para conversión a efectivo. El ecosistema DeFi tiene penetración limitada pero creciente entre perfiles técnicos.',
+        'El reto regulatorio es real: la falta de marcos legales claros crea incertidumbre para empresas que quieren operar formalmente con cripto en Venezuela. Sin embargo, la masa crítica de usuarios y expertise podría posicionar a venezolanos como los principales arquitectos de la regulación cripto latinoamericana si las condiciones políticas lo permiten.',
+      ],
+      sources: ['Chainalysis — Global Crypto Adoption Index 2025', 'Observatorio de Tecnología y Sociedad UCV', 'NEVADO Servicios — Encuesta fintech Q4 2025'],
+    },
+  ];
+
+  // ─── Ticker ─────────────────────────────────────────────────────────────────
+  const tickerItems = [
+    {val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},
+    {val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},
+    {val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},
+  ];
+  const track = document.getElementById('titTickerTrack');
+  const tickerHtml = tickerItems.map(i =>
+    `<span class="tit-ticker-item"><span class="tit-ticker-val">${i.val}</span><span class="tit-ticker-sep">·</span>${i.l}</span>`
+  ).join('');
+  track.innerHTML = tickerHtml + tickerHtml;
+
+  // ─── Filter ──────────────────────────────────────────────────────────────────
+  function filterByCategory(cat) {
+    document.querySelectorAll('.tit-article-card').forEach(card => {
+      const match = cat === 'all' || card.dataset.category === cat;
+      card.hidden = !match;
+    });
+  }
+
+  // ─── Search (debounced) ──────────────────────────────────────────────────────
+  let searchTimer;
+  function searchContent(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.tit-article-card').forEach(card => {
+      const title   = (card.dataset.title   || '').toLowerCase();
+      const summary = (card.dataset.summary || '').toLowerCase();
+      card.hidden = q.length > 0 && !title.includes(q) && !summary.includes(q);
+    });
+  }
+
+  // ─── Modal ───────────────────────────────────────────────────────────────────
+  function openArticle(id) {
+    const a = articles.find(x => x.id === id);
+    if (!a) return;
+    document.getElementById('modalCat').textContent    = a.category;
+    document.getElementById('modalStatus').textContent = a.status;
+    document.getElementById('modalTitle').textContent  = a.title;
+    document.getElementById('modalExcerpt').textContent= a.excerpt;
+    document.getElementById('modalReadTime').textContent = a.readTime;
+    document.getElementById('modalBody').innerHTML = a.body.map(p => `<p>${p}</p>`).join('');
+    document.getElementById('modalSources').innerHTML  = a.sources.map(s =>
+      `<div class="tit-modal-source-item">${s}</div>`).join('');
+    const modal = document.getElementById('articleModal');
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeArticle() {
+    document.getElementById('articleModal').hidden = true;
+    document.getElementById('articleModal').querySelector('.tit-modal-inner').classList.remove('reading-mode');
+    document.body.style.overflow = '';
+  }
+
+  function toggleSaveArticle(btn) {
+    const saved = btn.classList.toggle('saved');
+    btn.textContent = saved ? 'Guardado ✓' : 'Guardar';
+  }
+
+  function toggleReadingMode() {
+    document.getElementById('articleModal').querySelector('.tit-modal-inner').classList.toggle('reading-mode');
+  }
+
+  // ─── Verify demo ─────────────────────────────────────────────────────────────
+  function runVerificationDemo() {
+    const input = document.querySelector('.tit-verify-input').value.trim();
+    if (!input) return;
+    const result = document.getElementById('verifyResult');
+    const body   = document.getElementById('verifyResultBody');
+    body.textContent = 'Analizando…';
+    result.hidden = false;
+    setTimeout(() => {
+      body.innerHTML = `<strong>Señales detectadas:</strong> El texto contiene afirmaciones que pueden verificarse. Se identificaron 2 posibles fuentes de origen. La información circula desde hace aproximadamente 48 horas sin confirmación de fuentes primarias. <strong>Recomendación:</strong> No compartir hasta confirmar con al menos 2 fuentes independientes. El equipo editorial está investigando. Tiempo estimado de verificación completa: 24 horas.`;
+    }, 1400);
+  }
+
+  // ─── Newsletter demo ──────────────────────────────────────────────────────────
+  function newsletterDemo() {
+    const input = document.getElementById('newsletterInput');
+    const msg   = document.getElementById('newsletterMsg');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      msg.style.color = '#E74C3C';
+      msg.textContent = 'Ingresa un correo válido.';
+      return;
+    }
+    msg.style.color = '#27AE60';
+    msg.textContent = `✓ Suscrito. El próximo boletín llega el domingo a ${email}`;
+    input.value = '';
+    input.disabled = true;
+    document.getElementById('newsletterBtn').disabled = true;
+  }
+
+  // ─── Event listeners ─────────────────────────────────────────────────────────
+  // Chips
+  document.querySelectorAll('.tit-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.tit-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      filterByCategory(chip.dataset.category);
+    });
+  });
+
+  // Sidebar categories
+  document.querySelectorAll('.tit-category-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.tit-category-item').forEach(c => c.classList.remove('active'));
+      item.classList.add('active');
+      filterByCategory(item.dataset.filter);
+    });
+  });
+
+  // Sidebar nav scroll
+  document.querySelectorAll('.tit-sidebar-item[data-scroll]').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.tit-sidebar-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      const target = document.getElementById(item.dataset.scroll);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Search
+  document.querySelector('.tit-search').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => searchContent(e.target.value), 300);
+  });
+
+  // Modal close
+  document.getElementById('modalClose').addEventListener('click', closeArticle);
+  document.getElementById('articleModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('articleModal')) closeArticle();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArticle(); });
+
+  // Verify
+  document.getElementById('verifySubmit').addEventListener('click', runVerificationDemo);
+  document.getElementById('verifyBtn').addEventListener('click', () => {
+    document.getElementById('verifySection').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Newsletter
+  document.getElementById('newsletterBtn').addEventListener('click', newsletterDemo);
+  document.getElementById('newsletterInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') newsletterDemo();
+  });
+
+  // Breaking follow buttons
+  document.querySelectorAll('.tit-breaking-follow').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.textContent = btn.textContent === 'Siguiendo ✓' ? 'Seguir' : 'Siguiendo ✓';
+      btn.style.color = btn.textContent === 'Siguiendo ✓' ? '#2980B9' : '';
+    });
+  });
+
+  // Keyboard shortcut
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      document.querySelector('.tit-search').focus();
+    }
+  });
+  </script>
+  <div id="reading-mode-bar" style="display:none">
+    <button id="exit-reading-btn" onclick="toggleReadingMode()"><span>⊞</span> Salir del modo lectura</button>
+  </div>
+
+  <script>
+  function toggleReadingMode() {
+    const isReading = document.body.classList.toggle('reading-mode');
+    const bar = document.getElementById('reading-mode-bar');
+    const link = document.getElementById('tit-reading-link');
+    if (isReading) {
+      if (bar) bar.style.display = 'block';
+      if (link) link.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg> Modo normal';
+      showReadingToast('Modo lectura activado');
+      localStorage.setItem('titulares_reading_mode', '1');
+    } else {
+      if (bar) bar.style.display = 'none';
+      if (link) link.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" stroke-width="1.1"/></svg> Modo lectura';
+      localStorage.removeItem('titulares_reading_mode');
+    }
+  }
+
+  function showReadingToast(msg) {
+    const existing = document.getElementById('nv-reading-toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.id = 'nv-reading-toast';
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(10,10,18,0.95);border:1px solid rgba(255,255,255,0.1);color:rgba(232,228,220,0.8);padding:8px 18px;border-radius:8px;font-size:12px;letter-spacing:0.06em;font-family:\'Geist\',sans-serif;z-index:9000;pointer-events:none;animation:toast-in 0.25s ease;';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2200);
+  }
+
+  if (localStorage.getItem('titulares_reading_mode') === '1') {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.classList.add('reading-mode');
+      const bar = document.getElementById('reading-mode-bar');
+      if (bar) bar.style.display = 'block';
+      const link = document.getElementById('tit-reading-link');
+      if (link) link.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M4 6.5h5M6.5 4v5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg> Modo normal';
+    });
+  }
+  </script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+</body>
+</html>

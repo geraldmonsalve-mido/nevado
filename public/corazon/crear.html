@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Crear Campaña · Corazón · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#2980B9;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:960px;margin:0 auto;padding:40px 28px}
+
+    /* WIZARD STEPS */
+    .wizard-header{margin-bottom:40px;text-align:center}
+    .wizard-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:6px}
+    .wizard-header p{color:var(--text-dim);font-size:13px}
+    .steps-bar{display:flex;align-items:center;justify-content:center;gap:0;margin-top:24px}
+    .step{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+    .step-circle{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-muted);transition:all 0.3s;position:relative;z-index:1}
+    .step.active .step-circle{border-color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 15%,transparent);color:var(--page-accent)}
+    .step.done .step-circle{border-color:var(--page-accent);background:var(--page-accent);color:#05050A}
+    .step-label{font-size:9px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-muted);white-space:nowrap}
+    .step.active .step-label{color:var(--page-accent)}
+    .step.done .step-label{color:var(--text-dim)}
+    .step-connector{width:80px;height:1px;background:var(--border);margin-bottom:16px}
+    .step-connector.done{background:var(--page-accent)}
+
+    /* FORM PANELS */
+    .wizard-panel{display:none}
+    .wizard-panel.active{display:block}
+    .panel-layout{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+    .form-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+    .form-card-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .form-row{margin-bottom:16px}
+    .form-row label{display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
+    .form-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent)}
+    .form-textarea{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:120px;transition:border-color 0.2s;cursor:none;line-height:1.6}
+    .form-textarea:focus{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent)}
+    .form-select{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text-dim);font-family:'Inter',sans-serif;font-size:12px;outline:none;cursor:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(232,228,220,0.25)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+    .form-hint{font-size:10px;color:var(--text-muted);margin-top:4px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .category-pills{display:flex;gap:6px;flex-wrap:wrap}
+    .cat-pill{font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit}
+    .cat-pill.active,.cat-pill:hover{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+
+    /* PREVIEW */
+    .preview-card{background:var(--surface);border:1px solid color-mix(in srgb,var(--page-accent) 20%,transparent);border-radius:12px;padding:20px;position:sticky;top:88px}
+    .preview-label{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+    .preview-cover{height:80px;border-radius:8px;background:color-mix(in srgb,var(--page-accent) 08%,transparent);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px}
+    .preview-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;min-height:20px}
+    .preview-org{font-size:10px;color:var(--text-dim);margin-bottom:10px}
+    .preview-prog{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin-bottom:4px}
+    .preview-fill{height:100%;width:0%;border-radius:2px;background:var(--page-accent);transition:width 0.3s}
+    .preview-meta{font-size:9px;color:var(--text-muted)}
+
+    /* CHECKLIST (step 3) */
+    .checklist{margin-bottom:20px}
+    .check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .check-item:last-child{border-bottom:none}
+    .check-icon{width:18px;height:18px;border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:10px}
+    .check-icon.ok{background:color-mix(in srgb,var(--page-accent) 12%,transparent);border-color:color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent)}
+    .check-icon.warn{background:rgba(244,208,63,0.10);border-color:rgba(244,208,63,0.25);color:#F4D03F}
+    .check-text strong{display:block;font-size:11px;font-weight:500;color:var(--text)}
+    .check-text span{font-size:10px;color:var(--text-dim)}
+
+    /* WIZARD ACTIONS */
+    .wizard-actions{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+    .btn-prev{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 20px;border-radius:7px;cursor:none;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:inherit;transition:all 0.2s}
+    .btn-prev:hover{border-color:rgba(255,255,255,0.15);color:var(--text)}
+    .btn-next{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 24px;border-radius:7px;cursor:none;background:color-mix(in srgb,var(--page-accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s}
+    .btn-next:hover{background:color-mix(in srgb,var(--page-accent) 22%,transparent)}
+    .btn-submit{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 24px;border-radius:7px;cursor:none;background:color-mix(in srgb,var(--page-accent) 18%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s}
+    .btn-submit:hover{background:color-mix(in srgb,var(--page-accent) 26%,transparent)}
+    .step-indicator{font-size:10px;color:var(--text-muted)}
+
+    /* SUCCESS */
+    #success-panel{display:none;text-align:center;padding:60px 20px}
+    #success-panel.active{display:block}
+    .success-icon{font-size:56px;margin-bottom:16px}
+    .success-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--text);margin-bottom:8px}
+    .success-sub{font-size:13px;color:var(--text-dim);margin-bottom:24px}
+    .success-actions{display:flex;gap:10px;justify-content:center}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item active" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/corazon-tricolor.html">← Corazón</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Crear campaña</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="wizard-header">
+    <h1>Crear campaña</h1>
+    <p>Lanza una iniciativa de impacto para la comunidad venezolana en 4 pasos.</p>
+    <div class="steps-bar">
+      <div class="step active" id="s1"><div class="step-circle">1</div><div class="step-label">Básico</div></div>
+      <div class="step-connector" id="c12"></div>
+      <div class="step" id="s2"><div class="step-circle">2</div><div class="step-label">Detalles</div></div>
+      <div class="step-connector" id="c23"></div>
+      <div class="step" id="s3"><div class="step-circle">3</div><div class="step-label">Revisión</div></div>
+      <div class="step-connector" id="c34"></div>
+      <div class="step" id="s4"><div class="step-circle">4</div><div class="step-label">Publicar</div></div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="wizard-panel active" id="panel1">
+    <div class="panel-layout">
+      <div>
+        <div class="form-card">
+          <div class="form-card-title">Información básica</div>
+          <div class="form-row">
+            <label>Nombre de la campaña *</label>
+            <input class="form-input" id="f-title" type="text" placeholder="Ej: Becas de conectividad para estudiantes" maxlength="80" oninput="updatePreview()"/>
+            <div class="form-hint">Máximo 80 caracteres · Sé claro y específico</div>
+          </div>
+          <div class="form-row">
+            <label>Organización o nombre del responsable *</label>
+            <input class="form-input" id="f-org" type="text" placeholder="Tu nombre o nombre de la organización" oninput="updatePreview()"/>
+          </div>
+          <div class="form-row">
+            <label>Categoría *</label>
+            <div class="category-pills" id="cat-pills">
+              <button class="cat-pill active" data-cat="Educación">Educación</button>
+              <button class="cat-pill" data-cat="Salud">Salud</button>
+              <button class="cat-pill" data-cat="Emergencia">Emergencia</button>
+              <button class="cat-pill" data-cat="Cultura">Cultura</button>
+              <button class="cat-pill" data-cat="Emprendimiento">Emprendimiento</button>
+              <button class="cat-pill" data-cat="Vivienda">Vivienda</button>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="form-row">
+              <label>Meta de recaudación (USD) *</label>
+              <input class="form-input" id="f-goal" type="number" placeholder="Ej: 5000" min="100" oninput="updatePreview()"/>
+            </div>
+            <div class="form-row">
+              <label>Duración de la campaña *</label>
+              <select class="form-select" id="f-duration">
+                <option>15 días</option>
+                <option>30 días</option>
+                <option selected>45 días</option>
+                <option>60 días</option>
+                <option>90 días</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-card">
+        <div class="preview-label">Vista previa</div>
+        <div class="preview-cover">💙</div>
+        <div class="preview-title" id="prev-title">Nombre de tu campaña</div>
+        <div class="preview-org" id="prev-org">Organización</div>
+        <div class="preview-prog"><div class="preview-fill"></div></div>
+        <div class="preview-meta">$0 recaudados · 0% · 45 días</div>
+      </div>
+    </div>
+    <div class="wizard-actions">
+      <span class="step-indicator">Paso 1 de 4</span>
+      <button class="btn-next" onclick="goStep(2)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="wizard-panel" id="panel2">
+    <div class="panel-layout">
+      <div>
+        <div class="form-card">
+          <div class="form-card-title">Historia y detalles</div>
+          <div class="form-row">
+            <label>Descripción de la campaña *</label>
+            <textarea class="form-textarea" id="f-desc" placeholder="Explica el problema que resuelve tu campaña, cómo se usarán los fondos y el impacto esperado. Mínimo 150 palabras." style="min-height:160px"></textarea>
+            <div class="form-hint">Cuanto más específico, más confianza genera</div>
+          </div>
+          <div class="form-row">
+            <label>Beneficiarios directos</label>
+            <input class="form-input" type="text" placeholder="Ej: 200 estudiantes en zonas rurales de Venezuela"/>
+          </div>
+          <div class="form-row">
+            <label>Sitio web o redes sociales (opcional)</label>
+            <input class="form-input" type="url" placeholder="https://tusitio.org"/>
+          </div>
+          <div class="form-row">
+            <label>¿Cómo se auditarán los fondos?</label>
+            <select class="form-select">
+              <option>Publicaré recibos y comprobantes en NEVADO</option>
+              <option>Tengo auditor externo asignado</option>
+              <option>Usaré la plataforma de transparencia de NEVADO</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="preview-card">
+        <div class="preview-label">Vista previa</div>
+        <div class="preview-cover">💙</div>
+        <div class="preview-title" id="prev-title2">—</div>
+        <div class="preview-org" id="prev-org2">—</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:8px;line-height:1.5" id="prev-desc2">Tu descripción aparecerá aquí...</div>
+      </div>
+    </div>
+    <div class="wizard-actions">
+      <button class="btn-prev" onclick="goStep(1)">← Anterior</button>
+      <span class="step-indicator">Paso 2 de 4</span>
+      <button class="btn-next" onclick="goStep(3)">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="wizard-panel" id="panel3">
+    <div class="form-card" style="margin-bottom:20px">
+      <div class="form-card-title">Revisión — Checklist de calidad</div>
+      <div class="checklist">
+        <div class="check-item">
+          <div class="check-icon ok">✓</div>
+          <div class="check-text"><strong>Nombre de campaña</strong><span>Claro, descriptivo y con menos de 80 caracteres</span></div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon ok">✓</div>
+          <div class="check-text"><strong>Meta financiera definida</strong><span>Monto específico y justificado</span></div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon warn">!</div>
+          <div class="check-text"><strong>Descripción completa</strong><span>Recomendamos al menos 200 palabras para mayor confianza</span></div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon ok">✓</div>
+          <div class="check-text"><strong>Beneficiarios identificados</strong><span>Quiénes recibirán el apoyo</span></div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon ok">✓</div>
+          <div class="check-text"><strong>Mecanismo de auditoría seleccionado</strong><span>Transparencia es obligatoria en NEVADO Corazón</span></div>
+        </div>
+      </div>
+      <div style="background:rgba(41,128,185,0.06);border:1px solid rgba(41,128,185,0.18);border-radius:8px;padding:14px;font-size:11px;color:var(--text-dim);line-height:1.6">
+        <strong style="color:var(--text);display:block;margin-bottom:4px">Proceso de verificación</strong>
+        Tu campaña será revisada por el equipo de NEVADO Corazón en un plazo de 24-48 horas antes de publicarse. Podrás realizar ajustes durante ese período.
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-card-title">Términos y condiciones</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.7;margin-bottom:16px">
+        Al publicar esta campaña confirmo que: (1) la información proporcionada es verídica, (2) los fondos se destinarán al propósito declarado, (3) publicaré actualizaciones regulares y (4) acepto la auditoría pública de NEVADO Corazón.
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:none">
+        <input type="checkbox" id="terms-check" style="margin-top:2px;cursor:none;accent-color:var(--page-accent)"/>
+        <span style="font-size:11px;color:var(--text-dim)">Acepto los términos, el proceso de verificación y el compromiso de transparencia con la comunidad NEVADO.</span>
+      </label>
+    </div>
+    <div class="wizard-actions">
+      <button class="btn-prev" onclick="goStep(2)">← Anterior</button>
+      <span class="step-indicator">Paso 3 de 4</span>
+      <button class="btn-next" onclick="goStep(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="wizard-panel" id="panel4">
+    <div class="form-card" style="margin-bottom:20px">
+      <div class="form-card-title">Confirmar y publicar</div>
+      <div style="font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:20px">
+        Tu campaña está lista para enviarse a revisión. El equipo de NEVADO la verificará en 24-48 horas. Recibirás una notificación cuando esté publicada.
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px">
+        <div style="font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px">Resumen de tu campaña</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><div style="font-size:9px;color:var(--text-muted)">Nombre</div><div style="font-size:11px;color:var(--text-dim)" id="sum-title">—</div></div>
+          <div><div style="font-size:9px;color:var(--text-muted)">Meta</div><div style="font-size:11px;color:var(--text-dim)" id="sum-goal">—</div></div>
+          <div><div style="font-size:9px;color:var(--text-muted)">Categoría</div><div style="font-size:11px;color:var(--text-dim)" id="sum-cat">Educación</div></div>
+          <div><div style="font-size:9px;color:var(--text-muted)">Duración</div><div style="font-size:11px;color:var(--text-dim)" id="sum-dur">45 días</div></div>
+        </div>
+      </div>
+      <button class="btn-submit" style="width:100%;padding:12px;font-size:11px" onclick="submitCampaign()">Enviar para revisión</button>
+    </div>
+    <div class="wizard-actions">
+      <button class="btn-prev" onclick="goStep(3)">← Anterior</button>
+      <span class="step-indicator">Paso 4 de 4</span>
+      <span></span>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="success-panel">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Campaña enviada para revisión</div>
+    <div class="success-sub">El equipo de NEVADO Corazón revisará tu campaña en las próximas 24-48 horas.<br>Te notificaremos cuando esté publicada y lista para recibir donaciones.</div>
+    <div class="success-actions">
+      <a href="/corazon-tricolor.html" style="font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 20px;border-radius:7px;text-decoration:none;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 28%,transparent);color:var(--page-accent)">Ir a Corazón</a>
+      <a href="/corazon/transparencia.html" style="font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 20px;border-radius:7px;text-decoration:none;background:transparent;border:1px solid var(--border);color:var(--text-dim)">Ver transparencia</a>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Corazón</h4>
+      <a href="/corazon/campana.html">Campaña</a>
+      <a href="/corazon/crear.html">Crear campaña</a>
+      <a href="/corazon/transparencia.html">Transparencia</a>
+      <a href="/corazon/donacion.html">Donar</a>
+      <a href="/corazon/historias.html">Historias</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Guías</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+let currentStep=1;
+let selectedCat='Educación';
+function goStep(n){
+  document.getElementById('panel'+currentStep).classList.remove('active');
+  const s=document.getElementById('s'+currentStep);
+  s.classList.remove('active');s.classList.add('done');
+  s.querySelector('.step-circle').textContent='✓';
+  if(n>1)document.getElementById('c'+Math.min(currentStep,n-1)+(Math.min(currentStep,n-1)+1)).classList.add('done');
+  currentStep=n;
+  document.getElementById('panel'+n).classList.add('active');
+  document.getElementById('s'+n).classList.add('active');
+  updateSummary();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updatePreview(){
+  const t=document.getElementById('f-title').value||'Nombre de tu campaña';
+  const o=document.getElementById('f-org').value||'Organización';
+  document.getElementById('prev-title').textContent=t;
+  document.getElementById('prev-org').textContent=o;
+  if(document.getElementById('prev-title2')){
+    document.getElementById('prev-title2').textContent=t;
+    document.getElementById('prev-org2').textContent=o;
+    const d=document.getElementById('f-desc');
+    if(d)document.getElementById('prev-desc2').textContent=d.value.slice(0,120)||(d.value?d.value.slice(0,120)+'...':"Tu descripción aparecerá aquí...");
+  }
+}
+function updateSummary(){
+  const t=document.getElementById('f-title').value||'—';
+  const g=document.getElementById('f-goal').value;
+  document.getElementById('sum-title').textContent=t;
+  document.getElementById('sum-goal').textContent=g?'$'+parseInt(g).toLocaleString()+' USD':'—';
+  document.getElementById('sum-cat').textContent=selectedCat;
+  document.getElementById('sum-dur').textContent=document.getElementById('f-duration').value;
+}
+document.getElementById('cat-pills').addEventListener('click',function(e){
+  const p=e.target.closest('.cat-pill');
+  if(!p)return;
+  document.querySelectorAll('.cat-pill').forEach(x=>x.classList.remove('active'));
+  p.classList.add('active');
+  selectedCat=p.dataset.cat;
+});
+function submitCampaign(){
+  for(let i=1;i<=4;i++){
+    const p=document.getElementById('panel'+i);
+    if(p)p.style.display='none';
+  }
+  document.querySelector('.wizard-header').style.display='none';
+  document.getElementById('success-panel').classList.add('active');
+}
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

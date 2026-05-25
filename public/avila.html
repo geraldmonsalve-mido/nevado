@@ -1,0 +1,1274 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ÁVILA — Plataforma de Formación · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --carbon:       #0C0C0B;
+      --ivory:        #E8E4DC;
+      --gold:         #B8944A;
+      --avila:        #F4D03F;
+      --avila-dim:    rgba(244,208,63,0.10);
+      --avila-mid:    rgba(244,208,63,0.50);
+      --accent:       #C8501A;
+      --blue:         #2980B9;
+      --green:        #27AE60;
+      --surface:      rgba(22,22,20,0.9);
+      --border:       rgba(255,255,255,0.07);
+      --border-avila: rgba(244,208,63,0.18);
+      --text-dim:     rgba(232,228,220,0.35);
+      --text-mid:     rgba(232,228,220,0.60);
+      --topbar-h:     52px;
+      --page-accent:  #F4D03F;
+      --sub-h:        48px;
+      --sidebar-w:    248px;
+      --panel-w:      268px;
+    }
+    html, body { width:100%; min-height:100%; background:var(--carbon); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; overflow-x:hidden; padding-bottom:28px; }
+    #std-footer{background:#080810;border-top:1px solid rgba(255,255,255,0.06);padding:48px 10vw 56px;position:relative;z-index:10}
+    .std-fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
+    .std-fl-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.18em;color:var(--avila);text-decoration:none}
+    .std-fl-desc{font-size:12px;color:rgba(232,228,220,0.50);line-height:1.7;max-width:240px;margin-top:12px}
+    .std-fc-title{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,228,220,0.34);margin-bottom:12px}
+    .std-fl{display:block;font-size:12px;color:rgba(232,228,220,0.50);margin-bottom:8px;text-decoration:none;transition:color .2s;cursor:none}
+    .std-fl:hover{color:var(--avila)}
+    .std-fb{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)}
+    .std-fc{font-size:11px;color:rgba(232,228,220,0.34)}
+    .std-tri{display:flex;flex-direction:column;gap:3px}
+    .std-tri div{width:28px;height:4px;border-radius:2px}
+    @media(max-width:768px){.std-fg{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.std-fg{grid-template-columns:1fr}}
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+
+    /* ── TOPBAR UNIFICADO v3.0 ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      flex-shrink: 0; font-family: 'Cormorant Garamond', serif;
+    }
+    .topbar-logo span { color: var(--page-accent, #B8944A); }
+    .topbar-nav {
+      display: flex; align-items: center; gap: 2px;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .nav-item {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(232,228,220,0.38); text-decoration: none;
+      padding: 5px 12px; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      white-space: nowrap; cursor: none;
+    }
+    .nav-item:hover {
+      color: rgba(232,228,220,0.75);
+      background: rgba(255,255,255,0.05);
+    }
+    .nav-item.active {
+      color: var(--page-accent, #B8944A);
+      background: color-mix(in srgb, var(--page-accent, #B8944A) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--page-accent, #B8944A) 30%, transparent);
+      box-shadow: 0 0 12px color-mix(in srgb, var(--page-accent, #B8944A) 20%, transparent);
+    }
+    .topbar-actions {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .topbar-divider {
+      width: 1px; height: 20px; background: rgba(255,255,255,0.10); margin: 0 2px;
+    }
+    .btn-plus {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 6px; cursor: none;
+      background: transparent; color: #B8944A;
+      border: 1px solid rgba(184,148,74,0.35);
+      transition: all 0.2s; font-family: inherit;
+    }
+    .btn-plus:hover { background: rgba(184,148,74,0.08); }
+    .topbar-user {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center; justify-content: center;
+      cursor: none; color: rgba(232,228,220,0.45);
+      transition: all 0.2s;
+    }
+    .topbar-user:hover { background: rgba(255,255,255,0.10); color: rgba(232,228,220,0.85); }
+
+    /* SUBHEADER */
+    #av-sub { position:fixed; top:var(--topbar-h); left:0; right:0; height:var(--sub-h); display:flex; align-items:center; justify-content:space-between; padding:0 24px; border-bottom:1px solid var(--border-avila); background:rgba(10,10,9,0.95); backdrop-filter:blur(16px); z-index:190; gap:16px; }
+    .sub-search-wrap { flex:1; max-width:320px; position:relative; }
+    .sub-search-ico { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text-dim); font-size:13px; pointer-events:none; }
+    .sub-search { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:4px; padding:6px 12px 6px 30px; font-size:12px; color:var(--ivory); font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; cursor:none; }
+    .sub-search:focus { border-color:var(--avila); }
+    .sub-search::placeholder { color:var(--text-dim); }
+    .sub-metrics { display:flex; align-items:center; gap:18px; }
+    .sub-metric { display:flex; flex-direction:column; align-items:center; }
+    .sub-metric-val { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--avila); line-height:1; }
+    .sub-metric-lbl { font-size:9px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); }
+    .sub-sep { width:1px; height:26px; background:var(--border); }
+    .btn-diag { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; padding:7px 16px; background:var(--avila); color:var(--carbon); border:none; cursor:none; font-weight:600; border-radius:3px; white-space:nowrap; }
+    .btn-diag:hover { opacity:0.85; }
+
+    /* LAYOUT */
+    #av-layout { display:flex; margin-top:calc(var(--topbar-h) + var(--sub-h)); min-height:calc(100vh - var(--topbar-h) - var(--sub-h)); position:relative; z-index:10; }
+
+    /* LEFT SIDEBAR */
+    #av-sidebar { width:var(--sidebar-w); flex-shrink:0; position:sticky; top:calc(var(--topbar-h) + var(--sub-h)); height:calc(100vh - var(--topbar-h) - var(--sub-h)); overflow-y:auto; border-right:1px solid var(--border); padding:16px 0 20px; scrollbar-width:none; }
+    #av-sidebar::-webkit-scrollbar { display:none; }
+    .sb-lbl { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-dim); padding:0 14px 5px; }
+    .sb-link { display:flex; align-items:center; gap:9px; padding:7px 14px; font-size:12px; color:var(--text-mid); cursor:none; transition:all 0.18s; border-left:2px solid transparent; text-decoration:none; }
+    .sb-link:hover { color:var(--ivory); background:rgba(255,255,255,0.03); }
+    .sb-link.active { color:var(--avila); border-left-color:var(--avila); background:var(--avila-dim); }
+    .sb-link-ico { font-size:13px; width:16px; text-align:center; }
+    .sb-div { height:1px; background:var(--border); margin:10px 14px; }
+    .sb-area { display:flex; align-items:center; justify-content:space-between; padding:6px 14px; font-size:11px; color:var(--text-mid); cursor:none; transition:all 0.18s; border-radius:3px; margin:1px 6px; }
+    .sb-area:hover { background:rgba(255,255,255,0.04); color:var(--ivory); }
+    .sb-area.sel { color:var(--avila); background:var(--avila-dim); }
+    .sb-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-right:6px; }
+    .sb-cnt { font-size:9px; color:var(--text-dim); }
+
+    /* MAIN */
+    #av-main { flex:1; min-width:0; padding:28px 28px 100px; }
+
+    /* RIGHT PANEL */
+    #av-panel { width:var(--panel-w); flex-shrink:0; position:sticky; top:calc(var(--topbar-h) + var(--sub-h)); height:calc(100vh - var(--topbar-h) - var(--sub-h)); overflow-y:auto; border-left:1px solid var(--border); padding:16px 14px; scrollbar-width:none; }
+    #av-panel::-webkit-scrollbar { display:none; }
+    .pb { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px; margin-bottom:10px; }
+    .pb-title { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--avila); margin-bottom:10px; font-weight:600; }
+    .prog-ring-wrap { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .prog-ring { position:relative; width:54px; height:54px; flex-shrink:0; }
+    .prog-ring svg { transform:rotate(-90deg); }
+    .prog-ring-val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:16px; color:var(--avila); }
+    .prog-info h4 { font-size:12px; font-weight:600; margin-bottom:2px; }
+    .prog-info p { font-size:10px; color:var(--text-mid); }
+    .mini-bar { height:3px; border-radius:2px; background:rgba(255,255,255,0.06); margin-top:5px; overflow:hidden; }
+    .mini-bar-fill { height:100%; border-radius:2px; background:var(--avila); }
+    .streak-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--border); margin-top:8px; }
+    .streak-val { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--accent); line-height:1; }
+    .badge-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:5px; }
+    .bdg { aspect-ratio:1; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:17px; background:rgba(255,255,255,0.04); border:1px solid var(--border); cursor:none; transition:transform 0.2s; }
+    .bdg.on { background:var(--avila-dim); border-color:var(--border-avila); }
+    .bdg:hover { transform:scale(1.1); }
+    .next-card { background:linear-gradient(135deg,rgba(244,208,63,0.07),rgba(244,208,63,0.01)); border:1px solid var(--border-avila); border-radius:5px; padding:11px; }
+    .next-lbl { font-size:8px; letter-spacing:0.12em; text-transform:uppercase; color:var(--avila-mid); margin-bottom:4px; }
+    .next-title { font-size:11px; font-weight:500; margin-bottom:5px; }
+    .next-btn { font-size:9px; letter-spacing:0.07em; text-transform:uppercase; padding:4px 10px; background:var(--avila); color:var(--carbon); border:none; cursor:none; font-weight:600; border-radius:2px; }
+    .comm-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--border); }
+    .comm-row:last-child { border-bottom:none; }
+    .comm-lbl { font-size:10px; color:var(--text-mid); }
+    .comm-val { font-size:11px; font-weight:600; }
+
+    /* SECTION LAYOUT */
+    .s-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:18px; }
+    .s-tag { font-size:9px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--avila); margin-bottom:5px; }
+    .s-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,4vw,2.8rem); letter-spacing:0.04em; line-height:0.95; }
+    .s-action { font-size:11px; color:var(--avila); cursor:none; text-decoration:none; letter-spacing:0.05em; padding-bottom:1px; border-bottom:1px solid var(--avila-mid); white-space:nowrap; }
+    .av-s { margin-bottom:48px; }
+
+    /* HERO */
+    #av-hero { background:linear-gradient(135deg,rgba(244,208,63,0.06) 0%,transparent 55%); border:1px solid var(--border-avila); border-radius:8px; padding:32px 28px; margin-bottom:36px; position:relative; overflow:hidden; }
+    #av-hero::before { content:'ÁVILA'; position:absolute; right:-8px; top:-18px; font-family:'Bebas Neue',sans-serif; font-size:8rem; color:rgba(244,208,63,0.04); line-height:1; pointer-events:none; user-select:none; }
+    .h-eye { font-size:9px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:var(--avila); margin-bottom:8px; }
+    .h-h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.8rem,6vw,5rem); letter-spacing:0.04em; line-height:0.92; margin-bottom:12px; }
+    .h-h1 em { color:var(--avila); font-style:normal; }
+    .h-desc { font-size:13px; font-weight:300; color:var(--text-mid); max-width:440px; line-height:1.7; margin-bottom:20px; }
+    .h-ctas { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px; }
+    .btn-p { font-size:11px; letter-spacing:0.09em; text-transform:uppercase; padding:9px 22px; background:var(--avila); color:var(--carbon); border:none; cursor:none; font-weight:600; border-radius:3px; }
+    .btn-p:hover { opacity:0.87; }
+    .btn-s { font-size:11px; letter-spacing:0.09em; text-transform:uppercase; padding:8px 20px; background:transparent; color:var(--avila); border:1px solid var(--avila); cursor:none; border-radius:3px; }
+    .btn-s:hover { background:var(--avila-dim); }
+    .h-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+    .h-stat { border-top:2px solid var(--avila); padding-top:10px; }
+    .h-stat-val { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:var(--avila); line-height:1; }
+    .h-stat-lbl { font-size:9px; color:var(--text-dim); letter-spacing:0.05em; }
+
+    /* ROUTE CARDS */
+    #routes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .rc { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:18px; cursor:none; transition:border-color 0.22s,transform 0.22s; position:relative; overflow:hidden; }
+    .rc:hover { transform:translateY(-2px); }
+    .rc-ico { font-size:26px; margin-bottom:8px; }
+    .rc-title { font-size:13px; font-weight:600; margin-bottom:3px; }
+    .rc-desc { font-size:11px; color:var(--text-mid); line-height:1.55; margin-bottom:10px; }
+    .rc-meta { display:flex; gap:10px; }
+    .rc-m { font-size:10px; color:var(--text-dim); }
+    .rc-foot { display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
+    .rc-lvl { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 7px; border-radius:2px; background:rgba(255,255,255,0.05); color:var(--text-mid); }
+
+    /* COURSE CARDS */
+    #courses-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .cc { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px 16px; display:flex; align-items:flex-start; gap:12px; cursor:none; transition:border-color 0.2s,background 0.2s; }
+    .cc:hover { border-color:var(--border-avila); background:rgba(244,208,63,0.02); }
+    .cc-thumb { width:44px; height:44px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+    .cc-body { flex:1; min-width:0; }
+    .cc-title { font-size:12px; font-weight:600; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cc-meta { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+    .cc-cat { font-size:8px; letter-spacing:0.08em; text-transform:uppercase; padding:2px 6px; border-radius:2px; font-weight:600; }
+    .cc-dur { font-size:10px; color:var(--text-dim); }
+    .cc-prog-lbl { display:flex; justify-content:space-between; font-size:10px; color:var(--text-dim); margin-bottom:3px; }
+    .cc-bar { height:3px; border-radius:2px; background:rgba(255,255,255,0.06); overflow:hidden; }
+    .cc-bar-f { height:100%; border-radius:2px; transition:width 0.5s; }
+
+    /* LESSONS */
+    #lessons-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .lc { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:14px; cursor:none; transition:all 0.2s; }
+    .lc:hover { border-color:var(--border-avila); transform:translateY(-1px); }
+    .lc.done { border-color:rgba(39,174,96,0.28); background:rgba(39,174,96,0.03); }
+    .lc-ico { font-size:22px; margin-bottom:7px; }
+    .lc-type { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:3px; }
+    .lc-title { font-size:12px; font-weight:600; margin-bottom:8px; line-height:1.4; }
+    .lc-foot { display:flex; align-items:center; justify-content:space-between; }
+    .lc-time { font-size:10px; color:var(--text-dim); }
+    .lc-btn { font-size:9px; letter-spacing:0.06em; text-transform:uppercase; padding:4px 9px; border:1px solid var(--avila); color:var(--avila); background:transparent; cursor:none; border-radius:2px; transition:all 0.18s; }
+    .lc-btn:hover { background:var(--avila); color:var(--carbon); }
+    .lc-btn.done { border-color:var(--green); color:var(--green); }
+
+    /* CHALLENGE */
+    .ch-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .ch-streak { display:flex; align-items:center; gap:6px; font-size:12px; }
+    .ch-streak b { color:var(--accent); font-family:'Bebas Neue',sans-serif; font-size:20px; }
+    .ch-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:7px; margin-bottom:14px; }
+    .ch-day { aspect-ratio:1; border-radius:5px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(255,255,255,0.03); border:1px solid var(--border); cursor:none; transition:all 0.18s; }
+    .ch-day:hover:not(.locked) { border-color:var(--avila-mid); background:var(--avila-dim); }
+    .ch-day.done { background:rgba(39,174,96,0.08); border-color:rgba(39,174,96,0.28); }
+    .ch-day.today { border-color:var(--avila); box-shadow:0 0 0 1px var(--avila); }
+    .ch-day.locked { opacity:0.3; }
+    .ch-num { font-family:'Bebas Neue',sans-serif; font-size:15px; color:var(--text-mid); line-height:1; }
+    .ch-day.done .ch-num { color:var(--green); }
+    .ch-day.today .ch-num { color:var(--avila); }
+    .ch-ico { font-size:9px; }
+    .ch-tip { background:var(--avila-dim); border:1px solid var(--border-avila); border-radius:5px; padding:12px 14px; font-size:12px; color:var(--text-mid); line-height:1.6; }
+    .ch-tip strong { color:var(--avila); }
+
+    /* LAB */
+    .lab-tabs { display:flex; gap:4px; margin-bottom:18px; flex-wrap:wrap; }
+    .lab-tab { font-size:10px; letter-spacing:0.06em; text-transform:uppercase; padding:6px 12px; background:transparent; border:1px solid var(--border); color:var(--text-mid); cursor:none; border-radius:3px; transition:all 0.18s; }
+    .lab-tab:hover { border-color:var(--avila-mid); color:var(--avila); }
+    .lab-tab.active { background:var(--avila); color:var(--carbon); border-color:var(--avila); font-weight:600; }
+    .lab-tool { display:none; animation:fadeIn 0.3s ease; }
+    .lab-tool.active { display:block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+    .lab-card { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:22px; }
+    .lab-t { font-size:15px; font-weight:600; margin-bottom:5px; }
+    .lab-d { font-size:12px; color:var(--text-mid); line-height:1.65; margin-bottom:16px; }
+    .lab-inp { width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:4px; padding:9px 12px; font-size:12px; color:var(--ivory); font-family:'Inter',sans-serif; outline:none; resize:vertical; min-height:76px; margin-bottom:9px; transition:border-color 0.2s; cursor:none; }
+    .lab-inp:focus { border-color:var(--avila); }
+    .lab-run { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; padding:7px 16px; background:var(--avila); color:var(--carbon); border:none; cursor:none; font-weight:600; border-radius:3px; }
+    .lab-run:hover { opacity:0.87; }
+    .lab-out { margin-top:12px; background:rgba(244,208,63,0.04); border:1px solid var(--border-avila); border-radius:5px; padding:12px; font-size:12px; color:var(--text-mid); line-height:1.65; display:none; }
+    .lab-out.show { display:block; }
+
+    /* CERTIFICATES */
+    #certs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .cert-c { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:18px; cursor:none; transition:all 0.22s; position:relative; }
+    .cert-c:hover { border-color:var(--avila-mid); transform:translateY(-2px); }
+    .cert-rib { position:absolute; top:0; right:0; background:var(--avila); color:var(--carbon); font-size:8px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:3px 7px; border-bottom-left-radius:5px; }
+    .cert-ico { font-size:30px; margin-bottom:8px; }
+    .cert-t { font-size:13px; font-weight:600; margin-bottom:3px; }
+    .cert-org { font-size:9px; color:var(--text-dim); margin-bottom:9px; }
+    .cert-foot { display:flex; gap:7px; }
+    .cert-btn { flex:1; font-size:9px; letter-spacing:0.05em; text-transform:uppercase; padding:6px; border:1px solid var(--border); color:var(--text-mid); background:transparent; cursor:none; border-radius:2px; text-align:center; transition:all 0.18s; }
+    .cert-btn:hover { border-color:var(--avila); color:var(--avila); }
+    .cert-btn.p { background:var(--avila); color:var(--carbon); border-color:var(--avila); font-weight:600; }
+
+    /* LIBRARY */
+    .lib-filters { display:flex; gap:7px; margin-bottom:16px; flex-wrap:wrap; }
+    .lib-f { font-size:10px; letter-spacing:0.07em; text-transform:uppercase; padding:4px 11px; background:transparent; border:1px solid var(--border); color:var(--text-mid); cursor:none; border-radius:2px; transition:all 0.18s; }
+    .lib-f:hover { border-color:var(--avila-mid); color:var(--avila); }
+    .lib-f.active { background:var(--avila-dim); border-color:var(--avila); color:var(--avila); }
+    #library-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .lib-c { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:12px 14px; display:flex; align-items:flex-start; gap:10px; cursor:none; transition:border-color 0.2s; }
+    .lib-c:hover { border-color:var(--border-avila); }
+    .lib-c[data-saved="true"] { border-color:rgba(39,174,96,0.28); }
+    .lib-ico { font-size:22px; flex-shrink:0; }
+    .lib-body { flex:1; min-width:0; }
+    .lib-type { font-size:8px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:2px; }
+    .lib-title { font-size:11px; font-weight:600; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lib-author { font-size:10px; color:var(--text-mid); margin-bottom:5px; }
+    .lib-foot { display:flex; align-items:center; justify-content:space-between; }
+    .lib-rating { font-size:10px; color:var(--avila); }
+    .lib-save { font-size:8px; letter-spacing:0.05em; text-transform:uppercase; padding:2px 7px; border:1px solid var(--border); color:var(--text-dim); background:transparent; cursor:none; border-radius:2px; transition:all 0.18s; }
+    .lib-save:hover { border-color:var(--green); color:var(--green); }
+    .lib-save.saved { border-color:var(--green); color:var(--green); }
+
+    /* MENTORS */
+    #mentors-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .m-c { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:18px; cursor:none; transition:border-color 0.2s; }
+    .m-c:hover { border-color:var(--border-avila); }
+    .m-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .m-av { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
+    .m-info h4 { font-size:12px; font-weight:600; margin-bottom:1px; }
+    .m-info p { font-size:10px; color:var(--text-mid); }
+    .m-tags { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; }
+    .m-tag { font-size:8px; letter-spacing:0.05em; text-transform:uppercase; padding:2px 6px; background:rgba(255,255,255,0.05); border-radius:2px; color:var(--text-mid); }
+    .m-stats { display:flex; gap:14px; margin-bottom:12px; }
+    .m-stat { font-size:9px; color:var(--text-dim); }
+    .m-stat b { color:var(--ivory); font-size:11px; display:block; }
+    .m-btn { width:100%; font-size:10px; letter-spacing:0.07em; text-transform:uppercase; padding:7px; background:transparent; border:1px solid var(--avila); color:var(--avila); cursor:none; border-radius:3px; font-weight:500; transition:all 0.2s; }
+    .m-btn:hover { background:var(--avila); color:var(--carbon); }
+
+    /* EVENTS */
+    #events-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .ev-c { background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:18px; display:flex; gap:14px; cursor:none; transition:border-color 0.2s; }
+    .ev-c:hover { border-color:var(--border-avila); }
+    .ev-date { flex-shrink:0; width:46px; text-align:center; border-radius:5px; padding:7px 3px; background:var(--avila-dim); border:1px solid var(--border-avila); }
+    .ev-month { font-size:8px; letter-spacing:0.1em; text-transform:uppercase; color:var(--avila); }
+    .ev-day { font-family:'Bebas Neue',sans-serif; font-size:26px; color:var(--avila); line-height:1; }
+    .ev-body { flex:1; min-width:0; }
+    .ev-type { font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); margin-bottom:3px; }
+    .ev-title { font-size:12px; font-weight:600; margin-bottom:3px; }
+    .ev-host { font-size:10px; color:var(--text-mid); margin-bottom:9px; }
+    .ev-btn { font-size:9px; letter-spacing:0.06em; text-transform:uppercase; padding:4px 12px; background:var(--avila); color:var(--carbon); border:none; cursor:none; font-weight:600; border-radius:2px; }
+    .ev-btn:hover { opacity:0.87; }
+
+    /* DIAGNOSTIC MODAL */
+    #diag-ov { position:fixed; inset:0; background:rgba(0,0,0,0.82); backdrop-filter:blur(8px); z-index:500; display:none; align-items:center; justify-content:center; }
+    #diag-ov.show { display:flex; }
+    #diag-box { background:rgba(14,14,12,0.98); border:1px solid var(--border-avila); border-radius:9px; width:min(520px,92vw); max-height:85vh; overflow-y:auto; padding:28px; position:relative; }
+    .d-prog { height:2px; background:rgba(255,255,255,0.06); border-radius:1px; margin-bottom:22px; overflow:hidden; }
+    .d-prog-f { height:100%; background:var(--avila); border-radius:1px; transition:width 0.4s ease; }
+    .d-q { font-size:14px; font-weight:500; margin-bottom:18px; line-height:1.5; }
+    .d-opts { display:grid; gap:7px; }
+    .d-opt { padding:11px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:5px; font-size:12px; cursor:none; transition:all 0.18s; text-align:left; color:var(--ivory); }
+    .d-opt:hover { border-color:var(--avila); background:var(--avila-dim); }
+    .d-opt.sel { border-color:var(--avila); background:var(--avila-dim); }
+    .d-result { background:linear-gradient(135deg,rgba(244,208,63,0.07),transparent); border:1px solid var(--border-avila); border-radius:7px; padding:18px; margin-top:14px; }
+    .d-res-lbl { font-size:8px; letter-spacing:0.14em; text-transform:uppercase; color:var(--avila); margin-bottom:5px; }
+    .d-res-t { font-size:17px; font-weight:600; margin-bottom:7px; }
+    .d-res-d { font-size:12px; color:var(--text-mid); line-height:1.65; }
+    .d-nav { display:flex; justify-content:space-between; margin-top:20px; }
+    .d-back { font-size:11px; color:var(--text-mid); background:transparent; border:none; cursor:none; }
+    .d-next { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; padding:7px 18px; background:var(--avila); color:var(--carbon); border:none; cursor:none; font-weight:600; border-radius:3px; }
+    .d-next:disabled { opacity:0.4; }
+    .d-close { position:absolute; top:14px; right:14px; font-size:13px; color:var(--text-dim); background:transparent; border:none; cursor:none; }
+
+    /* CERT MODAL */
+    #cert-ov { position:fixed; inset:0; background:rgba(0,0,0,0.87); backdrop-filter:blur(10px); z-index:500; display:none; align-items:center; justify-content:center; }
+    #cert-ov.show { display:flex; }
+    #cert-box { background:rgba(14,14,12,0.98); border:1px solid var(--border-avila); border-radius:9px; width:min(460px,92vw); padding:28px; position:relative; text-align:center; }
+    .cm-ico { font-size:52px; margin-bottom:10px; }
+    .cm-lbl { font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:var(--avila); margin-bottom:5px; }
+    .cm-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.06em; margin-bottom:7px; }
+    .cm-id { font-size:9px; color:var(--text-dim); margin-bottom:16px; font-family:monospace; }
+    .cm-desc { font-size:12px; color:var(--text-mid); margin-bottom:18px; line-height:1.6; }
+    .cm-btns { display:flex; gap:9px; justify-content:center; }
+    .cert-close { position:absolute; top:12px; right:14px; font-size:13px; color:var(--text-dim); background:transparent; border:none; cursor:none; }
+
+    /* READING MODE */
+    body.reading-mode #av-sidebar { display: none !important; }
+    body.reading-mode #av-main {
+      max-width: 860px !important;
+      margin: 0 auto !important;
+      padding: 0 48px !important;
+      width: 100% !important;
+    }
+    body.reading-mode #av-panel,
+    body.reading-mode [id*="right"],
+    body.reading-mode [class*="right-panel"] { display: none !important; }
+    body.reading-mode #av-layout,
+    body.reading-mode [class*="layout"] {
+      display: block !important;
+      grid-template-columns: 1fr !important;
+    }
+    body.reading-mode p,
+    body.reading-mode .card-desc,
+    body.reading-mode [class*="desc"],
+    body.reading-mode [class*="text"] {
+      font-size: 16px !important;
+      line-height: 1.85 !important;
+      color: rgba(232,228,220,0.82) !important;
+    }
+    body.reading-mode h1,
+    body.reading-mode h2,
+    body.reading-mode [class*="title"],
+    body.reading-mode [class*="heading"] { max-width: 700px !important; }
+
+    /* READING MODE BAR */
+    #reading-mode-bar {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 8000;
+      animation: reading-bar-in 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes reading-bar-in {
+      from { opacity:0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    #exit-reading-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(244,208,63,0.12);
+      border: 1px solid rgba(244,208,63,0.35);
+      border-radius: 100px;
+      color: #F4D03F;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      cursor: none;
+      font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(12px);
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    #exit-reading-btn:hover {
+      background: rgba(244,208,63,0.2);
+      box-shadow: 0 4px 24px rgba(244,208,63,0.15);
+    }
+    @keyframes toast-in {
+      from { opacity:0; transform:translateX(-50%) translateY(6px); }
+      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
+
+    /* TICKER */
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid var(--border); z-index:90; background:rgba(12,12,11,0.95); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 30s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 22px; font-size:10px; letter-spacing:0.08em; color:var(--text-mid); height:28px; }
+    .ticker-val { color:var(--avila); font-weight:500; }
+    .ticker-sep { color:var(--text-dim); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* CURSOR */
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+
+    /* RESPONSIVE */
+    @media (max-width:1100px) {
+      #av-panel { display:none; }
+      #routes-grid { grid-template-columns:repeat(2,1fr); }
+      #certs-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:768px) {
+      #av-sidebar { display:none; }
+      #av-main { padding:16px 14px 80px; }
+      .h-stats { grid-template-columns:repeat(2,1fr); }
+      #routes-grid,#courses-grid,#lessons-grid,#library-grid,#mentors-grid,#events-grid { grid-template-columns:1fr; }
+      #certs-grid { grid-template-columns:repeat(2,1fr); }
+      .sub-metrics { display:none; }
+      .topbar-nav .nav-item:not(.active) { display:none; }
+    }
+  </style>
+</head>
+<body data-accent="gold">
+
+<!-- TOPBAR -->
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item " href="/talento.html">Capital Humano</a>
+    <a class="nav-item active" href="/avila.html">ÁVILA</a>
+    <a class="nav-item " href="/nodo.html">NODO</a>
+    <a class="nav-item " href="/enterate.html">Titulares</a>
+    <a class="nav-item " href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item " href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- SUBHEADER -->
+<div id="av-sub">
+  <div class="sub-search-wrap">
+    <span class="sub-search-ico">⌕</span>
+    <input id="av-search-inp" class="sub-search" type="text" placeholder="Buscar cursos, rutas, mentores…" oninput="searchAvila(this.value)" />
+  </div>
+  <div class="sub-metrics">
+    <div class="sub-metric"><span class="sub-metric-val">340</span><span class="sub-metric-lbl">Rutas</span></div>
+    <div class="sub-sep"></div>
+    <div class="sub-metric"><span class="sub-metric-val">312</span><span class="sub-metric-lbl">Mentores</span></div>
+    <div class="sub-sep"></div>
+    <div class="sub-metric"><span class="sub-metric-val">94.2K</span><span class="sub-metric-lbl">Horas</span></div>
+  </div>
+  <button class="btn-diag" onclick="openDiagnostic()">Comenzar diagnóstico →</button>
+</div>
+
+<!-- LAYOUT -->
+<div id="av-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside id="av-sidebar">
+    <div style="margin-bottom:6px">
+      <div class="sb-lbl">Navegación</div>
+      <a class="sb-link active" href="#av-hero" onclick="setSbActive(this)"><span class="sb-link-ico">⌂</span>Inicio</a>
+      <a class="sb-link" href="#av-routes" onclick="setSbActive(this)"><span class="sb-link-ico">◈</span>Rutas</a>
+      <a class="sb-link" href="#av-courses" onclick="setSbActive(this)"><span class="sb-link-ico">▣</span>Cursos</a>
+      <a class="sb-link" href="#av-lessons" onclick="setSbActive(this)"><span class="sb-link-ico">◎</span>Lecciones</a>
+      <a class="sb-link" href="#av-challenge" onclick="setSbActive(this)"><span class="sb-link-ico">⬡</span>Reto 28 días</a>
+      <a class="sb-link" href="#av-lab" onclick="setSbActive(this)"><span class="sb-link-ico">◉</span>Laboratorio</a>
+      <a class="sb-link" href="#av-certificates" onclick="setSbActive(this)"><span class="sb-link-ico">◑</span>Certificados</a>
+      <a class="sb-link" href="#av-library" onclick="setSbActive(this)"><span class="sb-link-ico">▤</span>Biblioteca</a>
+      <a class="sb-link" href="#av-mentorships" onclick="setSbActive(this)"><span class="sb-link-ico">◐</span>Mentorías</a>
+      <a class="sb-link" href="#av-events" onclick="setSbActive(this)"><span class="sb-link-ico">◇</span>Eventos</a>
+    </div>
+    <div class="sb-div"></div>
+    <div>
+      <div class="sb-lbl">Filtrar por área</div>
+      <div id="sb-areas"></div>
+    </div>
+    <div class="sb-div"></div>
+    <div>
+      <div class="sb-lbl">Herramientas</div>
+      <a class="sb-link" href="javascript:void(0)" id="sb-reading-link" onclick="toggleReadingMode()"><span class="sb-link-ico">☽</span>Modo lectura</a>
+      <a class="sb-link" href="/nodo.html"><span class="sb-link-ico">⬡</span>Comunidad NODO</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="av-main">
+
+    <!-- HERO -->
+    <section id="av-hero">
+      <div class="h-eye">Plataforma de Formación · NEVADO</div>
+      <h1 class="h-h1">Aprende.<br><em>Certifícate.</em><br>Trasciende.</h1>
+      <p class="h-desc">ÁVILA es el sistema de formación del ecosistema venezolano. Rutas certificadas, mentores de élite y un laboratorio de práctica para convertir conocimiento en carrera.</p>
+      <div class="h-ctas">
+        <button class="btn-p" onclick="openDiagnostic()">Diagnóstico gratuito</button>
+        <button class="btn-s" onclick="document.getElementById('av-routes').scrollIntoView({behavior:'smooth'})">Ver rutas →</button>
+      </div>
+      <div class="h-stats">
+        <div class="h-stat"><div class="h-stat-val">340</div><div class="h-stat-lbl">Rutas certificadas</div></div>
+        <div class="h-stat"><div class="h-stat-val">312</div><div class="h-stat-lbl">Mentores activos</div></div>
+        <div class="h-stat"><div class="h-stat-val">94.2K</div><div class="h-stat-lbl">Horas impartidas</div></div>
+        <div class="h-stat"><div class="h-stat-val">18K+</div><div class="h-stat-lbl">Graduados ÁVILA</div></div>
+      </div>
+    </section>
+
+    <!-- ROUTES -->
+    <section id="av-routes" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Rutas de aprendizaje</div><div class="s-title">Tu camino empieza aquí</div></div>
+        <a class="s-action" href="javascript:void(0)">Ver todas →</a>
+      </div>
+      <div id="routes-grid"></div>
+    </section>
+
+    <!-- COURSES -->
+    <section id="av-courses" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Cursos destacados</div><div class="s-title">Lo más cursado esta semana</div></div>
+        <a class="s-action" href="javascript:void(0)">Catálogo completo →</a>
+      </div>
+      <div id="courses-grid"></div>
+    </section>
+
+    <!-- LESSONS -->
+    <section id="av-lessons" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Lecciones rápidas</div><div class="s-title">Aprende en 15 minutos</div></div>
+      </div>
+      <div id="lessons-grid"></div>
+    </section>
+
+    <!-- CHALLENGE -->
+    <section id="av-challenge" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Reto ÁVILA</div><div class="s-title">28 días de transformación</div></div>
+      </div>
+      <div class="ch-head">
+        <p style="font-size:12px;color:var(--text-mid);max-width:380px;line-height:1.55">Un reto diario para crear el hábito de aprendizaje. Marca cada día completado.</p>
+        <div class="ch-streak">Racha: <b id="streak-cnt">7</b>&nbsp;días 🔥</div>
+      </div>
+      <div class="ch-grid" id="ch-grid"></div>
+      <div class="ch-tip" id="ch-tip"></div>
+    </section>
+
+    <!-- LAB -->
+    <section id="av-lab" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Laboratorio de práctica</div><div class="s-title">Aplica lo que aprendiste</div></div>
+      </div>
+      <div class="lab-tabs" id="lab-tabs"></div>
+      <div id="lab-content"></div>
+    </section>
+
+    <!-- CERTIFICATES -->
+    <section id="av-certificates" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Certificaciones ÁVILA</div><div class="s-title">Credenciales que abren puertas</div></div>
+        <a class="s-action" href="javascript:void(0)">Ver catálogo →</a>
+      </div>
+      <div id="certs-grid"></div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section id="av-library" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Biblioteca ÁVILA</div><div class="s-title">Recursos para ir más lejos</div></div>
+      </div>
+      <div class="lib-filters" id="lib-filters"></div>
+      <div id="library-grid"></div>
+    </section>
+
+    <!-- MENTORS -->
+    <section id="av-mentorships" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Mentorías personalizadas</div><div class="s-title">Aprende de quien ya lo logró</div></div>
+        <a class="s-action" href="javascript:void(0)">Ver 312 mentores →</a>
+      </div>
+      <div id="mentors-grid"></div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="av-events" class="av-s">
+      <div class="s-head">
+        <div><div class="s-tag">Eventos próximos</div><div class="s-title">Conecta con la comunidad</div></div>
+        <a class="s-action" href="javascript:void(0)">Ver calendario →</a>
+      </div>
+      <div id="events-grid"></div>
+    </section>
+
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside id="av-panel">
+    <div class="pb">
+      <div class="pb-title">Tu progreso</div>
+      <div class="prog-ring-wrap">
+        <div class="prog-ring">
+          <svg width="54" height="54" viewBox="0 0 54 54">
+            <circle cx="27" cy="27" r="21" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="4"/>
+            <circle cx="27" cy="27" r="21" fill="none" stroke="#F4D03F" stroke-width="4" stroke-linecap="round"
+              stroke-dasharray="131.95" stroke-dashoffset="92" style="transition:stroke-dashoffset 1s ease"/>
+          </svg>
+          <div class="prog-ring-val">30%</div>
+        </div>
+        <div class="prog-info">
+          <h4>Ruta actual</h4>
+          <p>Web Full Stack</p>
+          <div class="mini-bar" style="width:110px"><div class="mini-bar-fill" style="width:30%"></div></div>
+        </div>
+      </div>
+      <div class="streak-row">
+        <span style="font-size:16px">🔥</span>
+        <div><div class="streak-val">7</div><div style="font-size:9px;color:var(--text-dim)">días de racha</div></div>
+        <div style="margin-left:auto;text-align:right">
+          <div style="font-size:11px;font-weight:600">42 hrs</div>
+          <div style="font-size:9px;color:var(--text-dim)">este mes</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pb">
+      <div class="pb-title">Insignias</div>
+      <div class="badge-grid">
+        <div class="bdg on" title="Primer curso">🎯</div>
+        <div class="bdg on" title="7 días seguidos">🔥</div>
+        <div class="bdg on" title="Primer certificado">🏅</div>
+        <div class="bdg" title="Mentor — bloqueado">🌟</div>
+        <div class="bdg on" title="NODO activo">⬡</div>
+        <div class="bdg" title="30 días — bloqueado">💎</div>
+        <div class="bdg" title="Especialista — bloqueado">🎓</div>
+        <div class="bdg" title="Referente — bloqueado">👑</div>
+      </div>
+    </div>
+
+    <div class="pb">
+      <div class="pb-title">Próximo hito</div>
+      <div class="next-card">
+        <div class="next-lbl">A completar</div>
+        <div class="next-title">Certificado Web Foundations</div>
+        <div style="font-size:10px;color:var(--text-mid);margin-bottom:8px;line-height:1.5">3 lecciones más para desbloquear tu primera certificación oficial.</div>
+        <button class="next-btn" onclick="document.getElementById('av-certificates').scrollIntoView({behavior:'smooth'})">Ver certificado</button>
+      </div>
+    </div>
+
+    <div class="pb">
+      <div class="pb-title">Comunidad NODO</div>
+      <div class="comm-row"><span class="comm-lbl">Miembros ÁVILA</span><span class="comm-val">8,430</span></div>
+      <div class="comm-row"><span class="comm-lbl">Activos hoy</span><span class="comm-val">312</span></div>
+      <div class="comm-row"><span class="comm-lbl">Preguntas abiertas</span><span class="comm-val">47</span></div>
+      <div class="comm-row"><span class="comm-lbl">Respuestas hoy</span><span class="comm-val">184</span></div>
+      <a href="/nodo.html" style="display:block;margin-top:10px;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;padding:6px;border:1px solid var(--border);color:var(--text-mid);text-align:center;border-radius:3px;text-decoration:none;transition:all 0.2s" onmouseover="this.style.borderColor='var(--avila)';this.style.color='var(--avila)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-mid)'">Ir a NODO →</a>
+    </div>
+  </aside>
+
+</div><!-- /#av-layout -->
+
+<!-- DIAGNOSTIC MODAL -->
+<div id="diag-ov" onclick="if(event.target===this)closeDiagnostic()">
+  <div id="diag-box">
+    <button class="d-close" onclick="closeDiagnostic()">✕</button>
+    <div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--avila);margin-bottom:14px">Diagnóstico ÁVILA</div>
+    <div class="d-prog"><div class="d-prog-f" id="d-prog-f" style="width:0%"></div></div>
+    <div id="d-steps"></div>
+  </div>
+</div>
+
+<!-- CERT MODAL -->
+<div id="cert-ov" onclick="if(event.target===this)closeCertModal()">
+  <div id="cert-box">
+    <button class="cert-close" onclick="closeCertModal()">✕</button>
+    <div class="cm-ico" id="cm-ico">🏅</div>
+    <div class="cm-lbl">Certificación ÁVILA · Reconocida Internacionalmente</div>
+    <div class="cm-title" id="cm-title">—</div>
+    <div class="cm-id" id="cm-id">—</div>
+    <div class="cm-desc" id="cm-desc">—</div>
+    <div class="cm-btns">
+      <button class="btn-p" onclick="copyCertificateLink()">Copiar enlace</button>
+      <button class="btn-s" onclick="closeCertModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- STANDARD FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N<span>·</span>EVADO</a>
+      <p class="std-fl-desc">Rutas de aprendizaje venezolano. Formación certificada, mentores activos y laboratorio de herramientas digitales.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">ÁVILA</div>
+      <a class="std-fl" href="javascript:void(0)" onclick="document.getElementById('av-routes').scrollIntoView({behavior:'smooth'})">Rutas</a>
+      <a class="std-fl" href="javascript:void(0)" onclick="document.getElementById('av-courses').scrollIntoView({behavior:'smooth'})">Cursos</a>
+      <a class="std-fl" href="javascript:void(0)" onclick="document.getElementById('av-lab').scrollIntoView({behavior:'smooth'})">Laboratorio</a>
+      <a class="std-fl" href="javascript:void(0)" onclick="document.getElementById('av-certs').scrollIntoView({behavior:'smooth'})">Certificados</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)" onclick="openDiagnostic()">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · ÁVILA · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<!-- TICKER -->
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<!-- CURSOR -->
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const routes = [
+  { id:'web',    icon:'💻', title:'Desarrollo Web Full Stack', desc:'HTML, CSS, JS, Node.js, bases de datos y despliegue en producción.',             modules:24, hours:120, level:'Intermedio',      color:'#2980B9' },
+  { id:'data',   icon:'📊', title:'Ciencia de Datos & IA',    desc:'Python, pandas, machine learning y visualización avanzada de datos.',             modules:18, hours:90,  level:'Avanzado',         color:'#F4D03F' },
+  { id:'design', icon:'🎨', title:'Diseño UX/UI',             desc:'Figma, Design Thinking, prototipado e investigación con usuarios.',               modules:16, hours:72,  level:'Inicial',          color:'#C0392B' },
+  { id:'biz',    icon:'📈', title:'Negocios & Emprendimiento', desc:'Modelo de negocio, finanzas, pitch, marketing y crecimiento.',                    modules:20, hours:80,  level:'Inicial',          color:'#27AE60' },
+  { id:'lang',   icon:'🌐', title:'Inglés para el Trabajo',   desc:'Business English certificado: escritura, presentaciones y entrevistas.',           modules:30, hours:60,  level:'Todos los niveles', color:'#8E44AD' },
+  { id:'cloud',  icon:'☁️', title:'Cloud & DevOps',           desc:'AWS, Docker, CI/CD, Kubernetes y arquitectura de microservicios.',                  modules:22, hours:110, level:'Avanzado',         color:'#E67E22' },
+];
+
+const courses = [
+  { id:1,  icon:'🌐', title:'JavaScript Moderno ES2026',      cat:'Web',     catColor:'#2980B9', bg:'rgba(41,128,185,0.12)', dur:'8h 30m', prog:65,  route:'web'    },
+  { id:2,  icon:'🤖', title:'Inteligencia Artificial Práctica',cat:'Datos',   catColor:'#F4D03F', bg:'rgba(244,208,63,0.10)', dur:'12h',    prog:20,  route:'data'   },
+  { id:3,  icon:'🎨', title:'Figma para Diseñadores Reales',  cat:'Diseño',  catColor:'#C0392B', bg:'rgba(192,57,43,0.10)',  dur:'6h',     prog:100, route:'design' },
+  { id:4,  icon:'📊', title:'Python para Data Science',       cat:'Datos',   catColor:'#F4D03F', bg:'rgba(244,208,63,0.10)', dur:'14h',    prog:0,   route:'data'   },
+  { id:5,  icon:'☁️', title:'AWS Cloud Practitioner Prep',    cat:'Cloud',   catColor:'#E67E22', bg:'rgba(230,126,34,0.10)', dur:'10h',    prog:45,  route:'cloud'  },
+  { id:6,  icon:'📝', title:'Copywriting que Convierte',      cat:'Negocios',catColor:'#27AE60', bg:'rgba(39,174,96,0.10)', dur:'4h',     prog:80,  route:'biz'    },
+  { id:7,  icon:'🐳', title:'Docker & Contenedores',          cat:'Cloud',   catColor:'#E67E22', bg:'rgba(230,126,34,0.10)', dur:'7h',     prog:0,   route:'cloud'  },
+  { id:8,  icon:'🗣️', title:'Business English Speaking',      cat:'Idiomas', catColor:'#8E44AD', bg:'rgba(142,68,173,0.10)', dur:'9h',     prog:30,  route:'lang'   },
+  { id:9,  icon:'💰', title:'Finanzas para Emprendedores',    cat:'Negocios',catColor:'#27AE60', bg:'rgba(39,174,96,0.10)', dur:'5h',     prog:0,   route:'biz'    },
+  { id:10, icon:'⚡', title:'React desde Cero',               cat:'Web',     catColor:'#2980B9', bg:'rgba(41,128,185,0.12)', dur:'11h',    prog:10,  route:'web'    },
+];
+
+const lessons = [
+  { id:1, icon:'⚡', type:'Video · Rápido', title:'Git en 10 minutos: flujo básico',                time:'10 min', done:true  },
+  { id:2, icon:'📖', type:'Lectura',        title:'Cómo escribir un README que impresione',         time:'8 min',  done:false },
+  { id:3, icon:'🎧', type:'Podcast',        title:'Historia de venezolanos en Silicon Valley',      time:'22 min', done:false },
+  { id:4, icon:'💡', type:'Ejercicio',      title:'Construye tu primer componente React',           time:'15 min', done:true  },
+  { id:5, icon:'🎯', type:'Quiz',           title:'¿Qué tan listo estás para el mercado laboral?', time:'5 min',  done:false },
+  { id:6, icon:'🔧', type:'Práctica',       title:'API REST con Node.js en tiempo real',           time:'20 min', done:false },
+];
+
+const challengeTips = [
+  'Dedica 30 minutos a una lección de tu ruta principal.',
+  'Lee un artículo técnico relacionado con tu área.',
+  'Practica con un ejercicio del Laboratorio ÁVILA.',
+  'Conéctate en NODO y comparte lo aprendido.',
+  'Completa una lección rápida antes del almuerzo.',
+  'Revisa conceptos del día anterior y consolida.',
+  'Descansa con intención: visualiza tu meta.',
+];
+
+const labTools = [
+  { id:'cv',        label:'Constructor CV',    icon:'📄', title:'Constructor de CV Técnico',     desc:'Genera un CV profesional optimizado para el mercado tech internacional. Incluye análisis ATS.',                        ph:'Pega tu experiencia y habilidades...\n\nEj: 5 años backend, Python · Django · Docker. Busco trabajo remoto en empresa SaaS.',         btn:'Generar CV' },
+  { id:'cover',     label:'Carta de presentación', icon:'✍️', title:'Carta de Presentación',    desc:'Cartas personalizadas para cada postulación. Tono profesional y enfocado en resultados medibles.',                    ph:'Describe el puesto y tu experiencia relevante...\n\nEj: Senior Frontend en startup fintech. 3 años React, lideré equipo de 4.',         btn:'Redactar carta' },
+  { id:'interview', label:'Entrevista',         icon:'🎤', title:'Simulador de Entrevista',       desc:'Practica respuestas para entrevistas con retroalimentación sobre estructura, claridad y contenido.',                ph:'¿Cuánta experiencia tienes y a qué rol aspiras?\n\nEj: 2 años QA, aspiro a Data Analyst en empresa de logística.',                        btn:'Simular entrevista' },
+  { id:'skill',     label:'Gap Analysis',       icon:'🔍', title:'Análisis de Habilidades',       desc:'Compara tu perfil actual con demandas del mercado y obtén un plan de acción personalizado.',                        ph:'Describe tu perfil y el rol objetivo...\n\nEj: Diseñadora gráfica 4 años Illustrator/Photoshop → UX Designer en producto digital.',   btn:'Analizar perfil' },
+  { id:'portfolio', label:'Portfolio',          icon:'🖼️', title:'Portfolio Generator',           desc:'Recibe estructura y recomendaciones para construir un portafolio que destaque en selección.',                       ph:'Describe tus proyectos más destacados...\n\nEj: 3 apps Flutter (5K descargas), 2 landing pages para startups venezolanas.',            btn:'Estructurar portfolio' },
+  { id:'salary',    label:'Salario',            icon:'💰', title:'Benchmark Salarial',            desc:'Rangos salariales reales según tu perfil, experiencia y mercado objetivo.',                                         ph:'Describe tu experiencia y mercado objetivo...\n\nEj: Dev 4 años React + Node.js. Busco trabajo remoto para empresas USA/Europa.',        btn:'Calcular rango' },
+  { id:'linkedin',  label:'LinkedIn',           icon:'🔗', title:'Optimizador de LinkedIn',       desc:'Mejora tu perfil para aparecer en más búsquedas de reclutadores y aumentar tu visibilidad.',                       ph:'Pega tu headline y resumen actual...\n\nEj: Headline: "Software Developer | Python | Venezuela"\nResumen: "Desarrollador con..."',    btn:'Optimizar perfil' },
+];
+
+const certificates = [
+  { id:'web-f',  icon:'💻', title:'Web Foundations',      org:'ÁVILA · NEVADO',    ribbon:'Disponible',    earned:true,  desc:'Fundamentos del desarrollo web moderno. Reconocida por más de 40 empresas del ecosistema.' },
+  { id:'data-py',icon:'📊', title:'Data Analysis Python', org:'ÁVILA · NEVADO',    ribbon:'En progreso',   earned:false, desc:'Análisis de datos, visualización y reporting con Python y pandas.' },
+  { id:'ux-fig', icon:'🎨', title:'UX/UI Professional',   org:'ÁVILA · NEVADO',    ribbon:'Disponible',    earned:true,  desc:'Diseño de experiencias digitales con metodología centrada en el usuario.' },
+  { id:'biz-s',  icon:'📈', title:'Startup Foundations',  org:'ÁVILA · NEVADO',    ribbon:'Disponible',    earned:true,  desc:'Construye y valida tu modelo de negocio con metodología Lean Startup.' },
+  { id:'eng-b2', icon:'🌐', title:'Business English B2',  org:'ÁVILA · NEVADO',    ribbon:'En progreso',   earned:false, desc:'Comunicación profesional en inglés certificada al nivel B2 del MCER.' },
+  { id:'aws-cp', icon:'☁️', title:'Cloud Practitioner',   org:'ÁVILA · AWS Partner',ribbon:'Próximamente', earned:false, desc:'Fundamentos de computación en la nube con preparación para AWS CCP.' },
+];
+
+const resources = [
+  { id:1, ico:'📕', type:'Libro',    title:'Clean Code de Robert Martin',         author:'Robert C. Martin',  rating:'⭑⭑⭑⭑⭑', cat:'Desarrollo', saved:false },
+  { id:2, ico:'📝', type:'Guía',     title:'Guía definitiva de LinkedIn para Devs',author:'Equipo ÁVILA',      rating:'⭑⭑⭑⭑⭒', cat:'Carrera',    saved:true  },
+  { id:3, ico:'🎧', type:'Podcast',  title:'Venezolanos en Tech · Ep. 14',        author:'NODO Podcasts',      rating:'⭑⭑⭑⭑⭑', cat:'Inspiración',saved:false },
+  { id:4, ico:'📺', type:'Video',    title:'Cómo negociar tu salario en dólares', author:'Mentora ÁVILA',      rating:'⭑⭑⭑⭑⭑', cat:'Carrera',    saved:false },
+  { id:5, ico:'📄', type:'Plantilla',title:'Plantilla CV Tech Internacional',     author:'Equipo ÁVILA',       rating:'⭑⭑⭑⭑⭑', cat:'Carrera',    saved:true  },
+  { id:6, ico:'📗', type:'Libro',    title:'The Pragmatic Programmer',            author:'Hunt & Thomas',      rating:'⭑⭑⭑⭑⭑', cat:'Desarrollo', saved:false },
+  { id:7, ico:'🔗', type:'Recurso',  title:'Roadmap.sh — Rutas de aprendizaje',  author:'Comunidad OSS',      rating:'⭑⭑⭑⭑⭒', cat:'Desarrollo', saved:false },
+  { id:8, ico:'📊', type:'Dataset',  title:'Salarios tech diáspora venezolana',   author:'Investigación NEVADO',rating:'⭑⭑⭑⭑⭑', cat:'Datos',      saved:false },
+];
+
+const mentorships = [
+  { icon:'👨‍💻', name:'Carlos Méndez',   role:'Senior Engineer · Google NYC',   tags:['React','Node.js','System Design'], sessions:148, rating:'4.97', flag:'🇺🇸', color:'#2980B9' },
+  { icon:'👩‍🎨', name:'Andreína Paz',    role:'Lead UX Designer · Shopify',     tags:['Figma','UX Research','Product'],   sessions:92,  rating:'5.0',  flag:'🇨🇦', color:'#C0392B' },
+  { icon:'👨‍💼', name:'Rodrigo Silva',   role:'Founder · Fintech startup Miami', tags:['Startups','Fundraising','Growth'], sessions:67,  rating:'4.93', flag:'🇺🇸', color:'#27AE60' },
+  { icon:'👩‍🔬', name:'Valentina Ramos', role:'Data Scientist · Spotify Madrid', tags:['Python','ML','Analytics'],         sessions:110, rating:'4.98', flag:'🇪🇸', color:'#F4D03F' },
+];
+
+const events = [
+  { month:'JUN', day:'05', type:'Webinar',    title:'Conseguir trabajo tech en USA siendo venezolano',    host:'Valentina R. · Spotify' },
+  { month:'JUN', day:'12', type:'Workshop',   title:'Tu primer portfolio con GitHub Pages',               host:'Carlos M. · Google'    },
+  { month:'JUN', day:'19', type:'Panel',      title:'Venezolanas líderes en tecnología global',           host:'Equipo ÁVILA'           },
+  { month:'JUN', day:'28', type:'Masterclass',title:'IA para no técnicos: oportunidades reales hoy',      host:'Andreína P. · Shopify'  },
+];
+
+const routeAreas = [
+  { label:'Desarrollo Web', color:'#2980B9', count:124, filter:'web'    },
+  { label:'Datos & IA',     color:'#F4D03F', count:89,  filter:'data'   },
+  { label:'Diseño',         color:'#C0392B', count:67,  filter:'design' },
+  { label:'Negocios',       color:'#27AE60', count:54,  filter:'biz'    },
+  { label:'Idiomas',        color:'#8E44AD', count:43,  filter:'lang'   },
+  { label:'Cloud',          color:'#E67E22', count:38,  filter:'cloud'  },
+];
+
+const libCats = ['Todos','Desarrollo','Carrera','Datos','Inspiración'];
+
+const diagQuestions = [
+  { q:'¿Cuál es tu objetivo principal en ÁVILA?',       opts:['Conseguir mi primer trabajo tech','Escalar a un mejor puesto','Emprender mi propio proyecto','Aprender por desarrollo personal'] },
+  { q:'¿Cuánta experiencia tienes en tecnología?',      opts:['Soy completamente nuevo/a','Tengo conocimientos básicos','Tengo 1-3 años de experiencia','Más de 3 años de experiencia']          },
+  { q:'¿Cuánto tiempo puedes dedicar a aprender?',      opts:['Menos de 1 hora al día','1-2 horas al día','3-4 horas al día','Más de 4 horas al día']                                             },
+  { q:'¿Qué área te genera más curiosidad?',            opts:['Desarrollo Web o Mobile','Datos, IA y Machine Learning','Diseño y experiencia de usuario','Negocios, startups o marketing']         },
+];
+
+const diagResults = [
+  { title:'Ruta Express: Web Developer',      desc:'Tu perfil está listo para avanzar rápido. La Ruta de Desarrollo Web Full Stack es tu camino. Con tu dedicación estimada, podrías certificarte en 4 meses.'    },
+  { title:'Ruta Fundacional: Tech Starter',   desc:'Estás en el momento perfecto para construir bases sólidas. Empieza con las lecciones rápidas y el reto de 28 días para crear el hábito de aprendizaje.'       },
+  { title:'Ruta Avanzada: Data & AI',         desc:'Tu perfil apunta a un rol de alto impacto. La ruta de Ciencia de Datos con mentoría especializada es tu siguiente paso natural.'                               },
+  { title:'Ruta Creativa: UX/UI Designer',    desc:'El diseño de experiencias es tu llamado. La ruta UX/UI con Figma te llevará al mercado internacional en menos tiempo del que imaginas.'                        },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let activeFilter = null;
+let activeLibCat = 'Todos';
+let activeLabIdx = 0;
+let diagStep = 0;
+let diagAnswers = [];
+let certActive = null;
+let doneLessons = new Set([1,4]);
+let challenge = Array.from({length:28},(_,i)=>({ num:i+1, done:i<7, today:i===7, locked:i>7 }));
+let streakCount = 7;
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderRoutes() {
+  document.getElementById('routes-grid').innerHTML = routes.map(r => `
+    <div class="rc" style="border-color:${activeFilter===r.id?r.color:'var(--border)'};background:${activeFilter===r.id?'rgba('+hexRgb(r.color)+',0.06)':'var(--surface)'}" onclick="openRoute('${r.id}')">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${r.color};border-radius:7px 7px 0 0"></div>
+      <div class="rc-ico">${r.icon}</div>
+      <div class="rc-title">${r.title}</div>
+      <div class="rc-desc">${r.desc}</div>
+      <div class="rc-meta"><span class="rc-m">▣ ${r.modules} módulos</span><span class="rc-m">◷ ${r.hours}h</span></div>
+      <div class="rc-foot">
+        <span class="rc-lvl">${r.level}</span>
+        <span style="font-size:10px;color:${r.color};cursor:none">Comenzar →</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCourses() {
+  const list = activeFilter ? courses.filter(c=>c.route===activeFilter) : courses;
+  document.getElementById('courses-grid').innerHTML = list.map(c => `
+    <div class="cc" onclick="openCourse(${c.id})">
+      <div class="cc-thumb" style="background:${c.bg}">${c.icon}</div>
+      <div class="cc-body">
+        <div class="cc-title">${c.title}</div>
+        <div class="cc-meta">
+          <span class="cc-cat" style="background:${c.bg};color:${c.catColor}">${c.cat}</span>
+          <span class="cc-dur">◷ ${c.dur}</span>
+        </div>
+        <div class="cc-prog-lbl"><span>${c.prog===0?'Sin comenzar':c.prog===100?'Completado':'En progreso'}</span><span>${c.prog}%</span></div>
+        <div class="cc-bar"><div class="cc-bar-f" style="width:${c.prog}%;background:${c.prog===100?'var(--green)':'var(--avila)'}"></div></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLessons() {
+  document.getElementById('lessons-grid').innerHTML = lessons.map(l => {
+    const d = doneLessons.has(l.id);
+    return `
+      <div class="lc${d?' done':''}" onclick="openLesson(${l.id})">
+        <div class="lc-ico">${l.icon}</div>
+        <div class="lc-type">${l.type}</div>
+        <div class="lc-title">${l.title}</div>
+        <div class="lc-foot">
+          <span class="lc-time">◷ ${l.time}</span>
+          <button class="lc-btn${d?' done':''}" onclick="event.stopPropagation();completeLesson(${l.id})">${d?'✓ Hecho':'Comenzar'}</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderChallenge() {
+  document.getElementById('ch-grid').innerHTML = challenge.map((d,i)=>`
+    <div class="ch-day${d.done?' done':''}${d.today?' today':''}${d.locked?' locked':''}"
+      onclick="${d.locked?'':('toggleChallengeDay('+i+')')}"
+      title="Día ${d.num}: ${challengeTips[i%7]}">
+      <div class="ch-num">${d.num}</div>
+      <div class="ch-ico">${d.done?'✓':d.today?'●':''}</div>
+    </div>`).join('');
+  const cur = challenge.find(d=>d.today) || challenge[streakCount] || challenge[0];
+  const tipEl = document.getElementById('ch-tip');
+  if (tipEl && cur) tipEl.innerHTML = `<strong>Reto del día ${cur.num}:</strong> ${challengeTips[(cur.num-1)%7]}`;
+  document.getElementById('streak-cnt').textContent = streakCount;
+}
+
+function renderLabTools() {
+  document.getElementById('lab-tabs').innerHTML = labTools.map((t,i)=>
+    `<button class="lab-tab${i===activeLabIdx?' active':''}" onclick="setLabTool(${i})">${t.icon} ${t.label}</button>`
+  ).join('');
+  document.getElementById('lab-content').innerHTML = labTools.map((t,i)=>`
+    <div class="lab-tool${i===activeLabIdx?' active':''}" id="lt-${i}">
+      <div class="lab-card">
+        <div class="lab-t">${t.icon} ${t.title}</div>
+        <div class="lab-d">${t.desc}</div>
+        <textarea class="lab-inp" id="li-${i}" placeholder="${t.ph}"></textarea>
+        <button class="lab-run" onclick="runLab(${i})">${t.btn}</button>
+        <div class="lab-out" id="lo-${i}"></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderCertificates() {
+  document.getElementById('certs-grid').innerHTML = certificates.map(c=>`
+    <div class="cert-c" onclick="openCertificate('${c.id}')">
+      <div class="cert-rib">${c.ribbon}</div>
+      <div class="cert-ico">${c.icon}</div>
+      <div class="cert-t">${c.title}</div>
+      <div class="cert-org">${c.org}</div>
+      <div class="cert-foot">
+        ${c.earned
+          ? `<button class="cert-btn p" onclick="event.stopPropagation();openCertificate('${c.id}')">Ver certificado</button><button class="cert-btn" onclick="event.stopPropagation();copyCertificateLink('${c.id}')">Compartir</button>`
+          : `<button class="cert-btn" style="flex:1" onclick="event.stopPropagation()">Comenzar ruta</button>`}
+      </div>
+    </div>`).join('');
+}
+
+function renderResources() {
+  const list = activeLibCat==='Todos' ? resources : resources.filter(r=>r.cat===activeLibCat);
+  document.getElementById('library-grid').innerHTML = list.map(r=>`
+    <div class="lib-c" data-saved="${r.saved}" id="lb-${r.id}">
+      <div class="lib-ico">${r.ico}</div>
+      <div class="lib-body">
+        <div class="lib-type">${r.type}</div>
+        <div class="lib-title">${r.title}</div>
+        <div class="lib-author">${r.author}</div>
+        <div class="lib-foot">
+          <span class="lib-rating">${r.rating}</span>
+          <button class="lib-save${r.saved?' saved':''}" onclick="saveResource(${r.id})">${r.saved?'✓ Guardado':'+ Guardar'}</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderMentors() {
+  document.getElementById('mentors-grid').innerHTML = mentorships.map(m=>`
+    <div class="m-c">
+      <div class="m-head">
+        <div class="m-av" style="background:rgba(${hexRgb(m.color)},0.10);border:1.5px solid rgba(${hexRgb(m.color)},0.28)">${m.icon}</div>
+        <div class="m-info"><h4>${m.name} ${m.flag}</h4><p>${m.role}</p></div>
+      </div>
+      <div class="m-tags">${m.tags.map(t=>`<span class="m-tag">${t}</span>`).join('')}</div>
+      <div class="m-stats">
+        <div class="m-stat"><b>${m.sessions}</b>sesiones</div>
+        <div class="m-stat"><b>${m.rating} ⭑</b>valoración</div>
+      </div>
+      <button class="m-btn" onclick="registerEventDemo()">Solicitar mentoría</button>
+    </div>`).join('');
+}
+
+function renderEvents() {
+  document.getElementById('events-grid').innerHTML = events.map(e=>`
+    <div class="ev-c">
+      <div class="ev-date"><div class="ev-month">${e.month}</div><div class="ev-day">${e.day}</div></div>
+      <div class="ev-body">
+        <div class="ev-type">${e.type}</div>
+        <div class="ev-title">${e.title}</div>
+        <div class="ev-host">${e.host}</div>
+        <button class="ev-btn" onclick="registerEventDemo()">Registrarme</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderSbAreas() {
+  document.getElementById('sb-areas').innerHTML = routeAreas.map(a=>`
+    <div class="sb-area${activeFilter===a.filter?' sel':''}" onclick="filterContent('${a.filter}')">
+      <div style="display:flex;align-items:center;flex:1">
+        <div class="sb-dot" style="background:${a.color}"></div>
+        <span>${a.label}</span>
+      </div>
+      <span class="sb-cnt">${a.count}</span>
+    </div>`).join('');
+}
+
+function renderLibFilters() {
+  document.getElementById('lib-filters').innerHTML = libCats.map(c=>
+    `<button class="lib-f${activeLibCat===c?' active':''}" onclick="setLibCat('${c}')">${c}</button>`
+  ).join('');
+}
+
+function renderTicker() {
+  const items = [{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'}];
+  const h = items.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML = h + h;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+function openRoute(id) { filterContent(id); document.getElementById('av-courses').scrollIntoView({behavior:'smooth'}); }
+function openCourse(id) { const c=courses.find(x=>x.id===id); if(c) toast(`Abriendo: ${c.title}`); }
+function openLesson(id) { toast('Cargando lección…'); }
+
+function completeLesson(id) {
+  if(doneLessons.has(id)) doneLessons.delete(id); else { doneLessons.add(id); toast('¡Lección completada! +10 puntos'); }
+  renderLessons();
+}
+
+function toggleChallengeDay(i) {
+  if(challenge[i].locked) return;
+  challenge[i].done = !challenge[i].done;
+  if(challenge[i].done) {
+    toast(`¡Día ${challenge[i].num} completado! 🔥`);
+    if(i+1<challenge.length && challenge[i+1].locked) { challenge[i+1].locked=false; challenge[i+1].today=true; if(challenge[i].today) challenge[i].today=false; }
+    streakCount = challenge.filter(d=>d.done).length;
+  }
+  renderChallenge();
+}
+
+function filterContent(f) {
+  activeFilter = activeFilter===f ? null : f;
+  renderSbAreas(); renderRoutes(); renderCourses();
+}
+
+function setLibCat(c) { activeLibCat=c; renderLibFilters(); renderResources(); }
+function setLabTool(i) { activeLabIdx=i; renderLabTools(); }
+
+async function runLab(idx) {
+  const t=labTools[idx], inp=document.getElementById(`li-${idx}`), out=document.getElementById(`lo-${idx}`);
+  const btn=document.querySelector(`#lt-${idx} .lab-run`);
+  const txt=inp.value.trim(); if(!txt){toast('Escribe algo primero');return;}
+  btn.textContent='Generando…'; btn.disabled=true; out.textContent=''; out.classList.remove('show');
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','x-api-key':window.__NVD_KEY||''},
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:600,
+        system:`Eres el asistente de laboratorio de ÁVILA, plataforma del ecosistema NEVADO. Tu función: ${t.title}. Responde en español, texto plano sin markdown, directo, práctico, máximo 150 palabras.`,
+        messages:[{role:'user',content:txt}]})
+    });
+    const data=await res.json();
+    out.textContent=data.content?.[0]?.text||'No pude generar una respuesta.';
+    out.classList.add('show');
+  } catch { out.textContent='Error de conexión. Intenta de nuevo.'; out.classList.add('show'); }
+  finally { btn.textContent=t.btn; btn.disabled=false; }
+}
+
+function openCertificate(id) {
+  const c=certificates.find(x=>x.id===id); if(!c) return;
+  certActive=c;
+  document.getElementById('cm-ico').textContent=c.icon;
+  document.getElementById('cm-title').textContent=c.title;
+  document.getElementById('cm-id').textContent=`ID: AVL-${id.toUpperCase()}-2026 · ${c.org}`;
+  document.getElementById('cm-desc').textContent=c.desc;
+  document.getElementById('cert-ov').classList.add('show');
+}
+function closeCertModal() { document.getElementById('cert-ov').classList.remove('show'); }
+
+function copyCertificateLink(id) {
+  const cid=id||(certActive&&certActive.id)||'cert';
+  const url=`https://nevado.ve/certificados/${cid}`;
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Enlace copiado al portapapeles'));
+  else toast('Enlace: '+url);
+}
+
+function saveResource(id) {
+  const r=resources.find(x=>x.id===id); if(!r) return;
+  r.saved=!r.saved; renderResources();
+  toast(r.saved?'✓ Recurso guardado':'Recurso eliminado de tu biblioteca');
+}
+
+function registerEventDemo() { toast('¡Registro exitoso! Te enviaremos un recordatorio.'); }
+function toggleReadingMode() {
+  const isReading = document.body.classList.toggle('reading-mode');
+  const bar = document.getElementById('reading-mode-bar');
+  const sidebarLink = document.getElementById('sb-reading-link');
+  if (isReading) {
+    if (bar) bar.style.display = 'block';
+    if (sidebarLink) sidebarLink.innerHTML = '<span class="sb-link-ico">☀</span>Modo normal';
+    showReadingToast('Modo lectura activado');
+    document.getElementById('av-main')?.scrollIntoView({ behavior: 'smooth' });
+    localStorage.setItem('avila_reading_mode', '1');
+  } else {
+    if (bar) bar.style.display = 'none';
+    if (sidebarLink) sidebarLink.innerHTML = '<span class="sb-link-ico">☽</span>Modo lectura';
+    localStorage.removeItem('avila_reading_mode');
+  }
+}
+
+function showReadingToast(msg) {
+  const existing = document.getElementById('nv-reading-toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.id = 'nv-reading-toast';
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(10,10,18,0.95);border:1px solid rgba(255,255,255,0.1);color:rgba(232,228,220,0.8);padding:8px 18px;border-radius:8px;font-size:12px;letter-spacing:0.06em;font-family:\'Inter\',sans-serif;z-index:9000;pointer-events:none;animation:toast-in 0.25s ease;';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+if (localStorage.getItem('avila_reading_mode') === '1') {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.classList.add('reading-mode');
+    const bar = document.getElementById('reading-mode-bar');
+    if (bar) bar.style.display = 'block';
+    const link = document.getElementById('sb-reading-link');
+    if (link) link.innerHTML = '<span class="sb-link-ico">☀</span>Modo normal';
+  });
+}
+
+function searchAvila(q) {
+  if(!q.trim()){renderRoutes();renderCourses();renderLessons();renderResources();return;}
+  const ql=q.toLowerCase();
+  const fr=routes.filter(r=>r.title.toLowerCase().includes(ql)||r.desc.toLowerCase().includes(ql));
+  const fc=courses.filter(c=>c.title.toLowerCase().includes(ql)||c.cat.toLowerCase().includes(ql));
+  document.getElementById('routes-grid').innerHTML=fr.length
+    ?fr.map(r=>`<div class="rc" style="border-top:3px solid ${r.color}"><div class="rc-ico">${r.icon}</div><div class="rc-title">${r.title}</div><div class="rc-desc">${r.desc}</div></div>`).join('')
+    :'<p style="color:var(--text-dim);font-size:13px;grid-column:1/-1">No se encontraron rutas.</p>';
+  document.getElementById('courses-grid').innerHTML=fc.length
+    ?fc.map(c=>`<div class="cc"><div class="cc-thumb" style="background:${c.bg}">${c.icon}</div><div class="cc-body"><div class="cc-title">${c.title}</div><div style="font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:${c.catColor};margin-top:4px">${c.cat}</div></div></div>`).join('')
+    :'<p style="color:var(--text-dim);font-size:13px;grid-column:1/-1">No se encontraron cursos.</p>';
+}
+
+// ── DIAGNOSTIC ────────────────────────────────────────────────────────────────
+function openDiagnostic() { diagStep=0; diagAnswers=[]; renderDiagStep(); document.getElementById('diag-ov').classList.add('show'); }
+function closeDiagnostic() { document.getElementById('diag-ov').classList.remove('show'); }
+
+function renderDiagStep() {
+  const pct=Math.round(diagStep/diagQuestions.length*100);
+  document.getElementById('d-prog-f').style.width=pct+'%';
+  const box=document.getElementById('d-steps');
+  if(diagStep<diagQuestions.length) {
+    const q=diagQuestions[diagStep];
+    box.innerHTML=`
+      <div class="d-q">${diagStep+1}. ${q.q}</div>
+      <div class="d-opts">${q.opts.map((o,i)=>`<button class="d-opt" onclick="selDiagOpt(this,${i})">${o}</button>`).join('')}</div>
+      <div class="d-nav">
+        <button class="d-back" onclick="${diagStep>0?'diagBack()':'closeDiagnostic()'}">← ${diagStep>0?'Anterior':'Cancelar'}</button>
+        <button class="d-next" id="d-next" onclick="diagNext()" disabled>Siguiente →</button>
+      </div>`;
+  } else {
+    document.getElementById('d-prog-f').style.width='100%';
+    const ri=diagAnswers[3]!==undefined?diagAnswers[3]:0;
+    const r=diagResults[ri];
+    box.innerHTML=`
+      <div style="text-align:center;margin-bottom:18px"><div style="font-size:38px;margin-bottom:7px">🎯</div><div style="font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--avila)">Tu diagnóstico ÁVILA</div></div>
+      <div class="d-result"><div class="d-res-lbl">Recomendación personalizada</div><div class="d-res-t">${r.title}</div><div class="d-res-d">${r.desc}</div></div>
+      <div class="d-nav" style="justify-content:center;margin-top:18px"><button class="d-next" onclick="closeDiagnostic()">Comenzar mi ruta →</button></div>`;
+  }
+}
+
+function selDiagOpt(el,idx) {
+  el.closest('.d-opts').querySelectorAll('.d-opt').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); diagAnswers[diagStep]=idx;
+  const nb=document.getElementById('d-next'); if(nb){nb.disabled=false;}
+}
+function diagNext() { if(diagAnswers[diagStep]===undefined)return; diagStep++; renderDiagStep(); }
+function diagBack() { if(diagStep>0){diagStep--;renderDiagStep();} }
+
+// ── SCROLL SPY ────────────────────────────────────────────────────────────────
+function initScrollSpy() {
+  const ids=['av-hero','av-routes','av-courses','av-lessons','av-challenge','av-lab','av-certificates','av-library','av-mentorships','av-events'];
+  const links=document.querySelectorAll('.sb-link');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ const id=e.target.id; links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+id)); }});
+  },{rootMargin:'-30% 0px -60% 0px'});
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+}
+
+function setSbActive(el) { document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active')); el.classList.add('active'); }
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const ex=document.getElementById('av-toast'); if(ex)ex.remove();
+  const t=document.createElement('div'); t.id='av-toast'; t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(16,16,14,0.97);border:1px solid var(--border-avila);color:var(--ivory);padding:9px 18px;border-radius:5px;font-size:12px;z-index:800;opacity:0;transition:all 0.25s;letter-spacing:0.04em;white-space:nowrap;pointer-events:none';
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},2500);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function hexRgb(hex) {
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  renderRoutes(); renderCourses(); renderLessons(); renderChallenge();
+  renderLabTools(); renderCertificates(); renderResources();
+  renderMentors(); renderEvents(); renderSbAreas(); renderLibFilters(); renderTicker();
+  initScrollSpy();
+});
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDiagnostic();closeCertModal();} });
+</script>
+
+<div id="reading-mode-bar" style="display:none">
+  <button id="exit-reading-btn" onclick="toggleReadingMode()"><span>⊞</span> Salir del modo lectura</button>
+</div>
+
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

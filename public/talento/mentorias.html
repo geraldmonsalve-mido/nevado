@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Mentorías — Capital Humano · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#05050A;--ivory:#E8E4DC;--accent:#F4D03F;--gold:#B8944A;--border:rgba(255,255,255,0.07);--text-dim:rgba(232,228,220,0.34);--text-mid:rgba(232,228,220,0.60);--surface:rgba(22,22,20,0.88)}
+    html,body{width:100%;min-height:100%;background:var(--bg);color:var(--ivory);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;cursor:none;padding-top:80px;padding-bottom:28px}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);pointer-events:none;z-index:0}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:#F4D03F}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:#F4D03F;background:rgba(244,208,63,0.10);border:1px solid rgba(244,208,63,0.28);box-shadow:0 0 12px rgba(244,208,63,0.18)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#F4D03F}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    .page-content{padding:40px 10vw 80px;position:relative;z-index:10}
+    .page-tag{font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:#F4D03F;margin-bottom:12px}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,6rem);letter-spacing:0.04em;line-height:0.92;color:var(--ivory);margin-bottom:16px}
+    .page-desc{font-size:14px;font-weight:300;color:var(--text-mid);max-width:560px;line-height:1.7;margin-bottom:48px}
+    .types-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:64px}
+    .type-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;text-align:center;transition:border-color 0.2s}
+    .type-card:hover{border-color:rgba(244,208,63,0.3)}
+    .type-icon{font-size:2rem;margin-bottom:12px}
+    .type-name{font-size:13px;font-weight:600;color:var(--ivory);margin-bottom:6px}
+    .type-dur{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+    .type-price{font-size:12px;color:#F4D03F;font-weight:600}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.06em;color:var(--ivory);margin-bottom:24px}
+    .mentors-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:64px}
+    .mentor-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px}
+    .mentor-avatar{width:52px;height:52px;border-radius:50%;background:rgba(244,208,63,0.15);border:2px solid rgba(244,208,63,0.3);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#F4D03F;margin-bottom:14px}
+    .mentor-name{font-size:14px;font-weight:600;color:var(--ivory);margin-bottom:2px}
+    .mentor-spec{font-size:11px;color:#F4D03F;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
+    .mentor-country{font-size:12px;color:var(--text-dim);margin-bottom:10px}
+    .mentor-stars{color:#F4D03F;font-size:12px;margin-bottom:4px}
+    .mentor-sessions{font-size:11px;color:var(--text-dim);margin-bottom:14px}
+    .btn-accent{background:#F4D03F;color:#05050A;border:none;padding:9px 18px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;transition:opacity 0.2s;font-family:inherit;width:100%}
+    .btn-accent:hover{opacity:0.85}
+    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:64px}
+    .testimonial{background:var(--surface);border:1px solid var(--border);border-left:3px solid #F4D03F;border-radius:8px;padding:24px}
+    .t-quote{font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:14px;font-style:italic}
+    .t-author{font-size:11px;font-weight:600;color:var(--ivory)}
+    .t-role{font-size:10px;color:var(--text-dim)}
+    .request-form{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px;max-width:640px}
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+    .form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--ivory);font-family:inherit;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:#F4D03F}
+    .form-input::placeholder{color:var(--text-dim)}
+    select.form-input option{background:#1a1a1a}
+    #std-footer{background:#080810;border-top:1px solid rgba(255,255,255,0.06);padding:48px 10vw 56px;position:relative;z-index:10}
+    .std-fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
+    .std-fl-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.18em;color:#F4D03F;text-decoration:none}
+    .std-fl-desc{font-size:12px;color:rgba(232,228,220,0.50);line-height:1.7;max-width:240px;margin-top:12px}
+    .std-fc-title{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,228,220,0.34);margin-bottom:12px}
+    .std-fl{display:block;font-size:12px;color:rgba(232,228,220,0.50);margin-bottom:8px;text-decoration:none;transition:color .2s;cursor:none}
+    .std-fl:hover{color:#F4D03F}
+    .std-fb{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)}
+    .std-fc-copy{font-size:11px;color:rgba(232,228,220,0.34)}
+    .std-tri{display:flex;flex-direction:column;gap:3px}
+    .std-tri div{width:28px;height:4px;border-radius:2px}
+    #ticker{position:fixed;bottom:0;left:0;right:0;height:28px;overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);z-index:90;background:rgba(5,5,10,0.96)}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 32s linear infinite}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55);height:28px}
+    .ticker-val{color:#F4D03F;font-weight:500}
+    .ticker-sep{color:rgba(232,228,220,0.30)}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .cursor-dot{position:fixed;top:0;left:0;width:7px;height:7px;border-radius:50%;background:var(--ivory);pointer-events:none;z-index:9999;mix-blend-mode:difference}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9000;display:flex;align-items:center;justify-content:center;display:none}
+    .modal-overlay.open{display:flex}
+    .modal{background:#111118;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:36px;max-width:480px;width:90%}
+    .modal-title{font-size:16px;font-weight:600;color:var(--ivory);margin-bottom:20px}
+    .modal-close{float:right;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:none}
+    @media(max-width:900px){.types-grid{grid-template-columns:repeat(2,1fr)}.mentors-grid{grid-template-columns:repeat(2,1fr)}.testimonials{grid-template-columns:1fr}.std-fg{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.types-grid{grid-template-columns:1fr}.mentors-grid{grid-template-columns:1fr}.std-fg{grid-template-columns:1fr}}
+  </style>
+</head>
+<body data-accent="yellow">
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item active" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item" href="/nodo.html">NODO</a>
+      <a class="nav-item" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="nv-breadcrumb">
+    <a href="/talento.html" class="nv-bc-back">← Capital Humano</a>
+    <span class="nv-bc-sep">·</span>
+    <span class="nv-bc-current">Mentorías</span>
+  </div>
+
+  <main class="page-content">
+    <div class="page-tag">Capital Humano · NEVADO</div>
+    <div class="page-title">MENTORÍAS</div>
+    <p class="page-desc">Sesiones 1:1 con profesionales venezolanos experimentados. Acelera tu carrera con orientación personalizada del ecosistema NEVADO.</p>
+
+    <div class="types-grid">
+      <div class="type-card">
+        <div class="type-icon">📄</div>
+        <div class="type-name">Revisión de CV</div>
+        <div class="type-dur">45 minutos</div>
+        <div class="type-price">Gratuito</div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon">🎤</div>
+        <div class="type-name">Simulación de Entrevista</div>
+        <div class="type-dur">60 minutos</div>
+        <div class="type-price">$15 USD</div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon">🧭</div>
+        <div class="type-name">Orientación de Carrera</div>
+        <div class="type-dur">90 minutos</div>
+        <div class="type-price">$25 USD</div>
+      </div>
+      <div class="type-card">
+        <div class="type-icon">💼</div>
+        <div class="type-name">Feedback Portafolio</div>
+        <div class="type-dur">45 minutos</div>
+        <div class="type-price">$10 USD</div>
+      </div>
+    </div>
+
+    <div class="section-title">MENTORES DISPONIBLES</div>
+    <div class="mentors-grid">
+      <div class="mentor-card">
+        <div class="mentor-avatar">LR</div>
+        <div class="mentor-name">Laura Rodríguez</div>
+        <div class="mentor-spec">Frontend & UX</div>
+        <div class="mentor-country">🇨🇴 Bogotá, Colombia</div>
+        <div class="mentor-stars">★★★★★</div>
+        <div class="mentor-sessions">142 sesiones · 98% satisfacción</div>
+        <button class="btn-accent" onclick="openModal()">Agendar sesión</button>
+      </div>
+      <div class="mentor-card">
+        <div class="mentor-avatar">CM</div>
+        <div class="mentor-name">Carlos Montoya</div>
+        <div class="mentor-spec">Backend · Node.js · AWS</div>
+        <div class="mentor-country">🇪🇸 Barcelona, España</div>
+        <div class="mentor-stars">★★★★★</div>
+        <div class="mentor-sessions">89 sesiones · 97% satisfacción</div>
+        <button class="btn-accent" onclick="openModal()">Agendar sesión</button>
+      </div>
+      <div class="mentor-card">
+        <div class="mentor-avatar">AG</div>
+        <div class="mentor-name">Andreína García</div>
+        <div class="mentor-spec">Producto · Startups</div>
+        <div class="mentor-country">🇺🇸 Miami, EEUU</div>
+        <div class="mentor-stars">★★★★☆</div>
+        <div class="mentor-sessions">67 sesiones · 95% satisfacción</div>
+        <button class="btn-accent" onclick="openModal()">Agendar sesión</button>
+      </div>
+      <div class="mentor-card">
+        <div class="mentor-avatar">JP</div>
+        <div class="mentor-name">Jorge Parra</div>
+        <div class="mentor-spec">Data Science · Python</div>
+        <div class="mentor-country">🇨🇱 Santiago, Chile</div>
+        <div class="mentor-stars">★★★★★</div>
+        <div class="mentor-sessions">53 sesiones · 99% satisfacción</div>
+        <button class="btn-accent" onclick="openModal()">Agendar sesión</button>
+      </div>
+      <div class="mentor-card">
+        <div class="mentor-avatar">MV</div>
+        <div class="mentor-name">María Velásquez</div>
+        <div class="mentor-spec">Marketing Digital</div>
+        <div class="mentor-country">🇵🇪 Lima, Perú</div>
+        <div class="mentor-stars">★★★★☆</div>
+        <div class="mentor-sessions">38 sesiones · 94% satisfacción</div>
+        <button class="btn-accent" onclick="openModal()">Agendar sesión</button>
+      </div>
+      <div class="mentor-card">
+        <div class="mentor-avatar">RS</div>
+        <div class="mentor-name">Rodrigo Salcedo</div>
+        <div class="mentor-spec">Finanzas Personales · Cripto</div>
+        <div class="mentor-country">🇦🇷 Buenos Aires</div>
+        <div class="mentor-stars">★★★★★</div>
+        <div class="mentor-sessions">71 sesiones · 96% satisfacción</div>
+        <button class="btn-accent" onclick="openModal()">Agendar sesión</button>
+      </div>
+    </div>
+
+    <div class="section-title">LO QUE DICEN NUESTROS MENTEES</div>
+    <div class="testimonials" style="margin-bottom:64px">
+      <div class="testimonial">
+        <div class="t-quote">"Después de mi sesión de CV con Laura, conseguí 3 entrevistas en la misma semana. La orientación fue precisa y enfocada en el mercado remoto."</div>
+        <div class="t-author">Gabriela Moreno</div>
+        <div class="t-role">Desarrolladora Frontend · Caracas → Remoto</div>
+      </div>
+      <div class="testimonial">
+        <div class="t-quote">"Jorge me ayudó a entender qué habilidades de datos necesitaba para competir internacionalmente. En 3 meses ya tenía mi primer cliente en EEUU."</div>
+        <div class="t-author">Diego Hernández</div>
+        <div class="t-role">Data Analyst · Maracaibo → Freelance</div>
+      </div>
+      <div class="testimonial">
+        <div class="t-quote">"La simulación de entrevista con Carlos fue más dura que la real. Eso fue exactamente lo que necesitaba. Conseguí el trabajo."</div>
+        <div class="t-author">Valentina Castillo</div>
+        <div class="t-role">Backend Dev · Valencia → España</div>
+      </div>
+    </div>
+
+    <div class="section-title">SOLICITAR SESIÓN</div>
+    <div class="request-form">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" type="text" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="tu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de mentoría</label>
+        <select class="form-input">
+          <option>Revisión de CV — Gratuito</option>
+          <option>Simulación de entrevista — $15 USD</option>
+          <option>Orientación de carrera — $25 USD</option>
+          <option>Feedback de portafolio — $10 USD</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cuéntanos tu situación</label>
+        <textarea class="form-input" rows="4" placeholder="¿Dónde estás en tu carrera? ¿Qué quieres lograr?"></textarea>
+      </div>
+      <button class="btn-accent" onclick="submitRequest()" style="width:auto;padding:11px 28px">Solicitar sesión</button>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal">
+      <button class="modal-close" onclick="document.getElementById('scheduleModal').classList.remove('open')">×</button>
+      <div class="modal-title">Agendar sesión — Modo demo</div>
+      <p style="font-size:13px;color:var(--text-mid);margin-bottom:20px">Selecciona un horario disponible para tu sesión 1:1.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px">
+        <button onclick="selectSlot(this)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:11px;color:var(--text-mid);cursor:none;font-family:inherit">Lun 10:00</button>
+        <button onclick="selectSlot(this)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:11px;color:var(--text-mid);cursor:none;font-family:inherit">Mié 15:00</button>
+        <button onclick="selectSlot(this)" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:11px;color:var(--text-mid);cursor:none;font-family:inherit">Vie 18:00</button>
+      </div>
+      <button class="btn-accent" onclick="confirmSession()" style="width:100%">Confirmar en modo demo</button>
+    </div>
+  </div>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div>
+        <a class="std-fl-logo" href="/">N·EVADO</a>
+        <p class="std-fl-desc">Red de talento venezolano para el mercado global.</p>
+      </div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Capital Humano</div>
+        <a class="std-fl" href="/talento/cv.html">Constructor de CV</a>
+        <a class="std-fl" href="/talento/profesionales.html">Profesionales</a>
+        <a class="std-fl" href="/talento/mentorias.html">Mentorías</a>
+        <a class="std-fl" href="/talento/aplicaciones.html">Mis Aplicaciones</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · Capital Humano · Modo demostración</span>
+      <div class="std-tri">
+        <div style="background:#F4D03F"></div>
+        <div style="background:#2980B9"></div>
+        <div style="background:#E74C3C"></div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <script>
+    function openModal(){document.getElementById('scheduleModal').classList.add('open')}
+    function selectSlot(btn){document.querySelectorAll('.modal button[onclick^="selectSlot"]').forEach(b=>{b.style.borderColor='var(--border)';b.style.color='var(--text-mid)';b.style.background='rgba(255,255,255,0.05)'});btn.style.borderColor='#F4D03F';btn.style.color='#F4D03F';btn.style.background='rgba(244,208,63,0.08)'}
+    function confirmSession(){document.querySelector('.modal').innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:3rem;margin-bottom:16px">✓</div><div style="font-size:16px;font-weight:600;color:var(--ivory);margin-bottom:8px">¡Sesión agendada!</div><p style="color:var(--text-mid);font-size:13px">Recibirás una confirmación en modo demo. Te contactaremos pronto.</p><button class="btn-accent" onclick="document.getElementById(\'scheduleModal\').classList.remove(\'open\')" style="margin-top:20px;width:auto;padding:10px 24px">Cerrar</button></div>'}
+    function submitRequest(){const btn=event.target;btn.textContent='¡Solicitud enviada!';btn.style.background='#27AE60';setTimeout(()=>{btn.textContent='Solicitar sesión';btn.style.background='#F4D03F'},3000)}
+  </script>
+</body>
+</html>

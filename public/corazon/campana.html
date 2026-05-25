@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Campaña · Corazón · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#2980B9;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+
+    /* LAYOUT */
+    .camp-layout{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+
+    /* MAIN CONTENT */
+    .camp-tag{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--page-accent);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .camp-tag-pill{background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);padding:2px 8px;border-radius:4px}
+    .camp-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;letter-spacing:0.03em;color:var(--text);margin-bottom:10px;line-height:1.2}
+    .camp-org{font-size:12px;color:var(--text-dim);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+    .org-avatar{width:24px;height:24px;border-radius:50%;background:color-mix(in srgb,var(--page-accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);display:flex;align-items:center;justify-content:center;font-size:11px}
+    .camp-cover{width:100%;height:200px;border-radius:12px;background:linear-gradient(135deg,color-mix(in srgb,var(--page-accent) 12%,transparent),rgba(255,255,255,0.01));border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:64px;margin-bottom:24px}
+    .camp-desc{font-size:13px;color:var(--text-dim);line-height:1.8;margin-bottom:28px}
+    .camp-desc p{margin-bottom:12px}
+
+    /* UPDATES TIMELINE */
+    .section-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .timeline{position:relative;padding-left:20px}
+    .timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border)}
+    .timeline-item{position:relative;margin-bottom:20px}
+    .timeline-dot{position:absolute;left:-18px;top:4px;width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--page-accent) 40%,transparent);border:1px solid var(--page-accent)}
+    .timeline-date{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
+    .timeline-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
+    .timeline-body{font-size:11px;color:var(--text-dim);line-height:1.6}
+
+    /* DONORS */
+    .donors-list{margin-bottom:24px}
+    .donor-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .donor-row:last-child{border-bottom:none}
+    .donor-avatar{width:28px;height:28px;border-radius:50%;background:color-mix(in srgb,var(--page-accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 18%,transparent);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+    .donor-name{flex:1;font-size:11px;color:var(--text-dim)}
+    .donor-anon{color:var(--text-muted)}
+    .donor-amount{font-size:11px;font-weight:500;color:var(--page-accent)}
+    .donor-date{font-size:9px;color:var(--text-muted)}
+
+    /* DONATION SIDEBAR */
+    .donate-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;position:sticky;top:88px}
+    .donate-prog-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+    .donate-raised{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--page-accent)}
+    .donate-goal{font-size:11px;color:var(--text-dim)}
+    .prog-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;margin-bottom:8px}
+    .prog-fill{height:100%;border-radius:3px;background:var(--page-accent);transition:width 0.8s ease}
+    .prog-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-bottom:20px}
+    .quick-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+    .amt-btn{padding:8px 4px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:11px;cursor:none;transition:all 0.2s;font-family:inherit;text-align:center}
+    .amt-btn.active,.amt-btn:hover{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+    .custom-amount{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color 0.2s;cursor:none;margin-bottom:12px}
+    .custom-amount:focus{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent)}
+    .btn-donate{width:100%;padding:12px;border-radius:8px;background:color-mix(in srgb,var(--page-accent) 18%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);font-size:11px;letter-spacing:0.10em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s;margin-bottom:10px}
+    .btn-donate:hover{background:color-mix(in srgb,var(--page-accent) 26%,transparent)}
+    .donate-note{font-size:9px;color:var(--text-muted);text-align:center;line-height:1.5}
+    .donate-sep{height:1px;background:var(--border);margin:16px 0}
+    .donate-share{width:100%;padding:9px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:10px;letter-spacing:0.09em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .donate-share:hover{border-color:rgba(255,255,255,0.15);color:var(--text)}
+    .sidebar-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+    .sidebar-stat{text-align:center;padding:8px}
+    .sidebar-stat-num{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text)}
+    .sidebar-stat-lbl{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item active" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/corazon-tricolor.html">← Corazón</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Campaña</span>
+</div>
+
+<main class="page-wrap">
+  <div class="camp-layout">
+
+    <!-- MAIN -->
+    <div>
+      <div class="camp-tag">
+        <span class="camp-tag-pill">Activa · Educación</span>
+        Campaña verificada · NEVADO Corazón
+      </div>
+      <h1 class="camp-title">Becas de Conectividad para Estudiantes Venezolanos</h1>
+      <div class="camp-org">
+        <div class="org-avatar">📡</div>
+        <span>Fundación Conecta Venezuela · <strong>Verificada</strong></span>
+      </div>
+
+      <div class="camp-cover">📡</div>
+
+      <div class="camp-desc">
+        <p>Miles de estudiantes venezolanos no pueden completar sus estudios online por falta de acceso a internet estable. Esta campaña financia planes de datos móviles de 6 meses para 200 estudiantes seleccionados en zonas con conectividad limitada.</p>
+        <p>Cada donación de $30 USD garantiza un mes de internet para un estudiante. Los beneficiarios son seleccionados por su compromiso académico y necesidad económica verificada por nuestra red de aliados en Venezuela.</p>
+        <p>El 100% de los fondos se destina directamente a los planes de datos. Los costos operativos son cubiertos por NEVADO Corazón. Cada trimestre publicamos auditoría pública con lista de beneficiarios y recibos.</p>
+      </div>
+
+      <div class="section-title">Actualizaciones</div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">14 May 2025</div>
+          <div class="timeline-title">Segunda tanda de beneficiarios asignada</div>
+          <div class="timeline-body">Se activaron los planes de datos para 80 estudiantes adicionales en Zulia, Mérida y Bolívar. Recibos subidos a la sección de Transparencia.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">01 Abr 2025</div>
+          <div class="timeline-title">Primera tanda: 60 estudiantes activos</div>
+          <div class="timeline-body">Los primeros 60 beneficiarios recibieron su plan de 6 meses. El 94% reportó mejora en su participación de clases online.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">15 Mar 2025</div>
+          <div class="timeline-title">Meta 50% alcanzada — Gracias a 420 donantes</div>
+          <div class="timeline-body">En 45 días alcanzamos la mitad de la meta. La comunidad NEVADO demostró que es posible conectar a nuestra gente.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">01 Feb 2025</div>
+          <div class="timeline-title">Campaña lanzada</div>
+          <div class="timeline-body">Iniciamos con meta de $6,000 USD para garantizar conectividad a 200 estudiantes por 6 meses.</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:32px">Donantes recientes</div>
+      <div class="donors-list">
+        <div class="donor-row">
+          <div class="donor-avatar">🦅</div>
+          <div class="donor-name">María G. — Bogotá</div>
+          <div>
+            <div class="donor-amount">$50</div>
+            <div class="donor-date">Hace 2 horas</div>
+          </div>
+        </div>
+        <div class="donor-row">
+          <div class="donor-avatar">⭐</div>
+          <div class="donor-name donor-anon">Anónimo</div>
+          <div>
+            <div class="donor-amount">$30</div>
+            <div class="donor-date">Hace 5 horas</div>
+          </div>
+        </div>
+        <div class="donor-row">
+          <div class="donor-avatar">🌐</div>
+          <div class="donor-name">Carlos V. — Madrid</div>
+          <div>
+            <div class="donor-amount">$100</div>
+            <div class="donor-date">Ayer</div>
+          </div>
+        </div>
+        <div class="donor-row">
+          <div class="donor-avatar">💙</div>
+          <div class="donor-name">Andreína M. — Santiago</div>
+          <div>
+            <div class="donor-amount">$25</div>
+            <div class="donor-date">Ayer</div>
+          </div>
+        </div>
+        <div class="donor-row">
+          <div class="donor-avatar">⭐</div>
+          <div class="donor-name donor-anon">Anónimo</div>
+          <div>
+            <div class="donor-amount">$200</div>
+            <div class="donor-date">Hace 2 días</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="donate-sidebar">
+      <div class="donate-prog-header">
+        <span class="donate-raised" id="raised-display">$4,380</span>
+        <span class="donate-goal">de $6,000 meta</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:73%"></div></div>
+      <div class="prog-meta">
+        <span>73% alcanzado</span>
+        <span>14 días restantes</span>
+      </div>
+
+      <div class="quick-amounts" id="quick-amounts">
+        <button class="amt-btn" data-amount="10">$10</button>
+        <button class="amt-btn active" data-amount="30">$30</button>
+        <button class="amt-btn" data-amount="50">$50</button>
+        <button class="amt-btn" data-amount="100">$100</button>
+        <button class="amt-btn" data-amount="200">$200</button>
+        <button class="amt-btn" data-amount="0">Otro</button>
+      </div>
+      <input class="custom-amount" id="custom-amt" type="number" placeholder="Cantidad personalizada (USD)" min="1" style="display:none"/>
+      <button class="btn-donate" id="donate-btn">Donar $30</button>
+      <div class="donate-note">Transacción procesada por NEVADO Corazón · Fondos auditables · Sin comisión de plataforma</div>
+
+      <div class="donate-sep"></div>
+      <button class="donate-share" onclick="shareCampaign()">Compartir campaña</button>
+
+      <div class="sidebar-stats">
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-num">642</div>
+          <div class="sidebar-stat-lbl">Donantes</div>
+        </div>
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-num">140</div>
+          <div class="sidebar-stat-lbl">Beneficiarios</div>
+        </div>
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-num">22</div>
+          <div class="sidebar-stat-lbl">Países</div>
+        </div>
+        <div class="sidebar-stat">
+          <div class="sidebar-stat-num">100%</div>
+          <div class="sidebar-stat-lbl">Auditado</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Corazón</h4>
+      <a href="/corazon/campana.html">Campaña</a>
+      <a href="/corazon/crear.html">Crear campaña</a>
+      <a href="/corazon/transparencia.html">Transparencia</a>
+      <a href="/corazon/donacion.html">Donar</a>
+      <a href="/corazon/historias.html">Historias</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Auditoría</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+let selectedAmount = 30;
+document.querySelectorAll('.amt-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    const amt=parseInt(this.dataset.amount);
+    const custom=document.getElementById('custom-amt');
+    if(!amt){custom.style.display='block';custom.focus();document.getElementById('donate-btn').textContent='Donar';selectedAmount=0}
+    else{custom.style.display='none';selectedAmount=amt;document.getElementById('donate-btn').textContent=`Donar $${amt}`}
+  });
+});
+document.getElementById('custom-amt').addEventListener('input',function(){
+  const v=parseInt(this.value)||0;
+  selectedAmount=v;
+  document.getElementById('donate-btn').textContent=v>0?`Donar $${v}`:'Donar';
+});
+document.getElementById('donate-btn').addEventListener('click',function(){
+  if(!selectedAmount)return;
+  window.location.href='/corazon/donacion.html?campaign=conectividad&amount='+selectedAmount;
+});
+function shareCampaign(){
+  navigator.clipboard.writeText(window.location.href).catch(()=>{});
+  const btn=document.querySelector('.donate-share');
+  btn.textContent='¡Enlace copiado!';
+  setTimeout(()=>btn.textContent='Compartir campaña',2000);
+}
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

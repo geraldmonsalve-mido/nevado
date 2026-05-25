@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Calculadora Freelance · Servicios · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#E74C3C;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#E74C3C}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+    .page-header{margin-bottom:32px}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:520px}
+
+    /* TOOL TABS */
+    .tool-tabs{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap}
+    .tool-tab{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:7px 16px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit}
+    .tool-tab.active{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 08%,transparent)}
+    .tool-tab:hover:not(.active){border-color:rgba(255,255,255,0.12);color:var(--text)}
+
+    /* TOOL PANELS */
+    .tool-panel{display:none}
+    .tool-panel.active{display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start}
+
+    .calc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px}
+    .calc-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .form-row{margin-bottom:14px}
+    .form-row label{display:block;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+    .form-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:color-mix(in srgb,var(--page-accent) 35%,transparent)}
+    .form-select{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text-dim);font-family:'Inter',sans-serif;font-size:12px;outline:none;cursor:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(232,228,220,0.25)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn-calc{width:100%;padding:10px;border-radius:7px;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);color:var(--page-accent);font-size:10px;letter-spacing:0.10em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .btn-calc:hover{background:color-mix(in srgb,var(--page-accent) 20%,transparent)}
+
+    /* RESULT SIDEBAR */
+    .result-card{background:color-mix(in srgb,var(--page-accent) 06%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 20%,transparent);border-radius:12px;padding:20px;position:sticky;top:88px}
+    .result-main{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;color:var(--page-accent);margin-bottom:4px}
+    .result-sub{font-size:11px;color:var(--text-dim);margin-bottom:16px}
+    .result-breakdown{display:flex;flex-direction:column;gap:6px}
+    .result-row{display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .result-row:last-child{border-bottom:none}
+    .result-k{color:var(--text-muted)}
+    .result-v{color:var(--text-dim)}
+    .result-v.accent{color:var(--page-accent);font-weight:500}
+
+    /* AI PROPOSAL TOOL */
+    .proposal-panel{display:none}
+    .proposal-panel.active{display:block}
+    .ai-response-box{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:12px;color:var(--text-dim);line-height:1.7;min-height:100px;white-space:pre-wrap;margin-top:14px}
+    .ai-loading{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:12px}
+    .ai-dot{width:5px;height:5px;border-radius:50%;background:var(--page-accent);animation:ai-pulse 1s ease-in-out infinite}
+    .ai-dot:nth-child(2){animation-delay:0.2s}
+    .ai-dot:nth-child(3){animation-delay:0.4s}
+    @keyframes ai-pulse{0%,100%{opacity:0.3}50%{opacity:1}}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item active" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/servicios.html">← Servicios</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Calculadora Freelance</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Calculadora Freelance</h1>
+    <p>4 herramientas para establecer tarifas justas, calcular proyectos, entender comisiones y generar propuestas con IA.</p>
+  </div>
+
+  <div class="tool-tabs">
+    <button class="tool-tab active" onclick="switchTool('tarifa')">Tarifa por hora</button>
+    <button class="tool-tab" onclick="switchTool('proyecto')">Proyecto</button>
+    <button class="tool-tab" onclick="switchTool('comision')">Comisiones</button>
+    <button class="tool-tab" onclick="switchTool('propuesta')">✦ Propuesta IA</button>
+  </div>
+
+  <!-- TARIFA POR HORA -->
+  <div class="tool-panel active" id="panel-tarifa">
+    <div class="calc-card">
+      <div class="calc-title">Calculadora de tarifa/hora</div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>Ingreso mensual deseado (USD)</label>
+          <input class="form-input" id="t-income" type="number" value="3000" min="1" oninput="calcTarifa()"/>
+        </div>
+        <div class="form-row">
+          <label>Horas facturables/semana</label>
+          <input class="form-input" id="t-hours" type="number" value="25" min="1" max="60" oninput="calcTarifa()"/>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>Vacaciones (semanas/año)</label>
+          <input class="form-input" id="t-vac" type="number" value="3" min="0" max="12" oninput="calcTarifa()"/>
+        </div>
+        <div class="form-row">
+          <label>Gastos operativos/mes (USD)</label>
+          <input class="form-input" id="t-expenses" type="number" value="150" min="0" oninput="calcTarifa()"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Buffer de imprevistos (%)</label>
+        <input class="form-input" id="t-buffer" type="number" value="20" min="0" max="50" oninput="calcTarifa()"/>
+      </div>
+      <div class="form-row">
+        <label>Mercado principal</label>
+        <select class="form-select" id="t-market" onchange="calcTarifa()">
+          <option value="1.0">Latam (base)</option>
+          <option value="1.4">España</option>
+          <option value="1.8">USA / Canadá</option>
+          <option value="1.6">Europa Occidental</option>
+          <option value="0.9">Venezuela / local</option>
+        </select>
+      </div>
+    </div>
+    <div class="result-card" id="r-tarifa">
+      <div class="result-main" id="r-tarifa-main">$0/h</div>
+      <div class="result-sub">Tarifa mínima recomendada</div>
+      <div class="result-breakdown">
+        <div class="result-row"><span class="result-k">Tarifa mínima</span><span class="result-v" id="rt-min">—</span></div>
+        <div class="result-row"><span class="result-k">Tarifa ideal</span><span class="result-v accent" id="rt-ideal">—</span></div>
+        <div class="result-row"><span class="result-k">Tarifa premium</span><span class="result-v" id="rt-prem">—</span></div>
+        <div class="result-row"><span class="result-k">Horas/mes facturables</span><span class="result-v" id="rt-hpm">—</span></div>
+        <div class="result-row"><span class="result-k">Ingreso bruto objetivo</span><span class="result-v" id="rt-gross">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROYECTO -->
+  <div class="tool-panel" id="panel-proyecto">
+    <div class="calc-card">
+      <div class="calc-title">Calculadora de proyecto</div>
+      <div class="form-row">
+        <label>Tipo de proyecto</label>
+        <select class="form-select" id="p-type" onchange="calcProyecto()">
+          <option value="web">Sitio web completo</option>
+          <option value="app">App móvil</option>
+          <option value="design">Diseño UI/UX</option>
+          <option value="content">Estrategia de contenidos</option>
+          <option value="consulting">Consultoría</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>Horas estimadas</label>
+          <input class="form-input" id="p-hours" type="number" value="80" min="1" oninput="calcProyecto()"/>
+        </div>
+        <div class="form-row">
+          <label>Tarifa por hora (USD)</label>
+          <input class="form-input" id="p-rate" type="number" value="35" min="1" oninput="calcProyecto()"/>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>Buffer de revisiones (%)</label>
+          <input class="form-input" id="p-buf" type="number" value="20" min="0" max="50" oninput="calcProyecto()"/>
+        </div>
+        <div class="form-row">
+          <label>Comisión de plataforma (%)</label>
+          <input class="form-input" id="p-plat" type="number" value="10" min="0" max="30" oninput="calcProyecto()"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Gastos adicionales del proyecto (USD)</label>
+        <input class="form-input" id="p-extra" type="number" value="0" min="0" oninput="calcProyecto()"/>
+      </div>
+    </div>
+    <div class="result-card" id="r-proyecto">
+      <div class="result-main" id="rp-main">$0</div>
+      <div class="result-sub">Precio mínimo del proyecto</div>
+      <div class="result-breakdown">
+        <div class="result-row"><span class="result-k">Base (horas × tarifa)</span><span class="result-v" id="rp-base">—</span></div>
+        <div class="result-row"><span class="result-k">+ Revisiones</span><span class="result-v" id="rp-rev">—</span></div>
+        <div class="result-row"><span class="result-k">+ Comisión plataforma</span><span class="result-v" id="rp-plat">—</span></div>
+        <div class="result-row"><span class="result-k">+ Gastos adicionales</span><span class="result-v" id="rp-extra">—</span></div>
+        <div class="result-row"><span class="result-k">Precio ideal (+25%)</span><span class="result-v accent" id="rp-ideal">—</span></div>
+        <div class="result-row"><span class="result-k">Precio premium (+50%)</span><span class="result-v" id="rp-prem">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMISIONES -->
+  <div class="tool-panel" id="panel-comision">
+    <div class="calc-card">
+      <div class="calc-title">Calculadora de comisiones de plataforma</div>
+      <div class="form-row">
+        <label>Valor del proyecto (USD)</label>
+        <input class="form-input" id="c-project" type="number" value="1000" min="1" oninput="calcComision()"/>
+      </div>
+      <div class="form-row">
+        <label>Plataforma</label>
+        <select class="form-select" id="c-platform" onchange="calcComision()">
+          <option value="20">Upwork (hasta $500)</option>
+          <option value="10">Upwork ($500–$10K)</option>
+          <option value="20">Fiverr</option>
+          <option value="13">Toptal</option>
+          <option value="5">Contra</option>
+          <option value="0">Directo (sin plataforma)</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Impuesto estimado (%)</label>
+        <input class="form-input" id="c-tax" type="number" value="15" min="0" max="40" oninput="calcComision()"/>
+      </div>
+      <div class="form-row">
+        <label>Tarifa de transferencia (USD)</label>
+        <input class="form-input" id="c-transfer" type="number" value="2" min="0" oninput="calcComision()"/>
+      </div>
+    </div>
+    <div class="result-card" id="r-comision">
+      <div class="result-main" id="rc-net">$0</div>
+      <div class="result-sub">Neto recibido</div>
+      <div class="result-breakdown">
+        <div class="result-row"><span class="result-k">Bruto del proyecto</span><span class="result-v" id="rc-gross">—</span></div>
+        <div class="result-row"><span class="result-k">− Comisión plataforma</span><span class="result-v" id="rc-plat">—</span></div>
+        <div class="result-row"><span class="result-k">− Impuesto estimado</span><span class="result-v" id="rc-tax">—</span></div>
+        <div class="result-row"><span class="result-k">− Transferencia</span><span class="result-v" id="rc-trans">—</span></div>
+        <div class="result-row"><span class="result-k">Neto final</span><span class="result-v accent" id="rc-final">—</span></div>
+        <div class="result-row"><span class="result-k">% efectivo retenido</span><span class="result-v" id="rc-pct">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPUESTA IA (full width) -->
+  <div class="proposal-panel" id="panel-propuesta">
+    <div class="calc-card">
+      <div class="calc-title">✦ Generador de propuesta con IA</div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>Tu especialidad</label>
+          <input class="form-input" id="ai-skill" type="text" placeholder="Ej: Diseño UX, Desarrollo React"/>
+        </div>
+        <div class="form-row">
+          <label>Tipo de cliente</label>
+          <select class="form-select" id="ai-client">
+            <option>Startup latinoamericana</option>
+            <option>Empresa estadounidense</option>
+            <option>Empresa europea</option>
+            <option>ONG / No-profit</option>
+            <option>Cliente directo / Local</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Descripción del proyecto (breve)</label>
+        <input class="form-input" id="ai-project" type="text" placeholder="Ej: Rediseño de app móvil de pagos, 3 meses"/>
+      </div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>Tarifa que cotizarás</label>
+          <input class="form-input" id="ai-rate" type="text" placeholder="Ej: $2,500 USD / mes"/>
+        </div>
+        <div class="form-row">
+          <label>Tu experiencia</label>
+          <select class="form-select" id="ai-exp">
+            <option>Junior (0-2 años)</option>
+            <option>Mid (2-5 años)</option>
+            <option>Senior (5+ años)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-calc" id="ai-gen-btn" onclick="generateProposal()">✦ Generar propuesta profesional</button>
+      <div class="ai-response-box" id="ai-proposal-box" style="display:none"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Servicios</h4>
+      <a href="/servicios/cambio.html">Cambio de divisas</a>
+      <a href="/servicios/freelance.html">Calculadora freelance</a>
+      <a href="/servicios/tramites.html">Trámites</a>
+      <a href="/servicios/seguridad.html">Seguridad</a>
+      <a href="/servicios/directorio.html">Directorio</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Guías</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+function switchTool(id){
+  document.querySelectorAll('.tool-tab').forEach((t,i)=>{
+    const ids=['tarifa','proyecto','comision','propuesta'];
+    t.classList.toggle('active',ids[i]===id);
+  });
+  document.querySelectorAll('.tool-panel,.proposal-panel').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('panel-'+id);
+  if(el)el.classList.add('active');
+  if(id==='tarifa')calcTarifa();
+  if(id==='proyecto')calcProyecto();
+  if(id==='comision')calcComision();
+}
+
+function calcTarifa(){
+  const income=parseFloat(document.getElementById('t-income').value)||0;
+  const hoursW=parseFloat(document.getElementById('t-hours').value)||1;
+  const vac=parseFloat(document.getElementById('t-vac').value)||0;
+  const expenses=parseFloat(document.getElementById('t-expenses').value)||0;
+  const buffer=parseFloat(document.getElementById('t-buffer').value)||0;
+  const mult=parseFloat(document.getElementById('t-market').value)||1;
+  const worksWeeks=52-vac;
+  const hoursM=(hoursW*worksWeeks)/12;
+  const grossNeeded=(income+expenses)*(1+buffer/100);
+  const minRate=grossNeeded/hoursM;
+  const ideal=minRate*mult;
+  const prem=ideal*1.5;
+  document.getElementById('r-tarifa-main').textContent='$'+minRate.toFixed(0)+'/h';
+  document.getElementById('rt-min').textContent='$'+minRate.toFixed(2)+'/h';
+  document.getElementById('rt-ideal').textContent='$'+ideal.toFixed(2)+'/h';
+  document.getElementById('rt-prem').textContent='$'+prem.toFixed(2)+'/h';
+  document.getElementById('rt-hpm').textContent=hoursM.toFixed(1)+' h/mes';
+  document.getElementById('rt-gross').textContent='$'+grossNeeded.toFixed(2)+'/mes';
+}
+
+function calcProyecto(){
+  const hours=parseFloat(document.getElementById('p-hours').value)||0;
+  const rate=parseFloat(document.getElementById('p-rate').value)||0;
+  const buf=parseFloat(document.getElementById('p-buf').value)||0;
+  const plat=parseFloat(document.getElementById('p-plat').value)||0;
+  const extra=parseFloat(document.getElementById('p-extra').value)||0;
+  const base=hours*rate;
+  const revs=base*(buf/100);
+  const subTotal=base+revs+extra;
+  const platFee=subTotal*(plat/100);
+  const total=subTotal+platFee;
+  const ideal=total*1.25;
+  const prem=total*1.5;
+  document.getElementById('rp-main').textContent='$'+total.toFixed(0);
+  document.getElementById('rp-base').textContent='$'+base.toFixed(2);
+  document.getElementById('rp-rev').textContent='$'+revs.toFixed(2);
+  document.getElementById('rp-plat').textContent='$'+platFee.toFixed(2);
+  document.getElementById('rp-extra').textContent='$'+extra.toFixed(2);
+  document.getElementById('rp-ideal').textContent='$'+ideal.toFixed(2);
+  document.getElementById('rp-prem').textContent='$'+prem.toFixed(2);
+}
+
+function calcComision(){
+  const proj=parseFloat(document.getElementById('c-project').value)||0;
+  const platPct=parseFloat(document.getElementById('c-platform').value)||0;
+  const taxPct=parseFloat(document.getElementById('c-tax').value)||0;
+  const transfer=parseFloat(document.getElementById('c-transfer').value)||0;
+  const platFee=proj*(platPct/100);
+  const afterPlat=proj-platFee;
+  const tax=afterPlat*(taxPct/100);
+  const net=afterPlat-tax-transfer;
+  const pctKept=proj>0?(net/proj*100):0;
+  document.getElementById('rc-net').textContent='$'+net.toFixed(2);
+  document.getElementById('rc-gross').textContent='$'+proj.toFixed(2);
+  document.getElementById('rc-plat').textContent='$'+platFee.toFixed(2)+' ('+platPct+'%)';
+  document.getElementById('rc-tax').textContent='$'+tax.toFixed(2)+' ('+taxPct+'%)';
+  document.getElementById('rc-trans').textContent='$'+transfer.toFixed(2);
+  document.getElementById('rc-final').textContent='$'+net.toFixed(2);
+  document.getElementById('rc-pct').textContent=pctKept.toFixed(1)+'%';
+}
+
+async function generateProposal(){
+  const skill=document.getElementById('ai-skill').value;
+  const client=document.getElementById('ai-client').value;
+  const project=document.getElementById('ai-project').value;
+  const rate=document.getElementById('ai-rate').value;
+  const exp=document.getElementById('ai-exp').value;
+  const box=document.getElementById('ai-proposal-box');
+  box.style.display='block';
+  box.innerHTML='<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Generando propuesta profesional...</span></div>';
+  const btn=document.getElementById('ai-gen-btn');
+  btn.disabled=true;btn.textContent='Generando...';
+  const key=window.__NVD_KEY;
+  if(!key){box.textContent='La clave de API no está disponible.';btn.disabled=false;btn.textContent='✦ Generar propuesta profesional';return;}
+  const ctrl=new AbortController();
+  setTimeout(()=>ctrl.abort(),25000);
+  const prompt=`Eres un asistente de negocios para freelancers venezolanos. Genera una propuesta profesional en español para:\n- Especialidad: ${skill||'No especificada'}\n- Cliente: ${client}\n- Proyecto: ${project||'No especificado'}\n- Tarifa: ${rate||'a definir'}\n- Experiencia: ${exp}\n\nEscribe una propuesta de 3-4 párrafos: 1) Presentación y propuesta de valor, 2) Cómo abordarás el proyecto, 3) Por qué estás calificado, 4) Llamada a la acción. Tono profesional pero cálido. Sin markdown excesivo.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',signal:ctrl.signal,
+      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    box.textContent=d.content?.[0]?.text||'No se pudo generar la propuesta.';
+  }catch(e){box.textContent='No se pudo conectar. Verifica tu conexión e intenta de nuevo.';}
+  btn.disabled=false;btn.textContent='✦ Regenerar propuesta';
+}
+
+calcTarifa();calcProyecto();calcComision();
+
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

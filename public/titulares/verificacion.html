@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Centro de Verificación — Titulares · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#05050A;--ivory:#E8E4DC;--accent:#2980B9;--gold:#B8944A;--border:rgba(255,255,255,0.07);--text-dim:rgba(232,228,220,0.34);--text-mid:rgba(232,228,220,0.60);--surface:rgba(22,22,20,0.88)}
+    html,body{width:100%;min-height:100%;background:var(--bg);color:var(--ivory);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;cursor:none;padding-top:80px;padding-bottom:28px}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);pointer-events:none;z-index:0}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:#2980B9}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:#2980B9;background:rgba(41,128,185,0.10);border:1px solid rgba(41,128,185,0.28);box-shadow:0 0 12px rgba(41,128,185,0.18)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    .page-content{padding:40px 10vw 80px;position:relative;z-index:10}
+    .page-tag{font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:#2980B9;margin-bottom:12px}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5rem);letter-spacing:0.04em;line-height:0.92;color:var(--ivory);margin-bottom:16px}
+    .page-desc{font-size:14px;font-weight:300;color:var(--text-mid);max-width:560px;line-height:1.7;margin-bottom:48px}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:48px}
+    .stat-box{background:var(--surface);padding:20px;text-align:center}
+    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#2980B9;line-height:1}
+    .stat-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:4px}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.06em;color:var(--ivory);margin-bottom:24px}
+    .process-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px}
+    .step-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;position:relative}
+    .step-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:rgba(41,128,185,0.2);line-height:1;margin-bottom:12px}
+    .step-title{font-size:13px;font-weight:600;color:var(--ivory);margin-bottom:8px}
+    .step-desc{font-size:12px;color:var(--text-mid);line-height:1.6}
+    .reviewing-list{display:flex;flex-direction:column;gap:12px;margin-bottom:48px}
+    .reviewing-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 22px;display:flex;align-items:center;gap:16px}
+    .rev-badge{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:rgba(243,156,18,0.15);color:#F39C12;border:1px solid rgba(243,156,18,0.3);flex-shrink:0}
+    .rev-info{flex:1}
+    .rev-topic{font-size:13px;font-weight:500;color:var(--ivory);margin-bottom:2px}
+    .rev-date{font-size:11px;color:var(--text-dim)}
+    .badge-legend{display:flex;gap:20px;margin-bottom:48px;flex-wrap:wrap}
+    .legend-item{display:flex;align-items:center;gap:8px}
+    .legend-badge{font-size:9px;font-weight:600;letter-spacing:0.08em;padding:3px 10px;border-radius:4px}
+    .legend-label{font-size:12px;color:var(--text-mid)}
+    .report-form{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:32px;max-width:600px}
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+    .form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--ivory);font-family:inherit;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:#2980B9}
+    .form-input::placeholder{color:var(--text-dim)}
+    select.form-input option{background:#1a1a1a}
+    textarea.form-input{resize:vertical;min-height:100px}
+    .btn-accent{background:#2980B9;color:#fff;border:none;padding:10px 24px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;transition:opacity 0.2s;font-family:inherit}
+    .btn-accent:hover{opacity:0.85}
+    #std-footer{background:#080810;border-top:1px solid rgba(255,255,255,0.06);padding:48px 10vw 56px;position:relative;z-index:10}
+    .std-fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
+    .std-fl-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.18em;color:#2980B9;text-decoration:none}
+    .std-fl-desc{font-size:12px;color:rgba(232,228,220,0.50);line-height:1.7;max-width:240px;margin-top:12px}
+    .std-fc-title{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,228,220,0.34);margin-bottom:12px}
+    .std-fl{display:block;font-size:12px;color:rgba(232,228,220,0.50);margin-bottom:8px;text-decoration:none;transition:color .2s;cursor:none}
+    .std-fl:hover{color:#2980B9}
+    .std-fb{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)}
+    .std-fc-copy{font-size:11px;color:rgba(232,228,220,0.34)}
+    .std-tri{display:flex;flex-direction:column;gap:3px}
+    .std-tri div{width:28px;height:4px;border-radius:2px}
+    #ticker{position:fixed;bottom:0;left:0;right:0;height:28px;overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);z-index:90;background:rgba(5,5,10,0.96)}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 32s linear infinite}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55);height:28px}
+    .ticker-val{color:#2980B9;font-weight:500}
+    .ticker-sep{color:rgba(232,228,220,0.30)}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .cursor-dot{position:fixed;top:0;left:0;width:7px;height:7px;border-radius:50%;background:var(--ivory);pointer-events:none;z-index:9999;mix-blend-mode:difference}
+    @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}.process-steps{grid-template-columns:1fr}.std-fg{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body data-accent="blue">
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item" href="/nodo.html">NODO</a>
+      <a class="nav-item active" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="nv-breadcrumb">
+    <a href="/enterate.html" class="nv-bc-back">← Titulares</a>
+    <span class="nv-bc-sep">·</span>
+    <span class="nv-bc-current">Verificación</span>
+  </div>
+
+  <main class="page-content">
+    <div class="page-tag">Titulares · NEVADO</div>
+    <div class="page-title">CENTRO DE VERIFICACIÓN</div>
+    <p class="page-desc">Cada artículo publicado en NEVADO pasa por un proceso de verificación de fuentes. La información sin verificar no se publica.</p>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val">42</div><div class="stat-lbl">Verificados</div></div>
+      <div class="stat-box"><div class="stat-val">12</div><div class="stat-lbl">En proceso</div></div>
+      <div class="stat-box"><div class="stat-val">8</div><div class="stat-lbl">Reportes activos</div></div>
+      <div class="stat-box"><div class="stat-val">96%</div><div class="stat-lbl">Precisión</div></div>
+    </div>
+
+    <div class="section-title">NUESTRO PROCESO</div>
+    <div class="process-steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Recibimos la información</div>
+        <div class="step-desc">Cualquier venezolano puede enviarnos información, denuncias o artículos para verificar. También monitoreamos medios nacionales e internacionales.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">Verificamos con fuentes</div>
+        <div class="step-desc">Nuestro equipo editorial contrasta cada dato con al menos 2 fuentes independientes. Se verifica el contexto, la fecha y la procedencia.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Publicamos con trazabilidad</div>
+        <div class="step-desc">Solo publicamos lo verificado. Cada artículo incluye las fuentes citadas, la fecha de verificación y el equipo responsable.</div>
+      </div>
+    </div>
+
+    <div class="section-title">EN PROCESO DE VERIFICACIÓN</div>
+    <div class="badge-legend" style="margin-bottom:20px">
+      <div class="legend-item"><span class="legend-badge" style="background:rgba(39,174,96,0.15);color:#27AE60;border:1px solid rgba(39,174,96,0.3)">✓ Verificado</span><span class="legend-label">Información confirmada</span></div>
+      <div class="legend-item"><span class="legend-badge" style="background:rgba(243,156,18,0.15);color:#F39C12;border:1px solid rgba(243,156,18,0.3)">⟳ En revisión</span><span class="legend-label">Bajo análisis</span></div>
+      <div class="legend-item"><span class="legend-badge" style="background:rgba(41,128,185,0.15);color:#2980B9;border:1px solid rgba(41,128,185,0.3)">◐ Fuente revisada</span><span class="legend-label">Fuente verificada, contexto en revisión</span></div>
+    </div>
+    <div class="reviewing-list">
+      <div class="reviewing-card">
+        <div class="rev-badge">⟳ En revisión</div>
+        <div class="rev-info">
+          <div class="rev-topic">Cifras de migración venezolana reportadas por OIM para el primer trimestre 2026</div>
+          <div class="rev-date">Recibido: 20 mayo 2026 · Tiempo estimado: 48h</div>
+        </div>
+      </div>
+      <div class="reviewing-card">
+        <div class="rev-badge">⟳ En revisión</div>
+        <div class="rev-info">
+          <div class="rev-topic">Tasas de desempleo juvenil en Venezuela publicadas por organismos internacionales</div>
+          <div class="rev-date">Recibido: 22 mayo 2026 · Tiempo estimado: 24h</div>
+        </div>
+      </div>
+      <div class="reviewing-card">
+        <div class="rev-badge">◐ Fuente revisada</div>
+        <div class="rev-info">
+          <div class="rev-topic">Nuevos requisitos de visa de trabajo para venezolanos en España — SEPE 2026</div>
+          <div class="rev-date">Recibido: 18 mayo 2026 · En última revisión de contexto</div>
+        </div>
+      </div>
+      <div class="reviewing-card">
+        <div class="rev-badge">⟳ En revisión</div>
+        <div class="rev-info">
+          <div class="rev-topic">Programa de regularización migratoria anunciado por gobierno colombiano</div>
+          <div class="rev-date">Recibido: 23 mayo 2026 · Tiempo estimado: 72h</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">REPORTAR INFORMACIÓN DUDOSA</div>
+    <div class="report-form">
+      <div class="form-group">
+        <label class="form-label">URL o descripción de la información</label>
+        <input class="form-input" type="text" placeholder="https://... o describe brevemente el contenido">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select class="form-input">
+          <option>Desinformación</option>
+          <option>Cifra incorrecta</option>
+          <option>Fuente dudosa</option>
+          <option>Contexto incompleto</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">¿Por qué te parece dudosa?</label>
+        <textarea class="form-input" rows="4" placeholder="Explica por qué crees que esta información puede ser incorrecta o engañosa..."></textarea>
+      </div>
+      <button class="btn-accent" onclick="submitReport()">Enviar reporte</button>
+    </div>
+  </main>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div><a class="std-fl-logo" href="/">N·EVADO</a><p class="std-fl-desc">Información verificada para la diáspora venezolana global.</p></div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Titulares</div>
+        <a class="std-fl" href="/titulares/articulo.html">Artículos</a>
+        <a class="std-fl" href="/titulares/verificacion.html">Verificación</a>
+        <a class="std-fl" href="/titulares/boletin.html">Boletín</a>
+        <a class="std-fl" href="/titulares/oportunidades.html">Oportunidades</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · Titulares · Modo demostración</span>
+      <div class="std-tri"><div style="background:#F4D03F"></div><div style="background:#2980B9"></div><div style="background:#E74C3C"></div></div>
+    </div>
+  </footer>
+
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <script>
+    function submitReport(){const btn=event.target;btn.textContent='¡Gracias! Revisaremos en 24-48 horas';btn.style.background='#27AE60';btn.disabled=true}
+  </script>
+</body>
+</html>

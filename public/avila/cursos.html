@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursos — ÁVILA · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #0C0C0B; --ivory: #E8E4DC; --accent: #F4D03F; --gold: #B8944A; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#F4D03F; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#F4D03F; background:rgba(244,208,63,0.10); border:1px solid rgba(244,208,63,0.28); box-shadow:0 0 12px rgba(244,208,63,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#F4D03F; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+    .page-content { padding:32px 10vw 80px; position:relative; z-index:10; }
+    .page-tag { font-size:9px; font-weight:600; letter-spacing:0.25em; text-transform:uppercase; color:#F4D03F; margin-bottom:12px; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,7vw,6rem); letter-spacing:0.04em; line-height:0.92; color:var(--ivory); margin-bottom:16px; }
+    .page-desc { font-size:14px; font-weight:300; color:var(--text-mid); max-width:560px; line-height:1.7; margin-bottom:40px; }
+    .btn-accent { background:#F4D03F; color:#0C0C0B; border:none; padding:10px 22px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-accent:hover { opacity:0.85; }
+    .btn-outline { background:transparent; color:#F4D03F; border:1px solid rgba(244,208,63,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; }
+    .btn-outline:hover { background:rgba(244,208,63,0.08); }
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#F4D03F; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#F4D03F; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#F4D03F; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+
+    /* CURSOS SPECIFIC */
+    .filter-bar { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:32px; }
+    .filter-select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:8px 14px; font-size:12px; color:var(--ivory); font-family:inherit; outline:none; cursor:none; transition:border-color 0.2s; }
+    .filter-select:focus { border-color:#F4D03F; }
+    .filter-toggle { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-mid); cursor:none; }
+    .toggle-switch { width:36px; height:20px; background:rgba(255,255,255,0.10); border-radius:10px; position:relative; transition:background 0.2s; cursor:none; }
+    .toggle-switch.on { background:rgba(244,208,63,0.50); }
+    .toggle-knob { width:14px; height:14px; background:var(--ivory); border-radius:50%; position:absolute; top:3px; left:3px; transition:transform 0.2s; }
+    .toggle-switch.on .toggle-knob { transform:translateX(16px); background:#F4D03F; }
+    .search-input { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:6px; padding:8px 14px; font-size:12px; color:var(--ivory); font-family:inherit; outline:none; cursor:none; transition:border-color 0.2s; min-width:220px; }
+    .search-input:focus { border-color:#F4D03F; }
+    .search-input::placeholder { color:var(--text-dim); }
+    .courses-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+    .course-card { background:rgba(22,22,20,0.88); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:22px; display:flex; flex-direction:column; gap:12px; transition:border-color 0.2s, transform 0.2s; cursor:none; }
+    .course-card:hover { border-color:rgba(244,208,63,0.25); transform:translateY(-2px); }
+    .course-cat-tag { font-size:9px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; padding:3px 8px; border-radius:4px; display:inline-block; width:fit-content; }
+    .cat-tecnologia { background:rgba(41,128,185,0.15); color:#5DADE2; }
+    .cat-negocios { background:rgba(39,174,96,0.15); color:#58D68D; }
+    .cat-diseno { background:rgba(155,89,182,0.15); color:#C39BD3; }
+    .cat-idiomas { background:rgba(230,126,34,0.15); color:#F0A16D; }
+    .cat-finanzas { background:rgba(244,208,63,0.12); color:#F4D03F; }
+    .course-title { font-size:15px; font-weight:600; color:var(--ivory); line-height:1.35; }
+    .course-meta { display:flex; align-items:center; gap:10px; }
+    .level-badge { font-size:9px; font-weight:600; letter-spacing:0.12em; padding:2px 7px; border-radius:3px; }
+    .level-basico { background:rgba(39,174,96,0.15); color:#58D68D; }
+    .level-intermedio { background:rgba(230,126,34,0.15); color:#F0A16D; }
+    .level-avanzado { background:rgba(231,76,60,0.15); color:#EC7063; }
+    .course-duration { font-size:11px; color:var(--text-dim); }
+    .course-desc { font-size:12px; color:var(--text-mid); line-height:1.6; flex:1; }
+    .course-footer { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+    .course-enrolled { font-size:11px; color:var(--text-dim); }
+    .course-cert-badge { font-size:9px; color:#F4D03F; letter-spacing:0.1em; }
+
+    /* MODAL */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.80); z-index:1000; display:none; align-items:center; justify-content:center; padding:20px; }
+    .modal-overlay.open { display:flex; }
+    .modal-box { background:#111118; border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:36px; max-width:600px; width:100%; max-height:80vh; overflow-y:auto; position:relative; }
+    .modal-close { position:absolute; top:16px; right:16px; background:transparent; border:1px solid var(--border); color:var(--text-mid); width:28px; height:28px; border-radius:50%; font-size:14px; cursor:none; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+    .modal-close:hover { border-color:#F4D03F; color:#F4D03F; }
+    .modal-cat-tag { font-size:9px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; padding:3px 8px; border-radius:4px; display:inline-block; margin-bottom:14px; }
+    .modal-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:0.06em; color:var(--ivory); margin-bottom:12px; }
+    .modal-desc { font-size:13px; color:var(--text-mid); line-height:1.7; margin-bottom:24px; }
+    .modal-section-title { font-size:10px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); margin-bottom:12px; }
+    .module-list { list-style:none; display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+    .module-item { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; padding:12px 16px; }
+    .module-num { font-size:9px; color:var(--text-dim); letter-spacing:0.12em; margin-bottom:4px; }
+    .module-name { font-size:13px; color:var(--ivory); font-weight:500; }
+    .module-lessons { font-size:11px; color:var(--text-dim); margin-top:6px; }
+    .preview-lesson { background:rgba(244,208,63,0.06); border:1px solid rgba(244,208,63,0.18); border-radius:6px; padding:14px 16px; margin-bottom:24px; }
+    .preview-label { font-size:9px; color:#F4D03F; letter-spacing:0.15em; font-weight:600; margin-bottom:6px; }
+    .preview-title { font-size:13px; color:var(--ivory); }
+    @media(max-width:768px){ .courses-grid { grid-template-columns:1fr; } .std-fg { grid-template-columns:1fr 1fr; } .filter-bar { flex-direction:column; align-items:flex-start; } }
+  </style>
+</head>
+<body data-accent="yellow">
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item active" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a href="/avila.html" class="nv-bc-back">← ÁVILA</a>
+  <span class="nv-bc-sep">·</span>
+  <span class="nv-bc-current">Catálogo de Cursos</span>
+</div>
+
+<div class="page-content">
+  <div class="page-tag">ÁVILA · Formación</div>
+  <h1 class="page-title">Catálogo<br>de Cursos</h1>
+  <p class="page-desc">340 cursos diseñados para venezolanos que buscan crecer profesionalmente en el mercado global. Aprende a tu ritmo, desde cualquier lugar.</p>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <select class="filter-select" id="filter-nivel" onchange="applyFilters()">
+      <option value="">Todos los niveles</option>
+      <option value="Básico">Básico</option>
+      <option value="Intermedio">Intermedio</option>
+      <option value="Avanzado">Avanzado</option>
+    </select>
+    <select class="filter-select" id="filter-cat" onchange="applyFilters()">
+      <option value="">Todas las categorías</option>
+      <option value="Tecnología">Tecnología</option>
+      <option value="Negocios">Negocios</option>
+      <option value="Diseño">Diseño</option>
+      <option value="Idiomas">Idiomas</option>
+      <option value="Finanzas">Finanzas</option>
+    </select>
+    <select class="filter-select" id="filter-dur" onchange="applyFilters()">
+      <option value="">Cualquier duración</option>
+      <option value="corto">Corto (menos de 10h)</option>
+      <option value="medio">Medio (10–24h)</option>
+      <option value="largo">Largo (más de 24h)</option>
+    </select>
+    <label class="filter-toggle">
+      <div class="toggle-switch" id="cert-toggle" onclick="toggleCert()"><div class="toggle-knob"></div></div>
+      Con certificado
+    </label>
+    <input class="search-input" type="text" id="search-input" placeholder="Buscar curso..." oninput="applyFilters()">
+  </div>
+
+  <!-- COURSES GRID -->
+  <div class="courses-grid" id="courses-grid"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="course-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <a class="std-fl-logo" href="/">N·EVADO</a>
+      <p class="std-fl-desc">Rutas de aprendizaje para venezolanos en el mundo.</p>
+    </div>
+    <div>
+      <div class="std-fc-title">Ecosistema</div>
+      <a class="std-fl" href="/talento.html">Capital Humano</a>
+      <a class="std-fl" href="/avila.html">ÁVILA</a>
+      <a class="std-fl" href="/nodo.html">NODO</a>
+      <a class="std-fl" href="/enterate.html">Titulares</a>
+      <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+      <a class="std-fl" href="/servicios.html">Servicios</a>
+    </div>
+    <div>
+      <div class="std-fc-title">ÁVILA</div>
+      <a class="std-fl" href="/avila/cursos.html">Catálogo de Cursos</a>
+      <a class="std-fl" href="/avila/rutas.html">Rutas de Aprendizaje</a>
+      <a class="std-fl" href="/avila/laboratorio.html">Laboratorio IA</a>
+      <a class="std-fl" href="/avila/certificados.html">Certificados</a>
+      <a class="std-fl" href="/avila/reto.html">Reto 28 Días</a>
+    </div>
+    <div>
+      <div class="std-fc-title">Info</div>
+      <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+      <a class="std-fl" href="/transparencia.html">Transparencia</a>
+      <a class="std-fl" href="javascript:void(0)">Contacto</a>
+    </div>
+  </div>
+  <div class="std-fb">
+    <span class="std-fc-copy">© 2026 NEVADO · ÁVILA · Modo demostración</span>
+    <div class="std-tri">
+      <div style="background:#F4D03F"></div>
+      <div style="background:#2980B9"></div>
+      <div style="background:#E74C3C"></div>
+    </div>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+<script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<script>
+const COURSES = [
+  {
+    id:1, title:'Python para Análisis de Datos', cat:'Tecnología', level:'Intermedio', hours:24, enrolled:1284, cert:true,
+    desc:'Aprende Python desde un enfoque práctico orientado al análisis de datos: pandas, matplotlib, numpy y proyectos reales con datasets venezolanos y latinoamericanos.',
+    fullDesc:'Domina las herramientas más demandadas en el mercado de datos. Este curso te lleva desde Python básico hasta análisis exploratorio completo, visualizaciones profesionales y tu primer proyecto de portafolio listo para mostrar a empleadores remotos.',
+    modules:[
+      {num:'Módulo 01', name:'Fundamentos de Python para Datos', lessons:'Tipos de datos · Estructuras · Control de flujo · Funciones'},
+      {num:'Módulo 02', name:'Pandas y Manipulación de Datos', lessons:'DataFrames · Limpieza · Merge · GroupBy · Pivot tables'},
+      {num:'Módulo 03', name:'Visualización con Matplotlib y Seaborn', lessons:'Gráficos de línea · Barras · Dispersión · Heatmaps · Dashboards'},
+      {num:'Módulo 04', name:'Proyecto Final: Análisis Real', lessons:'Dataset real · EDA completo · Informe ejecutivo · Presentación'},
+    ],
+    preview:'Lección 1.1 — ¿Por qué Python para datos? Entorno y primeros pasos'
+  },
+  {
+    id:2, title:'Inglés Profesional para Trabajo Remoto', cat:'Idiomas', level:'Básico', hours:40, enrolled:3210, cert:true,
+    desc:'Vocabulario, correos, reuniones y comunicación asíncrona en inglés, enfocado 100% en el entorno de trabajo remoto con empresas internacionales.',
+    fullDesc:'El inglés es la llave del mercado global. Este curso te enseña el inglés que realmente necesitas: redactar propuestas, participar en videollamadas, negociar tarifas y escribir updates de proyecto de manera profesional y natural.',
+    modules:[
+      {num:'Módulo 01', name:'Comunicación Escrita Profesional', lessons:'Emails · Slack · Reports · Propuestas · Follow-ups'},
+      {num:'Módulo 02', name:'Reuniones y Videollamadas', lessons:'Phraseology · Active listening · Taking notes · Presenting ideas'},
+      {num:'Módulo 03', name:'Negociación y Contratos', lessons:'Salary talk · Scope negotiation · Contract terms · Red flags'},
+      {num:'Módulo 04', name:'Comunicación Asíncrona Efectiva', lessons:'Loom videos · Written updates · Documentation · Feedback'},
+    ],
+    preview:'Lección 1.1 — El inglés del trabajo remoto: qué necesitas y qué no'
+  },
+  {
+    id:3, title:'Gestión de Proyectos con Notion', cat:'Negocios', level:'Básico', hours:12, enrolled:876, cert:true,
+    desc:'Organiza tu trabajo freelance o en equipo con Notion. Aprende a crear dashboards, bases de datos relacionales y sistemas de productividad personal.',
+    fullDesc:'Notion se ha convertido en la herramienta central de equipos remotos globales. Aprende a construir tu workspace desde cero: gestión de clientes, proyectos, tareas, base de conocimiento y automatizaciones que te ahorran horas cada semana.',
+    modules:[
+      {num:'Módulo 01', name:'Notion desde Cero', lessons:'Workspace · Páginas · Bloques · Templates · Navegación'},
+      {num:'Módulo 02', name:'Bases de Datos y Vistas', lessons:'Table · Board · Calendar · Gallery · Filtros · Fórmulas'},
+      {num:'Módulo 03', name:'Sistema de Gestión de Clientes', lessons:'CRM personal · Pipeline · Facturas · Contratos · Follow-up'},
+    ],
+    preview:'Lección 1.1 — Por qué Notion y cómo configurar tu workspace inicial'
+  },
+  {
+    id:4, title:'Diseño UI/UX para Freelancers', cat:'Diseño', level:'Intermedio', hours:32, enrolled:945, cert:true,
+    desc:'De wireframes a prototipos interactivos. Aprende el proceso completo de diseño de productos digitales con enfoque en conseguir tus primeros clientes.',
+    fullDesc:'Cubre todo el ciclo de diseño UX/UI: investigación de usuario, arquitectura de información, wireframing, diseño visual en Figma y entrega de specs a desarrolladores. Incluye cómo construir tu portafolio y conseguir proyectos freelance.',
+    modules:[
+      {num:'Módulo 01', name:'Fundamentos UX y Research', lessons:'User personas · Entrevistas · Análisis competitivo · Jobs-to-be-done'},
+      {num:'Módulo 02', name:'Wireframing y Arquitectura', lessons:'Flujos de usuario · Sitemaps · Wireframes Lo-Fi · Testing'},
+      {num:'Módulo 03', name:'Diseño Visual en Figma', lessons:'Componentes · Auto-layout · Tipografía · Color · Design system'},
+      {num:'Módulo 04', name:'Portfolio y Freelance', lessons:'Presentar casos · Behance · Propuestas · Tarifas · Contratos'},
+    ],
+    preview:'Lección 1.1 — Qué hace realmente un UX/UI designer y el mercado freelance hoy'
+  },
+  {
+    id:5, title:'Finanzas Personales en Dolarización', cat:'Finanzas', level:'Básico', hours:8, enrolled:4120, cert:false,
+    desc:'Maneja tus finanzas en un contexto dolarizado: ahorro en divisas, remesas, inversiones básicas y construcción de un fondo de emergencia real.',
+    fullDesc:'Diseñado específicamente para venezolanos en el exterior y en Venezuela. Aprende a administrar ingresos en dólares, optimizar el envío de remesas, empezar a invertir con poco capital y proteger tu patrimonio ante la inflación.',
+    modules:[
+      {num:'Módulo 01', name:'Presupuesto en Dólares', lessons:'Ingresos · Gastos fijos · Variables · Sistema de sobres · Apps'},
+      {num:'Módulo 02', name:'Ahorro y Fondo de Emergencia', lessons:'Regla 50/30/20 · Cuentas en USD · Metas · Automatización'},
+      {num:'Módulo 03', name:'Primeras Inversiones', lessons:'ETFs · Stablecoins · DCA · Riesgo · Plataformas para LATAM'},
+    ],
+    preview:'Lección 1.1 — La realidad financiera del venezolano: punto de partida honesto'
+  },
+  {
+    id:6, title:'Node.js y APIs REST', cat:'Tecnología', level:'Avanzado', hours:36, enrolled:612, cert:true,
+    desc:'Construye APIs robustas con Node.js, Express y bases de datos. Autenticación, seguridad, tests y deployment en producción. Para desarrolladores que quieren crecer.',
+    fullDesc:'Este curso lleva tu perfil de desarrollador al siguiente nivel. Cubrimos arquitectura de APIs RESTful, autenticación JWT, integración con PostgreSQL y MongoDB, testing con Jest, y deployment en Railway o Render. El proyecto final es una API de producción completa.',
+    modules:[
+      {num:'Módulo 01', name:'Node.js y Express Core', lessons:'HTTP · Routing · Middleware · Error handling · Async/await'},
+      {num:'Módulo 02', name:'Bases de Datos y ORM', lessons:'PostgreSQL · Prisma · MongoDB · Mongoose · Migraciones'},
+      {num:'Módulo 03', name:'Autenticación y Seguridad', lessons:'JWT · OAuth · Rate limiting · CORS · Helmet · Validación'},
+      {num:'Módulo 04', name:'Testing y Deployment', lessons:'Jest · Supertest · CI/CD · Railway · Variables de entorno'},
+    ],
+    preview:'Lección 1.1 — Arquitectura de una API moderna: decisiones de diseño clave'
+  },
+  {
+    id:7, title:'Marketing Digital para Emprendedores', cat:'Negocios', level:'Básico', hours:16, enrolled:1560, cert:true,
+    desc:'Estrategia de contenido, redes sociales, email marketing y primeros pasos en ads. Todo lo que necesitas para hacer crecer tu negocio digital desde cero.',
+    fullDesc:'Una guía práctica para emprendedores que quieren atraer clientes sin gastar fortunas en publicidad. Aprenderás a crear contenido que convierte, gestionar redes sociales eficientemente y medir resultados con métricas reales.',
+    modules:[
+      {num:'Módulo 01', name:'Estrategia y Posicionamiento', lessons:'Nicho · Buyer persona · Propuesta de valor · Competencia'},
+      {num:'Módulo 02', name:'Contenido y Redes Sociales', lessons:'Content plan · Instagram · LinkedIn · Copywriting · Calendarios'},
+      {num:'Módulo 03', name:'Email Marketing y Embudos', lessons:'Lista de correos · Secuencias · Landing pages · Conversión'},
+    ],
+    preview:'Lección 1.1 — Por qué el marketing de contenidos gana siempre a largo plazo'
+  },
+  {
+    id:8, title:'Figma desde Cero', cat:'Diseño', level:'Básico', hours:20, enrolled:2340, cert:true,
+    desc:'Aprende Figma de la A a la Z: interfaces, prototipos, colaboración en equipo y exportación de assets. El curso más completo en español para comenzar en diseño digital.',
+    fullDesc:'Figma es la herramienta número uno en diseño de interfaces. Este curso te enseña absolutamente todo lo que necesitas para trabajar como diseñador: desde tu primera pantalla hasta sistemas de diseño completos y prototipos interactivos que impresionan.',
+    modules:[
+      {num:'Módulo 01', name:'Interfaz y Herramientas Básicas', lessons:'Frames · Shapes · Texto · Colores · Gradientes · Estilos'},
+      {num:'Módulo 02', name:'Componentes y Auto-Layout', lessons:'Componentes · Variantes · Auto-layout · Grids · Constraints'},
+      {num:'Módulo 03', name:'Prototipado e Interacciones', lessons:'Conexiones · Animaciones · Smart animate · Presentación'},
+    ],
+    preview:'Lección 1.1 — El workspace de Figma: navegación y primeras herramientas'
+  },
+  {
+    id:9, title:'Excel Avanzado para Profesionales', cat:'Negocios', level:'Intermedio', hours:18, enrolled:1890, cert:true,
+    desc:'Domina las funciones avanzadas de Excel: VLOOKUP, tablas dinámicas, dashboards, macros básicas y análisis de datos. Indispensable para cualquier rol corporativo.',
+    fullDesc:'Excel sigue siendo la habilidad más valorada en empresas de todo tipo. Este curso va más allá de lo básico: aprenderás a construir modelos de datos, dashboards ejecutivos, automatizar reportes con macros y presentar información de manera impactante.',
+    modules:[
+      {num:'Módulo 01', name:'Funciones Avanzadas', lessons:'VLOOKUP · INDEX-MATCH · SUMIFS · COUNTIFS · Anidadas'},
+      {num:'Módulo 02', name:'Tablas Dinámicas y Dashboards', lessons:'Pivot tables · Slicers · Gráficos dinámicos · KPI boards'},
+      {num:'Módulo 03', name:'Automatización con Macros', lessons:'Grabación · VBA básico · Botones · Reportes automáticos'},
+    ],
+    preview:'Lección 1.1 — Las 10 funciones de Excel que todo profesional debe dominar'
+  },
+  {
+    id:10, title:'React + TypeScript', cat:'Tecnología', level:'Avanzado', hours:48, enrolled:428, cert:true,
+    desc:'El stack más demandado en el mercado frontend. Aprende React con TypeScript desde las bases hasta patterns avanzados, testing y arquitectura escalable.',
+    fullDesc:'TypeScript + React es la combinación más solicitada en ofertas de trabajo remoto. Este curso cubre todo: desde tipos básicos y JSX tipado hasta custom hooks, context, React Query, Zustand y el proyecto final: una aplicación SaaS completa.',
+    modules:[
+      {num:'Módulo 01', name:'TypeScript para React Developers', lessons:'Types · Interfaces · Generics · Utility types · tsconfig'},
+      {num:'Módulo 02', name:'React Moderno con TS', lessons:'Hooks · Context · Forms · Custom hooks · Patrones avanzados'},
+      {num:'Módulo 03', name:'Estado y Data Fetching', lessons:'Zustand · React Query · SWR · Optimistic updates · Cache'},
+      {num:'Módulo 04', name:'Testing y Arquitectura', lessons:'Vitest · Testing Library · Feature folders · Monorepo · CI'},
+    ],
+    preview:'Lección 1.1 — Por qué TypeScript es obligatorio en equipos serios de React'
+  },
+  {
+    id:11, title:'Comunicación Asíncrona', cat:'Negocios', level:'Básico', hours:6, enrolled:3780, cert:false,
+    desc:'Aprende a comunicarte de forma efectiva en equipos remotos distribuidos: escritura clara, video updates, documentación y cómo dar y recibir feedback por escrito.',
+    fullDesc:'La comunicación asíncrona es la habilidad diferenciadora del trabajo remoto moderno. Aprende a escribir con claridad y precisión, grabar Looms efectivos, estructurar documentos que se leen solos y dar feedback constructivo sin ambigüedad.',
+    modules:[
+      {num:'Módulo 01', name:'Escritura Clara y Efectiva', lessons:'Pirámide invertida · Concisión · Estructura · Tono profesional'},
+      {num:'Módulo 02', name:'Video Updates y Documentación', lessons:'Loom · Guiones · README · Wikis · Decisiones documentadas'},
+    ],
+    preview:'Lección 1.1 — El costo real de la mala comunicación en equipos remotos'
+  },
+  {
+    id:12, title:'Portafolio Digital Profesional', cat:'Diseño', level:'Intermedio', hours:14, enrolled:1102, cert:true,
+    desc:'Construye un portafolio web que te diferencia: estructura de casos de estudio, storytelling visual, hosting y cómo usarlo para conseguir trabajo y clientes.',
+    fullDesc:'Un buen portafolio es tu mejor vendedor. Aprenderás a estructurar casos de estudio que demuestran tu proceso, no solo resultados finales. Cubrimos qué plataformas usar, cómo escribir sobre tu trabajo y cómo presentarlo en procesos de selección.',
+    modules:[
+      {num:'Módulo 01', name:'Estrategia de Portafolio', lessons:'Audiencia · Qué mostrar · Selección de proyectos · Narrativa'},
+      {num:'Módulo 02', name:'Casos de Estudio Efectivos', lessons:'Estructura · Problema · Proceso · Solución · Métricas · Copy'},
+      {num:'Módulo 03', name:'Publicación y Promoción', lessons:'Behance · Notion · GitHub Pages · LinkedIn · Outreach'},
+    ],
+    preview:'Lección 1.1 — La diferencia entre un portafolio que consigue trabajo y uno que no'
+  }
+];
+
+let certFilter = false;
+
+function catClass(cat) {
+  const map = {'Tecnología':'cat-tecnologia','Negocios':'cat-negocios','Diseño':'cat-diseno','Idiomas':'cat-idiomas','Finanzas':'cat-finanzas'};
+  return map[cat] || 'cat-negocios';
+}
+
+function levelClass(level) {
+  const map = {'Básico':'level-basico','Intermedio':'level-intermedio','Avanzado':'level-avanzado'};
+  return map[level] || 'level-basico';
+}
+
+function toggleCert() {
+  certFilter = !certFilter;
+  const toggle = document.getElementById('cert-toggle');
+  toggle.classList.toggle('on', certFilter);
+  applyFilters();
+}
+
+function applyFilters() {
+  const nivel = document.getElementById('filter-nivel').value;
+  const cat = document.getElementById('filter-cat').value;
+  const dur = document.getElementById('filter-dur').value;
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const filtered = COURSES.filter(c => {
+    if (nivel && c.level !== nivel) return false;
+    if (cat && c.cat !== cat) return false;
+    if (dur === 'corto' && c.hours >= 10) return false;
+    if (dur === 'medio' && (c.hours < 10 || c.hours > 24)) return false;
+    if (dur === 'largo' && c.hours <= 24) return false;
+    if (certFilter && !c.cert) return false;
+    if (search && !c.title.toLowerCase().includes(search) && !c.desc.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  renderCourses(filtered);
+}
+
+function renderCourses(list) {
+  const grid = document.getElementById('courses-grid');
+  if (list.length === 0) {
+    grid.innerHTML = '<p style="color:var(--text-dim);font-size:13px;grid-column:1/-1;text-align:center;padding:40px 0;">No se encontraron cursos con esos filtros.</p>';
+    return;
+  }
+  grid.innerHTML = list.map(c => `
+    <div class="course-card">
+      <div>
+        <span class="course-cat-tag ${catClass(c.cat)}">${c.cat}</span>
+      </div>
+      <div class="course-title">${c.title}</div>
+      <div class="course-meta">
+        <span class="level-badge ${levelClass(c.level)}">${c.level}</span>
+        <span class="course-duration">⏱ ${c.hours}h</span>
+        ${c.cert ? '<span class="course-cert-badge">✦ Certificado</span>' : ''}
+      </div>
+      <p class="course-desc">${c.desc}</p>
+      <div class="course-footer">
+        <span class="course-enrolled">${c.enrolled.toLocaleString('es-VE')} inscritos</span>
+        <button class="btn-outline" onclick="openModal(${c.id})">Ver curso</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModal(id) {
+  const c = COURSES.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modal-content').innerHTML = `
+    <span class="modal-cat-tag ${catClass(c.cat)}">${c.cat}</span>
+    <div class="modal-title">${c.title}</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+      <span class="level-badge ${levelClass(c.level)}" style="font-size:10px;padding:3px 9px;">${c.level}</span>
+      <span style="font-size:12px;color:var(--text-dim);">⏱ ${c.hours} horas</span>
+      <span style="font-size:12px;color:var(--text-dim);">${c.enrolled.toLocaleString('es-VE')} inscritos</span>
+      ${c.cert ? '<span style="font-size:12px;color:#F4D03F;">✦ Certificado incluido</span>' : ''}
+    </div>
+    <p class="modal-desc">${c.fullDesc}</p>
+    <div class="modal-section-title">Módulos del curso</div>
+    <ul class="module-list">
+      ${c.modules.map(m => `<li class="module-item"><div class="module-num">${m.num}</div><div class="module-name">${m.name}</div><div class="module-lessons">${m.lessons}</div></li>`).join('')}
+    </ul>
+    <div class="modal-section-title">Vista previa</div>
+    <div class="preview-lesson">
+      <div class="preview-label">▶ Lección gratuita</div>
+      <div class="preview-title">${c.preview}</div>
+    </div>
+    <button class="btn-accent" style="width:100%;" onclick="alert('En modo demo. ¡Próximamente podrás iniciar el curso!')">Iniciar curso</button>
+  `;
+  document.getElementById('course-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('course-modal').classList.remove('open');
+}
+
+document.getElementById('course-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+renderCourses(COURSES);
+</script>
+</body>
+</html>

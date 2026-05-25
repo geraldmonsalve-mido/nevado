@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Boletín NEVADO — Titulares · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#05050A;--ivory:#E8E4DC;--accent:#2980B9;--gold:#B8944A;--border:rgba(255,255,255,0.07);--text-dim:rgba(232,228,220,0.34);--text-mid:rgba(232,228,220,0.60);--surface:rgba(22,22,20,0.88)}
+    html,body{width:100%;min-height:100%;background:var(--bg);color:var(--ivory);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;cursor:none;padding-top:80px;padding-bottom:28px}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);pointer-events:none;z-index:0}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:#2980B9}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:#2980B9;background:rgba(41,128,185,0.10);border:1px solid rgba(41,128,185,0.28);box-shadow:0 0 12px rgba(41,128,185,0.18)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;cursor:none}
+    .nv-bc-back:hover{color:#2980B9}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    .page-content{padding:40px 10vw 80px;position:relative;z-index:10}
+    .page-tag{font-size:9px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:#2980B9;margin-bottom:12px}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,5rem);letter-spacing:0.04em;line-height:0.92;color:var(--ivory);margin-bottom:16px}
+    .page-desc{font-size:14px;font-weight:300;color:var(--text-mid);max-width:560px;line-height:1.7;margin-bottom:48px}
+    .main-layout{display:grid;grid-template-columns:1fr 400px;gap:32px}
+    .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:40px}
+    .stat-box{background:var(--surface);padding:18px;text-align:center}
+    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#2980B9;line-height:1}
+    .stat-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:4px}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.06em;color:var(--ivory);margin-bottom:16px}
+    .form-group{margin-bottom:20px}
+    .form-label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+    .form-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--ivory);font-family:inherit;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-input:focus{border-color:#2980B9}
+    .form-input::placeholder{color:var(--text-dim)}
+    .freq-btns{display:flex;gap:8px;flex-wrap:wrap}
+    .freq-btn{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:8px 16px;font-size:12px;color:var(--text-mid);cursor:none;font-family:inherit;transition:all 0.2s}
+    .freq-btn.selected{background:rgba(41,128,185,0.12);border-color:rgba(41,128,185,0.4);color:#2980B9}
+    .topics-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .topic-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid)}
+    .topic-check input{accent-color:#2980B9;cursor:none;width:14px;height:14px}
+    .btn-accent{background:#2980B9;color:#fff;border:none;padding:12px 28px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;transition:opacity 0.2s;font-family:inherit}
+    .btn-accent:hover{opacity:0.85}
+    .success-box{display:none;background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.3);border-radius:8px;padding:16px;font-size:13px;color:#27AE60;margin-top:16px}
+    .newsletter-preview{background:rgba(255,255,255,0.02);border:1px solid rgba(41,128,185,0.25);border-radius:12px;overflow:hidden}
+    .nl-header{background:rgba(41,128,185,0.15);padding:24px 28px;border-bottom:1px solid rgba(41,128,185,0.2)}
+    .nl-logo{font-family:'Cormorant Garamond',serif;font-size:18px;letter-spacing:0.15em;color:#2980B9}
+    .nl-date{font-size:11px;color:var(--text-dim);margin-top:4px}
+    .nl-body{padding:24px 28px}
+    .nl-item{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .nl-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .nl-category{font-size:9px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#2980B9;margin-bottom:6px}
+    .nl-title{font-size:14px;font-weight:600;color:var(--ivory);margin-bottom:6px;line-height:1.4}
+    .nl-summary{font-size:12px;color:var(--text-mid);line-height:1.6}
+    .archive-cards{display:flex;flex-direction:column;gap:12px;margin-top:32px}
+    .archive-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+    .arch-info{flex:1}
+    .arch-date{font-size:12px;font-weight:600;color:var(--ivory);margin-bottom:2px}
+    .arch-stats{font-size:11px;color:var(--text-dim)}
+    .arch-btn{font-size:11px;color:#2980B9;background:transparent;border:1px solid rgba(41,128,185,0.3);border-radius:4px;padding:5px 12px;cursor:none;font-family:inherit}
+    #std-footer{background:#080810;border-top:1px solid rgba(255,255,255,0.06);padding:48px 10vw 56px;position:relative;z-index:10}
+    .std-fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
+    .std-fl-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.18em;color:#2980B9;text-decoration:none}
+    .std-fl-desc{font-size:12px;color:rgba(232,228,220,0.50);line-height:1.7;max-width:240px;margin-top:12px}
+    .std-fc-title{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,228,220,0.34);margin-bottom:12px}
+    .std-fl{display:block;font-size:12px;color:rgba(232,228,220,0.50);margin-bottom:8px;text-decoration:none;transition:color .2s;cursor:none}
+    .std-fl:hover{color:#2980B9}
+    .std-fb{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)}
+    .std-fc-copy{font-size:11px;color:rgba(232,228,220,0.34)}
+    .std-tri{display:flex;flex-direction:column;gap:3px}
+    .std-tri div{width:28px;height:4px;border-radius:2px}
+    #ticker{position:fixed;bottom:0;left:0;right:0;height:28px;overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);z-index:90;background:rgba(5,5,10,0.96)}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 32s linear infinite}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55);height:28px}
+    .ticker-val{color:#2980B9;font-weight:500}
+    .ticker-sep{color:rgba(232,228,220,0.30)}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .cursor-dot{position:fixed;top:0;left:0;width:7px;height:7px;border-radius:50%;background:var(--ivory);pointer-events:none;z-index:9999;mix-blend-mode:difference}
+    @media(max-width:900px){.main-layout{grid-template-columns:1fr}.stats-bar{grid-template-columns:1fr 1fr}.std-fg{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body data-accent="blue">
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item" href="/nodo.html">NODO</a>
+      <a class="nav-item active" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="nv-breadcrumb">
+    <a href="/enterate.html" class="nv-bc-back">← Titulares</a>
+    <span class="nv-bc-sep">·</span>
+    <span class="nv-bc-current">Boletín</span>
+  </div>
+
+  <main class="page-content">
+    <div class="page-tag">Titulares · NEVADO</div>
+    <div class="page-title">BOLETÍN NEVADO</div>
+    <p class="page-desc">Información verificada sobre Venezuela y su diáspora, directamente en tu bandeja de entrada.</p>
+
+    <div class="stats-bar">
+      <div class="stat-box"><div class="stat-val">4,200</div><div class="stat-lbl">Suscriptores</div></div>
+      <div class="stat-box"><div class="stat-val">68%</div><div class="stat-lbl">Tasa de apertura</div></div>
+      <div class="stat-box"><div class="stat-val">Semanal</div><div class="stat-lbl">Frecuencia principal</div></div>
+    </div>
+
+    <div class="main-layout">
+      <div>
+        <div class="section-title">SUSCRIBIRME</div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="emailInput" placeholder="tu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Frecuencia</label>
+          <div class="freq-btns">
+            <button class="freq-btn selected" onclick="selectFreq(this)">Semanal</button>
+            <button class="freq-btn" onclick="selectFreq(this)">Mensual</button>
+            <button class="freq-btn" onclick="selectFreq(this)">Solo oportunidades</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Temas de interés</label>
+          <div class="topics-grid">
+            <label class="topic-check"><input type="checkbox" checked> Venezuela</label>
+            <label class="topic-check"><input type="checkbox" checked> Economía</label>
+            <label class="topic-check"><input type="checkbox" checked> Trabajo remoto</label>
+            <label class="topic-check"><input type="checkbox"> Diáspora</label>
+            <label class="topic-check"><input type="checkbox" checked> Tecnología</label>
+            <label class="topic-check"><input type="checkbox" checked> Oportunidades</label>
+          </div>
+        </div>
+        <button class="btn-accent" onclick="subscribe()">Suscribirme gratis</button>
+        <div class="success-box" id="successBox">✓ ¡Suscrito! Revisa tu bandeja de entrada para confirmar.</div>
+
+        <div style="margin-top:40px">
+          <div class="section-title">EDICIONES ANTERIORES</div>
+          <div class="archive-cards">
+            <div class="archive-card">
+              <div class="arch-info">
+                <div class="arch-date">Mayo 2026 — Edición 18</div>
+                <div class="arch-stats">8 titulares · 3 oportunidades · 72% apertura</div>
+              </div>
+              <button class="arch-btn" onclick="alert('Edición completa próximamente')">Ver</button>
+            </div>
+            <div class="archive-card">
+              <div class="arch-info">
+                <div class="arch-date">Abril 2026 — Edición 17</div>
+                <div class="arch-stats">6 titulares · 5 oportunidades · 69% apertura</div>
+              </div>
+              <button class="arch-btn" onclick="alert('Edición completa próximamente')">Ver</button>
+            </div>
+            <div class="archive-card">
+              <div class="arch-info">
+                <div class="arch-date">Marzo 2026 — Edición 16</div>
+                <div class="arch-stats">9 titulares · 2 oportunidades · 65% apertura</div>
+              </div>
+              <button class="arch-btn" onclick="alert('Edición completa próximamente')">Ver</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">ÚLTIMA EDICIÓN</div>
+        <div class="newsletter-preview">
+          <div class="nl-header">
+            <div class="nl-logo">N·EVADO</div>
+            <div class="nl-date">Boletín Semanal · 20 de mayo de 2026 · Edición 18</div>
+          </div>
+          <div class="nl-body">
+            <div class="nl-item">
+              <div class="nl-category">Economía</div>
+              <div class="nl-title">Dólar paralelo cierra semana con estabilización relativa en mercados informales</div>
+              <div class="nl-summary">Las tasas de referencia se mantuvieron en un rango de ±2% durante la semana, lo que algunos analistas interpretan como señal de estabilización temporal...</div>
+            </div>
+            <div class="nl-item">
+              <div class="nl-category">Diáspora</div>
+              <div class="nl-title">Colombia actualiza proceso del PPT: nuevos requisitos para 2026</div>
+              <div class="nl-summary">Migración Colombia anunció modificaciones al Permiso por Protección Temporal. Los cambios entran en vigor el próximo mes y afectan principalmente las renovaciones...</div>
+            </div>
+            <div class="nl-item">
+              <div class="nl-category">Oportunidad</div>
+              <div class="nl-title">Programa de Liderazgo Venezolano 2026 — Cierra 30 junio</div>
+              <div class="nl-summary">Fundación Simón Bolívar Global abre convocatoria para su programa anual de becas. Incluye formación, mentoría y red de alumni en 12 países...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div><a class="std-fl-logo" href="/">N·EVADO</a><p class="std-fl-desc">Información verificada para la diáspora venezolana global.</p></div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Titulares</div>
+        <a class="std-fl" href="/titulares/articulo.html">Artículos</a>
+        <a class="std-fl" href="/titulares/verificacion.html">Verificación</a>
+        <a class="std-fl" href="/titulares/boletin.html">Boletín</a>
+        <a class="std-fl" href="/titulares/oportunidades.html">Oportunidades</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · Titulares · Modo demostración</span>
+      <div class="std-tri"><div style="background:#F4D03F"></div><div style="background:#2980B9"></div><div style="background:#E74C3C"></div></div>
+    </div>
+  </footer>
+
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <script>
+    function selectFreq(btn){document.querySelectorAll('.freq-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
+    function subscribe(){const email=document.getElementById('emailInput').value;if(!email){document.getElementById('emailInput').style.borderColor='#E74C3C';return;}document.getElementById('emailInput').style.borderColor='';const box=document.getElementById('successBox');box.style.display='block';document.querySelector('.btn-accent').textContent='¡Ya estás suscrito!';document.querySelector('.btn-accent').style.background='#27AE60';}
+  </script>
+</body>
+</html>

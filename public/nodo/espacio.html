@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Programadores VE — NODO · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #05050A; --ivory: #E8E4DC; --accent: #E74C3C; --gold: #B8944A; --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.34); --text-mid: rgba(232,228,220,0.60); --surface: rgba(22,22,20,0.88); }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; padding-top:80px; padding-bottom:28px; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+    a { text-decoration:none; color:inherit; }
+
+    /* Topbar */
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:#E74C3C; }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:#E74C3C; background:rgba(231,76,60,0.10); border:1px solid rgba(231,76,60,0.28); box-shadow:0 0 12px rgba(231,76,60,0.18); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+    .btn-plus:hover { background:rgba(184,148,74,0.08); }
+    .topbar-user { width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10); display:flex; align-items:center; justify-content:center; cursor:none; color:rgba(232,228,220,0.45); transition:all 0.2s; }
+    .topbar-user:hover { background:rgba(255,255,255,0.10); color:rgba(232,228,220,0.85); }
+
+    /* Breadcrumb */
+    .nv-breadcrumb { position:fixed; top:52px; left:0; right:0; height:28px; display:flex; align-items:center; gap:8px; padding:0 28px; background:rgba(5,5,10,0.90); border-bottom:1px solid rgba(255,255,255,0.04); z-index:899; }
+    .nv-bc-back { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.38); text-decoration:none; transition:color 0.2s; cursor:none; }
+    .nv-bc-back:hover { color:#E74C3C; }
+    .nv-bc-sep { color:rgba(232,228,220,0.20); font-size:10px; }
+    .nv-bc-current { font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); }
+
+    /* Layout */
+    .espacio-layout { display:grid; grid-template-columns:65fr 35fr; gap:32px; padding:32px 6vw 80px; position:relative; z-index:10; max-width:1400px; margin:0 auto; }
+    @media(max-width:900px){ .espacio-layout { grid-template-columns:1fr; } }
+
+    /* Space Header */
+    .space-header { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px 32px; margin-bottom:24px; }
+    .space-tag { font-size:9px; font-weight:600; letter-spacing:0.25em; text-transform:uppercase; color:#E74C3C; margin-bottom:10px; }
+    .space-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.2rem,5vw,3.8rem); letter-spacing:0.04em; color:var(--ivory); margin-bottom:8px; }
+    .space-desc { font-size:13px; color:var(--text-mid); margin-bottom:16px; }
+    .space-stats { display:flex; align-items:center; gap:20px; margin-bottom:20px; }
+    .space-stat { font-size:12px; color:var(--text-mid); }
+    .space-stat strong { color:var(--ivory); font-weight:600; }
+    .space-stat-sep { color:var(--text-dim); }
+    .btn-join { background:#E74C3C; color:#fff; border:none; padding:10px 24px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:opacity 0.2s; font-family:inherit; }
+    .btn-join:hover { opacity:0.85; }
+    .btn-join.joined { background:rgba(231,76,60,0.15); color:#E74C3C; border:1px solid rgba(231,76,60,0.35); }
+
+    /* Publish bar */
+    .publish-bar { display:flex; justify-content:flex-end; margin-bottom:16px; }
+    .btn-publish { background:transparent; color:#E74C3C; border:1px solid rgba(231,76,60,0.35); padding:9px 20px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; border-radius:6px; cursor:none; transition:all 0.2s; font-family:inherit; text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+    .btn-publish:hover { background:rgba(231,76,60,0.08); }
+
+    /* Pinned post */
+    .pinned-post { background:rgba(231,76,60,0.06); border:1px solid rgba(231,76,60,0.25); border-radius:8px; padding:14px 18px; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+    .pinned-post-text { font-size:13px; color:rgba(232,228,220,0.75); }
+    .pinned-icon { font-size:14px; flex-shrink:0; }
+
+    /* Feed posts */
+    .feed-post { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:22px 24px; margin-bottom:12px; transition:border-color 0.2s; }
+    .feed-post:hover { border-color:rgba(255,255,255,0.12); }
+    .fp-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .fp-avatar { width:36px; height:36px; border-radius:50%; background:rgba(231,76,60,0.15); color:#E74C3C; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .fp-meta { flex:1; }
+    .fp-name { font-size:13px; font-weight:500; color:var(--ivory); }
+    .fp-role { font-size:11px; color:var(--text-mid); margin-top:1px; }
+    .fp-time { font-size:10px; color:var(--text-dim); margin-left:auto; white-space:nowrap; }
+    .fp-title { font-size:14px; font-weight:600; color:var(--ivory); margin-bottom:6px; line-height:1.4; }
+    .fp-preview { font-size:13px; color:var(--text-mid); line-height:1.6; margin-bottom:14px; }
+    .fp-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+    .fp-tag { font-size:10px; color:#E74C3C; background:rgba(231,76,60,0.08); padding:2px 8px; border-radius:20px; border:1px solid rgba(231,76,60,0.18); }
+    .fp-footer { display:flex; align-items:center; gap:4px; justify-content:space-between; }
+    .fp-reactions { display:flex; align-items:center; gap:4px; }
+    .fp-reaction { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--text-mid); background:none; border:none; padding:4px 8px; border-radius:5px; cursor:none; transition:color 0.2s,background 0.2s; font-family:inherit; }
+    .fp-reaction:hover { color:var(--ivory); background:rgba(255,255,255,0.05); }
+    .fp-reaction.liked { color:#E74C3C; }
+    .fp-read { font-size:11px; color:#E74C3C; text-decoration:none; letter-spacing:0.04em; transition:opacity 0.2s; }
+    .fp-read:hover { opacity:0.75; }
+
+    /* Sidebar */
+    .espacio-sidebar { display:flex; flex-direction:column; gap:20px; }
+    .sidebar-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px; }
+    .sidebar-card-title { font-size:9px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-dim); margin-bottom:14px; }
+
+    /* Rules */
+    .rule-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; font-size:12px; color:var(--text-mid); line-height:1.5; }
+    .rule-num { font-size:10px; font-weight:700; color:#E74C3C; flex-shrink:0; margin-top:1px; }
+
+    /* Members */
+    .member-mini { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .member-avatar { width:28px; height:28px; border-radius:50%; background:rgba(231,76,60,0.15); color:#E74C3C; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .member-info { flex:1; }
+    .member-name { font-size:12px; color:var(--ivory); }
+    .member-role { font-size:10px; color:var(--text-dim); }
+    .member-pts { font-size:10px; color:#E74C3C; margin-left:auto; }
+
+    /* Event mini */
+    .event-mini { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:6px; padding:12px 14px; margin-bottom:8px; text-decoration:none; display:block; transition:border-color 0.2s; cursor:none; }
+    .event-mini:hover { border-color:rgba(231,76,60,0.3); }
+    .event-mini-title { font-size:12px; font-weight:500; color:var(--ivory); margin-bottom:4px; }
+    .event-mini-meta { font-size:10px; color:var(--text-dim); }
+    .event-mini-badge { display:inline-flex; align-items:center; font-size:9px; font-weight:600; letter-spacing:0.08em; background:rgba(231,76,60,0.12); color:#E74C3C; padding:2px 6px; border-radius:4px; margin-bottom:6px; }
+
+    /* Ticker */
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:#E74C3C; font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* Footer */
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:#E74C3C; text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:#E74C3C; }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    @media(max-width:768px){ .std-fg { grid-template-columns:1fr 1fr; } }
+
+    .cursor-dot { position:fixed; top:0; left:0; width:7px; height:7px; border-radius:50%; background:var(--ivory); pointer-events:none; z-index:9999; mix-blend-mode:difference; }
+  </style>
+</head>
+<body>
+
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item active" href="/nodo.html">NODO</a>
+      <a class="nav-item" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+      <button class="topbar-user" aria-label="Mi perfil">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="nv-breadcrumb">
+    <a href="/nodo.html" class="nv-bc-back">← NODO</a>
+    <span class="nv-bc-sep">·</span>
+    <span class="nv-bc-current">Espacio: Programadores VE</span>
+  </div>
+
+  <div class="espacio-layout">
+
+    <!-- MAIN FEED -->
+    <main>
+      <!-- Space Header -->
+      <div class="space-header">
+        <div class="space-tag">Espacio · Tecnología</div>
+        <div class="space-title">PROGRAMADORES VE</div>
+        <div class="space-desc">Espacio de tecnología y desarrollo para la comunidad venezolana global. Comparte experiencias, recursos, oportunidades y aprende junto a miles de desarrolladores.</div>
+        <div class="space-stats">
+          <span class="space-stat"><strong>4,230</strong> miembros</span>
+          <span class="space-stat-sep">·</span>
+          <span class="space-stat"><strong>89</strong> aportes esta semana</span>
+          <span class="space-stat-sep">·</span>
+          <span class="space-stat"><strong>22</strong> países</span>
+        </div>
+        <button class="btn-join" id="joinBtn">Unirme al espacio</button>
+      </div>
+
+      <!-- Publish bar -->
+      <div class="publish-bar">
+        <a href="/nodo/publicar.html" class="btn-publish">+ Publicar en este espacio</a>
+      </div>
+
+      <!-- Pinned post -->
+      <div class="pinned-post">
+        <span class="pinned-icon">📌</span>
+        <span class="pinned-post-text"><strong>Reglas del espacio</strong> — Leer antes de publicar. Este es un espacio de colaboración respetuosa. Se prohíben autopromociones sin valor, spam y contenido ofensivo.</span>
+      </div>
+
+      <!-- Post 1 -->
+      <article class="feed-post">
+        <div class="fp-header">
+          <div class="fp-avatar">CM</div>
+          <div class="fp-meta">
+            <div class="fp-name">Carlos Méndez</div>
+            <div class="fp-role">Desarrollador Full-Stack · Caracas, VE</div>
+          </div>
+          <span class="fp-time">Hace 2 días</span>
+        </div>
+        <div class="fp-title">Cómo conseguí mi primer trabajo remoto desde Venezuela en 2026</div>
+        <div class="fp-preview">Después de 8 meses buscando trabajo remoto desde Caracas, finalmente lo logré. Lo que más me ayudó fue enfocarme en empresas medianas de EEUU y Canadá en lugar de grandes corporaciones. El proceso fue largo pero con la estrategia correcta es posible…</div>
+        <div class="fp-tags">
+          <span class="fp-tag">#remoto</span>
+          <span class="fp-tag">#trabajo</span>
+          <span class="fp-tag">#frontend</span>
+          <span class="fp-tag">#Venezuela</span>
+        </div>
+        <div class="fp-footer">
+          <div class="fp-reactions">
+            <button class="fp-reaction liked" data-like>❤️ 142</button>
+            <button class="fp-reaction">💬 28</button>
+            <button class="fp-reaction">🔖 67</button>
+          </div>
+          <a href="/nodo/aporte.html" class="fp-read">Leer aporte completo →</a>
+        </div>
+      </article>
+
+      <!-- Post 2 -->
+      <article class="feed-post">
+        <div class="fp-header">
+          <div class="fp-avatar" style="background:rgba(39,174,96,0.15);color:#27AE60">AG</div>
+          <div class="fp-meta">
+            <div class="fp-name">Ana García</div>
+            <div class="fp-role">Backend Engineer · Bogotá (residente VE)</div>
+          </div>
+          <span class="fp-time">Hace 3 días</span>
+        </div>
+        <div class="fp-title">Mi stack favorito para APIs en 2026: Rust + Actix vs Go + Fiber (comparativa real)</div>
+        <div class="fp-preview">Llevaba meses escuchando sobre Rust para APIs y finalmente lo puse a prueba en un proyecto de producción. Comparo rendimiento, curva de aprendizaje y ecosistema con Go, que era mi lenguaje principal…</div>
+        <div class="fp-tags">
+          <span class="fp-tag">#rust</span>
+          <span class="fp-tag">#golang</span>
+          <span class="fp-tag">#backend</span>
+          <span class="fp-tag">#APIs</span>
+        </div>
+        <div class="fp-footer">
+          <div class="fp-reactions">
+            <button class="fp-reaction" data-like>❤️ 98</button>
+            <button class="fp-reaction">💬 41</button>
+            <button class="fp-reaction">🔖 53</button>
+          </div>
+          <a href="/nodo/aporte.html" class="fp-read">Leer aporte completo →</a>
+        </div>
+      </article>
+
+      <!-- Post 3 -->
+      <article class="feed-post">
+        <div class="fp-header">
+          <div class="fp-avatar" style="background:rgba(41,128,185,0.15);color:#2980B9">LV</div>
+          <div class="fp-meta">
+            <div class="fp-name">Luis Velásquez</div>
+            <div class="fp-role">DevOps Engineer · Miami, FL</div>
+          </div>
+          <span class="fp-time">Hace 4 días</span>
+        </div>
+        <div class="fp-title">Herramientas que uso a diario para trabajar remoto con eficiencia desde América Latina</div>
+        <div class="fp-preview">Cuando empecé a trabajar remoto con equipos en Europa y EEUU el mayor reto no era técnico sino de coordinación y visibilidad. Comparto el toolkit exacto que uso: desde gestión del tiempo hasta facturación internacional…</div>
+        <div class="fp-tags">
+          <span class="fp-tag">#devops</span>
+          <span class="fp-tag">#herramientas</span>
+          <span class="fp-tag">#productividad</span>
+          <span class="fp-tag">#remoto</span>
+        </div>
+        <div class="fp-footer">
+          <div class="fp-reactions">
+            <button class="fp-reaction" data-like>❤️ 76</button>
+            <button class="fp-reaction">💬 19</button>
+            <button class="fp-reaction">🔖 44</button>
+          </div>
+          <a href="/nodo/aporte.html" class="fp-read">Leer aporte completo →</a>
+        </div>
+      </article>
+
+      <!-- Post 4 -->
+      <article class="feed-post">
+        <div class="fp-header">
+          <div class="fp-avatar" style="background:rgba(155,89,182,0.15);color:#9B59B6">MR</div>
+          <div class="fp-meta">
+            <div class="fp-name">Mariela Rondón</div>
+            <div class="fp-role">Mobile Developer · Barcelona, España</div>
+          </div>
+          <span class="fp-time">Hace 5 días</span>
+        </div>
+        <div class="fp-title">Flutter vs React Native en 2026: cuál elegir si ya sabes JavaScript</div>
+        <div class="fp-preview">La pregunta me la hacen al menos dos veces por semana en los grupos. Mi respuesta corta: depende del proyecto. Pero aquí está la respuesta larga con casos reales, benchmarks actualizados y mi experiencia migrando una app de producción…</div>
+        <div class="fp-tags">
+          <span class="fp-tag">#flutter</span>
+          <span class="fp-tag">#reactnative</span>
+          <span class="fp-tag">#mobile</span>
+          <span class="fp-tag">#javascript</span>
+        </div>
+        <div class="fp-footer">
+          <div class="fp-reactions">
+            <button class="fp-reaction" data-like>❤️ 134</button>
+            <button class="fp-reaction">💬 57</button>
+            <button class="fp-reaction">🔖 89</button>
+          </div>
+          <a href="/nodo/aporte.html" class="fp-read">Leer aporte completo →</a>
+        </div>
+      </article>
+
+      <!-- Post 5 -->
+      <article class="feed-post">
+        <div class="fp-header">
+          <div class="fp-avatar" style="background:rgba(184,148,74,0.15);color:#B8944A">JB</div>
+          <div class="fp-meta">
+            <div class="fp-name">Jorge Bermúdez</div>
+            <div class="fp-role">IA Engineer · Santiago, Chile</div>
+          </div>
+          <span class="fp-time">Hace 1 semana</span>
+        </div>
+        <div class="fp-title">Cómo integré Claude API en una app de productividad y conseguí 500 usuarios en 2 semanas</div>
+        <div class="fp-preview">Construí una herramienta para venezolanos freelancers que automatiza propuestas de proyecto usando IA. Sin marketing, solo distribución por NODO y grupos de WhatsApp. Este es el proceso técnico y las lecciones que aprendí…</div>
+        <div class="fp-tags">
+          <span class="fp-tag">#IA</span>
+          <span class="fp-tag">#claude</span>
+          <span class="fp-tag">#startup</span>
+          <span class="fp-tag">#freelance</span>
+        </div>
+        <div class="fp-footer">
+          <div class="fp-reactions">
+            <button class="fp-reaction" data-like>❤️ 203</button>
+            <button class="fp-reaction">💬 72</button>
+            <button class="fp-reaction">🔖 118</button>
+          </div>
+          <a href="/nodo/aporte.html" class="fp-read">Leer aporte completo →</a>
+        </div>
+      </article>
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="espacio-sidebar">
+      <!-- Rules -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Normas del espacio</div>
+        <div class="rule-item"><span class="rule-num">01</span><span>Comparte conocimiento real. Los aportes deben tener valor práctico para otros desarrolladores venezolanos.</span></div>
+        <div class="rule-item"><span class="rule-num">02</span><span>Cero spam y autopromociones sin contexto. Si ofreces un servicio, aporta valor primero.</span></div>
+        <div class="rule-item"><span class="rule-num">03</span><span>Respeta a todos los miembros, independientemente de su nivel de experiencia.</span></div>
+        <div class="rule-item"><span class="rule-num">04</span><span>Las preguntas son bienvenidas. No hay preguntas tontas, solo falta de respuesta.</span></div>
+      </div>
+
+      <!-- Featured members -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Miembros destacados</div>
+        <div class="member-mini">
+          <div class="member-avatar">CM</div>
+          <div class="member-info"><div class="member-name">Carlos Méndez</div><div class="member-role">Full-Stack · Caracas</div></div>
+          <span class="member-pts">340 pts</span>
+        </div>
+        <div class="member-mini">
+          <div class="member-avatar" style="background:rgba(39,174,96,0.15);color:#27AE60">AG</div>
+          <div class="member-info"><div class="member-name">Ana García</div><div class="member-role">Backend · Bogotá</div></div>
+          <span class="member-pts">280 pts</span>
+        </div>
+        <div class="member-mini">
+          <div class="member-avatar" style="background:rgba(41,128,185,0.15);color:#2980B9">LV</div>
+          <div class="member-info"><div class="member-name">Luis Velásquez</div><div class="member-role">DevOps · Miami</div></div>
+          <span class="member-pts">210 pts</span>
+        </div>
+        <div class="member-mini">
+          <div class="member-avatar" style="background:rgba(155,89,182,0.15);color:#9B59B6">MR</div>
+          <div class="member-info"><div class="member-name">Mariela Rondón</div><div class="member-role">Mobile · Barcelona</div></div>
+          <span class="member-pts">190 pts</span>
+        </div>
+        <div class="member-mini">
+          <div class="member-avatar" style="background:rgba(184,148,74,0.15);color:#B8944A">JB</div>
+          <div class="member-info"><div class="member-name">Jorge Bermúdez</div><div class="member-role">IA · Santiago</div></div>
+          <span class="member-pts">175 pts</span>
+        </div>
+      </div>
+
+      <!-- Upcoming events -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Próximos eventos</div>
+        <a href="/nodo/eventos.html" class="event-mini">
+          <div class="event-mini-badge">Virtual · Gratis</div>
+          <div class="event-mini-title">Charla: Trabajo Remoto en 2026</div>
+          <div class="event-mini-meta">15 Jun · 18:00 VET · 340 registrados</div>
+        </a>
+        <a href="/nodo/eventos.html" class="event-mini">
+          <div class="event-mini-badge">Virtual · $5</div>
+          <div class="event-mini-title">Workshop: Figma para Devs</div>
+          <div class="event-mini-meta">18 Jun · 200 cupos disponibles</div>
+        </a>
+      </div>
+    </aside>
+
+  </div>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div>
+        <a class="std-fl-logo" href="/">N·EVADO</a>
+        <p class="std-fl-desc">Inteligencia colectiva del ecosistema venezolano global.</p>
+      </div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">NODO</div>
+        <a class="std-fl" href="/nodo/espacio.html">Espacios</a>
+        <a class="std-fl" href="/nodo/publicar.html">Publicar Aporte</a>
+        <a class="std-fl" href="/nodo/eventos.html">Eventos</a>
+        <a class="std-fl" href="/nodo/perfil.html">Mi Perfil</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · NODO · Modo demostración</span>
+      <div class="std-tri">
+        <div style="background:#F4D03F"></div>
+        <div style="background:#2980B9"></div>
+        <div style="background:#E74C3C"></div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <div class="cursor-dot" id="cursor-dot"></div>
+
+  <script>
+    // Join button
+    const joinBtn = document.getElementById('joinBtn');
+    joinBtn.addEventListener('click', () => {
+      joinBtn.classList.toggle('joined');
+      joinBtn.textContent = joinBtn.classList.contains('joined') ? '✓ Miembro del espacio' : 'Unirme al espacio';
+    });
+
+    // Like reactions
+    document.querySelectorAll('[data-like]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const liked = btn.classList.toggle('liked');
+        const match = btn.textContent.match(/(\D+)(\d+)/);
+        if (match) {
+          const emoji = match[1];
+          const count = parseInt(match[2]);
+          btn.textContent = emoji + (liked ? count + 1 : Math.max(0, count - 1));
+        }
+      });
+    });
+  </script>
+</body>
+</html>

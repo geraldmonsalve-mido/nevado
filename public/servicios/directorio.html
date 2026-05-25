@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Directorio de Recursos · Servicios · NEVADO</title>
+<style>
+:root{--topbar-h:52px;--page-accent:#E74C3C;--bg:#0d0d0d;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;--text:#e8e8e8;--muted:#888;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;padding-top:80px;padding-bottom:28px;min-height:100vh}
+
+/* TOPBAR */
+#topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:rgba(13,13,13,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;z-index:1000}
+.topbar-logo{font-weight:700;font-size:15px;letter-spacing:.04em;color:var(--text);text-decoration:none;white-space:nowrap;flex-shrink:0}
+.topbar-logo span{color:var(--page-accent)}
+.topbar-nav{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:2px;align-items:center}
+.nav-item{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;transition:.15s;white-space:nowrap}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-item.active{color:#fff;background:color-mix(in srgb,var(--page-accent) 18%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent)}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.topbar-divider{width:1px;height:18px;background:var(--border)}
+.btn-plus{padding:5px 12px;border-radius:6px;background:color-mix(in srgb,var(--page-accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);font-size:11px;font-weight:600;cursor:pointer;transition:.15s;letter-spacing:.03em}
+.btn-plus:hover{background:color-mix(in srgb,var(--page-accent) 25%,transparent)}
+.topbar-user{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.topbar-user:hover{color:var(--text);border-color:var(--muted)}
+
+/* TICKER */
+#ticker{position:fixed;bottom:0;left:0;right:0;height:28px;background:var(--surface);border-top:1px solid var(--border);overflow:hidden;z-index:999;display:flex;align-items:center}
+#ticker-track{display:flex;gap:0;white-space:nowrap;animation:ticker-scroll 40s linear infinite}
+@keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{padding:0 24px;font-size:11px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.ticker-val{color:var(--text);font-weight:600}
+.ticker-sep{color:var(--border)}
+
+/* BREADCRUMB */
+.nv-breadcrumb{position:fixed;top:var(--topbar-h);left:0;right:0;height:28px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:8px;z-index:999;font-size:11px;color:var(--muted)}
+.nv-bc-back{color:var(--muted);text-decoration:none;transition:.15s}
+.nv-bc-back:hover{color:var(--text)}
+.nv-bc-sep{color:var(--border)}
+.nv-bc-current{color:var(--text);font-weight:500}
+
+/* LAYOUT */
+.page-wrap{max-width:1200px;margin:0 auto;padding:32px 20px}
+.page-header{margin-bottom:28px}
+.page-title{font-size:24px;font-weight:700;margin-bottom:6px}
+.page-desc{color:var(--muted);font-size:13px}
+
+/* STATS */
+.stats-row{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;flex:1;min-width:140px}
+.stat-val{font-size:22px;font-weight:700;color:var(--page-accent)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* SEARCH & FILTER */
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.search-input-wrap{flex:1;min-width:220px;position:relative}
+.search-input-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;padding:9px 12px 9px 36px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;transition:.15s}
+.search-input:focus{border-color:var(--page-accent)}
+.filter-select{padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--page-accent)}
+.btn-clear{padding:9px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:.15s}
+.btn-clear:hover{color:var(--text);border-color:var(--muted)}
+
+/* CATEGORY TABS */
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.cat-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:.15s}
+.cat-tab:hover{color:var(--text);border-color:var(--muted)}
+.cat-tab.active{color:#fff;background:var(--page-accent);border-color:var(--page-accent)}
+
+/* RESULTS COUNT */
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.results-count{font-size:12px;color:var(--muted)}
+.results-count span{color:var(--text);font-weight:600}
+.view-toggles{display:flex;gap:4px}
+.view-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.view-btn.active{color:var(--text);border-color:var(--muted)}
+
+/* RESOURCE GRID */
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.resource-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:12px;position:relative}
+.resource-card:hover{border-color:var(--page-accent);transform:translateY(-2px);box-shadow:0 4px 20px rgba(231,76,60,.1)}
+.resource-card.hidden{display:none}
+.card-top{display:flex;align-items:flex-start;gap:12px}
+.card-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.card-meta{flex:1;min-width:0}
+.card-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.3}
+.card-org{font-size:11px;color:var(--muted)}
+.card-badge{position:absolute;top:12px;right:12px;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid}
+.badge-free{color:#27AE60;border-color:#27AE60;background:rgba(39,174,96,.1)}
+.badge-paid{color:#F4D03F;border-color:#F4D03F;background:rgba(244,208,63,.1)}
+.badge-gov{color:#2980B9;border-color:#2980B9;background:rgba(41,128,185,.1)}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.5;flex:1}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)}
+.card-cat{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.card-cat-dot{width:6px;height:6px;border-radius:50%}
+.card-action{padding:5px 12px;border-radius:6px;background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);color:var(--page-accent);font-size:11px;font-weight:600;cursor:pointer;transition:.15s}
+.card-action:hover{background:color-mix(in srgb,var(--page-accent) 22%,transparent)}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{padding:2px 8px;border-radius:10px;font-size:10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+.empty-state small{font-size:12px;opacity:.7}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;display:flex;flex-direction:column}
+.modal-header{padding:20px 24px 0;display:flex;align-items:flex-start;gap:14px;border-bottom:1px solid var(--border);padding-bottom:16px}
+.modal-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.modal-titles{flex:1}
+.modal-name{font-size:17px;font-weight:700;margin-bottom:4px}
+.modal-org{font-size:12px;color:var(--muted)}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;flex-shrink:0;padding:4px}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+.modal-section-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.modal-desc{font-size:13px;color:var(--text);line-height:1.6}
+.modal-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-item{background:var(--surface2);border-radius:8px;padding:10px 12px}
+.detail-label{font-size:10px;color:var(--muted);margin-bottom:2px}
+.detail-value{font-size:13px;font-weight:600;color:var(--text)}
+.req-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.req-list li{font-size:12px;color:var(--muted);padding-left:16px;position:relative;line-height:1.5}
+.req-list li::before{content:'•';position:absolute;left:0;color:var(--page-accent)}
+.modal-tags{display:flex;flex-wrap:wrap;gap:6px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px}
+.btn-primary{flex:1;padding:10px;border-radius:8px;background:var(--page-accent);border:none;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;text-align:center}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{padding:10px 16px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;cursor:pointer;transition:.15s}
+.btn-secondary:hover{color:var(--text);border-color:var(--muted)}
+
+/* FOOTER */
+#std-footer{background:var(--surface);border-top:1px solid var(--border);padding:32px 20px 20px;margin-top:40px}
+.std-fg{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+.fg-logo{font-size:18px;font-weight:700;margin-bottom:8px}.fg-logo span{color:var(--page-accent)}
+.fg-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.fg-col h4{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.fg-col a{display:block;font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:6px;transition:.15s}
+.fg-col a:hover{color:var(--text)}
+.fg-bottom{max-width:1200px;margin:20px auto 0;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}
+@media(max-width:768px){.std-fg{grid-template-columns:1fr 1fr}.topbar-nav{display:none}.resource-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item" href="/nodo.html">Nodo</a>
+    <a class="nav-item" href="/titulares.html">Titulares</a>
+    <a class="nav-item" href="/corazon.html">Corazón</a>
+    <a class="nav-item active" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/servicios.html">← Servicios</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Directorio</span>
+</div>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1 class="page-title">Directorio de Recursos</h1>
+    <p class="page-desc">Recursos verificados para venezolanos en la diáspora y en Venezuela — organizaciones, plataformas y servicios de confianza.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val">18</div><div class="stat-lbl">Recursos Listados</div></div>
+    <div class="stat-card"><div class="stat-val">8</div><div class="stat-lbl">Categorías</div></div>
+    <div class="stat-card"><div class="stat-val">22</div><div class="stat-lbl">Países Cubiertos</div></div>
+    <div class="stat-card"><div class="stat-val">100%</div><div class="stat-lbl">Verificados</div></div>
+  </div>
+
+  <div class="search-bar">
+    <div class="search-input-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input class="search-input" id="search-input" type="text" placeholder="Buscar recursos, organizaciones..." oninput="filterCards()"/>
+    </div>
+    <select class="filter-select" id="filter-costo" onchange="filterCards()">
+      <option value="">Todos los costos</option>
+      <option value="free">Gratuito</option>
+      <option value="paid">De pago</option>
+      <option value="gov">Gubernamental</option>
+    </select>
+    <select class="filter-select" id="filter-pais" onchange="filterCards()">
+      <option value="">Todos los países</option>
+      <option value="colombia">Colombia</option>
+      <option value="chile">Chile</option>
+      <option value="peru">Perú</option>
+      <option value="espana">España</option>
+      <option value="usa">EE.UU.</option>
+      <option value="global">Global</option>
+      <option value="venezuela">Venezuela</option>
+    </select>
+    <button class="btn-clear" onclick="clearFilters()">Limpiar</button>
+  </div>
+
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="setCategory(this,'todos')">Todos <small>(18)</small></button>
+    <button class="cat-tab" onclick="setCategory(this,'empleo')">💼 Empleo</button>
+    <button class="cat-tab" onclick="setCategory(this,'legal')">⚖️ Legal</button>
+    <button class="cat-tab" onclick="setCategory(this,'salud')">🏥 Salud</button>
+    <button class="cat-tab" onclick="setCategory(this,'educacion')">🎓 Educación</button>
+    <button class="cat-tab" onclick="setCategory(this,'finanzas')">💰 Finanzas</button>
+    <button class="cat-tab" onclick="setCategory(this,'vivienda')">🏠 Vivienda</button>
+    <button class="cat-tab" onclick="setCategory(this,'comunidad')">🤝 Comunidad</button>
+  </div>
+
+  <div class="results-bar">
+    <div class="results-count">Mostrando <span id="count-display">18</span> recursos</div>
+  </div>
+
+  <div class="resource-grid" id="resource-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div class="empty-icon">🔍</div>
+    <p>No se encontraron recursos</p>
+    <small>Intenta con otros términos o filtros</small>
+  </div>
+</div>
+
+<!-- INFO MODAL -->
+<div class="modal-backdrop" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content">
+    <div class="modal-header">
+      <div class="modal-icon" id="m-icon"></div>
+      <div class="modal-titles">
+        <div class="modal-name" id="m-name"></div>
+        <div class="modal-org" id="m-org"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-section-title">Descripción</div>
+        <div class="modal-desc" id="m-desc"></div>
+      </div>
+      <div class="modal-details-grid" id="m-details"></div>
+      <div id="m-req-wrap">
+        <div class="modal-section-title">Requisitos</div>
+        <ul class="req-list" id="m-req"></ul>
+      </div>
+      <div>
+        <div class="modal-section-title">Etiquetas</div>
+        <div class="modal-tags" id="m-tags"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="copyResourceLink()">Copiar enlace</button>
+      <a class="btn-primary" id="m-link" href="#" target="_blank" rel="noopener">Visitar recurso →</a>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div id="ticker"><div id="ticker-track"></div></div>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="fg-logo">N<span>·</span>EVADO</div>
+      <p class="fg-desc">Ecosistema digital venezolano. Conectando talento, cultura y oportunidades dentro y fuera de Venezuela.</p>
+    </div>
+    <div class="fg-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">Nodo</a>
+      <a href="/titulares.html">Titulares</a>
+      <a href="/corazon.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="fg-col">
+      <h4>Servicios</h4>
+      <a href="/servicios/cambio.html">Cambio</a>
+      <a href="/servicios/freelance.html">Freelance</a>
+      <a href="/servicios/tramites.html">Trámites</a>
+      <a href="/servicios/seguridad.html">Seguridad</a>
+      <a href="/servicios/directorio.html">Directorio</a>
+    </div>
+    <div class="fg-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Contacto</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="fg-bottom">
+    <span>© 2025 NEVADO · Ecosistema Venezolano</span>
+    <span>v3.0</span>
+  </div>
+</footer>
+
+<script>
+const RESOURCES = [
+  {
+    id:1, name:'Acnur Venezuela', org:'UNHCR / ONU',
+    icon:'🔵', cat:'legal', cost:'gov', pais:'global',
+    badge:'gov', badgeLabel:'Oficial',
+    desc:'Agencia de la ONU para los Refugiados. Ofrece asistencia legal, registro de refugiados, documentación y orientación para venezolanos en todo el mundo.',
+    fullDesc:'ACNUR es la agencia de la ONU para los refugiados. Brinda protección internacional y soluciones duraderas para los venezolanos que han cruzado fronteras internacionales. Sus servicios incluyen registro y reconocimiento como refugiado, asistencia legal, apoyo en integración local, información sobre derechos y acceso a servicios gubernamentales en el país de acogida.',
+    details:{País:'Global',Costo:'Gratuito',Idioma:'Español, inglés y más',Tipo:'Organización internacional'},
+    reqs:['Ser venezolano fuera de tu país de origen','Llevar documentos de identidad si los tienes','Registrarse en la oficina ACNUR o partner local'],
+    tags:['Refugio','Legal','Documentación','Protección','ONU'],
+    url:'https://www.unhcr.org/es/venezuela'
+  },
+  {
+    id:2, name:'Worki', org:'Plataforma de empleo',
+    icon:'💼', cat:'empleo', cost:'free', pais:'colombia',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Principal plataforma de empleo en Colombia. Millones de vacantes con filtros por ciudad, sector y tipo de contrato. Ideal para venezolanos con permiso de trabajo.',
+    fullDesc:'Worki es la plataforma de empleo líder en Colombia con más de 2 millones de ofertas activas. Permite subir hoja de vida, aplicar a vacantes, recibir alertas personalizadas y contactar reclutadores directamente. Muchas empresas en su catálogo contratan venezolanos con PPT (Permiso por Protección Temporal) o con residencia colombiana.',
+    details:{País:'Colombia',Costo:'Gratuito',Modalidad:'Web y App',Tipo:'Bolsa de empleo'},
+    reqs:['Crear cuenta gratuita','Subir hoja de vida actualizada','Contar con PPT o cédula extranjería para aplicar'],
+    tags:['Empleo','Colombia','Vacantes','CV','Reclutamiento'],
+    url:'https://www.worki.com.co'
+  },
+  {
+    id:3, name:'Servicio Jesuita a Refugiados', org:'SJR Venezuela',
+    icon:'🕊️', cat:'legal', cost:'free', pais:'global',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Acompañamiento legal, psicosocial y de integración para venezolanos migrantes en América Latina. Presente en Colombia, Ecuador, Perú y más.',
+    fullDesc:'El Servicio Jesuita a Refugiados (SJR) es una organización internacional de la Compañía de Jesús que acompaña, sirve y defiende a refugiados y migrantes. Para venezolanos ofrece: asesoría jurídica gratuita, apoyo psicosocial, talleres de formación, acceso a empleo y vivienda transitoria en alianza con otras organizaciones.',
+    details:{País:'América Latina',Costo:'Gratuito',Modalidad:'Presencial',Tipo:'ONG internacional'},
+    reqs:['Ser venezolano migrante o refugiado','Acercarse a oficina local','No se requiere documentación específica para la primera consulta'],
+    tags:['Legal','Psicosocial','Migración','ONG','Jesuitas'],
+    url:'https://www.sjr.org'
+  },
+  {
+    id:4, name:'Konempleo', org:'Comunidad de empleo',
+    icon:'🤝', cat:'empleo', cost:'free', pais:'colombia',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Red comunitaria de empleo con foco en inclusión de migrantes venezolanos en Colombia. Ferias de empleo virtuales y presenciales.',
+    fullDesc:'Konempleo es una iniciativa colombiana enfocada en la inclusión laboral de migrantes y refugiados. Organiza ferias de empleo gratuitas donde las empresas buscan explícitamente contratar venezolanos. También brinda talleres de preparación laboral, mejora de hoja de vida y simulacros de entrevista.',
+    details:{País:'Colombia',Costo:'Gratuito',Modalidad:'Virtual y presencial',Tipo:'Red comunitaria'},
+    reqs:['Registro en la plataforma','Hoja de vida básica','Permiso de trabajo (PPT o cédula) para empleos formales'],
+    tags:['Empleo','Colombia','Ferias','Inclusión','Migrantes'],
+    url:'https://konempleo.com'
+  },
+  {
+    id:5, name:'Platzi', org:'Plataforma educativa',
+    icon:'🎓', cat:'educacion', cost:'paid', pais:'global',
+    badge:'paid', badgeLabel:'De pago',
+    desc:'Plataforma de educación online en español con más de 1,000 cursos de tecnología, marketing, diseño y negocios. Plan anual con descuento para Venezuela.',
+    fullDesc:'Platzi es la plataforma de educación tecnológica más grande en español. Ofrece cursos, carreras y certificaciones en programación, diseño, marketing digital, inteligencia artificial y más. Cuenta con descuentos especiales para usuarios en Venezuela y programas de becas. Sus certificados son reconocidos por empresas en toda América Latina y España.',
+    details:{País:'Global',Costo:'Desde $99/año',Idioma:'Español',Tipo:'Ed-tech'},
+    reqs:['Acceso a internet estable','Pago con tarjeta o PayPal','Cuenta de correo electrónico'],
+    tags:['Educación','Tecnología','Certificados','Online','Cursos'],
+    url:'https://platzi.com'
+  },
+  {
+    id:6, name:'Médicos Sin Fronteras', org:'MSF Venezuela',
+    icon:'🏥', cat:'salud', cost:'free', pais:'venezuela',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Asistencia médica gratuita en zonas vulnerables de Venezuela. Atención primaria, salud mental, nutrición y emergencias en regiones con poca cobertura.',
+    fullDesc:'Médicos Sin Fronteras (MSF) opera en Venezuela ofreciendo atención médica gratuita en regiones con acceso limitado a salud pública. Sus programas incluyen atención primaria de salud, salud mental y apoyo psicosocial, nutrición infantil, enfermedades tropicales y respuesta a emergencias. También tienen presencia en países receptores de venezolanos como Colombia y Ecuador.',
+    details:{País:'Venezuela y frontera',Costo:'Gratuito',Modalidad:'Presencial',Tipo:'ONG médica'},
+    reqs:['No se requieren documentos','Acercarse a clínica o punto MSF','Sin restricción de edad o condición'],
+    tags:['Salud','Médicos','Gratuito','Venezuela','Emergencias'],
+    url:'https://www.msf.org.ve'
+  },
+  {
+    id:7, name:'Vivienda Solidaria', org:'Red migrante Chile',
+    icon:'🏠', cat:'vivienda', cost:'free', pais:'chile',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Red de acogida temporal en Chile para venezolanos recién llegados. Habitaciones gratuitas por hasta 30 días mientras se estabiliza la situación.',
+    fullDesc:'Vivienda Solidaria es una red de familias y organizaciones en Chile que ofrecen hospedaje temporal gratuito a migrantes venezolanos recién llegados. El programa incluye habitación, orientación sobre trámites de residencia, integración a la comunidad y conexión con redes de empleo. Los huéspedes pueden permanecer hasta 30 días mientras consiguen estabilidad económica.',
+    details:{País:'Chile',Costo:'Gratuito',Duración:'Hasta 30 días',Tipo:'Red solidaria'},
+    reqs:['Ser venezolano recién llegado a Chile','Registro previo en la red','Compromiso de respetar normas del hogar anfitrión'],
+    tags:['Vivienda','Chile','Acogida','Temporal','Solidaridad'],
+    url:'https://viviendasolidaria.cl'
+  },
+  {
+    id:8, name:'Bancamiga', org:'Banco venezolano',
+    icon:'🏦', cat:'finanzas', cost:'free', pais:'venezuela',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Banco venezolano con cuenta digital gratuita. Permite recibir remesas en divisas, pagos móviles y acceso a servicios financieros desde Venezuela.',
+    fullDesc:'Bancamiga ofrece cuentas digitales en Venezuela con soporte para divisas. Permite a los usuarios recibir remesas del exterior en dólares o euros, realizar pagos móviles, transferencias y acceder a servicios financieros básicos. Su app es funcional con conexión limitada y no requiere ir a una sucursal para abrir la cuenta digital.',
+    details:{País:'Venezuela',Costo:'Sin costo de apertura',Modalidad:'Digital y presencial',Tipo:'Banco'},
+    reqs:['Cédula de identidad venezolana vigente','Número de teléfono activo','Conexión a internet para app'],
+    tags:['Finanzas','Venezuela','Banco','Remesas','Digital'],
+    url:'https://bancamiga.com'
+  },
+  {
+    id:9, name:'OIM Perú', org:'Organización Internacional para las Migraciones',
+    icon:'🌐', cat:'legal', cost:'gov', pais:'peru',
+    badge:'gov', badgeLabel:'Oficial',
+    desc:'Orientación y asistencia para venezolanos en Perú. Asesoría migratoria, apoyo en regularización de estatus y acceso a servicios del Estado peruano.',
+    fullDesc:'La OIM (Organización Internacional para las Migraciones) en Perú ofrece servicios de orientación y asistencia directa a venezolanos. Esto incluye asesoría sobre trámites de residencia y regularización, acceso a salud pública, empleo y educación, así como apoyo psicosocial. También realizan procesos de retorno voluntario asistido para quienes deseen regresar a Venezuela.',
+    details:{País:'Perú',Costo:'Gratuito',Modalidad:'Presencial en Lima y regiones',Tipo:'Organización internacional'},
+    reqs:['Presentarse en oficina OIM','Llevar documentos disponibles (pasaporte, acta, etc.)','Sin restricción de estatus migratorio para orientación inicial'],
+    tags:['Legal','Perú','Migración','Regularización','OIM'],
+    url:'https://www.iom.int/es/countries/peru'
+  },
+  {
+    id:10, name:'Comunidad Venezolana España', org:'CVE',
+    icon:'🇪🇸', cat:'comunidad', cost:'free', pais:'espana',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Red de venezolanos en España. Grupo de Telegram y WhatsApp con más de 40,000 miembros, información sobre trámites, empleo y actividades culturales.',
+    fullDesc:'La Comunidad Venezolana en España (CVE) es la red de apoyo mutuo más grande de venezolanos en España. Opera principalmente a través de grupos de mensajería donde se comparte información sobre trámites de residencia y NIE, ofertas de empleo, alquiler de pisos, eventos culturales y noticias relevantes. También organiza encuentros presenciales en Madrid, Barcelona y otras ciudades.',
+    details:{País:'España',Costo:'Gratuito',Modalidad:'Digital y presencial',Tipo:'Comunidad'},
+    reqs:['Unirse al grupo de Telegram o WhatsApp','Respetar las normas de la comunidad','No se requiere documentación'],
+    tags:['Comunidad','España','Red','Venezolanos','Apoyo'],
+    url:'https://t.me/venezolanosespana'
+  },
+  {
+    id:11, name:'GetOnBoard', org:'Plataforma de empleo tech',
+    icon:'💻', cat:'empleo', cost:'free', pais:'global',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Plataforma especializada en empleos de tecnología en América Latina. Vacantes remotas y en Chile, Colombia, México y más países para desarrolladores venezolanos.',
+    fullDesc:'GetOnBoard es la bolsa de empleo tecnológico más grande de América Latina. Publica miles de vacantes en desarrollo de software, diseño UX/UI, data science, product management y marketing digital. Tiene una sección especial de empleos 100% remotos accesibles desde Venezuela o cualquier país. Las empresas que publican aquí suelen estar abiertas a contratar venezolanos.',
+    details:{País:'Global / América Latina',Costo:'Gratuito',Modalidad:'Remoto y presencial',Tipo:'Bolsa de empleo tech'},
+    reqs:['Registro con correo o LinkedIn','Perfil técnico completado','Portafolio o GitHub recomendado'],
+    tags:['Empleo','Tecnología','Remoto','Startup','Programación'],
+    url:'https://www.getonbrd.com'
+  },
+  {
+    id:12, name:'Curso de Español para Líderes', org:'UNHCR / ACNUR',
+    icon:'📚', cat:'educacion', cost:'free', pais:'global',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Programa educativo de ACNUR para venezuelanos refugiados. Incluye cursos de idiomas, habilidades digitales, emprendimiento y liderazgo comunitario.',
+    fullDesc:'ACNUR ofrece programas de capacitación y educación para refugiados venezolanos en colaboración con universidades y organizaciones locales. Los programas incluyen formación en idiomas para países de habla no española (portugués, inglés, alemán), habilidades digitales básicas, iniciación al emprendimiento y liderazgo comunitario. Muchos están disponibles en formato online gratuito.',
+    details:{País:'Global',Costo:'Gratuito',Modalidad:'Virtual',Tipo:'Programa educativo'},
+    reqs:['Registro previo con ACNUR o partner local','Conexión a internet básica','Compromiso de completar el programa'],
+    tags:['Educación','ACNUR','Idiomas','Digital','Liderazgo'],
+    url:'https://www.unhcr.org/es/educacion'
+  },
+  {
+    id:13, name:'Rappibank', org:'Rappi Colombia',
+    icon:'💳', cat:'finanzas', cost:'free', pais:'colombia',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Cuenta digital con tarjeta Rappicard en Colombia. Disponible para venezolanos con PPT. Sin cuota de manejo, pagos en línea y cashback en Rappi.',
+    fullDesc:'RappiBank ofrece una cuenta digital gratuita con tarjeta Visa en Colombia. Es una de las pocas opciones financieras accesibles para venezolanos con PPT (Permiso por Protección Temporal) sin cédula de ciudadanía colombiana. Incluye cuenta de ahorros sin cuota de manejo, tarjeta débito virtual y física, pagos en Rappi con cashback y transferencias gratuitas.',
+    details:{País:'Colombia',Costo:'Sin costo de manejo',Requisito:'PPT o cédula extranjería',Tipo:'Fintech'},
+    reqs:['PPT vigente o cédula de extranjería','Número de celular colombiano','App Rappi instalada','Selfie y foto del documento'],
+    tags:['Finanzas','Colombia','Cuenta digital','PPT','Tarjeta'],
+    url:'https://rappibank.com'
+  },
+  {
+    id:14, name:'Con Venezuela', org:'Red de apoyo diáspora',
+    icon:'🇻🇪', cat:'comunidad', cost:'free', pais:'global',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Plataforma comunitaria global de venezolanos en el exterior. Conecta profesionales, emprendedores y voluntarios para apoyarse mutuamente.',
+    fullDesc:'Con Venezuela es una red digital que conecta a venezolanos en la diáspora para colaborar, apoyarse y mantener lazos con su país. La plataforma ofrece un directorio de profesionales venezolanos por área y país, grupos de networking temáticos, mentorías entre pares, y canales de noticias sobre Venezuela. También coordina iniciativas de apoyo a causas dentro del país.',
+    details:{País:'Global',Costo:'Gratuito',Modalidad:'Digital',Tipo:'Red comunitaria'},
+    reqs:['Ser venezolano o descendiente','Registro en la plataforma','Completar perfil profesional'],
+    tags:['Comunidad','Diáspora','Networking','Venezuela','Profesionales'],
+    url:'https://convenezouela.org'
+  },
+  {
+    id:15, name:'Clínica Jurídica para Migrantes', org:'Universidad de Chile',
+    icon:'⚖️', cat:'legal', cost:'free', pais:'chile',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Asesoría jurídica gratuita para migrantes en Chile. Estudiantes de derecho supervisados por profesores atienden casos de visa, familia y laboral.',
+    fullDesc:'La Clínica Jurídica para Migrantes de la Universidad de Chile ofrece asistencia legal gratuita a migrantes incluyendo venezolanos. Los casos son atendidos por estudiantes de derecho bajo supervisión de profesores especializados. Atienden materias de derecho migratorio, reunificación familiar, derecho laboral y acceso a la justicia. Las consultas son en español y se ofrecen intérpretes para otros idiomas.',
+    details:{País:'Chile',Costo:'Gratuito',Modalidad:'Presencial en Santiago',Tipo:'Clínica universitaria'},
+    reqs:['Solicitar cita previa','Llevar documentación disponible','Cualquier estatus migratorio'],
+    tags:['Legal','Chile','Universidad','Gratis','Migración'],
+    url:'https://derecho.uchile.cl/clinica-juridica'
+  },
+  {
+    id:16, name:'Airbnb Open Homes', org:'Airbnb',
+    icon:'🏡', cat:'vivienda', cost:'free', pais:'global',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Alojamiento temporal gratuito para refugiados y desplazados. Airbnb conecta venezolanos en situación de emergencia con anfitriones solidarios en todo el mundo.',
+    fullDesc:'Airbnb Open Homes (ahora parte de Airbnb.org) conecta a personas en situaciones de emergencia humanitaria con anfitriones que ofrecen alojamiento gratuito. Para venezolanos, el programa ha operado especialmente en Colombia, Ecuador, Perú y países de Europa. Se coordinan estancias de corta duración mientras las personas encuentran soluciones más permanentes. Las solicitudes se procesan a través de organizaciones aliadas.',
+    details:{País:'Global',Costo:'Gratuito',Duración:'Corto plazo',Tipo:'Programa humanitario'},
+    reqs:['Estar en situación de emergencia o desplazamiento','Solicitar a través de organización aliada de ACNUR o MSF','No se requiere tarjeta de crédito'],
+    tags:['Vivienda','Emergencia','Alojamiento','Global','Humanitario'],
+    url:'https://www.airbnb.org'
+  },
+  {
+    id:17, name:'Ve Sin Filtro', org:'IPYS Venezuela',
+    icon:'📡', cat:'comunidad', cost:'free', pais:'venezuela',
+    badge:'free', badgeLabel:'Gratis',
+    desc:'Herramienta para eludir la censura de internet en Venezuela. VPN y proxies verificados para acceder a sitios bloqueados con seguridad.',
+    fullDesc:'Ve Sin Filtro es una iniciativa del IPYS (Instituto de Prensa y Sociedad) Venezuela que provee herramientas verificadas para eludir la censura de internet. Incluye una lista actualizada de VPNs recomendados, configuraciones de DNS alternativo, proxies seguros y guías de seguridad digital. También documentan los bloqueos de internet en Venezuela y publican reportes de libertad de prensa.',
+    details:{País:'Venezuela',Costo:'Gratuito',Modalidad:'Digital',Tipo:'Herramienta digital'},
+    reqs:['Smartphone o computadora','Seguir instrucciones de instalación','VPN recomendado: Psiphon, Lantern o similares'],
+    tags:['Internet','Censura','VPN','Seguridad','Venezuela'],
+    url:'https://vesinfiltro.com'
+  },
+  {
+    id:18, name:'Beca DAAD Venezuela', org:'DAAD Alemania',
+    icon:'🇩🇪', cat:'educacion', cost:'free', pais:'espana',
+    badge:'free', badgeLabel:'Beca',
+    desc:'Becas del servicio alemán de intercambio académico para venezolanos. Posgrados, investigación y cursos cortos en Alemania con financiamiento completo.',
+    fullDesc:'El DAAD (Deutscher Akademischer Austauschdienst) ofrece programas de becas para venezolanos que deseen estudiar o investigar en Alemania. Las becas incluyen maestrías y doctorados en universidades alemanas, programas de investigación para académicos, cursos cortos y prácticas profesionales. Cubren gastos de manutención, seguro médico y pasaje aéreo. El alemán básico es requerido para algunos programas; otros están en inglés.',
+    details:{País:'Alemania',Costo:'Beca completa',Idioma:'Alemán / Inglés',Tipo:'Beca académica'},
+    reqs:['Título universitario previo','Expediente académico destacado','Carta de motivación y referencias','Nivel de idioma certificado (A2-B2 alemán o IELTS inglés)'],
+    tags:['Educación','Beca','Alemania','Posgrado','DAAD'],
+    url:'https://www.daad.de/es'
+  }
+];
+
+let activeCategory = 'todos';
+let activeResIdx = -1;
+
+function renderCards(){
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const costo = document.getElementById('filter-costo').value;
+  const pais = document.getElementById('filter-pais').value;
+  const grid = document.getElementById('resource-grid');
+  grid.innerHTML = '';
+  let shown = 0;
+  RESOURCES.forEach((r, i) => {
+    const matchCat = activeCategory === 'todos' || r.cat === activeCategory;
+    const matchCost = !costo || r.cost === costo;
+    const matchPais = !pais || r.pais === pais;
+    const matchQ = !q || r.name.toLowerCase().includes(q) || r.org.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q) || r.tags.some(t=>t.toLowerCase().includes(q));
+    if(!matchCat||!matchCost||!matchPais||!matchQ) return;
+    shown++;
+    const col = getCatColor(r.cat);
+    const card = document.createElement('div');
+    card.className='resource-card';
+    card.onclick=()=>openModal(i);
+    card.innerHTML=`
+      <span class="card-badge badge-${r.cost}">${r.badgeLabel}</span>
+      <div class="card-top">
+        <div class="card-icon" style="background:${col}22">${r.icon}</div>
+        <div class="card-meta">
+          <div class="card-name">${r.name}</div>
+          <div class="card-org">${r.org}</div>
+        </div>
+      </div>
+      <div class="card-desc">${r.desc}</div>
+      <div class="card-tags">${r.tags.slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="card-footer">
+        <div class="card-cat"><div class="card-cat-dot" style="background:${col}"></div>${catLabel(r.cat)}</div>
+        <button class="card-action" onclick="event.stopPropagation();openModal(${i})">Ver info</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+  document.getElementById('count-display').textContent = shown;
+  document.getElementById('empty-state').style.display = shown ? 'none' : 'block';
+}
+
+function getCatColor(cat){
+  const m={empleo:'#E74C3C',legal:'#2980B9',salud:'#27AE60',educacion:'#F4D03F',finanzas:'#9B59B6',vivienda:'#E67E22',comunidad:'#1ABC9C'};
+  return m[cat]||'#888';
+}
+function catLabel(cat){
+  const m={empleo:'Empleo',legal:'Legal',salud:'Salud',educacion:'Educación',finanzas:'Finanzas',vivienda:'Vivienda',comunidad:'Comunidad'};
+  return m[cat]||cat;
+}
+
+function setCategory(el, cat){
+  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeCategory = cat;
+  renderCards();
+}
+
+function filterCards(){renderCards();}
+function clearFilters(){
+  document.getElementById('search-input').value='';
+  document.getElementById('filter-costo').value='';
+  document.getElementById('filter-pais').value='';
+  renderCards();
+}
+
+function openModal(idx){
+  const r = RESOURCES[idx];
+  activeResIdx = idx;
+  document.getElementById('m-icon').textContent = r.icon;
+  document.getElementById('m-icon').style.background = getCatColor(r.cat)+'22';
+  document.getElementById('m-name').textContent = r.name;
+  document.getElementById('m-org').textContent = r.org;
+  document.getElementById('m-desc').textContent = r.fullDesc;
+  const det = document.getElementById('m-details');
+  det.innerHTML = Object.entries(r.details).map(([k,v])=>`<div class="detail-item"><div class="detail-label">${k}</div><div class="detail-value">${v}</div></div>`).join('');
+  const req = document.getElementById('m-req');
+  req.innerHTML = r.reqs.map(q=>`<li>${q}</li>`).join('');
+  document.getElementById('m-tags').innerHTML = r.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  document.getElementById('m-link').href = r.url;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e){
+  if(e.target === document.getElementById('modal')) closeModalDirect();
+}
+function closeModalDirect(){document.getElementById('modal').classList.remove('open');}
+
+function copyResourceLink(){
+  if(activeResIdx<0) return;
+  const r = RESOURCES[activeResIdx];
+  navigator.clipboard.writeText(r.url).then(()=>{
+    const btn = document.querySelector('.modal-footer .btn-secondary');
+    const orig = btn.textContent;
+    btn.textContent='¡Copiado!';
+    setTimeout(()=>btn.textContent=orig, 1800);
+  });
+}
+
+renderCards();
+
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

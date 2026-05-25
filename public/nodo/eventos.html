@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Eventos · NODO · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--topbar-h:52px;--page-accent:#E74C3C;--bg:#05050A;--surface:rgba(255,255,255,0.03);--border:rgba(255,255,255,0.07);--text:rgba(232,228,220,0.88);--text-dim:rgba(232,228,220,0.45);--text-muted:rgba(232,228,220,0.25)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;cursor:none;padding-top:80px;padding-bottom:28px;min-height:100vh}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
+    .topbar-logo span{color:var(--page-accent)}
+    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
+    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
+    .nav-item.active{color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 30%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--page-accent) 20%,transparent)}
+    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
+    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
+    .btn-plus:hover{background:rgba(184,148,74,0.08)}
+    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
+    .topbar-user:hover{background:rgba(255,255,255,0.10);color:rgba(232,228,220,0.85)}
+    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
+    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;transition:color 0.2s;cursor:none}
+    .nv-bc-back:hover{color:#E74C3C}
+    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
+    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
+    #ticker{height:28px;background:rgba(5,5,10,0.95);border-bottom:1px solid rgba(255,255,255,0.04);overflow:hidden;display:flex;align-items:center;position:fixed;bottom:0;left:0;right:0;z-index:800}
+    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 55s linear infinite}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 28px;font-size:10px;letter-spacing:0.10em;color:rgba(232,228,220,0.32)}
+    .ticker-val{color:var(--page-accent);font-weight:500}
+    .ticker-sep{color:rgba(255,255,255,0.15)}
+
+    .page-wrap{max-width:1100px;margin:0 auto;padding:40px 28px}
+
+    .page-header{margin-bottom:32px}
+    .page-header h1{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;letter-spacing:0.04em;margin-bottom:8px}
+    .page-header p{color:var(--text-dim);font-size:13px;max-width:520px}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--page-accent)}
+    .stat-lbl{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-top:3px}
+
+    /* FILTERS */
+    .filters-bar{display:flex;align-items:center;gap:8px;margin-bottom:28px;flex-wrap:wrap}
+    .filter-group{display:flex;gap:4px}
+    .filter-pill{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all 0.2s;font-family:inherit}
+    .filter-pill.active,.filter-pill:hover{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent);color:var(--page-accent);background:color-mix(in srgb,var(--page-accent) 8%,transparent)}
+    .filter-sep{width:1px;height:22px;background:var(--border);margin:0 4px}
+
+    /* FEATURED EVENT */
+    .featured-event{background:linear-gradient(135deg,color-mix(in srgb,var(--page-accent) 08%,transparent),rgba(255,255,255,0.01));border:1px solid color-mix(in srgb,var(--page-accent) 20%,transparent);border-radius:14px;padding:28px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;margin-bottom:32px;cursor:none;transition:border-color 0.2s}
+    .featured-event:hover{border-color:color-mix(in srgb,var(--page-accent) 35%,transparent)}
+    .feat-tag{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--page-accent);margin-bottom:8px}
+    .feat-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--text);margin-bottom:8px}
+    .feat-desc{font-size:12px;color:var(--text-dim);max-width:540px;margin-bottom:16px;line-height:1.7}
+    .feat-meta{display:flex;gap:16px;flex-wrap:wrap}
+    .feat-meta-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim)}
+    .feat-meta-icon{color:var(--page-accent);font-size:12px}
+    .feat-sidebar{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+    .feat-date-badge{background:color-mix(in srgb,var(--page-accent) 12%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 25%,transparent);border-radius:10px;padding:14px 18px;text-align:center;min-width:80px}
+    .feat-day{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--page-accent);line-height:1}
+    .feat-month{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
+    .btn-register{font-size:10px;letter-spacing:0.10em;text-transform:uppercase;padding:9px 20px;border-radius:7px;cursor:none;background:color-mix(in srgb,var(--page-accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s;white-space:nowrap}
+    .btn-register:hover{background:color-mix(in srgb,var(--page-accent) 22%,transparent)}
+
+    /* EVENTS GRID */
+    .section-title{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .events-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px}
+    .event-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:none;transition:border-color 0.2s,transform 0.2s}
+    .event-card:hover{border-color:color-mix(in srgb,var(--page-accent) 25%,transparent);transform:translateY(-1px)}
+    .event-header{padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px}
+    .event-date-mini{background:color-mix(in srgb,var(--page-accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 20%,transparent);border-radius:8px;padding:8px 10px;text-align:center;flex-shrink:0}
+    .event-day-mini{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--page-accent);line-height:1}
+    .event-month-mini{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim)}
+    .event-info{flex:1}
+    .event-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+    .event-org{font-size:10px;color:var(--text-dim)}
+    .event-body{padding:12px 16px 16px}
+    .event-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+    .event-tag{font-size:9px;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid var(--border);color:var(--text-muted)}
+    .event-tag.tipo{border-color:color-mix(in srgb,var(--page-accent) 25%,transparent);color:color-mix(in srgb,var(--page-accent) 80%,white)}
+    .event-desc{font-size:11px;color:var(--text-dim);line-height:1.6;margin-bottom:12px}
+    .event-footer{display:flex;align-items:center;justify-content:space-between}
+    .event-spots{font-size:10px;color:var(--text-muted)}
+    .event-spots span{color:var(--text-dim)}
+    .btn-ev-reg{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;border-radius:6px;cursor:none;background:color-mix(in srgb,var(--page-accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 28%,transparent);color:var(--page-accent);font-family:inherit;transition:all 0.2s}
+    .btn-ev-reg:hover{background:color-mix(in srgb,var(--page-accent) 18%,transparent)}
+
+    /* PAST EVENTS */
+    .past-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .past-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;opacity:0.65}
+    .past-date{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+    .past-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
+    .past-attend{font-size:10px;color:var(--text-dim)}
+    .past-recording{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--page-accent);cursor:none;text-decoration:none;display:inline-block;margin-top:6px}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(5,5,10,0.88);backdrop-filter:blur(12px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s}
+    .modal-overlay.open{opacity:1;pointer-events:auto}
+    .modal{width:520px;max-height:85vh;overflow-y:auto;background:#0C0C14;border:1px solid rgba(231,76,60,0.20);border-radius:14px;padding:28px;position:relative}
+    .modal-close{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);cursor:none;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all 0.2s}
+    .modal-close:hover{background:rgba(255,255,255,0.10)}
+    .modal-event-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);margin-bottom:6px}
+    .modal-event-org{font-size:11px;color:var(--text-dim);margin-bottom:16px}
+    .modal-event-desc{font-size:12px;color:var(--text-dim);line-height:1.7;margin-bottom:18px}
+    .modal-details{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:18px}
+    .modal-detail-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .modal-detail-row:last-child{border-bottom:none}
+    .modal-detail-k{font-size:10px;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted)}
+    .modal-detail-v{font-size:11px;color:var(--text-dim)}
+    .modal-form-title{font-size:11px;letter-spacing:0.10em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+    .form-row{margin-bottom:12px}
+    .form-row label{display:block;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
+    .form-row input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;outline:none;transition:border-color 0.2s;cursor:none}
+    .form-row input:focus{border-color:color-mix(in srgb,var(--page-accent) 40%,transparent)}
+    .btn-confirm-reg{width:100%;padding:11px;border-radius:8px;background:color-mix(in srgb,var(--page-accent) 15%,transparent);border:1px solid color-mix(in srgb,var(--page-accent) 35%,transparent);color:var(--page-accent);font-size:10px;letter-spacing:0.10em;text-transform:uppercase;cursor:none;font-family:inherit;transition:all 0.2s}
+    .btn-confirm-reg:hover{background:color-mix(in srgb,var(--page-accent) 22%,transparent)}
+
+    /* FOOTER */
+    #std-footer{background:rgba(5,5,10,0.98);border-top:1px solid rgba(255,255,255,0.06);padding:40px 28px 20px;margin-top:48px}
+    .std-fg{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px}
+    .footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;letter-spacing:0.12em;color:rgba(232,228,220,0.75);margin-bottom:8px}
+    .footer-logo span{color:var(--page-accent)}
+    .footer-desc{font-size:11px;color:rgba(232,228,220,0.28);line-height:1.7;max-width:220px}
+    .footer-col h4{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,228,220,0.30);margin-bottom:12px}
+    .footer-col a{display:block;font-size:11px;color:rgba(232,228,220,0.38);text-decoration:none;margin-bottom:7px;transition:color 0.2s;cursor:none}
+    .footer-col a:hover{color:rgba(232,228,220,0.75)}
+    .footer-bottom{max-width:1100px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+    .footer-copy{font-size:10px;color:rgba(232,228,220,0.20)}
+  </style>
+</head>
+<body>
+
+<header id="topbar">
+  <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+  <nav class="topbar-nav">
+    <a class="nav-item" href="/talento.html">Capital Humano</a>
+    <a class="nav-item" href="/avila.html">ÁVILA</a>
+    <a class="nav-item active" href="/nodo.html">NODO</a>
+    <a class="nav-item" href="/enterate.html">Titulares</a>
+    <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+    <a class="nav-item" href="/servicios.html">Servicios</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="topbar-divider"></div>
+    <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    <button class="topbar-user" aria-label="Mi perfil">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="nv-breadcrumb">
+  <a class="nv-bc-back" href="/nodo.html">← NODO</a>
+  <span class="nv-bc-sep">/</span>
+  <span class="nv-bc-current">Eventos</span>
+</div>
+
+<main class="page-wrap">
+
+  <div class="page-header">
+    <h1>Eventos NODO</h1>
+    <p>Encuentros, talleres y hackathones para la comunidad venezolana global. Presenciales y virtuales.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">6</div><div class="stat-lbl">Próximos</div></div>
+    <div class="stat-card"><div class="stat-num">1,204</div><div class="stat-lbl">Asistentes totales</div></div>
+    <div class="stat-card"><div class="stat-num">22</div><div class="stat-lbl">Países</div></div>
+    <div class="stat-card"><div class="stat-num">48</div><div class="stat-lbl">Eventos realizados</div></div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <button class="filter-pill active">Todos</button>
+      <button class="filter-pill">Taller</button>
+      <button class="filter-pill">Hackathón</button>
+      <button class="filter-pill">Networking</button>
+      <button class="filter-pill">Charla</button>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <button class="filter-pill active">Virtual</button>
+      <button class="filter-pill">Presencial</button>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group">
+      <button class="filter-pill active">Gratuito</button>
+      <button class="filter-pill">De pago</button>
+    </div>
+  </div>
+
+  <!-- FEATURED -->
+  <div class="featured-event" onclick="openModal(0)">
+    <div>
+      <div class="feat-tag">✦ Evento destacado · Virtual · Gratuito</div>
+      <div class="feat-title">Hackathón NEVADO 2025: Soluciones para la Diáspora</div>
+      <div class="feat-desc">48 horas de desarrollo intensivo para construir herramientas que mejoren la vida de venezolanos en el exterior. Premios en USD, mentoría de expertos y visibilidad en el ecosistema.</div>
+      <div class="feat-meta">
+        <div class="feat-meta-item"><span class="feat-meta-icon">🌐</span>Virtual — Zoom + Discord</div>
+        <div class="feat-meta-item"><span class="feat-meta-icon">🕐</span>10:00 AM VET / 2:00 PM CET</div>
+        <div class="feat-meta-item"><span class="feat-meta-icon">👥</span>148 / 200 cupos</div>
+        <div class="feat-meta-item"><span class="feat-meta-icon">🏆</span>Premio total: $2,000 USD</div>
+      </div>
+    </div>
+    <div class="feat-sidebar">
+      <div class="feat-date-badge">
+        <div class="feat-day">14</div>
+        <div class="feat-month">Jun</div>
+      </div>
+      <button class="btn-register" onclick="event.stopPropagation();openModal(0)">Registrarse</button>
+    </div>
+  </div>
+
+  <div class="section-title">Próximos eventos</div>
+
+  <div class="events-grid">
+
+    <div class="event-card" onclick="openModal(1)">
+      <div class="event-header">
+        <div class="event-date-mini">
+          <div class="event-day-mini">28</div>
+          <div class="event-month-mini">May</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Taller: Marca Personal para Remotos</div>
+          <div class="event-org">Organiza: ÁVILA · Capital Humano</div>
+        </div>
+      </div>
+      <div class="event-body">
+        <div class="event-tags">
+          <span class="event-tag tipo">Taller</span>
+          <span class="event-tag">Virtual</span>
+          <span class="event-tag">Gratuito</span>
+        </div>
+        <div class="event-desc">Construye una presencia digital potente como profesional remoto. LinkedIn, portafolio y cómo hablar de tu trayectoria venezolana como fortaleza.</div>
+        <div class="event-footer">
+          <span class="event-spots">Cupos: <span>62 / 80</span></span>
+          <button class="btn-ev-reg" onclick="event.stopPropagation();openModal(1)">Registrarse</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="openModal(2)">
+      <div class="event-header">
+        <div class="event-date-mini">
+          <div class="event-day-mini">03</div>
+          <div class="event-month-mini">Jun</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Networking: Venezolanos en Tech Europa</div>
+          <div class="event-org">Organiza: NODO · Comunidad</div>
+        </div>
+      </div>
+      <div class="event-body">
+        <div class="event-tags">
+          <span class="event-tag tipo">Networking</span>
+          <span class="event-tag">Virtual</span>
+          <span class="event-tag">Gratuito</span>
+        </div>
+        <div class="event-desc">Espacio para venezolanos trabajando en tech en Europa. Comparte experiencias, conecta con otros y explora oportunidades de colaboración.</div>
+        <div class="event-footer">
+          <span class="event-spots">Cupos: <span>41 / 60</span></span>
+          <button class="btn-ev-reg" onclick="event.stopPropagation();openModal(2)">Registrarse</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="openModal(3)">
+      <div class="event-header">
+        <div class="event-date-mini">
+          <div class="event-day-mini">07</div>
+          <div class="event-month-mini">Jun</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Charla: Remesas y Finanzas Transnacionales</div>
+          <div class="event-org">Organiza: Servicios NEVADO</div>
+        </div>
+      </div>
+      <div class="event-body">
+        <div class="event-tags">
+          <span class="event-tag tipo">Charla</span>
+          <span class="event-tag">Virtual</span>
+          <span class="event-tag">Gratuito</span>
+        </div>
+        <div class="event-desc">Estrategias reales para enviar dinero a Venezuela, ahorrar en USD y construir patrimonio desde el exterior con casos prácticos.</div>
+        <div class="event-footer">
+          <span class="event-spots">Cupos: <span>88 / 120</span></span>
+          <button class="btn-ev-reg" onclick="event.stopPropagation();openModal(3)">Registrarse</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="openModal(4)">
+      <div class="event-header">
+        <div class="event-date-mini">
+          <div class="event-day-mini">21</div>
+          <div class="event-month-mini">Jun</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Taller Presencial: UX para Startups · Bogotá</div>
+          <div class="event-org">Organiza: ÁVILA · NODO Bogotá</div>
+        </div>
+      </div>
+      <div class="event-body">
+        <div class="event-tags">
+          <span class="event-tag tipo">Taller</span>
+          <span class="event-tag">Presencial</span>
+          <span class="event-tag">$15 USD</span>
+        </div>
+        <div class="event-desc">Workshop intensivo de 4 horas sobre investigación de usuarios y prototipado rápido. Materiales incluidos. Cupo limitado.</div>
+        <div class="event-footer">
+          <span class="event-spots">Cupos: <span>18 / 25</span></span>
+          <button class="btn-ev-reg" onclick="event.stopPropagation();openModal(4)">Registrarse</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="event-card" onclick="openModal(5)">
+      <div class="event-header">
+        <div class="event-date-mini">
+          <div class="event-day-mini">28</div>
+          <div class="event-month-mini">Jun</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">Demo Day: Proyectos NODO Q2 2025</div>
+          <div class="event-org">Organiza: NODO · Corazón</div>
+        </div>
+      </div>
+      <div class="event-body">
+        <div class="event-tags">
+          <span class="event-tag tipo">Demo Day</span>
+          <span class="event-tag">Virtual</span>
+          <span class="event-tag">Gratuito</span>
+        </div>
+        <div class="event-desc">Los mejores proyectos del trimestre presentan ante la comunidad, mentores y potenciales colaboradores. Espacio abierto para feedback.</div>
+        <div class="event-footer">
+          <span class="event-spots">Cupos: <span>74 / 150</span></span>
+          <button class="btn-ev-reg" onclick="event.stopPropagation();openModal(5)">Registrarse</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-title">Eventos pasados · Grabaciones disponibles</div>
+
+  <div class="past-grid">
+    <div class="past-card">
+      <div class="past-date">15 Apr 2025 · Taller · Virtual</div>
+      <div class="past-title">Cómo conseguir trabajo remoto en 90 días</div>
+      <div class="past-attend">📹 892 asistentes · Grabación disponible</div>
+      <a class="past-recording" href="#">Ver grabación →</a>
+    </div>
+    <div class="past-card">
+      <div class="past-date">02 Mar 2025 · Hackathón · Virtual</div>
+      <div class="past-title">Build for Venezuela — Edición I</div>
+      <div class="past-attend">📹 340 participantes · 48 proyectos</div>
+      <a class="past-recording" href="#">Ver proyectos →</a>
+    </div>
+    <div class="past-card">
+      <div class="past-date">14 Feb 2025 · Charla · Virtual</div>
+      <div class="past-title">Freelance internacional: cobros y contratos</div>
+      <div class="past-attend">📹 1,204 asistentes · Grabación disponible</div>
+      <a class="past-recording" href="#">Ver grabación →</a>
+    </div>
+  </div>
+
+</main>
+
+<!-- REGISTRATION MODAL -->
+<div class="modal-overlay" id="reg-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-event-title" id="modal-title">Evento</div>
+    <div class="modal-event-org" id="modal-org">Organizador</div>
+    <div class="modal-event-desc" id="modal-desc">Descripción</div>
+    <div class="modal-details">
+      <div class="modal-detail-row"><span class="modal-detail-k">Fecha</span><span class="modal-detail-v" id="modal-date">—</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-k">Modalidad</span><span class="modal-detail-v" id="modal-mode">—</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-k">Cupos</span><span class="modal-detail-v" id="modal-spots">—</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-k">Costo</span><span class="modal-detail-v" id="modal-cost">Gratuito</span></div>
+    </div>
+    <div class="modal-form-title">Datos de registro</div>
+    <div class="form-row"><label>Nombre completo</label><input type="text" placeholder="Tu nombre" autocomplete="name"/></div>
+    <div class="form-row"><label>Correo electrónico</label><input type="email" placeholder="correo@ejemplo.com" autocomplete="email"/></div>
+    <div class="form-row"><label>País de residencia</label><input type="text" placeholder="País actual" autocomplete="country-name"/></div>
+    <button class="btn-confirm-reg" id="reg-btn" onclick="confirmRegistration()">Confirmar registro</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="std-footer">
+  <div class="std-fg">
+    <div>
+      <div class="footer-logo">N<span>·</span>EVADO</div>
+      <div class="footer-desc">Ecosistema venezolano de talento, formación y oportunidades para la diáspora global.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Ecosistema</h4>
+      <a href="/talento.html">Capital Humano</a>
+      <a href="/avila.html">ÁVILA</a>
+      <a href="/nodo.html">NODO</a>
+      <a href="/enterate.html">Titulares</a>
+      <a href="/corazon-tricolor.html">Corazón</a>
+      <a href="/servicios.html">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>NODO</h4>
+      <a href="/nodo/espacio.html">Espacios</a>
+      <a href="/nodo/aporte.html">Aportes</a>
+      <a href="/nodo/perfil.html">Perfil</a>
+      <a href="/nodo/publicar.html">Publicar</a>
+      <a href="/nodo/eventos.html">Eventos</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">Acerca de</a>
+      <a href="#">Comunidad</a>
+      <a href="#">Privacidad</a>
+      <a href="#">Términos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 NEVADO · Todos los derechos reservados</span>
+    <span class="footer-copy">v3.0</span>
+  </div>
+</footer>
+
+<div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
+
+<script>
+const EVENTS = [
+  {title:'Hackathón NEVADO 2025: Soluciones para la Diáspora',org:'Organiza: NODO · Comunidad',desc:'48 horas de desarrollo intensivo para construir herramientas que mejoren la vida de venezolanos en el exterior. Premios en USD, mentoría de expertos y visibilidad en el ecosistema.',date:'14 Jun 2025 · 10:00 AM VET',mode:'Virtual — Zoom + Discord',spots:'148 / 200 cupos',cost:'Gratuito'},
+  {title:'Taller: Marca Personal para Remotos',org:'Organiza: ÁVILA · Capital Humano',desc:'Construye una presencia digital potente como profesional remoto. LinkedIn, portafolio y cómo hablar de tu trayectoria venezolana como fortaleza.',date:'28 May 2025 · 6:00 PM VET',mode:'Virtual — Google Meet',spots:'62 / 80 cupos',cost:'Gratuito'},
+  {title:'Networking: Venezolanos en Tech Europa',org:'Organiza: NODO · Comunidad',desc:'Espacio para venezolanos trabajando en tech en Europa. Comparte experiencias, conecta con otros y explora oportunidades de colaboración.',date:'03 Jun 2025 · 7:00 PM CET',mode:'Virtual — Gather.town',spots:'41 / 60 cupos',cost:'Gratuito'},
+  {title:'Charla: Remesas y Finanzas Transnacionales',org:'Organiza: Servicios NEVADO',desc:'Estrategias reales para enviar dinero a Venezuela, ahorrar en USD y construir patrimonio desde el exterior.',date:'07 Jun 2025 · 5:00 PM VET',mode:'Virtual — YouTube Live',spots:'88 / 120 cupos',cost:'Gratuito'},
+  {title:'Taller Presencial: UX para Startups · Bogotá',org:'Organiza: ÁVILA · NODO Bogotá',desc:'Workshop intensivo de 4 horas sobre investigación de usuarios y prototipado rápido. Materiales incluidos.',date:'21 Jun 2025 · 9:00 AM COT',mode:'Presencial — Bogotá, Colombia',spots:'18 / 25 cupos',cost:'$15 USD'},
+  {title:'Demo Day: Proyectos NODO Q2 2025',org:'Organiza: NODO · Corazón',desc:'Los mejores proyectos del trimestre presentan ante la comunidad, mentores y potenciales colaboradores.',date:'28 Jun 2025 · 4:00 PM VET',mode:'Virtual — Zoom + YouTube',spots:'74 / 150 cupos',cost:'Gratuito'},
+];
+
+function openModal(i){
+  const e=EVENTS[i];
+  document.getElementById('modal-title').textContent=e.title;
+  document.getElementById('modal-org').textContent=e.org;
+  document.getElementById('modal-desc').textContent=e.desc;
+  document.getElementById('modal-date').textContent=e.date;
+  document.getElementById('modal-mode').textContent=e.mode;
+  document.getElementById('modal-spots').textContent=e.spots;
+  document.getElementById('modal-cost').textContent=e.cost;
+  document.getElementById('reg-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('reg-modal').classList.remove('open')}
+function confirmRegistration(){
+  const btn=document.getElementById('reg-btn');
+  btn.textContent='✓ Registrado — revisa tu correo';
+  btn.disabled=true;btn.style.opacity='0.6';
+  setTimeout(closeModal,2000);
+}
+document.querySelectorAll('.filter-pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    const grp=this.closest('.filter-group');
+    grp.querySelectorAll('.filter-pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+(function(){
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
+  document.getElementById('ticker-track').innerHTML=h+h;
+})();
+</script>
+<script src="/cursor.js"></script>
+<script type="module" src="/src/nevado-key.js"></script>
+<script src="/nevado-plus.js"></script>
+<script src="/mini-nevado.js"></script>
+</body>
+</html>

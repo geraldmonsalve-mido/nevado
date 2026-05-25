@@ -1,0 +1,88 @@
+:root {
+  --mn-glow:      rgba(184,148,74,0.35);
+  --mn-glow-soft: rgba(184,148,74,0.12);
+}
+
+.mini-nevado-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 16px 0 8px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.mini-nevado-halo {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--mn-glow-soft) 0%, transparent 70%);
+  filter: blur(16px);
+  animation: mnHaloPulse 4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes mnHaloPulse {
+  from { opacity: 0.5; transform: scale(0.95); }
+  to   { opacity: 1;   transform: scale(1.08); }
+}
+
+.mini-nevado-img {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+  animation: mnFloat 5s ease-in-out infinite;
+  transition: transform 400ms cubic-bezier(0.4,0,0.2,1), filter 400ms ease;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes mnFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+.mini-nevado-wrap:hover .mini-nevado-img {
+  transform: scale(1.05) translateY(-3px);
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.7));
+}
+
+.mini-nevado-wrap:hover .mini-nevado-halo {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.mini-nevado-hint {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.25);
+  text-transform: uppercase;
+  margin-top: 6px;
+  transition: color 300ms ease;
+  font-family: 'Geist', sans-serif;
+}
+
+.mini-nevado-wrap:hover .mini-nevado-hint {
+  color: rgba(255,255,255,0.55);
+}
+
+body[data-accent="blue"]   { --mn-glow: rgba(41,128,185,0.4);  --mn-glow-soft: rgba(41,128,185,0.14); }
+body[data-accent="gold"]   { --mn-glow: rgba(184,148,74,0.4);  --mn-glow-soft: rgba(184,148,74,0.14); }
+body[data-accent="green"]  { --mn-glow: rgba(39,174,96,0.4);   --mn-glow-soft: rgba(39,174,96,0.14);  }
+body[data-accent="red"]    { --mn-glow: rgba(192,57,43,0.4);   --mn-glow-soft: rgba(192,57,43,0.14);  }
+body[data-accent="orange"] { --mn-glow: rgba(243,156,18,0.4);  --mn-glow-soft: rgba(243,156,18,0.14); }
+
+@media (max-width: 768px) {
+  .mini-nevado-img  { height: 65px; }
+  .mini-nevado-halo { width: 88px; height: 88px; }
+}
+@media (max-width: 480px) {
+  .mini-nevado-img  { height: 52px; }
+  .mini-nevado-halo { width: 70px; height: 70px; }
+}
