@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEVADO — Perfil</title>
+
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_cmVuZXdlZC1zd2luZS03OS5jbGVyay5hY2NvdW50cy5kZXYk"
+    src="https://renewed-swine-79.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript">
+  </script>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    window.supabase = createClient(
+      'https://icxrduatkbazvwysvxrg.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljeHJkdWF0a2JhenZ3eXN2eHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ3NTEsImV4cCI6MjA5NTMyMDc1MX0.dKNGHz9jEmtVn7hmruzNp2KipMq9BDFb0ABRmlGgqNE'
+    )
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(2,3,10,.45), rgba(2,3,10,.92)),
+        url("/fondo.png");
+      background-size: cover;
+      background-position: center;
+      color: white;
+      font-family: Inter, system-ui, sans-serif;
+      display: grid;
+      place-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(212,168,72,.18), transparent 35%),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: auto, 80px 80px, 80px 80px;
+      pointer-events: none;
+    }
+
+    .profile-shell {
+      width: min(720px, 92vw);
+      position: relative;
+      z-index: 2;
+      padding: 40px 0;
+    }
+
+    .profile-card {
+      background: rgba(4,6,16,.72);
+      border: 1px solid rgba(255,215,120,.12);
+      border-radius: 34px;
+      backdrop-filter: blur(28px);
+      padding: 42px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.45);
+      text-align: center;
+    }
+
+    .avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,215,120,.4);
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-weight: 400;
+      letter-spacing: .08em;
+      font-size: clamp(34px, 5vw, 56px);
+    }
+
+    .rank {
+      margin-top: 12px;
+      color: #d0a74f;
+      text-transform: uppercase;
+      letter-spacing: .28em;
+      font-size: 13px;
+    }
+
+    .grid {
+      margin-top: 36px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 22px;
+      padding: 24px;
+    }
+
+    .metric span {
+      display: block;
+      color: rgba(255,255,255,.58);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .metric strong {
+      font-size: 20px;
+    }
+
+    .explain {
+      margin-top: 26px;
+      padding: 22px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.07);
+      text-align: left;
+      line-height: 1.65;
+      color: rgba(255,255,255,.72);
+    }
+
+    .explain strong {
+      color: #ffd978;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 22px;
+      border-radius: 16px;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .25s ease;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg,#ffd978,#c8942c);
+      color: #050816;
+      border: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,215,120,.28);
+      color: #ffd978;
+    }
+
+    .btn.primary:hover {
+      color: #050816;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+      font-size: 18px;
+      opacity: .8;
+    }
+
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      .profile-card { padding: 28px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="profile-shell">
+    <section class="profile-card" id="profile-card">
+      <div class="loading">Cargando perfil NEVADO...</div>
+    </section>
+  </main>
+
+  <script>
+    const RANKS = [
+      { key: 'cachorro', name: 'Cachorro', min: 1, max: 10, accumulated: 1000, next: 'Explorador' },
+      { key: 'explorador', name: 'Explorador', min: 11, max: 20, accumulated: 2000, next: 'Guardián' },
+      { key: 'guardian', name: 'Guardián', min: 21, max: 32, accumulated: 3200, next: 'Montañista' },
+      { key: 'montanista', name: 'Montañista', min: 33, max: 47, accumulated: 5450, next: 'Guía' },
+      { key: 'guia', name: 'Guía', min: 48, max: 67, accumulated: 8450, next: 'Protector' },
+      { key: 'protector', name: 'Protector', min: 68, max: 107, accumulated: 16450, next: 'Leyenda Andina' },
+      { key: 'leyenda_andina', name: 'Leyenda Andina', min: 108, max: 170, accumulated: 29050, next: null }
+    ]
+
+    function getRankData(rankKey) {
+      return RANKS.find(r => r.key === rankKey) || RANKS[0]
+    }
+
+    window.addEventListener('load', async () => {
+      await window.Clerk.load()
+
+      if (!window.Clerk.user) {
+        window.location.href = '/auth.html'
+        return
+      }
+
+      const clerkId = window.Clerk.user.id
+
+      const { data: profile, error } = await window.supabase
+        .from('profiles')
+        .select('*')
+        .eq('clerk_id', clerkId)
+        .single()
+
+      if (error || !profile) {
+        document.getElementById('profile-card').innerHTML = `
+          <div class="loading">Error cargando perfil.</div>
+        `
+        console.error(error)
+        return
+      }
+
+      const rank = getRankData(profile.rank_key)
+      const croquetas = Number(profile.croquetas || 0)
+
+      let ascenso = 'Rango máximo'
+      let explanation = 'Ya estás en el rango máximo del ecosistema NEVADO.'
+
+      if (rank.next) {
+        const faltantes = Math.max(rank.accumulated - croquetas, 0)
+        ascenso = faltantes.toLocaleString('es-VE') + ' 🦴'
+        explanation = `Para ascender de <strong>${rank.name}</strong> a <strong>${rank.next}</strong>, debes alcanzar <strong>${rank.accumulated.toLocaleString('es-VE')} Croquetas acumuladas</strong>. Desde Guardián, los ascensos también pueden requerir evaluación humana.`
+      }
+
+      document.getElementById('profile-card').innerHTML = `
+        <img class="avatar" src="${profile.avatar_url || '/rangos/rango1-cachorro.png'}" />
+
+        <h1>${profile.display_name || 'Usuario NEVADO'}</h1>
+
+        <p class="rank">${rank.name}</p>
+
+        <div class="grid">
+          <div class="metric">
+            <span>Nivel</span>
+            <strong>${profile.level}</strong>
+          </div>
+
+          <div class="metric">
+            <span>Croquetas</span>
+            <strong>${croquetas.toLocaleString('es-VE')}</strong>
+          </div>
+
+          <div class="metric">
+            <span>Rango actual</span>
+            <strong>${rank.name}</strong>
+          </div>
+
+          <div class="metric">
+            <span>Croquetas para ascender</span>
+            <strong>${ascenso}</strong>
+          </div>
+        </div>
+
+        <div class="explain">
+          ${explanation}
+          <br><br>
+          En NEVADO no basta con acumular Croquetas: los rangos altos existen para reconocer permanencia, aporte real, criterio comunitario y compromiso con el ecosistema.
+        </div>
+
+        <div class="actions">
+          <a class="btn primary" href="/rangos.html">Ver sistema de rangos</a>
+          <a class="btn" href="/">Volver</a>
+          <button class="btn" id="logout-btn">Cerrar sesión</button>
+        </div>
+      `
+
+      document.getElementById('logout-btn').onclick = async () => {
+        await window.Clerk.signOut()
+        window.location.href = '/auth.html'
+      }
+    })
+  </script>
+</body>
+</html>

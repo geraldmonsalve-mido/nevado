@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEVADO — Acceso</title>
+
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_cmVuZXdlZC1zd2luZS03OS5jbGVyay5hY2NvdW50cy5kZXYk"
+    src="https://renewed-swine-79.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript">
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(2,3,10,.45), rgba(2,3,10,.9)),
+        url("/fondo.png");
+      background-size: cover;
+      background-position: center;
+      color: white;
+      font-family: Inter, system-ui, sans-serif;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(212,168,72,.18), transparent 35%),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: auto, 80px 80px, 80px 80px;
+      pointer-events: none;
+    }
+
+    .auth-shell {
+      width: min(460px, 92vw);
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .brand { margin-bottom: 26px; }
+
+    .brand h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: clamp(38px, 8vw, 58px);
+      font-weight: 400;
+      letter-spacing: .22em;
+    }
+
+    .brand p {
+      margin: 12px 0 0;
+      color: #c8a74d;
+      letter-spacing: .32em;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 30px;
+      padding: 10px 18px;
+      border: 1px solid rgba(255,215,120,.18);
+      border-radius: 999px;
+      background: rgba(255,255,255,.055);
+      backdrop-filter: blur(18px);
+      color: rgba(255,255,255,.78);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #62f59c;
+      box-shadow: 0 0 16px #62f59c;
+    }
+
+    #clerk-auth {
+      display: grid;
+      place-items: center;
+    }
+
+    .cl-card {
+      border-radius: 28px !important;
+      box-shadow: 0 30px 90px rgba(0,0,0,.45) !important;
+      border: 1px solid rgba(255,215,120,.18) !important;
+    }
+
+    .cl-footerActionLink,
+    .cl-formButtonPrimary {
+      letter-spacing: .08em !important;
+    }
+
+    .back-home {
+      display: inline-block;
+      margin-top: 24px;
+      color: rgba(255,255,255,.62);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: .08em;
+    }
+
+    .back-home:hover { color: #d7b56b; }
+  </style>
+</head>
+
+<body>
+  <main class="auth-shell">
+    <section class="brand">
+      <h1>NEVADO</h1>
+      <p>Acceso institucional</p>
+    </section>
+
+    <div class="status">
+      <span class="dot"></span>
+      <span>Ecosistema activo · 48,291 venezolanos</span>
+    </div>
+
+    <div id="clerk-auth"></div>
+
+    <a class="back-home" href="/">← Volver al ecosistema</a>
+  </main>
+
+  <script>
+    const textMap = {
+      'Sign in': 'Iniciar sesión',
+      'Sign up': 'Crear cuenta',
+      'to continue to MIDO': 'para continuar con NEVADO',
+      'to continue to NEVADO': 'para continuar con NEVADO',
+      'to continue to Nevado': 'para continuar con NEVADO',
+      'Continue with Google': 'Continuar con Google',
+      'Email address': 'Correo electrónico',
+      'CONTINUE': 'CONTINUAR',
+      'Continue': 'Continuar',
+      'No account?': '¿No tienes cuenta?',
+      'Already have an account?': '¿Ya tienes cuenta?',
+      'or': 'o',
+      'Enter your email address': 'Ingresa tu correo electrónico',
+      'Password': 'Contraseña',
+      'Forgot password?': '¿Olvidaste tu contraseña?',
+      'Secured by': 'Protegido por'
+    }
+
+    function translateClerk() {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+
+      while (walker.nextNode()) {
+        const node = walker.currentNode
+        const original = node.nodeValue.trim()
+
+        if (textMap[original]) {
+          node.nodeValue = node.nodeValue.replace(original, textMap[original])
+        }
+
+        if (node.nodeValue.includes('MIDO')) {
+          node.nodeValue = node.nodeValue.replaceAll('MIDO', 'NEVADO')
+        }
+      }
+    }
+
+    function observeClerk() {
+      const observer = new MutationObserver(() => translateClerk())
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      })
+    }
+
+    window.addEventListener('load', async () => {
+      await window.Clerk.load()
+
+      const container = document.getElementById('clerk-auth')
+
+      if (window.Clerk.user) {
+        container.innerHTML = `
+          <div style="
+            width:min(420px,92vw);
+            padding:32px;
+            border:1px solid rgba(255,215,120,.18);
+            border-radius:28px;
+            background:rgba(8,10,18,.72);
+            backdrop-filter:blur(28px);
+            text-align:center;
+          ">
+            <h2 style="margin:0 0 12px;">Sesión activa</h2>
+            <p style="opacity:.7;">${window.Clerk.user.primaryEmailAddress?.emailAddress || 'Usuario NEVADO'}</p>
+            <button id="logout-btn" style="
+              margin-top:18px;
+              padding:14px 18px;
+              border:0;
+              border-radius:14px;
+              background:linear-gradient(135deg,#ffd978,#c8942c);
+              color:#050816;
+              font-weight:800;
+              cursor:pointer;
+            ">Cerrar sesión</button>
+          </div>
+        `
+
+        document.getElementById('logout-btn').onclick = async () => {
+          await window.Clerk.signOut()
+          window.location.reload()
+        }
+
+        return
+      }
+
+      window.Clerk.mountSignIn(container, {
+        routing: 'hash',
+        afterSignInUrl: '/profile.html',
+        afterSignUpUrl: '/profile.html',
+        appearance: {
+          variables: {
+            colorPrimary: '#c8942c',
+            colorBackground: '#ffffff',
+            colorText: '#101010',
+            borderRadius: '18px'
+          }
+        }
+      })
+
+      observeClerk()
+      setTimeout(translateClerk, 300)
+      setTimeout(translateClerk, 900)
+      setTimeout(translateClerk, 1600)
+    })
+  </script>
+</body>
+</html>

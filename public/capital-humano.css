@@ -4,7 +4,7 @@
 :root {
   --ch-accent:   #B8944A;
   --ch-surface:  rgba(255,255,255,0.03);
-  --ch-border:   rgba(255,255,255,0.06);
+  --ch-border:   rgba(255,255,255,0.05);
   --ch-text:     #E8E8E0;
   --ch-muted:    rgba(255,255,255,0.35);
   --ch-carbon:   #05050A;
