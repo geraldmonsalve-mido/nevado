@@ -180,27 +180,6 @@
       .grid { grid-template-columns: 1fr; }
       .profile-card { padding: 28px; }
     }
-  
-    .founder-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin: 10px 8px 0;
-      padding: 14px 20px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,215,120,.35);
-      background: rgba(200,148,44,.16);
-      color: #f6d98b;
-      text-decoration: none;
-      font-weight: 800;
-      letter-spacing: .08em;
-      box-shadow: 0 0 22px rgba(200,148,44,.12);
-    }
-
-    .founder-btn:hover {
-      background: rgba(200,148,44,.28);
-      color: #fff2c4;
-    }
   </style>
 </head>
 
@@ -243,15 +222,7 @@
         .single()
 
       if (error || !profile) {
-        console.log("PROFILE DATA", profile)
-      console.log("IS_FOUNDER", profile.is_founder)
-      console.log("USERNAME", profile.username)
-
-      const founderButton = (profile.is_founder === true || profile.username === 'nevado')
-        ? '<a class="founder-btn" href="/founder-panel.html">Panel de Control</a>'
-        : ''
-
-      document.getElementById('profile-card').innerHTML = `
+        document.getElementById('profile-card').innerHTML = `
           <div class="loading">Error cargando perfil.</div>
         `
         console.error(error)
@@ -269,14 +240,6 @@
         ascenso = faltantes.toLocaleString('es-VE') + ' 🦴'
         explanation = `Para ascender de <strong>${rank.name}</strong> a <strong>${rank.next}</strong>, debes alcanzar <strong>${rank.accumulated.toLocaleString('es-VE')} Croquetas acumuladas</strong>. Desde Guardián, los ascensos también pueden requerir evaluación humana.`
       }
-
-      console.log("PROFILE DATA", profile)
-      console.log("IS_FOUNDER", profile.is_founder)
-      console.log("USERNAME", profile.username)
-
-      const founderButton = (profile.is_founder === true || profile.username === 'nevado')
-        ? '<a class="founder-btn" href="/founder-panel.html">Panel de Control</a>'
-        : ''
 
       document.getElementById('profile-card').innerHTML = `
         <img class="avatar" src="${profile.avatar_url || '/rangos/rango1-cachorro.png'}" />
