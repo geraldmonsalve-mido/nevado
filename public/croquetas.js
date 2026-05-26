@@ -1,6 +1,8 @@
-// NEVADO — Sistema de Croquetas v1.0 (MVP hook layer)
+// NEVADO — Sistema de Croquetas v2.0 (Supabase + localStorage fallback)
 ;(function() {
   'use strict';
+
+  let _dbPts = null; // cuando el usuario está logueado, se usa este valor
 
   window.NEVADO_CROQUETAS = {
     rangos: [
@@ -17,11 +19,29 @@
       return this.rangos.find(r => pts >= r.min && pts <= r.max) || this.rangos[0];
     },
 
+    // Lee desde DB si hay sesión, si no desde localStorage
     get puntos() {
+      if (_dbPts !== null) return _dbPts;
       return parseInt(localStorage.getItem('nevado_croquetas') || '0');
     },
 
+    // Sincroniza valor desde Supabase (llamado por auth.js al login)
+    _syncFromDB(pts) {
+      _dbPts = pts;
+      localStorage.setItem('nevado_croquetas', pts);
+      this._updateBadges();
+    },
+
     agregar(pts, motivo) {
+      if (window.NEVADO_AUTH?.isSignedIn()) {
+        // Con sesión: escribe en Supabase (auth.js.otorgarCroquetas) y actualiza local
+        const clerk_id = window.NEVADO_AUTH.getClerkUser()?.id;
+        if (clerk_id) {
+          window.NEVADO_AUTH.otorgarCroquetas(clerk_id, pts, motivo);
+          return; // auth.js actualiza _dbPts y badges
+        }
+      }
+      // Sin sesión: solo localStorage
       const nuevo = this.puntos + pts;
       localStorage.setItem('nevado_croquetas', nuevo);
       this._showToast(pts, motivo);
@@ -50,15 +70,25 @@
         'animation:croqueta-in 0.3s cubic-bezier(0.4,0,0.2,1)',
       ].join(';');
       document.body.appendChild(t);
-      setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .4s'; setTimeout(() => t.remove(), 400); }, 2800);
+      setTimeout(() => {
+        t.style.opacity = '0'; t.style.transition = 'opacity .4s';
+        setTimeout(() => t.remove(), 400);
+      }, 2800);
     },
 
     _updateBadges() {
-      const pts = this.puntos;
+      const pts   = this.puntos;
       const rango = this.getRango(pts);
       document.querySelectorAll('#croquetas-display,[data-croquetas-badge]').forEach(el => {
         el.textContent = `🦴 ${pts.toLocaleString('es')} Croquetas · ${rango.emoji} ${rango.nombre}`;
       });
+      // Actualiza panel talento si existe
+      const img = document.getElementById('perfil-rango-img');
+      const nom = document.getElementById('perfil-rango-nombre');
+      const cnt = document.getElementById('perfil-croquetas-count');
+      if (img) { img.src = rango.img; img.alt = rango.nombre; }
+      if (nom) nom.textContent = rango.nombre;
+      if (cnt) cnt.textContent = `🦴 ${pts.toLocaleString('es')} Croquetas`;
     },
 
     init() {
@@ -66,7 +96,7 @@
     }
   };
 
-  // Inject keyframe CSS
+  // CSS
   const style = document.createElement('style');
   style.textContent = `
     @keyframes croqueta-in {
@@ -84,7 +114,6 @@
   `;
   document.head.appendChild(style);
 
-  // Auto-init after DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => window.NEVADO_CROQUETAS.init());
   } else {
