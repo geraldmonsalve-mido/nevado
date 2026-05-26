@@ -585,3 +585,45 @@
     backdrop-filter: blur(12px) !important;
   }
 }
+
+/* Ajuste: bajar más a Nevado detrás del logo */
+@media (max-width: 767px) {
+
+  #nevado-canvas-container {
+    height: 430px !important;
+    min-height: 430px !important;
+
+    /* baja el perro */
+    background-position: center 58px !important;
+
+    /* ligeramente más grande */
+    background-size: 255px auto !important;
+
+    /* deja que las patas entren detrás del logo */
+    margin-bottom: -145px !important;
+
+    z-index: 1 !important;
+  }
+
+  /* Logo encima del perro */
+  .hero-logo,
+  .nevado-logo,
+  h1 {
+    position: relative !important;
+    z-index: 20 !important;
+  }
+
+  /* Texto secundario */
+  .hero-subtitle,
+  .hero-tagline {
+    position: relative !important;
+    z-index: 21 !important;
+  }
+
+  /* Barra ecosistema */
+  .ecosystem-status,
+  .status-pill {
+    position: relative !important;
+    z-index: 22 !important;
+  }
+}
