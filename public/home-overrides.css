@@ -1,7 +1,20 @@
 /* ─── TAREA 1 — Imagen de fondo (solo home) ─────────────────────────────── */
+
+/*
+ * body tiene background: var(--carbon) en style.css. Un child con z-index:-1
+ * queda DETRÁS del background box del padre, haciéndose invisible.
+ * Solución: body.home transparent para que #home-bg (z-index:-1) sea visible.
+ */
+body.home {
+  background: transparent;
+}
+
 #home-bg {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -1;
   background: url('/fondo.png') center / cover no-repeat fixed;
   opacity: 0.76;
