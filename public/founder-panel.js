@@ -755,36 +755,51 @@ function showAccessDenied(msg) {
     </div>`;
 }
 
+
 function checkFounderAccess() {
-  const founderEmails = window.FOUNDER_EMAILS || [];
-  const auth = window.NEVADO_AUTH;
-  if (!auth || !auth.isSignedIn()) {
-    showAccessDenied('Solo el Fundador puede acceder a este panel. Por favor inicia sesión.');
+
+  const clerk = window.Clerk
+
+  if (!clerk || !clerk.user) {
+    showAccessDenied('Debes iniciar sesión.');
     return false;
   }
-  const user = auth.getUser();
-  const currentEmail =
-    user?.email ||
-    user?.primaryEmailAddress?.emailAddress ||
-    user?.primary_email_address?.email_address ||
-    '';
 
-  const currentId = user?.id || '';
+  const user = clerk.user
+
+  const email =
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses?.[0]?.emailAddress ||
+    ''
+
+  const clerkId = user.id || ''
+
+  const founderEmails = [
+    'gerald.monsalve@gmail.com',
+    'nevadopro7@gmail.com'
+  ]
 
   const founderIds = [
     'user_3EG4uguiDjrh2Tx5gY9cjDpniJw'
-  ];
+  ]
 
   const allowed =
-    founderEmails.includes(currentEmail) ||
-    founderIds.includes(currentId);
+    founderEmails.includes(email) ||
+    founderIds.includes(clerkId)
 
-  if (!user || !allowed) {
+  console.log('CHECK FOUNDER')
+  console.log('EMAIL:', email)
+  console.log('CLERK ID:', clerkId)
+  console.log('ALLOWED:', allowed)
+
+  if (!allowed) {
     showAccessDenied('Tu cuenta no tiene acceso al Panel del Fundador.');
     return false;
   }
+
   return true;
 }
+
 
 /* ---- KPIs REALES DESDE SUPABASE ------------------------------------ */
 
