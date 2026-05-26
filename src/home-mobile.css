@@ -481,3 +481,38 @@
     transform: none !important;
   }
 }
+
+/* FIX DEFINITIVO: mostrar perro mobile aunque JS no inserte el img */
+@media (max-width: 767px) {
+  #nevado-canvas-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: 260px !important;
+    min-height: 260px !important;
+    margin: 8px auto 10px !important;
+    position: relative !important;
+    z-index: 18 !important;
+    background-image: url('/NevadoMobilePoster.webp') !important;
+    background-repeat: no-repeat !important;
+    background-position: center bottom !important;
+    background-size: contain !important;
+    pointer-events: none !important;
+  }
+
+  #nevado-canvas,
+  canvas#nevado-canvas {
+    display: none !important;
+  }
+
+  #nevado-mobile-poster {
+    display: none !important;
+  }
+
+  #nm-bubble {
+    right: 24px !important;
+    left: auto !important;
+    max-width: 150px !important;
+  }
+}
