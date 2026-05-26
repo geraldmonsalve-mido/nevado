@@ -11,6 +11,9 @@
     type="text/javascript"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.nevadoDb = window.supabase.createClient("https://icxrduatkbazvwysvxrg.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljeHJkdWF0a2JhenZ3eXN2eHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ3NTEsImV4cCI6MjA5NTMyMDc1MX0.dKNGHz9jEmtVn7hmruzNp2KipMq9BDFb0ABRmlGgqNE");
+  </script>
 
   <style>
     * { box-sizing: border-box; }
@@ -124,11 +127,7 @@
   <main id="profile-card" class="card">Cargando perfil...</main>
 
   <script>
-    const SUPABASE_URL = "https://icxrduatkbazvwysvxrg.supabase.co";
-    const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY_SI_ESTA_LINEA_FALLA";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const rankNames = {
+const rankNames = {
       cachorro: "Cachorro",
       explorador: "Explorador",
       guardian: "Guardián",
@@ -165,7 +164,7 @@
           return;
         }
 
-        const { data: profile, error } = await supabase
+        const { data: profile, error } = await window.nevadoDb
           .from("profiles")
           .select("*")
           .eq("clerk_id", clerkUser.id)
