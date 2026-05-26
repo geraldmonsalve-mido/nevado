@@ -442,3 +442,42 @@
     overflow: visible !important;
   }
 }
+
+
+/* FIX FINAL: mostrar Nevado mobile desde imagen real */
+@media (max-width: 767px) {
+  #nevado-canvas-container {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    min-height: 180px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    z-index: 12 !important;
+    margin: 6px auto 10px !important;
+    pointer-events: none !important;
+  }
+
+  #nevado-mobile-poster {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: min(62vw, 240px) !important;
+    max-height: 32vh !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    z-index: 20 !important;
+    pointer-events: auto !important;
+    filter: drop-shadow(0 22px 38px rgba(0,0,0,.65));
+  }
+
+  #nm-bubble {
+    right: max(18px, env(safe-area-inset-right)) !important;
+    left: auto !important;
+    max-width: 165px !important;
+    transform: none !important;
+  }
+}
