@@ -9,7 +9,6 @@ export default defineConfig({
           .replace(
             '</head>',
             '  <link rel="stylesheet" href="/home-overrides.css">\n' +
-            '  <link rel="stylesheet" href="/home-mobile.css">\n' +
             '</head>'
           )
           .replace(
@@ -18,7 +17,7 @@ export default defineConfig({
           )
           .replace(
             '</body>',
-            '  <script src="/home-mobile-dom.js" defer></script>\n</body>'
+            '  <script src="/home-mobile-ui.js" defer></script>\n</body>'
           );
       },
     },

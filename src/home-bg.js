@@ -1,3 +1,4 @@
+import './home-mobile.css';
 // Fondo home — inyección directa sin depender de CSS externo
 const style = document.createElement('style');
 style.textContent = `

@@ -1,0 +1,340 @@
+/* ═══════════════════════════════════════════════════════════════
+   NEVADO — Home Mobile  (exclusivo @media max-width: 768px)
+   Selectores verificados contra src/main.js y src/style.css
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+  /* ── Base ───────────────────────────────────────────────────── */
+  html, body { overflow-x: hidden !important; }
+  body { padding-bottom: env(safe-area-inset-bottom); }
+
+  /* ════════════════════════════════════════════════════════════
+     PASO 1 — FONDO MOBILE
+     body.home::before es el mismo pseudo-elemento que el grid de
+     style.css (body::before z-index:0), pero body.home es más
+     específico → lo sobreescribe completamente en mobile.
+     ════════════════════════════════════════════════════════════ */
+  body.home {
+    background: transparent !important;
+  }
+  body.home::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(180deg, rgba(5,5,10,0.35) 0%, rgba(5,5,10,0.78) 100%),
+      url('/fondo.png');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     OCULTAR DESKTOP
+     Selectores reales de src/main.js
+     ════════════════════════════════════════════════════════════ */
+  #topbar,
+  .module-card,
+  #sysbar,
+  #tagline,
+  #nodes-svg,
+  #watermark,
+  #nebula-1, #nebula-2, #nebula-3,
+  #particles-bg {
+    display: none !important;
+  }
+
+  /* ── Canvas 3D — queda como fondo visual del perro ─────────── */
+  #nevado-canvas-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     TICKER MOBILE  (#ticker viene de main.js con id real)
+     Tricolor top stripe ya existe en home-overrides.css
+     ════════════════════════════════════════════════════════════ */
+  #ticker {
+    bottom: 0 !important;   /* sysbar oculto: bajar al piso */
+    height: 24px !important;
+    font-size: 10px !important;
+    z-index: 200;
+  }
+  .ticker-item { font-size: 10px !important; }
+
+  /* ── Mini Nevado — subir 30px para no tapar ticker ─────────── */
+  /* #miniNevadoWrap tiene bottom:44px inline; !important lo sobreescribe */
+  #miniNevadoWrap {
+    bottom: 54px !important;  /* 24px ticker + 30px margen */
+    right: 16px !important;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     PASO 2 — HEADER MOBILE
+     Elementos inyectados por public/home-mobile-ui.js
+     ════════════════════════════════════════════════════════════ */
+  .mobile-session-card {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 18px);
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(5,5,10,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(184,148,74,0.3);
+    border-radius: 12px;
+  }
+  .session-label {
+    display: block;
+    font-size: 11px;
+    color: #B8944A;
+    letter-spacing: 0.5px;
+    font-family: 'Geist', sans-serif;
+  }
+  .session-sub {
+    display: block;
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    font-family: 'Geist', sans-serif;
+  }
+
+  .mobile-menu-button {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 22px);
+    right: 20px;
+    z-index: 100;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(5,5,10,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(184,148,74,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(184,148,74,0.1);
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     SCROLL WRAPPER — contenedor único de todo el contenido mobile
+     Transparente en la parte superior → deja ver el canvas (z-index:1)
+     ════════════════════════════════════════════════════════════ */
+  .mobile-scroll-wrapper {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    bottom: 24px;  /* espacio para #ticker */
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    z-index: 50;
+    scrollbar-width: none;
+  }
+  .mobile-scroll-wrapper::-webkit-scrollbar { display: none; }
+
+  /* Spacer transparente — "ventana" al perro 3D debajo */
+  .mobile-hero-spacer {
+    height: 52vh;
+    pointer-events: none;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     PASO 4 — HERO IDENTITY
+     ════════════════════════════════════════════════════════════ */
+  .hero-identity {
+    text-align: center;
+    padding: 0 24px 20px;
+    pointer-events: auto;
+  }
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 8vw, 38px);
+    letter-spacing: 8px;
+    color: #FFFFFF;
+    text-shadow: 0 0 40px rgba(184,148,74,0.25);
+    margin: 0 0 4px;
+    font-weight: 400;
+    line-height: 1;
+  }
+  .hero-title-text {
+    font-family: 'Geist', sans-serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #B8944A;
+    font-weight: 300;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 18px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    font-family: 'Geist', sans-serif;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00FF88;
+    box-shadow: 0 0 8px rgba(0,255,136,0.6);
+    flex-shrink: 0;
+    animation: mvStatusBlink 2s ease-in-out infinite;
+  }
+  @keyframes mvStatusBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; box-shadow: 0 0 12px rgba(0,255,136,0.9); }
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     PASO 5 — ECOSYSTEM CARDS MOBILE
+     ════════════════════════════════════════════════════════════ */
+  .mobile-ecosystem {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 20px 100px;
+    margin-top: 24px;
+  }
+
+  /* — Cards grandes (Capital Humano y Servicios) — */
+  .mobile-card-primary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 22px 60px 22px 20px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.08);
+    text-decoration: none;
+    color: white;
+    position: relative;
+    transition: transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-card-primary:active { transform: scale(0.98); }
+
+  .mobile-card-amarillo {
+    border-top: 3px solid #FFD700;
+    box-shadow: 0 0 24px rgba(255,215,0,0.1);
+  }
+  .mobile-card-rojo {
+    border-top: 3px solid #CF142B;
+    box-shadow: 0 0 24px rgba(207,20,43,0.1);
+  }
+
+  .mobile-card-primary .mc-cat {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    font-family: 'Geist', sans-serif;
+  }
+  .mobile-card-primary .mc-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 4px 0;
+    line-height: 1.1;
+  }
+  .mobile-card-primary .mc-metric {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+    font-family: 'Geist', sans-serif;
+  }
+  .mobile-card-primary .mc-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* — Carrusel horizontal — */
+  .mobile-card-carousel {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 0 8px;
+    scrollbar-width: none;
+  }
+  .mobile-card-carousel::-webkit-scrollbar { display: none; }
+
+  /* — Cards mini (carrusel) — */
+  .mobile-card-mini {
+    min-width: 155px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    padding: 16px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-top: 2px solid var(--mc-color, rgba(255,255,255,0.25));
+    text-decoration: none;
+    color: white;
+    transition: transform 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-card-mini:active { transform: scale(0.97); }
+
+  .mobile-card-mini .mc-cat {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'Geist', sans-serif;
+  }
+  .mobile-card-mini .mc-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0 0 4px;
+    line-height: 1.1;
+  }
+  .mobile-card-mini .mc-metric {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin: 0;
+    font-family: 'Geist', sans-serif;
+  }
+
+}
+/* ── FIN @media (max-width: 768px) ── */
