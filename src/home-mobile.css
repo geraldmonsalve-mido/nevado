@@ -347,3 +347,14 @@
 
 }
 /* ── FIN @media (max-width: 768px) ── */
+
+
+@media (max-width: 768px) {
+  .home-bg,
+  body::before,
+  .hero-bg {
+    background-attachment: scroll !important;
+    image-rendering: auto !important;
+    transform: translateZ(0);
+  }
+}
