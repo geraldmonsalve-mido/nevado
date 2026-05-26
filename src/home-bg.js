@@ -15,7 +15,7 @@ bg.style.cssText = [
   'width:100vw',
   'height:100vh',
   'z-index:-1',
-  'background-image:url(/fondo.png)',
+  'background-image:url(/fondo-home.webp)',
   'background-size:cover',
   'background-position:center center',
   'background-repeat:no-repeat',

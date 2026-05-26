@@ -16,7 +16,7 @@ body.home {
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background: url('/fondo.png') center / cover no-repeat fixed;
+  background: url('/fondo-home.webp') center / cover no-repeat fixed;
   opacity: 0.76;
   pointer-events: none;
 }
