@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "draco3dgltf": "^1.5.7",
     "vite": "^5.4.2"
   },
   "dependencies": {
