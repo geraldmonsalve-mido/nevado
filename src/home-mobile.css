@@ -380,3 +380,22 @@
     50% { transform: translateY(-6px) scale(1.015); }
   }
 }
+
+
+@media (max-width: 767px) {
+  body.nevado-mobile-static #nevado-mobile-poster {
+    position: relative;
+    z-index: 8;
+    width: min(70vw, 260px);
+    max-height: 38vh;
+    object-fit: contain;
+    margin: 0 auto 10px;
+    display: block;
+    filter: drop-shadow(0 24px 44px rgba(0,0,0,.62));
+  }
+
+  body.nevado-mobile-static .nevado-loader,
+  body.nevado-mobile-static [data-nevado-loader] {
+    display: none !important;
+  }
+}

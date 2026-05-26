@@ -6,9 +6,15 @@ export function initNevado3D() {
 
   if (window.innerWidth < 768) {
     const canvas = document.getElementById('nevado-canvas');
+
+    const existingLoader = document.querySelector('[data-nevado-loader]');
+    if (existingLoader) existingLoader.remove();
+
     if (canvas) {
-      canvas.outerHTML = '<img id="nevado-mobile-poster" src="/NevadoDePie.png" alt="Nevado" />';
+      canvas.outerHTML = '<img id="nevado-mobile-poster" src="/NevadoDePie.png" alt="Nevado" decoding="async" fetchpriority="high" />';
     }
+
+    document.body.classList.add('nevado-mobile-static');
     return;
   }
 
@@ -70,6 +76,7 @@ export function initNevado3D() {
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:20px;opacity:1;transition:opacity 0.8s ease;
   `;
+  loadingEl.setAttribute('data-nevado-loader', 'true');
   loadingEl.innerHTML = `
     <svg width="56" height="56" viewBox="0 0 56 56" fill="none"
          style="animation:nevado-spin 1.4s linear infinite;">
