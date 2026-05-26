@@ -383,12 +383,12 @@ function initializeFormCroquetas() {
     renderLogs();
 
     // Persist to Supabase if available (lookup by email or clerk_id)
-    const supabase = window.NEVADO_AUTH?.supabase;
-    if (supabase) {
+    const nevadoFounderDb = window.NEVADO_AUTH?.supabase;
+    if (nevadoFounderDb) {
       const isEmail = usuario.includes('@') && usuario.includes('.');
       const query = isEmail
-        ? supabase.from('usuarios').select('clerk_id,croquetas').eq('email', usuario).single()
-        : supabase.from('usuarios').select('clerk_id,croquetas').ilike('nombre', `%${usuario}%`).limit(1).single();
+        ? nevadoFounderDb.from('usuarios').select('clerk_id,croquetas').eq('email', usuario).single()
+        : nevadoFounderDb.from('usuarios').select('clerk_id,croquetas').ilike('nombre', `%${usuario}%`).limit(1).single();
       query.then(({ data, error }) => {
         if (error || !data) {
           agregarLog('[DB] Usuario no encontrado: ' + usuario);
@@ -396,8 +396,8 @@ function initializeFormCroquetas() {
         }
         const nuevas = (data.croquetas || 0) + cantidad;
         const rango  = window.NEVADO_CROQUETAS?.getRango(nuevas)?.nombre || 'Cachorro';
-        supabase.from('usuarios').update({ croquetas: nuevas, rango, ultima_actividad: new Date().toISOString() }).eq('clerk_id', data.clerk_id)
-          .then(() => supabase.from('croquetas_log').insert({ clerk_id: data.clerk_id, cantidad, motivo }))
+        nevadoFounderDb.from('usuarios').update({ croquetas: nuevas, rango, ultima_actividad: new Date().toISOString() }).eq('clerk_id', data.clerk_id)
+          .then(() => nevadoFounderDb.from('croquetas_log').insert({ clerk_id: data.clerk_id, cantidad, motivo }))
           .then(() => agregarLog('[DB] Croquetas persistidas → ' + usuario + ' (' + formatNumber(nuevas) + ' total)'));
       });
     }
@@ -813,24 +813,24 @@ function timeAgo(iso) {
 }
 
 async function loadSupabaseKPIs() {
-  const supabase = window.NEVADO_AUTH?.supabase;
-  if (!supabase) return;
+  const nevadoFounderDb = window.NEVADO_AUTH?.supabase;
+  if (!nevadoFounderDb) return;
   try {
     // Total users
-    const { count: totalUsers } = await supabase.from('usuarios')
+    const { count: totalUsers } = await nevadoFounderDb.from('usuarios')
       .select('*', { count: 'exact', head: true });
     // Active users (last 24h)
     const since = new Date(Date.now() - 86400000).toISOString();
-    const { count: activeUsers } = await supabase.from('usuarios')
+    const { count: activeUsers } = await nevadoFounderDb.from('usuarios')
       .select('*', { count: 'exact', head: true }).gte('ultima_actividad', since);
     // Total croquetas (sum)
-    const { data: ptsRows } = await supabase.from('usuarios').select('croquetas');
+    const { data: ptsRows } = await nevadoFounderDb.from('usuarios').select('croquetas');
     const totalCroquetas = ptsRows?.reduce((s, u) => s + (u.croquetas || 0), 0) ?? founderState.croquetas.enCirculacion;
     // Recent croquetas_log
-    const { data: logs } = await supabase.from('croquetas_log')
+    const { data: logs } = await nevadoFounderDb.from('croquetas_log')
       .select('clerk_id,cantidad,motivo,creado_en').order('creado_en', { ascending: false }).limit(8);
     // Top users for evaluaciones mock
-    const { data: topUsers } = await supabase.from('usuarios')
+    const { data: topUsers } = await nevadoFounderDb.from('usuarios')
       .select('nombre,rango,croquetas').order('croquetas', { ascending: false }).limit(3);
 
     if (totalUsers !== null) founderState.usuarios.total = totalUsers;

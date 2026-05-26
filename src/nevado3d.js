@@ -11,7 +11,7 @@ export function initNevado3D() {
     if (existingLoader) existingLoader.remove();
 
     if (canvas) {
-      canvas.outerHTML = '<img id="nevado-mobile-poster" src="/NevadoDePie.png" alt="Nevado" decoding="async" fetchpriority="high" />';
+      canvas.outerHTML = '<img id="nevado-mobile-poster" src="/NevadoDePie.webp" alt="Nevado" decoding="async" fetchpriority="high" />';
     }
 
     document.body.classList.add('nevado-mobile-static');

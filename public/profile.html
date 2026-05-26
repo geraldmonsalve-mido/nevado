@@ -7,7 +7,7 @@
 
   <script async crossorigin="anonymous"
     data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
-    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
     type="text/javascript"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -163,6 +163,15 @@ const rankNames = {
           window.location.href = "/auth.html";
           return;
         }
+
+        await window.nevadoDb
+          .from("usuarios")
+          .upsert({
+            clerk_id: clerkUser.id,
+            nombre: clerkUser.fullName || clerkUser.firstName,
+            email: clerkUser.primaryEmailAddress?.emailAddress,
+            ultima_actividad: new Date().toISOString()
+          }, { onConflict: "clerk_id" });
 
         const { data: profile, error } = await window.nevadoDb
           .from("profiles")
