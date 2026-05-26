@@ -775,7 +775,7 @@ function checkFounderAccess() {
   const clerkId = user.id || ''
 
   const founderEmails = [
-    'gerald.monsalve@gmail.com',
+    'nevadopro7@gmail.com',
     'nevadopro7@gmail.com'
   ]
 
