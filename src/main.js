@@ -1,3 +1,4 @@
+import './home-bg.js';
 import './style.css';
 import { initNevado3D } from './nevado3d.js';
 import { initInteractions } from './interactions.js';
