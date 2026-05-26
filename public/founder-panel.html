@@ -1,590 +1,317 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Panel administrativo del Fundador para el ecosistema NEVADO." />
-  <meta name="theme-color" content="#050816" />
-  <title>NEVADO — Panel del Fundador</title>
-  <link rel="stylesheet" href="./founder-panel.css" />
-  <link rel="preload" as="image" href="/rangos/rango7-leyendaandina-oro-joyas.png" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Founder Panel — NEVADO</title>
+
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+  src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js">
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Inter,system-ui,sans-serif;
+background:
+linear-gradient(rgba(2,3,10,.78),rgba(2,3,10,.95)),
+url("/fondo.png");
+background-size:cover;
+background-position:center;
+min-height:100vh;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+background-size:80px 80px;
+pointer-events:none;
+}
+
+#app{
+width:100%;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:40px;
+}
+
+.loading,
+.denied{
+width:min(520px,92vw);
+padding:42px;
+border-radius:30px;
+background:rgba(5,8,18,.82);
+border:1px solid rgba(255,215,120,.18);
+backdrop-filter:blur(26px);
+text-align:center;
+}
+
+.loading{
+font-size:20px;
+}
+
+.denied h1{
+font-size:38px;
+margin-bottom:18px;
+}
+
+.denied p{
+opacity:.7;
+line-height:1.6;
+}
+
+.dashboard{
+width:100%;
+max-width:1450px;
+display:grid;
+grid-template-columns:320px 1fr;
+gap:28px;
+}
+
+.sidebar{
+padding:28px;
+border-radius:34px;
+background:rgba(5,8,18,.78);
+border:1px solid rgba(255,215,120,.12);
+backdrop-filter:blur(30px);
+}
+
+.main{
+padding:34px;
+border-radius:34px;
+background:rgba(5,8,18,.74);
+border:1px solid rgba(255,215,120,.12);
+backdrop-filter:blur(30px);
+}
+
+.avatar{
+width:130px;
+height:130px;
+border-radius:50%;
+overflow:hidden;
+margin:auto;
+border:3px solid rgba(212,168,72,.6);
+}
+
+.avatar img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.title{
+margin-top:22px;
+font-size:46px;
+font-weight:800;
+line-height:1;
+}
+
+.subtitle{
+margin-top:10px;
+color:#d4a848;
+letter-spacing:.22em;
+text-transform:uppercase;
+font-size:12px;
+}
+
+.grid{
+margin-top:34px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:18px;
+}
+
+.card{
+padding:24px;
+border-radius:24px;
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.06);
+}
+
+.card span{
+display:block;
+opacity:.6;
+font-size:14px;
+margin-bottom:12px;
+}
+
+.card strong{
+font-size:32px;
+}
+
+.banner{
+margin-top:28px;
+padding:34px;
+border-radius:30px;
+background:
+radial-gradient(circle at right,rgba(212,168,72,.22),transparent 35%),
+rgba(255,255,255,.03);
+border:1px solid rgba(255,215,120,.12);
+}
+
+.banner h2{
+font-size:54px;
+line-height:1;
+margin-bottom:20px;
+}
+
+.banner p{
+max-width:760px;
+opacity:.78;
+line-height:1.7;
+font-size:18px;
+}
+</style>
 </head>
 
-<body class="founder-panel-page fp-loading" data-nevado-page="founder-panel">
+<body>
 
-  <div class="background-glow" aria-hidden="true"></div>
-  <div class="background-mountain" aria-hidden="true"></div>
-  <div class="background-grid" aria-hidden="true"></div>
+<div id="app">
+<div class="loading">
+Validando sesión institucional...
+</div>
+</div>
 
-  <div class="founder-shell">
+<script>
+const supabase = window.supabase.createClient(
+"https://icxrduatkbazvwysvxrg.supabase.co",
+"TU_SUPABASE_ANON_KEY"
+)
 
-    <aside class="founder-sidebar" aria-label="Navegación administrativa">
+async function boot(){
 
-      <header class="sidebar-brand">
-        <a class="brand-link" href="./founder-panel.html" aria-label="Ir al resumen del Panel del Fundador">
-          <img class="brand-mark" src="./assets/nevado-mark.png" alt="Símbolo NEVADO" width="36" height="36" / loading="lazy">
-          <div class="brand-copy">
-            <span class="brand-name">NEVADO</span>
-            <span class="brand-subtitle">Ecosistema</span>
-          </div>
-        </a>
-      </header>
+await window.Clerk.load()
 
-      <div class="founder-identity-card">
-        <div class="founder-avatar-wrap">
-          <img class="founder-avatar" src="/rangos/rango7-leyendaandina-oro-joyas.png" alt="Insignia Leyenda Andina Fundador" loading="lazy" />
-          <span class="founder-avatar-ring" aria-hidden="true"></span>
-        </div>
-        <p class="founder-overline" aria-label="Sesión institucional">Sesión institucional</p>
-        <h2 class="founder-name">NEVADO</h2>
-        <p class="founder-rank">Leyenda Andina Fundador</p>
-        <p class="founder-level">Nivel 170</p>
-        <p class="founder-presence"><span class="presence-dot" aria-hidden="true"></span>Presencia institucional activa</p>
-      </div>
+const user = window.Clerk.user
 
-      <nav class="sidebar-nav" aria-label="Secciones del Panel del Fundador">
-        <p class="nav-group-label">Administración</p>
+if(!user){
+renderDenied()
+return
+}
 
-        <a class="nav-item active" href="#resumen">
-          <span class="nav-icon" aria-hidden="true">⌁</span>
-          <span>Resumen</span>
-        </a>
+const clerkId = user.id
+const email = user.primaryEmailAddress?.emailAddress || ""
 
-        <a class="nav-item" href="#evaluaciones">
-          <span class="nav-icon" aria-hidden="true">▣</span>
-          <span>Evaluaciones</span>
-          <span class="nav-badge" id="badge-evaluaciones">12</span>
-        </a>
+const { data: profile, error } = await supabase
+.from("profiles")
+.select("*")
+.eq("clerk_id", clerkId)
+.single()
 
-        <a class="nav-item" href="#ascensos">
-          <span class="nav-icon" aria-hidden="true">↑</span>
-          <span>Ascensos</span>
-          <span class="nav-badge violet" id="badge-ascensos">5</span>
-        </a>
+if(error || !profile){
+renderDenied()
+return
+}
 
-        <a class="nav-item" href="#usuarios">
-          <span class="nav-icon" aria-hidden="true">◎</span>
-          <span>Usuarios</span>
-        </a>
+const isFounder =
+profile.is_founder === true ||
+email.includes("@nevado")
 
-        <a class="nav-item" href="#moderacion">
-          <span class="nav-icon" aria-hidden="true">⚖</span>
-          <span>Moderación</span>
-        </a>
+if(!isFounder){
+renderDenied()
+return
+}
 
-        <a class="nav-item" href="#croquetas">
-          <span class="nav-icon" aria-hidden="true">◉</span>
-          <span>Croquetas</span>
-          <span class="nav-status" aria-label="Operativo"></span>
-        </a>
+renderFounder(profile,user)
+}
 
-        <a class="nav-item" href="#reportes">
-          <span class="nav-icon" aria-hidden="true">◇</span>
-          <span>Reportes</span>
-          <span class="nav-badge red" id="badge-reportes">7</span>
-        </a>
+function renderDenied(){
+document.getElementById("app").innerHTML = `
+<div class="denied">
+<h1>🔒 Acceso restringido</h1>
+<p>
+Solo cuentas institucionales del ecosistema pueden acceder
+al centro de mando NEVADO.
+</p>
+</div>
+`
+}
 
-        <a class="nav-item" href="#logs">
-          <span class="nav-icon" aria-hidden="true">☷</span>
-          <span>Logs del sistema</span>
-        </a>
+function renderFounder(profile,user){
 
-        <a class="nav-item" href="#configuracion">
-          <span class="nav-icon" aria-hidden="true">⚙</span>
-          <span>Configuración</span>
-        </a>
+const avatar =
+profile.avatar_url ||
+user.imageUrl ||
+"/NevadoDePie.png"
 
-        <p class="nav-group-label">Ecosistema</p>
+document.getElementById("app").innerHTML = `
+<div class="dashboard">
 
-        <a class="nav-item" href="#estadisticas">
-          <span class="nav-icon" aria-hidden="true">↟</span>
-          <span>Estadísticas</span>
-        </a>
+<div class="sidebar">
 
-        <a class="nav-item" href="#actividad-vivo">
-          <span class="nav-icon" aria-hidden="true">ϟ</span>
-          <span>Actividad en vivo</span>
-        </a>
+<div class="avatar">
+<img src="${avatar}">
+</div>
 
-        <a class="nav-item" href="#salud-ecosistema">
-          <span class="nav-icon" aria-hidden="true">✦</span>
-          <span>Salud del ecosistema</span>
-        </a>
-      </nav>
+<div class="title">
+${profile.display_name || "Founder"}
+</div>
 
-      <footer class="sidebar-footer">
-        <button class="ghost-action" type="button" data-action="logout">
-          <span aria-hidden="true">↩</span>
-          <span>Cerrar sesión</span>
-        </button>
-      </footer>
+<div class="subtitle">
+${profile.rank_key || "FOUNDER"}
+</div>
 
-    </aside>
+</div>
 
-    <main class="founder-main" id="resumen">
+<div class="main">
 
-      <header class="topbar" aria-label="Barra superior">
-        <div class="topbar-title">
-          <p class="eyebrow">Panel del Fundador</p>
-          <h2>Control total del Ecosistema NEVADO</h2>
-        </div>
-        <div class="topbar-actions">
-          <div class="security-pill">
-            <span class="security-icon" aria-hidden="true">▣</span>
-            <div>
-              <strong>Sesión verificada</strong>
-              <span>2FA activa</span>
-            </div>
-          </div>
-          <div class="clock-card" aria-label="Hora actual">
-            <strong id="founder-clock">00:00:00</strong>
-            <span id="founder-date">Fecha del sistema</span>
-          </div>
-        </div>
-      </header>
+<div class="banner">
+<h2>Centro de mando institucional</h2>
 
-      <section class="founder-hero glass-card" aria-labelledby="hero-title">
-        <div class="hero-content">
-          <div class="hero-badge">
-            <span aria-hidden="true">♛</span>
-            <span>Leyenda Andina Fundador</span>
-          </div>
-          <h2 id="hero-title">Centro de mando institucional</h2>
-          <p>Supervisa evaluaciones, ascensos, croquetas, moderación, reportes, configuración del ecosistema y actividad en tiempo real. Todos los cambios persisten en el ecosistema.</p>
-          <div class="hero-metrics">
-            <div class="mini-metric">
-              <span>Rango máximo</span>
-              <strong>Nivel 170 / 170</strong>
-            </div>
-            <div class="mini-metric">
-              <span>Croquetas para otorgar</span>
-              <strong>∞</strong>
-            </div>
-            <div class="mini-metric">
-              <span>Permiso superior</span>
-              <strong>Super Administrador</strong>
-            </div>
-          </div>
-        </div>
-        <div class="hero-emblem" aria-hidden="true">
-          <img src="/rangos/rango7-leyendaandina-oro-joyas.png" alt="" loading="eager" />
-          <span class="emblem-aura"></span>
-        </div>
-      </section>
+<p>
+Supervisa evaluaciones, croquetas, ascensos,
+moderación y actividad completa del ecosistema.
+</p>
+</div>
 
-      <section class="kpi-grid" aria-label="Indicadores principales">
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon blue" aria-hidden="true">◎</span>
-          <div>
-            <p>Usuarios totales</p>
-            <strong id="kpi-usuarios-total">128.420</strong>
-            <small>↑ 2.341 en 24h</small>
-          </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon green" aria-hidden="true">ϟ</span>
-          <div>
-            <p>Usuarios activos</p>
-            <strong id="kpi-usuarios-activos">15.842</strong>
-            <small>↑ 1.205 en 24h</small>
-          </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon gold" aria-hidden="true">◉</span>
-          <div>
-            <p>Croquetas en circulación</p>
-            <strong id="kpi-croquetas">2.450.879.250</strong>
-            <small>↑ 85.210.450 en 24h</small>
-          </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon violet" aria-hidden="true">▣</span>
-          <div>
-            <p>Evaluaciones pendientes</p>
-            <strong id="kpi-evaluaciones">377</strong>
-            <small><a href="#evaluaciones">Ver evaluaciones →</a></small>
-          </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon red" aria-hidden="true">◇</span>
-          <div>
-            <p>Reportes pendientes</p>
-            <strong id="kpi-reportes">7</strong>
-            <small><a href="#reportes">Ver reportes →</a></small>
-          </div>
-        </article>
-      </section>
+<div class="grid">
 
-      <section class="dashboard-grid">
+<div class="card">
+<span>Nivel</span>
+<strong>${profile.level || 0}</strong>
+</div>
 
-        <!-- ESTADÍSTICAS -->
-        <article class="panel-card glass-card" id="estadisticas">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Distribución</p>
-              <h3>Niveles del ecosistema</h3>
-            </div>
-            <span class="panel-meta">Usuarios</span>
-          </header>
-          <ol class="rank-list" id="rank-list-container">
-            <!-- Renderizado dinámico por JS -->
-          </ol>
-        </article>
+<div class="card">
+<span>Croquetas</span>
+<strong>${Number(profile.croquetas || 0).toLocaleString("es-VE")}</strong>
+</div>
 
-        <!-- ACTIVIDAD EN VIVO -->
-        <article class="panel-card glass-card" id="actividad-vivo">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Pulso vivo</p>
-              <h3>Actividad en tiempo real</h3>
-            </div>
-            <a class="panel-header-link" href="#resumen">Ver todo →</a>
-          </header>
-          <ul class="activity-list" id="activity-feed">
-            <!-- Renderizado dinámico por JS -->
-          </ul>
-        </article>
+<div class="card">
+<span>Rol</span>
+<strong>${profile.role || "FOUNDER"}</strong>
+</div>
 
-        <!-- SALUD DEL ECOSISTEMA -->
-        <article class="panel-card glass-card" id="salud-ecosistema">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Estado operativo</p>
-              <h3>Salud del ecosistema</h3>
-            </div>
-          </header>
-          <div class="health-layout">
-            <ul class="health-list" id="health-list">
-              <!-- Renderizado dinámico por JS -->
-            </ul>
-            <div class="health-orb">
-              <div class="orb-ring">
-                <span>Estado general</span>
-                <strong id="health-estado">ESTABLE</strong>
-              </div>
-              <p id="health-msg">Todo en orden</p>
-            </div>
-          </div>
-        </article>
+</div>
 
-        <!-- SEGURIDAD -->
-        <article class="panel-card glass-card" id="seguridad">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Blindaje institucional</p>
-              <h3>Seguridad</h3>
-            </div>
-          </header>
-          <ul class="security-list">
-            <li>
-              <div>
-                <strong>Autenticación en dos pasos</strong>
-                <span>Activada con Google Authenticator</span>
-              </div>
-              <span class="check">✓</span>
-            </li>
-            <li>
-              <div>
-                <strong>Sesión actual</strong>
-                <span>IP segura · sesión activa</span>
-              </div>
-              <span class="check">✓</span>
-            </li>
-            <li>
-              <div>
-                <strong>Actividad sospechosa</strong>
-                <span id="security-suspicious">No se han detectado actividades</span>
-              </div>
-              <span class="check" id="security-check-suspicious">✓</span>
-            </li>
-          </ul>
-        </article>
+</div>
 
-        <!-- LOGS -->
-        <article class="panel-card glass-card" id="logs">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Trazabilidad</p>
-              <h3>Logs institucionales</h3>
-            </div>
-            <button class="btn-mini" type="button" id="btn-export-logs">Exportar</button>
-          </header>
-          <ul class="log-list" id="log-list">
-            <!-- Renderizado dinámico por JS -->
-          </ul>
-        </article>
+</div>
+`
+}
 
-        <!-- ACCESOS RÁPIDOS -->
-        <article class="panel-card glass-card quick-access">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Centro operativo</p>
-              <h3>Accesos rápidos</h3>
-            </div>
-          </header>
-          <div class="quick-grid">
-            <button class="quick-action" type="button" data-panel="evaluaciones">
-              <span>▣</span>
-              <strong>Evaluaciones</strong>
-              <small>Revisar candidatos</small>
-              <em id="qa-badge-evaluaciones">12</em>
-            </button>
-            <button class="quick-action" type="button" data-panel="ascensos">
-              <span>↑</span>
-              <strong>Ascensos</strong>
-              <small>Gestionar niveles altos</small>
-              <em class="violet" id="qa-badge-ascensos">5</em>
-            </button>
-            <button class="quick-action" type="button" data-panel="croquetas">
-              <span>◉</span>
-              <strong>Croquetas</strong>
-              <small>Otorgar croquetas</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="usuarios">
-              <span>◎</span>
-              <strong>Usuarios</strong>
-              <small>Buscar usuarios</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="moderacion">
-              <span>⚖</span>
-              <strong>Moderación</strong>
-              <small>Acciones rápidas</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="reportes">
-              <span>◇</span>
-              <strong>Reportes</strong>
-              <small>Ver reportes</small>
-              <em class="red" id="qa-badge-reportes">7</em>
-            </button>
-            <button class="quick-action" type="button" data-panel="logs">
-              <span>☷</span>
-              <strong>Logs</strong>
-              <small>Ver registro</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="configuracion">
-              <span>⚙</span>
-              <strong>Config</strong>
-              <small>Ajustes globales</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="anuncios">
-              <span>✦</span>
-              <strong>Anuncios</strong>
-              <small>Crear anuncio</small>
-            </button>
-          </div>
-        </article>
+boot()
+</script>
 
-        <!-- EVALUACIONES -->
-        <article class="panel-card glass-card" id="evaluaciones">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Evaluativos</p>
-              <h3>Procesos pendientes</h3>
-            </div>
-            <span class="panel-meta" id="eval-count">0 pendientes</span>
-          </header>
-          <div class="evaluation-list" id="evaluaciones-list">
-            <!-- Renderizado dinámico por JS -->
-          </div>
-        </article>
-
-        <!-- CROQUETAS -->
-        <article class="panel-card glass-card" id="croquetas">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Economía interna</p>
-              <h3>Otorgar croquetas</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="grant-croquetas" novalidate>
-            <label>
-              <span>Usuario</span>
-              <input type="text" name="user" placeholder="@usuario o nombre..." autocomplete="off" required />
-            </label>
-            <label>
-              <span>Cantidad</span>
-              <div class="input-with-addon">
-                <input type="number" name="amount" placeholder="100000" min="1" max="999999999" required />
-                <button type="button" class="addon-btn" data-action="set-infinite">Máx.<br>∞</button>
-              </div>
-            </label>
-            <label>
-              <span>Motivo institucional</span>
-              <textarea name="reason" rows="3" placeholder="Reconocimiento por aporte tangible al ecosistema"></textarea>
-            </label>
-            <button class="cta-btn" type="submit">Otorgar croquetas</button>
-          </form>
-        </article>
-
-        <!-- ASCENSOS -->
-        <article class="panel-card glass-card" id="ascensos">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Ascenso ceremonial</p>
-              <h3>Iniciar proceso de ascenso</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="promotion" novalidate>
-            <label>
-              <span>Usuario</span>
-              <input type="text" name="promotionUser" placeholder="Buscar usuario..." autocomplete="off" required />
-            </label>
-            <label>
-              <span>Nuevo rango</span>
-              <select name="newRank" required>
-                <option value="">Seleccionar rango</option>
-                <option value="guardian">Guardián</option>
-                <option value="montanista">Montañista</option>
-                <option value="guia">Guía</option>
-                <option value="protector">Protector</option>
-                <option value="leyenda-andina">Leyenda Andina</option>
-              </select>
-            </label>
-            <p class="form-hint">Los ascensos a Protector y Leyenda Andina requieren evaluación directa del Fundador.</p>
-            <button class="cta-btn" type="submit">Confirmar ascenso</button>
-          </form>
-        </article>
-
-        <!-- MODERACIÓN -->
-        <article class="panel-card glass-card" id="moderacion">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Control disciplinario</p>
-              <h3>Acciones de moderación</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="moderation" novalidate>
-            <label>
-              <span>Usuario objetivo</span>
-              <input type="text" name="modUser" placeholder="@usuario..." autocomplete="off" required />
-            </label>
-            <label>
-              <span>Acción</span>
-              <select name="modAction" required>
-                <option value="">Seleccionar acción</option>
-                <option value="warn">Advertencia formal</option>
-                <option value="ban-24h">Suspensión 24 horas</option>
-                <option value="ban-7d">Suspensión 7 días</option>
-                <option value="ban-perm">Suspensión permanente</option>
-                <option value="unlock">Desbloquear usuario</option>
-              </select>
-            </label>
-            <label>
-              <span>Motivo institucional</span>
-              <textarea name="modReason" rows="2" placeholder="Describe el motivo de la acción..." required></textarea>
-            </label>
-            <button class="cta-btn cta-btn--warning" type="submit">Aplicar acción</button>
-          </form>
-        </article>
-
-        <!-- USUARIOS -->
-        <article class="panel-card glass-card" id="usuarios">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Directorio</p>
-              <h3>Buscar usuarios</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="user-search" novalidate>
-            <label>
-              <span>Buscar por usuario, nivel o rango</span>
-              <input type="text" name="searchQuery" placeholder="@usuario, Guardián, nivel 45..." autocomplete="off" id="user-search-input" />
-            </label>
-            <button class="cta-btn cta-btn--secondary" type="submit">Buscar</button>
-          </form>
-          <div id="user-search-results" class="search-results" style="margin-top:1rem"></div>
-        </article>
-
-        <!-- REPORTES -->
-        <article class="panel-card glass-card" id="reportes">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Gestión de reportes</p>
-              <h3>Reportes pendientes</h3>
-            </div>
-            <span class="panel-meta" id="reportes-count">7 pendientes</span>
-          </header>
-          <div class="reports-list" id="reportes-list">
-            <p class="empty-state">Los reportes se cargan desde el sistema. Conecta la API para ver reportes en tiempo real.</p>
-          </div>
-        </article>
-
-        <!-- CONFIGURACIÓN -->
-        <article class="panel-card glass-card" id="configuracion">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Control global</p>
-              <h3>Configuración del ecosistema</h3>
-            </div>
-          </header>
-          <div class="config-grid">
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Modo mantenimiento</strong>
-                <span>Suspende el acceso público temporalmente</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-mantenimiento" role="switch" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Registro abierto</strong>
-                <span>Permite nuevos registros de usuarios</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-registro" role="switch" checked />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Evaluaciones activas</strong>
-                <span>Habilita el sistema de evaluaciones</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-evaluaciones" role="switch" checked />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Notificaciones activas</strong>
-                <span>Envío de notificaciones al ecosistema</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-notificaciones" role="switch" checked />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-full">
-              <label>
-                <strong>Mensaje global del ecosistema</strong>
-                <span>Se muestra en todas las páginas activas</span>
-                <textarea id="mensaje-global" rows="3" placeholder="Escribe un mensaje para todos los usuarios del ecosistema..."></textarea>
-              </label>
-              <button class="cta-btn" type="button" id="btn-mensaje-global">Publicar mensaje global</button>
-            </div>
-            <div class="config-full config-danger">
-              <strong>Zona de peligro</strong>
-              <span>Restaura todos los datos del ecosistema a los valores por defecto</span>
-              <button class="cta-btn cta-btn--danger" type="button" id="btn-reset-datos">Restaurar datos por defecto</button>
-            </div>
-          </div>
-        </article>
-
-      </section>
-
-    </main>
-  </div>
-
-  <!-- Auth + protection -->
-  <script>window.FOUNDER_EMAILS = ['gerald.monsalve@gmail.com'];</script>
-  <script src="/cursor.js"></script>
-  <script type="module" src="/src/nevado-key.js"></script>
-  <script type="module" src="/src/auth.js"></script>
-  <script src="/croquetas.js"></script>
-  <script src="./founder-panel.js" defer></script>
 </body>
 </html>
