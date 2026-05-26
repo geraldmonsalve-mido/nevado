@@ -1,0 +1,141 @@
+/* ─── TAREA 1 — Imagen de fondo (solo home) ─────────────────────────────── */
+#home-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('/fondo.png') center / cover no-repeat fixed;
+  opacity: 0.76;
+  pointer-events: none;
+}
+
+/* ─── TAREA 4 — Golden atmosphere (detrás de todo, solo home) ──────────── */
+body.home::before {
+  background-image:
+    radial-gradient(ellipse at center, rgba(184,148,74,0.08) 0%, transparent 70%),
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: auto, 80px 80px, 80px 80px;
+}
+
+/* ─── TAREA 2 — Tricolor border-top + glow per card ────────────────────── */
+
+/* Capital Humano + ÁVILA → Amarillo */
+#mod-talent,
+#mod-education {
+  border-top: 3px solid #FFD700;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 0 20px rgba(255,215,0,0.4);
+}
+
+/* NODO + Servicios → Rojo */
+#mod-community,
+#mod-services {
+  border-top: 3px solid #CF142B;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 0 20px rgba(207,20,43,0.4);
+}
+
+/* Entérate + Corazón → Azul */
+#mod-transparent,
+#mod-media {
+  border-top: 3px solid #003DA5;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 0 20px rgba(0,61,165,0.4);
+}
+
+/* .module-tag brighter per card */
+#mod-talent .module-tag,
+#mod-education .module-tag {
+  color: rgba(255,215,0,0.75);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+#mod-community .module-tag,
+#mod-services .module-tag {
+  color: rgba(207,20,43,0.8);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+#mod-transparent .module-tag,
+#mod-media .module-tag {
+  color: rgba(0,61,165,0.9);
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+/* ─── TAREA 3 — Ticker tricolor top border ──────────────────────────────── */
+#ticker {
+  position: relative;
+}
+#ticker::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FFD700 33%, #003DA5 33% 66%, #CF142B 66%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── TAREA 5 — Card hover: scale 1.02, doubled glow, 0.3s transition ──── */
+.module-card {
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease !important;
+  cursor: pointer;
+}
+.module-card:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+#mod-transparent:hover,
+#mod-media:hover {
+  transform: translateY(calc(-50% - 3px)) scale(1.02);
+}
+
+/* Hover glow doubled (0.18 → 0.4) per card */
+.module-card[data-module="talento"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 40px rgba(255,215,0,0.4),
+    0 32px 100px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.module-card[data-module="avila"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 40px rgba(255,215,0,0.4),
+    0 32px 100px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.module-card[data-module="enterate"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 40px rgba(0,61,165,0.4),
+    0 32px 100px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.module-card[data-module="corazon"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 40px rgba(0,61,165,0.4),
+    0 32px 100px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.module-card[data-module="nodo"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 40px rgba(207,20,43,0.4),
+    0 32px 100px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.module-card[data-module="servicios"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 0 40px rgba(207,20,43,0.4),
+    0 32px 100px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
