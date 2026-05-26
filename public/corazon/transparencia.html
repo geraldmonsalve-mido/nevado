@@ -384,14 +384,16 @@ function submitReport(){
   btn.disabled=true;btn.style.opacity='0.5';
 }
 (function(){
-  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];
+  const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.1',l:'NEVADO'}];
   const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');
   document.getElementById('ticker-track').innerHTML=h+h;
 })();
 </script>
 <script src="/cursor.js"></script>
 <script type="module" src="/src/nevado-key.js"></script>
+  <script type="module" src="/src/auth.js"></script>
 <script src="/nevado-plus.js"></script>
-<script src="/mini-nevado.js"></script>
+<script src="/croquetas.js"></script>
+  <script src="/mini-nevado.js"></script>
 </body>
 </html>
