@@ -213,7 +213,7 @@ return
 const clerkId = user.id
 const email = user.primaryEmailAddress?.emailAddress || ""
 
-const { data: profile, error } = await supabase
+const { data: profile, error } = await nevadoFounderDb
 .from("profiles")
 .select("*")
 .eq("clerk_id", clerkId)
