@@ -87,7 +87,7 @@
     @media(max-width:900px){.main-layout{grid-template-columns:1fr}.stats-bar{grid-template-columns:1fr 1fr}.std-fg{grid-template-columns:1fr 1fr}}
   </style>
 </head>
-<body data-accent="blue">
+<body data-page-context="Titulares | boletín informativo, noticias" data-accent="blue">
   <header id="topbar">
     <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
     <nav class="topbar-nav">
@@ -249,6 +249,7 @@
   <script src="/nevado-plus.js"></script>
   <script src="/croquetas.js"></script>
   <script src="/mini-nevado.js"></script>
+  <script src="/nevado-bubble.js"></script>
   <div class="cursor-dot" id="cursor-dot"></div>
   <script>
     function selectFreq(btn){document.querySelectorAll('.freq-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
