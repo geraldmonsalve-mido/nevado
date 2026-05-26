@@ -2,7 +2,6 @@
   if (window.__nevadoCursorInit) return;
   window.__nevadoCursorInit = true;
 
-  // ── Inject styles (skip if already present) ───────────────────────────────
   if (!document.getElementById('nevado-cursor-style')) {
     const s = document.createElement('style');
     s.id = 'nevado-cursor-style';
@@ -14,7 +13,6 @@
         background: #E8E4DC;
         pointer-events: none; z-index: 10001;
         mix-blend-mode: difference;
-        transition: opacity 0.2s;
         will-change: transform;
       }
       .click-ripple {
@@ -35,7 +33,6 @@
     document.head.appendChild(s);
   }
 
-  // ── Create dot (skip if already in DOM) ───────────────────────────────────
   let dot = document.querySelector('.cursor-dot');
   if (!dot) {
     dot = document.createElement('div');
@@ -43,18 +40,13 @@
     document.body.appendChild(dot);
   }
 
-  // ── Remove legacy nodo cursor elements if present ─────────────────────────
   document.querySelectorAll('.n-cursor, .n-cursor-dot').forEach(el => el.remove());
 
-  // ── Mouse tracking ────────────────────────────────────────────────────────
-  let mx = -100, my = -100;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  (function loop() {
-    dot.style.transform = `translate3d(${mx - 3.5}px,${my - 3.5}px,0)`;
-    requestAnimationFrame(loop);
-  })();
+  // Actualización directa en el evento — sin rAF, sin lerp, sin lag
+  document.addEventListener('mousemove', e => {
+    dot.style.transform = `translate3d(${e.clientX - 3.5}px,${e.clientY - 3.5}px,0)`;
+  }, { passive: true });
 
-  // ── Click ripple ──────────────────────────────────────────────────────────
   function createRipple(x, y) {
     const el = document.createElement('div');
     el.className = 'click-ripple';
