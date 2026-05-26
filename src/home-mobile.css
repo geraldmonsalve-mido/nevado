@@ -627,3 +627,52 @@
     z-index: 22 !important;
   }
 }
+
+/* Sesión / Login / Modo Nevado */
+@media (max-width: 767px) {
+  .nv-session-widget {
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-width: 168px !important;
+    max-width: 230px !important;
+  }
+
+  .nv-session-widget .nv-session-icon {
+    font-size: 24px !important;
+    line-height: 1 !important;
+    color: #d4a841 !important;
+  }
+
+  .nv-session-widget .nv-rank-icon {
+    width: 34px !important;
+    height: 34px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 0 10px rgba(212,168,65,.35));
+  }
+
+  .nv-session-widget .nv-session-copy {
+    display: flex !important;
+    flex-direction: column !important;
+    line-height: 1.15 !important;
+    min-width: 0 !important;
+  }
+
+  .nv-session-widget strong {
+    color: #d4a841 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 150px !important;
+  }
+
+  .nv-session-widget small {
+    color: rgba(255,255,255,.72) !important;
+    font-size: 12px !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+  }
+}
