@@ -382,6 +382,26 @@ function initializeFormCroquetas() {
     renderActividad();
     renderLogs();
 
+    // Persist to Supabase if available (lookup by email or clerk_id)
+    const supabase = window.NEVADO_AUTH?.supabase;
+    if (supabase) {
+      const isEmail = usuario.includes('@') && usuario.includes('.');
+      const query = isEmail
+        ? supabase.from('usuarios').select('clerk_id,croquetas').eq('email', usuario).single()
+        : supabase.from('usuarios').select('clerk_id,croquetas').ilike('nombre', `%${usuario}%`).limit(1).single();
+      query.then(({ data, error }) => {
+        if (error || !data) {
+          agregarLog('[DB] Usuario no encontrado: ' + usuario);
+          return;
+        }
+        const nuevas = (data.croquetas || 0) + cantidad;
+        const rango  = window.NEVADO_CROQUETAS?.getRango(nuevas)?.nombre || 'Cachorro';
+        supabase.from('usuarios').update({ croquetas: nuevas, rango, ultima_actividad: new Date().toISOString() }).eq('clerk_id', data.clerk_id)
+          .then(() => supabase.from('croquetas_log').insert({ clerk_id: data.clerk_id, cantidad, motivo }))
+          .then(() => agregarLog('[DB] Croquetas persistidas → ' + usuario + ' (' + formatNumber(nuevas) + ' total)'));
+      });
+    }
+
     form.reset();
     showToast(formatNumber(cantidad) + ' croquetas otorgadas a ' + usuario, 'success');
     console.log('[NEVADO][CROQUETAS]', { usuario, cantidad, motivo, timestamp: new Date().toISOString() });

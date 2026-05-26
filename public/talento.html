@@ -820,7 +820,19 @@
               <div id="perfil-croquetas-count" style="font-size:11px;color:rgba(232,228,220,0.38);font-family:'Geist',sans-serif;margin-top:2px;">🦴 0 Croquetas</div>
             </div>
           </div>
-          <button id="perfil-editar-btn" onclick="editarPerfil()" style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 0;border-radius:5px;cursor:none;background:transparent;border:1px solid rgba(255,255,255,0.07);color:rgba(232,228,220,0.35);font-family:inherit;width:100%;transition:all 0.2s;margin-bottom:4px;">Editar perfil</button>
+          <button id="perfil-editar-btn" onclick="editarPerfil()" style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 0;border-radius:5px;cursor:none;background:transparent;border:1px solid rgba(255,255,255,0.07);color:rgba(232,228,220,0.35);font-family:inherit;width:100%;transition:all 0.2s;margin-bottom:12px;">Editar perfil</button>
+          <!-- Progreso al siguiente rango -->
+          <div id="perfil-next-wrap" style="display:none;padding-top:4px;">
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:rgba(232,228,220,0.30);margin-bottom:5px;">
+              <span>Próximo rango</span>
+              <span id="perfil-pct-label"></span>
+            </div>
+            <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:5px;">
+              <div id="perfil-next-bar" style="height:100%;border-radius:2px;background:#B8944A;width:0%;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
+            </div>
+            <div id="perfil-next-label" style="font-size:10px;color:rgba(232,228,220,0.28);"></div>
+          </div>
+          <a href="/rangos.html" style="display:block;text-align:center;font-size:9px;letter-spacing:0.10em;text-transform:uppercase;color:rgba(184,148,74,0.45);text-decoration:none;margin-top:10px;cursor:none;">Ver todos los rangos →</a>
         </div>
 
         <div class="ch-progress-label">

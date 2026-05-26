@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rangos — Sistema de Croquetas · NEVADO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0C0C0B; --ivory: #E8E4DC; --gold: #B8944A;
+      --border: rgba(255,255,255,0.07); --text-dim: rgba(232,228,220,0.38);
+      --text-mid: rgba(232,228,220,0.60); --surface: rgba(18,18,16,0.90);
+      --topbar-h: 52px; --page-accent: #B8944A;
+    }
+    html, body { width:100%; min-height:100%; background:var(--bg); color:var(--ivory); font-family:'Geist',system-ui,sans-serif; -webkit-font-smoothing:antialiased; cursor:none; }
+    body::before { content:''; position:fixed; inset:0; background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px); background-size:80px 80px; mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%); pointer-events:none; z-index:0; }
+
+    /* ── TOPBAR ── */
+    #topbar { position:fixed; top:0; left:0; right:0; z-index:900; height:52px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; background:rgba(5,5,10,0.97); backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,0.06); }
+    .topbar-logo { font-size:13px; font-weight:600; letter-spacing:0.14em; color:rgba(232,228,220,0.88); text-decoration:none; flex-shrink:0; font-family:'Cormorant Garamond',serif; }
+    .topbar-logo span { color:var(--gold); }
+    .topbar-nav { display:flex; align-items:center; gap:2px; position:absolute; left:50%; transform:translateX(-50%); }
+    .nav-item { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(232,228,220,0.38); text-decoration:none; padding:5px 12px; border-radius:6px; transition:color 0.2s,background 0.2s; white-space:nowrap; cursor:none; }
+    .nav-item:hover { color:rgba(232,228,220,0.75); background:rgba(255,255,255,0.05); }
+    .nav-item.active { color:var(--gold); background:rgba(184,148,74,0.10); border:1px solid rgba(184,148,74,0.28); box-shadow:0 0 12px rgba(184,148,74,0.15); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .topbar-divider { width:1px; height:20px; background:rgba(255,255,255,0.10); margin:0 2px; }
+    .btn-plus { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:5px 12px; border-radius:6px; cursor:none; background:transparent; color:#B8944A; border:1px solid rgba(184,148,74,0.35); transition:all 0.2s; font-family:inherit; }
+
+    /* ── HERO ── */
+    .rangos-hero { padding: 120px 10vw 64px; position:relative; z-index:10; text-align:center; }
+    .hero-tag { font-size:9px; font-weight:600; letter-spacing:0.28em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+    .hero-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.5rem,6vw,4.2rem); font-weight:300; letter-spacing:0.04em; line-height:1.1; color:var(--ivory); margin-bottom:16px; }
+    .hero-title em { font-style:italic; color:var(--gold); }
+    .hero-desc { font-size:14px; font-weight:300; color:var(--text-mid); max-width:520px; margin:0 auto 48px; line-height:1.75; }
+
+    /* ── USER CARD ── */
+    .user-status { display:inline-flex; align-items:center; gap:16px; background:rgba(184,148,74,0.06); border:1px solid rgba(184,148,74,0.18); border-radius:16px; padding:16px 24px; margin-bottom:64px; }
+    .us-photo { width:44px; height:44px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(184,148,74,0.25); display:none; }
+    .us-badge { width:44px; height:44px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(184,148,74,0.3)); }
+    .us-info { text-align:left; }
+    .us-name { font-size:14px; font-weight:500; color:rgba(232,228,220,0.88); }
+    .us-pts  { font-size:11px; color:var(--text-dim); margin-top:2px; }
+    .us-cta  { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 16px; border-radius:6px; cursor:none; background:rgba(184,148,74,0.10); border:1px solid rgba(184,148,74,0.28); color:var(--gold); font-family:inherit; transition:all 0.2s; }
+
+    /* ── RANKS GRID ── */
+    .rangos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; padding:0 10vw 80px; position:relative; z-index:10; }
+    .rango-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px 24px 24px; position:relative; overflow:hidden; transition:border-color 0.25s,transform 0.2s; cursor:none; }
+    .rango-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:16px 16px 0 0; }
+    .rango-card:hover { transform:translateY(-3px); }
+    .rango-card.tier-bronze::before { background:linear-gradient(90deg,#8B5E3C,#C4883F,#8B5E3C); }
+    .rango-card.tier-silver::before { background:linear-gradient(90deg,#7F8C99,#C0C8D0,#7F8C99); }
+    .rango-card.tier-gold::before   { background:linear-gradient(90deg,#A0782A,#F4D03F,#A0782A); }
+    .rango-card.tier-legend::before { background:linear-gradient(90deg,#B8944A,#F4D03F,#E8C84A,#F4D03F,#B8944A); background-size:200% 100%; animation:legend-shimmer 3s linear infinite; }
+    @keyframes legend-shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+    .rango-card.current { border-color:rgba(184,148,74,0.45); background:rgba(184,148,74,0.04); }
+    .rango-card.locked { opacity:0.45; }
+    .rango-num { font-size:9px; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-dim); margin-bottom:16px; }
+    .rango-img-wrap { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+    .rango-img { width:72px; height:72px; object-fit:contain; filter:drop-shadow(0 4px 16px rgba(184,148,74,0.2)); }
+    .rango-current-pill { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(184,148,74,0.12); border:1px solid rgba(184,148,74,0.30); color:var(--gold); }
+    .rango-locked-pill { font-size:9px; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--text-dim); }
+    .rango-name { font-size:18px; font-weight:600; color:rgba(232,228,220,0.92); margin-bottom:4px; }
+    .rango-emoji { font-size:18px; margin-right:6px; }
+    .rango-range { font-size:11px; color:var(--text-dim); margin-bottom:12px; letter-spacing:0.06em; }
+    .rango-desc { font-size:12px; color:var(--text-mid); line-height:1.65; margin-bottom:16px; }
+    .rango-progress-wrap { margin-top:auto; }
+    .rango-progress-label { display:flex; justify-content:space-between; font-size:10px; color:var(--text-dim); margin-bottom:6px; }
+    .rango-progress-bar { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden; }
+    .rango-progress-fill { height:100%; border-radius:2px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .rango-pts-away { font-size:11px; color:rgba(232,228,220,0.40); margin-top:8px; }
+
+    /* ── HOW TO EARN ── */
+    .earn-section { padding:0 10vw 80px; position:relative; z-index:10; }
+    .earn-title { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:300; color:var(--ivory); margin-bottom:8px; }
+    .earn-sub { font-size:12px; color:var(--text-dim); margin-bottom:32px; }
+    .earn-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+    .earn-card { background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:18px; }
+    .earn-pts { font-size:18px; font-weight:600; color:var(--gold); margin-bottom:6px; }
+    .earn-action { font-size:12px; color:var(--text-mid); }
+
+    /* ── FOOTER ── */
+    #std-footer { background:#080810; border-top:1px solid rgba(255,255,255,0.06); padding:48px 10vw 56px; position:relative; z-index:10; }
+    .std-fg { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; margin-bottom:28px; }
+    .std-fl-logo { font-family:'Cormorant Garamond',serif; font-size:20px; letter-spacing:0.18em; color:var(--gold); text-decoration:none; }
+    .std-fl-desc { font-size:12px; color:rgba(232,228,220,0.50); line-height:1.7; max-width:240px; margin-top:12px; }
+    .std-fc-title { font-size:10px; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:rgba(232,228,220,0.34); margin-bottom:12px; }
+    .std-fl { display:block; font-size:12px; color:rgba(232,228,220,0.50); margin-bottom:8px; text-decoration:none; transition:color .2s; cursor:none; }
+    .std-fl:hover { color:var(--gold); }
+    .std-fb { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,0.06); }
+    .std-fc-copy { font-size:11px; color:rgba(232,228,220,0.34); }
+    .std-tri { display:flex; flex-direction:column; gap:3px; }
+    .std-tri div { width:28px; height:4px; border-radius:2px; }
+    #ticker { position:fixed; bottom:0; left:0; right:0; height:28px; overflow:hidden; border-top:1px solid rgba(255,255,255,0.07); z-index:90; background:rgba(5,5,10,0.96); }
+    .ticker-track { display:flex; white-space:nowrap; animation:ticker-scroll 32s linear infinite; }
+    .ticker-item { display:inline-flex; align-items:center; gap:8px; padding:0 24px; font-size:10px; letter-spacing:0.08em; color:rgba(232,228,220,0.55); height:28px; }
+    .ticker-val { color:var(--gold); font-weight:500; }
+    .ticker-sep { color:rgba(232,228,220,0.30); }
+    @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    @media (max-width:768px) { .rangos-grid { grid-template-columns:1fr 1fr; padding:0 5vw 60px; } .hero-title { font-size:2rem; } .std-fg { grid-template-columns:1fr 1fr; } }
+    @media (max-width:480px) { .rangos-grid { grid-template-columns:1fr; } .std-fg { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body data-page-context="Rangos | sistema de croquetas, niveles, reputación NEVADO">
+
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <nav class="topbar-nav">
+      <a class="nav-item" href="/talento.html">Capital Humano</a>
+      <a class="nav-item" href="/avila.html">ÁVILA</a>
+      <a class="nav-item" href="/nodo.html">NODO</a>
+      <a class="nav-item" href="/enterate.html">Titulares</a>
+      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
+      <a class="nav-item" href="/servicios.html">Servicios</a>
+    </nav>
+    <div class="topbar-actions">
+      <div class="topbar-divider"></div>
+      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
+    </div>
+  </header>
+
+  <section class="rangos-hero">
+    <div class="hero-tag">Sistema de Reputación</div>
+    <h1 class="hero-title">Colecciona <em>Croquetas</em>,<br>escala de rango</h1>
+    <p class="hero-desc">Cada acción en el ecosistema NEVADO suma Croquetas. Con ellas asciendes de rango y construyes tu reputación dentro de la red venezolana.</p>
+    <div class="user-status" id="user-status-wrap">
+      <img class="us-photo" id="us-photo" src="" alt="Foto" />
+      <img class="us-badge" id="us-badge" src="/rangos/rango1-cachorro-bronce.png" alt="Rango" />
+      <div class="us-info">
+        <div class="us-name" id="us-name">Visitante</div>
+        <div class="us-pts"  id="us-pts">🦴 0 Croquetas · Cachorro</div>
+      </div>
+      <button class="us-cta" id="us-cta" onclick="window.NEVADO_AUTH?.signIn()">Entrar para rastrear</button>
+    </div>
+  </section>
+
+  <div class="rangos-grid" id="rangos-grid"></div>
+
+  <section class="earn-section">
+    <div class="earn-title">¿Cómo ganas Croquetas?</div>
+    <div class="earn-sub">Participa, comparte, aprende. Cada contribución suma.</div>
+    <div class="earn-grid">
+      <div class="earn-card"><div class="earn-pts">+5</div><div class="earn-action">Leer un artículo en Titulares</div></div>
+      <div class="earn-card"><div class="earn-pts">+10</div><div class="earn-action">Publicar en NODO</div></div>
+      <div class="earn-card"><div class="earn-pts">+15</div><div class="earn-action">Completar una ruta ÁVILA</div></div>
+      <div class="earn-card"><div class="earn-pts">+20</div><div class="earn-action">Verificar una noticia</div></div>
+      <div class="earn-card"><div class="earn-pts">+25</div><div class="earn-action">Recomendación de talento verificada</div></div>
+      <div class="earn-card"><div class="earn-pts">+50</div><div class="earn-action">Mentoría completada</div></div>
+      <div class="earn-card"><div class="earn-pts">+100</div><div class="earn-action">Certificación ÁVILA aprobada</div></div>
+      <div class="earn-card"><div class="earn-pts">+200</div><div class="earn-action">Proyecto freelance completado en Servicios</div></div>
+    </div>
+  </section>
+
+  <footer id="std-footer">
+    <div class="std-fg">
+      <div>
+        <a class="std-fl-logo" href="/">N·EVADO</a>
+        <p class="std-fl-desc">Red venezolana. 48,291 activos en 22 países.</p>
+      </div>
+      <div>
+        <div class="std-fc-title">Ecosistema</div>
+        <a class="std-fl" href="/talento.html">Capital Humano</a>
+        <a class="std-fl" href="/avila.html">ÁVILA</a>
+        <a class="std-fl" href="/nodo.html">NODO</a>
+        <a class="std-fl" href="/enterate.html">Titulares</a>
+        <a class="std-fl" href="/corazon-tricolor.html">Corazón</a>
+        <a class="std-fl" href="/servicios.html">Servicios</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Croquetas</div>
+        <a class="std-fl" href="/rangos.html">Sistema de rangos</a>
+        <a class="std-fl" href="/talento.html">Mi perfil</a>
+        <a class="std-fl" href="javascript:void(0)">Tabla de líderes</a>
+      </div>
+      <div>
+        <div class="std-fc-title">Info</div>
+        <a class="std-fl" href="/transparencia.html">Transparencia</a>
+        <a class="std-fl" href="javascript:void(0)">Contacto</a>
+      </div>
+    </div>
+    <div class="std-fb">
+      <span class="std-fc-copy">© 2026 NEVADO · Sistema de Croquetas · Modo demostración</span>
+      <div class="std-tri">
+        <div style="background:#FFD700"></div>
+        <div style="background:#003DA5"></div>
+        <div style="background:#CF142B"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Rangos data
+    const RANGOS = [
+      { nombre:'Cachorro',       min:0,     max:99,       emoji:'🐾', color:'#8B9DC3', tier:'bronze',
+        img:'/rangos/rango1-cachorro-bronce.png',
+        desc:'Bienvenido al ecosistema. Estás dando tus primeros pasos en NEVADO. Explora, conecta y comienza a construir tu reputación venezolana.' },
+      { nombre:'Explorador',     min:100,   max:299,      emoji:'🧭', color:'#B8944A', tier:'bronze',
+        img:'/rangos/rango2-explorador-bronce.png',
+        desc:'Curioso y activo. Comienzas a marcar tu huella en la comunidad y a descubrir las rutas que este ecosistema tiene para ofrecerte.' },
+      { nombre:'Guardián',       min:300,   max:699,      emoji:'🛡️', color:'#C0C0C0', tier:'silver',
+        img:'/rangos/rango3-guardian-plata.png',
+        desc:'Comprometido con el ecosistema. La comunidad empieza a reconocerte. Tu consistencia construye confianza en la red venezolana.' },
+      { nombre:'Montañista',     min:700,   max:1499,     emoji:'⛰️', color:'#A8B4C8', tier:'silver',
+        img:'/rangos/rango4-montanista-plata.png',
+        desc:'Escalando en profundidad. Tu presencia tiene peso y dirección. Contribuyes con frecuencia y tu nombre resuena entre los más activos.' },
+      { nombre:'Guía',           min:1500,  max:2999,     emoji:'🗺️', color:'#A8B4C8', tier:'silver',
+        img:'/rangos/rango5-guia-plata.png',
+        desc:'Los demás buscan tu experiencia. Eres referencia en la red. Tu trayectoria dentro de NEVADO inspira a quienes están comenzando.' },
+      { nombre:'Protector',      min:3000,  max:5999,     emoji:'🦅', color:'#B8944A', tier:'gold',
+        img:'/rangos/rango6-protector-oro.png',
+        desc:'Pilar del ecosistema venezolano. Defiendes y construyes la comunidad con cada acción. Tu legado ya se siente en la red.' },
+      { nombre:'Leyenda Andina', min:6000,  max:Infinity, emoji:'🏔️', color:'#F4D03F', tier:'legend',
+        img:'/rangos/rango7-leyendaandina-oro-joyas.png',
+        desc:'Cumbre alcanzada. Eres la cima del ecosistema NEVADO. Tu nombre resonará en la red venezolana por siempre. Imborrable.' },
+    ];
+
+    function buildGrid(pts) {
+      const grid = document.getElementById('rangos-grid');
+      const currentRango = RANGOS.find(r => pts >= r.min && pts <= r.max) || RANGOS[0];
+      grid.innerHTML = RANGOS.map((r, i) => {
+        const isCurrent = r === currentRango;
+        const isLocked  = pts < r.min;
+        const isUnlocked = pts >= r.min;
+        const tierClass = `tier-${r.tier}`;
+        const stateClass = isCurrent ? 'current' : (isLocked ? 'locked' : '');
+        const statePill = isCurrent
+          ? `<span class="rango-current-pill">Tu rango actual</span>`
+          : (isLocked ? `<span class="rango-locked-pill">Bloqueado</span>` : `<span class="rango-current-pill" style="background:rgba(39,174,96,0.10);border-color:rgba(39,174,96,0.25);color:#27AE60;">Desbloqueado ✓</span>`);
+
+        // Progress within this rank
+        let progressPct = 0, ptsAwayText = '';
+        if (isCurrent) {
+          if (r.max === Infinity) {
+            progressPct = 100;
+            ptsAwayText = 'Rango máximo alcanzado';
+          } else {
+            const span = r.max - r.min + 1;
+            progressPct = Math.min(100, Math.round(((pts - r.min) / span) * 100));
+            const next = RANGOS[i + 1];
+            ptsAwayText = next ? `${(next.min - pts).toLocaleString('es')} Croquetas para ${next.nombre}` : 'Rango máximo alcanzado';
+          }
+        } else if (isUnlocked) {
+          progressPct = 100;
+        }
+
+        const fillColor = r.tier === 'legend' ? 'linear-gradient(90deg,#B8944A,#F4D03F)' : (r.tier === 'gold' ? '#B8944A' : (r.tier === 'silver' ? '#A8B4C8' : '#C4883F'));
+        const rangeLabel = r.max === Infinity ? `${r.min.toLocaleString('es')}+ Croquetas` : `${r.min.toLocaleString('es')} – ${r.max.toLocaleString('es')} Croquetas`;
+
+        return `
+          <div class="rango-card ${tierClass} ${stateClass}">
+            <div class="rango-num">Rango ${i + 1} de 7</div>
+            <div class="rango-img-wrap">
+              <img class="rango-img" src="${r.img}" alt="${r.nombre}" loading="${i < 3 ? 'eager' : 'lazy'}" />
+              ${statePill}
+            </div>
+            <div class="rango-name"><span class="rango-emoji">${r.emoji}</span>${r.nombre}</div>
+            <div class="rango-range">${rangeLabel}</div>
+            <div class="rango-desc">${r.desc}</div>
+            <div class="rango-progress-wrap">
+              <div class="rango-progress-bar"><div class="rango-progress-fill" style="width:${progressPct}%;background:${fillColor};"></div></div>
+              ${isCurrent && ptsAwayText ? `<div class="rango-pts-away">${ptsAwayText}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function updateUserStatus() {
+      const auth = window.NEVADO_AUTH;
+      const pts = window.NEVADO_CROQUETAS?.puntos || 0;
+      const rango = window.NEVADO_CROQUETAS?.getRango(pts) || RANGOS[0];
+
+      document.getElementById('us-badge').src = rango.img;
+      document.getElementById('us-pts').textContent = `🦴 ${pts.toLocaleString('es')} Croquetas · ${rango.nombre}`;
+
+      if (auth?.isSignedIn?.()) {
+        const user = auth.getUser();
+        const clerk = auth.getClerkUser();
+        if (user) document.getElementById('us-name').textContent = user.nombre?.split(' ')[0] || 'Tú';
+        const photo = document.getElementById('us-photo');
+        if (clerk?.imageUrl) { photo.src = clerk.imageUrl; photo.style.display = 'block'; }
+        const cta = document.getElementById('us-cta');
+        cta.textContent = 'Ver mi perfil';
+        cta.onclick = () => { window.location.href = '/talento.html'; };
+      }
+      buildGrid(pts);
+    }
+
+    // Wait for auth + croquetas to load before rendering
+    function init() {
+      updateUserStatus();
+      // Re-render if auth loads later
+      const interval = setInterval(() => {
+        if (window.NEVADO_CROQUETAS) {
+          updateUserStatus();
+          clearInterval(interval);
+        }
+      }, 300);
+      setTimeout(() => clearInterval(interval), 5000);
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+
+  <div id="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.1',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+  <script src="/cursor.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script type="module" src="/src/auth.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/croquetas.js"></script>
+  <script src="/mini-nevado.js"></script>
+  <script src="/nevado-bubble.js"></script>
+</body>
+</html>

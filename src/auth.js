@@ -118,6 +118,30 @@ function _refreshTalentoPanel() {
     if (cnt)             cnt.textContent  = `🦴 ${pts.toLocaleString('es')} Croquetas`;
     if (nombre)          nombre.textContent = _nvUser.nombre || 'Venezolano';
     if (email)           email.textContent  = _nvUser.email  || '';
+
+    // Progress to next rank
+    const rangos = window.NEVADO_CROQUETAS?.rangos;
+    if (rangos) {
+      const curIdx = rangos.indexOf(rango);
+      const nextRango = rangos[curIdx + 1];
+      const nextWrap = document.getElementById('perfil-next-wrap');
+      const nextBar  = document.getElementById('perfil-next-bar');
+      const nextLbl  = document.getElementById('perfil-next-label');
+      const pctLbl   = document.getElementById('perfil-pct-label');
+      if (nextWrap) {
+        if (nextRango) {
+          const span = nextRango.min - (rango?.min || 0);
+          const done = pts - (rango?.min || 0);
+          const pct  = Math.min(100, Math.round((done / span) * 100));
+          nextWrap.style.display = '';
+          if (nextBar) nextBar.style.width = pct + '%';
+          if (pctLbl)  pctLbl.textContent = pct + '%';
+          if (nextLbl) nextLbl.textContent = `${(nextRango.min - pts).toLocaleString('es')} para ${nextRango.emoji} ${nextRango.nombre}`;
+        } else {
+          nextWrap.style.display = 'none';
+        }
+      }
+    }
   } else {
     if (signedIn)  signedIn.style.display  = 'none';
     if (noSession) noSession.style.display = '';
