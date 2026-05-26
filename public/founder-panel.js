@@ -741,4 +741,114 @@ function bootFounderPanel() {
   }, 1200);
 }
 
-document.addEventListener('DOMContentLoaded', bootFounderPanel);
+/* ---- PROTECCIÓN DE ACCESO ------------------------------------------ */
+
+function showAccessDenied(msg) {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0C0C0B;font-family:Geist,sans-serif;padding:24px;">
+      <div style="text-align:center;max-width:400px;">
+        <div style="font-size:48px;margin-bottom:24px;">🔒</div>
+        <div style="font-size:18px;font-weight:600;color:rgba(232,228,220,0.88);margin-bottom:10px;">Acceso restringido</div>
+        <div style="font-size:13px;color:rgba(232,228,220,0.42);margin-bottom:32px;line-height:1.6;">${msg}</div>
+        <a href="/" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:10px 24px;border-radius:8px;background:rgba(184,148,74,0.10);border:1px solid rgba(184,148,74,0.28);color:#B8944A;text-decoration:none;">← Ecosistema</a>
+      </div>
+    </div>`;
+}
+
+function checkFounderAccess() {
+  const founderEmails = window.FOUNDER_EMAILS || [];
+  const auth = window.NEVADO_AUTH;
+  if (!auth || !auth.isSignedIn()) {
+    showAccessDenied('Solo el Fundador puede acceder a este panel. Por favor inicia sesión.');
+    return false;
+  }
+  const user = auth.getUser();
+  if (!user || !founderEmails.includes(user.email)) {
+    showAccessDenied('Tu cuenta no tiene acceso al Panel del Fundador.');
+    return false;
+  }
+  return true;
+}
+
+/* ---- KPIs REALES DESDE SUPABASE ------------------------------------ */
+
+function timeAgo(iso) {
+  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (m < 1) return 'hace un momento';
+  if (m < 60) return `hace ${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `hace ${h}h`;
+  return `hace ${Math.floor(h / 24)} días`;
+}
+
+async function loadSupabaseKPIs() {
+  const supabase = window.NEVADO_AUTH?.supabase;
+  if (!supabase) return;
+  try {
+    // Total users
+    const { count: totalUsers } = await supabase.from('usuarios')
+      .select('*', { count: 'exact', head: true });
+    // Active users (last 24h)
+    const since = new Date(Date.now() - 86400000).toISOString();
+    const { count: activeUsers } = await supabase.from('usuarios')
+      .select('*', { count: 'exact', head: true }).gte('ultima_actividad', since);
+    // Total croquetas (sum)
+    const { data: ptsRows } = await supabase.from('usuarios').select('croquetas');
+    const totalCroquetas = ptsRows?.reduce((s, u) => s + (u.croquetas || 0), 0) ?? founderState.croquetas.enCirculacion;
+    // Recent croquetas_log
+    const { data: logs } = await supabase.from('croquetas_log')
+      .select('clerk_id,cantidad,motivo,creado_en').order('creado_en', { ascending: false }).limit(8);
+    // Top users for evaluaciones mock
+    const { data: topUsers } = await supabase.from('usuarios')
+      .select('nombre,rango,croquetas').order('croquetas', { ascending: false }).limit(3);
+
+    if (totalUsers !== null) founderState.usuarios.total = totalUsers;
+    if (activeUsers !== null) founderState.usuarios.activos = activeUsers;
+    founderState.croquetas.enCirculacion = totalCroquetas;
+
+    if (logs?.length) {
+      const newFeed = logs.map(l => ({
+        usuario: l.clerk_id.slice(-8),
+        accion: `recibió ${formatNumber(l.cantidad)} croquetas · ${l.motivo || ''}`.trim(),
+        hace: timeAgo(l.creado_en),
+        tipo: 'croquetas',
+      }));
+      founderState.actividad.feed = [...newFeed, ...founderState.actividad.feed].slice(0, 12);
+    }
+
+    if (topUsers?.length) {
+      founderState.evaluaciones.lista = topUsers.map((u, i) => ({
+        id: 'ev_db_' + i,
+        usuario: u.nombre || 'Usuario',
+        rango: u.rango || 'Cachorro',
+        tipo: 'revisión de rango DB',
+        dificultad: i === 0 ? 'alta' : i === 1 ? 'media' : 'baja',
+      }));
+    }
+
+    saveEcosystemState(founderState);
+    renderKPIs();
+    renderEvaluaciones();
+    renderActividad();
+    agregarLog('[DB] KPIs actualizados desde Supabase — ' + new Date().toLocaleTimeString('es'));
+    renderLogs();
+  } catch (err) {
+    agregarLog('[DB] Error al cargar KPIs: ' + err.message);
+    renderLogs();
+  }
+}
+
+/* ---- BOOT CON PROTECCIÓN ------------------------------------------- */
+
+document.addEventListener('DOMContentLoaded', () => {
+  let waited = 0;
+  const poll = setInterval(() => {
+    waited += 100;
+    if (window.NEVADO_AUTH || waited >= 6000) {
+      clearInterval(poll);
+      if (!checkFounderAccess()) return;
+      bootFounderPanel();
+      loadSupabaseKPIs().catch(() => {});
+    }
+  }, 100);
+});
