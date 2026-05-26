@@ -791,15 +791,38 @@
 
       <div class="ch-panel-section">
         <div class="ch-panel-label">Mi perfil</div>
-        <div class="perfil-rango-wrap" style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:16px;">
-          <img id="perfil-rango-img"
-            src="/rangos/rango1-cachorro-bronce.png"
-            alt="Rango Cachorro"
-            style="width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(184,148,74,0.3));"
-          />
-          <div id="perfil-rango-nombre" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#B8944A;font-family:'Geist',sans-serif;">Cachorro</div>
-          <div id="perfil-croquetas-count" style="font-size:12px;color:rgba(232,228,220,0.4);font-family:'Geist',sans-serif;">🦴 0 Croquetas</div>
+
+        <!-- Estado: sin sesión -->
+        <div id="perfil-no-session" style="text-align:center;padding:12px 0 16px;">
+          <div style="font-size:11px;color:rgba(232,228,220,0.38);margin-bottom:12px;line-height:1.65;">Únete a NEVADO para guardar tu progreso, coleccionar Croquetas y conectar con la red venezolana.</div>
+          <button onclick="window.NEVADO_AUTH?.signIn()" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:8px 0;border-radius:6px;cursor:none;background:rgba(184,148,74,0.10);border:1px solid rgba(184,148,74,0.35);color:#B8944A;font-family:inherit;transition:all 0.2s;width:100%;">Únete a NEVADO</button>
         </div>
+
+        <!-- Estado: con sesión -->
+        <div id="perfil-signed-in" style="display:none;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="position:relative;flex-shrink:0;">
+              <img id="perfil-clerk-photo" src="" alt="Foto de perfil"
+                style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,0.10);background:rgba(255,255,255,0.05);" />
+              <img id="perfil-rango-badge" src="/rangos/rango1-cachorro-bronce.png" alt="Rango"
+                style="width:20px;height:20px;position:absolute;bottom:-3px;right:-3px;object-fit:contain;" />
+            </div>
+            <div style="min-width:0;">
+              <div id="perfil-nombre-display" style="font-size:13px;font-weight:500;color:rgba(232,228,220,0.88);font-family:'Geist',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Venezolano</div>
+              <div id="perfil-email-display" style="font-size:10px;color:rgba(232,228,220,0.30);margin-top:2px;font-family:'Geist',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <img id="perfil-rango-img" src="/rangos/rango1-cachorro-bronce.png" alt="Rango"
+              style="width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(184,148,74,0.25));flex-shrink:0;" />
+            <div>
+              <div id="perfil-rango-nombre" style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#B8944A;font-family:'Geist',sans-serif;">Cachorro</div>
+              <div id="perfil-croquetas-count" style="font-size:11px;color:rgba(232,228,220,0.38);font-family:'Geist',sans-serif;margin-top:2px;">🦴 0 Croquetas</div>
+            </div>
+          </div>
+          <button id="perfil-editar-btn" onclick="editarPerfil()" style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 0;border-radius:5px;cursor:none;background:transparent;border:1px solid rgba(255,255,255,0.07);color:rgba(232,228,220,0.35);font-family:inherit;width:100%;transition:all 0.2s;margin-bottom:4px;">Editar perfil</button>
+        </div>
+
         <div class="ch-progress-label">
           <span>Completitud del perfil</span>
           <span style="color:#B8944A;font-weight:500;">45%</span>
@@ -951,19 +974,33 @@
       });
     });
 
-    // Rango badge
+    // Rango badge — fallback offline (auth.js toma control cuando hay sesión)
     function actualizarPerfil() {
+      if (window.NEVADO_AUTH?.isSignedIn?.()) return;
       if (!window.NEVADO_CROQUETAS) return;
-      const pts = window.NEVADO_CROQUETAS.puntos;
+      const pts   = window.NEVADO_CROQUETAS.puntos;
       const rango = window.NEVADO_CROQUETAS.getRango(pts);
-      const img = document.getElementById('perfil-rango-img');
-      const nom = document.getElementById('perfil-rango-nombre');
-      const cnt = document.getElementById('perfil-croquetas-count');
-      if (img) { img.src = rango.img; img.alt = 'Rango ' + rango.nombre; }
-      if (nom) nom.textContent = rango.nombre;
-      if (cnt) cnt.textContent = '🦴 ' + pts.toLocaleString('es') + ' Croqueta' + (pts !== 1 ? 's' : '');
+      const img   = document.getElementById('perfil-rango-img');
+      const badge = document.getElementById('perfil-rango-badge');
+      const nom   = document.getElementById('perfil-rango-nombre');
+      const cnt   = document.getElementById('perfil-croquetas-count');
+      if (img)   { img.src   = rango.img; img.alt   = 'Rango ' + rango.nombre; }
+      if (badge) { badge.src = rango.img; badge.alt = rango.nombre; }
+      if (nom)   nom.textContent = rango.nombre;
+      if (cnt)   cnt.textContent = '🦴 ' + pts.toLocaleString('es') + ' Croqueta' + (pts !== 1 ? 's' : '');
     }
     document.addEventListener('DOMContentLoaded', actualizarPerfil);
+
+    async function editarPerfil() {
+      if (!window.NEVADO_AUTH?.isSignedIn?.()) {
+        window.NEVADO_AUTH?.signIn?.();
+        return;
+      }
+      const actual = document.getElementById('perfil-nombre-display')?.textContent || '';
+      const nuevo  = prompt('¿Cómo te llamamos en NEVADO?', actual);
+      if (!nuevo || !nuevo.trim() || nuevo.trim() === actual) return;
+      await window.NEVADO_AUTH.updateNombre(nuevo.trim());
+    }
   </script>
   <div id="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
   <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.0',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>

@@ -93,21 +93,35 @@ function _refreshNavBtn() {
 
 // ── Panel talento.html ─────────────────────────────────────
 function _refreshTalentoPanel() {
-  if (!_nvUser) return;
-  const pts   = _nvUser.croquetas || 0;
-  const rango = window.NEVADO_CROQUETAS?.getRango(pts) || window.NEVADO_CROQUETAS?.rangos?.[0];
+  const signedIn  = document.getElementById('perfil-signed-in');
+  const noSession = document.getElementById('perfil-no-session');
 
-  const img     = document.getElementById('perfil-rango-img');
-  const nom     = document.getElementById('perfil-rango-nombre');
-  const cnt     = document.getElementById('perfil-croquetas-count');
-  const pNombre = document.querySelector('.ch-profile-panel-name');
-  const pRole   = document.querySelector('.ch-profile-panel-role');
+  if (clerk.user && _nvUser) {
+    if (signedIn)  signedIn.style.display  = '';
+    if (noSession) noSession.style.display = 'none';
 
-  if (img   && rango) { img.src = rango.img; img.alt = rango.nombre; }
-  if (nom   && rango) nom.textContent = rango.nombre;
-  if (cnt)            cnt.textContent = `🦴 ${pts.toLocaleString('es')} Croquetas`;
-  if (pNombre)        pNombre.textContent = _nvUser.nombre || 'Venezolano';
-  if (pRole)          pRole.textContent   = _nvUser.email  || 'Profesional NEVADO';
+    const pts   = _nvUser.croquetas || 0;
+    const rango = window.NEVADO_CROQUETAS?.getRango(pts) || window.NEVADO_CROQUETAS?.rangos?.[0];
+
+    const photo  = document.getElementById('perfil-clerk-photo');
+    const badge  = document.getElementById('perfil-rango-badge');
+    const img    = document.getElementById('perfil-rango-img');
+    const nom    = document.getElementById('perfil-rango-nombre');
+    const cnt    = document.getElementById('perfil-croquetas-count');
+    const nombre = document.getElementById('perfil-nombre-display');
+    const email  = document.getElementById('perfil-email-display');
+
+    if (photo)           photo.src = clerk.user.imageUrl || '';
+    if (badge  && rango) { badge.src = rango.img; badge.alt = rango.nombre; }
+    if (img    && rango) { img.src   = rango.img; img.alt   = rango.nombre; }
+    if (nom    && rango) nom.textContent  = rango.nombre;
+    if (cnt)             cnt.textContent  = `🦴 ${pts.toLocaleString('es')} Croquetas`;
+    if (nombre)          nombre.textContent = _nvUser.nombre || 'Venezolano';
+    if (email)           email.textContent  = _nvUser.email  || '';
+  } else {
+    if (signedIn)  signedIn.style.display  = 'none';
+    if (noSession) noSession.style.display = '';
+  }
 }
 
 // ── Init ───────────────────────────────────────────────────
@@ -116,7 +130,7 @@ async function init() {
 
   const ready = () => {
     _injectAuthBtn();
-    if (clerk.user) _refreshTalentoPanel();
+    _refreshTalentoPanel();
   };
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', ready)
@@ -134,6 +148,7 @@ async function init() {
     } else {
       _nvUser = null;
       _refreshNavBtn();
+      _refreshTalentoPanel();
     }
   });
 
@@ -147,6 +162,15 @@ async function init() {
     signOut:    () => clerk.signOut(),
     isSignedIn: () => !!clerk.user,
     refreshPanel: _refreshTalentoPanel,
+
+    updateNombre: async (nuevoNombre) => {
+      if (!clerk.user || !_nvUser) return;
+      const { data } = await supabase.from('usuarios')
+        .update({ nombre: nuevoNombre })
+        .eq('clerk_id', clerk.user.id).select().single();
+      if (data) { _nvUser = data; _refreshNavBtn(); _refreshTalentoPanel(); }
+      return data;
+    },
 
     // Otorgar croquetas desde el panel Fundador
     otorgarCroquetas: async (clerk_id, cantidad, motivo = 'Otorgado por Fundador') => {
