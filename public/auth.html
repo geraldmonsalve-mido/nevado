@@ -182,7 +182,16 @@
     }
 
     window.addEventListener('load', async () => {
-      await window.Clerk.load()
+      await window.Clerk.load({
+        appearance: {
+          variables: {
+            colorPrimary: '#c8942c',
+            colorBackground: '#0a0a12',
+            colorText: '#ffffff',
+            borderRadius: '18px'
+          }
+        }
+      })
 
       const container = document.getElementById('clerk-auth')
 

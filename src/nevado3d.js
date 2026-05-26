@@ -123,7 +123,7 @@ export function initNevado3D() {
   // ── Load GLB ──────────────────────────────────────────────────────────────
   const loader = new GLTFLoader();
 
-  loader.load(
+  if (window.innerWidth >= 768) loader.load(
     '/Nevado.glb',
     (gltf) => {
       model = gltf.scene;
