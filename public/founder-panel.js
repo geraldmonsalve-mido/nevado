@@ -763,7 +763,23 @@ function checkFounderAccess() {
     return false;
   }
   const user = auth.getUser();
-  if (!user || !founderEmails.includes(user.email)) {
+  const currentEmail =
+    user?.email ||
+    user?.primaryEmailAddress?.emailAddress ||
+    user?.primary_email_address?.email_address ||
+    '';
+
+  const currentId = user?.id || '';
+
+  const founderIds = [
+    'user_3EG4uguiDjrh2Tx5gY9cjDpniJw'
+  ];
+
+  const allowed =
+    founderEmails.includes(currentEmail) ||
+    founderIds.includes(currentId);
+
+  if (!user || !allowed) {
     showAccessDenied('Tu cuenta no tiene acceso al Panel del Fundador.');
     return false;
   }
