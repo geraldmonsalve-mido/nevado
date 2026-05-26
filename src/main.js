@@ -271,5 +271,5 @@ setTimeout(() => {
   document.head.appendChild(npScript);
 }, 150);
 initNebula();
-initParticles();
+if (window.innerWidth >= 768) initParticles();
 initNodesSVG();

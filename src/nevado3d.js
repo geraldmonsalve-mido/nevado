@@ -3,6 +3,16 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 export function initNevado3D() {
+
+  if (window.innerWidth < 768) {
+    const canvas = document.getElementById('nevado-canvas');
+    if (canvas) {
+      canvas.outerHTML = '<img id="nevado-mobile-poster" src="/NevadoDePie.png" alt="Nevado" />';
+    }
+    return;
+  }
+
+
   // ── Canvas & renderer ─────────────────────────────────────────────────────
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;';
