@@ -549,7 +549,7 @@ body::selection {
 
   border: 1px solid rgba(255,255,255,0.06);
 
-  backdrop-filter: blur(24px);
+  backdrop-filter: blur(8px);
 }
 
 .security-icon {
@@ -593,7 +593,7 @@ body::selection {
 
   border-radius: var(--radius-xl);
 
-  backdrop-filter: blur(30px);
+  backdrop-filter: blur(8px);
 
   box-shadow: var(--shadow-soft);
 
@@ -1757,4 +1757,53 @@ textarea {
 #reportes,
 #configuracion {
   grid-column: span 6;
+}
+
+/* ---- CONTENT-VISIBILITY: secciones fuera del viewport inicial ------- */
+
+#evaluaciones,
+#croquetas,
+#ascensos,
+#moderacion,
+#usuarios,
+#reportes,
+#configuracion,
+#logs {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+
+/* ---- SKELETON LOADING ----------------------------------------------- */
+
+@keyframes fp-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.fp-loading .kpi-card strong,
+.fp-loading .kpi-card small:not(a),
+.fp-loading .kpi-card p {
+  color: transparent !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%);
+  background-size: 800px 100%;
+  animation: fp-shimmer 1.5s infinite linear;
+  border-radius: 4px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.fp-loading .rank-list li,
+.fp-loading .activity-feed li,
+.fp-loading .log-list li {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 800px 100%;
+  animation: fp-shimmer 1.5s infinite linear;
+  color: transparent;
+  pointer-events: none;
+}
+
+.fp-loading .rank-list li *,
+.fp-loading .activity-feed li *,
+.fp-loading .log-list li * {
+  opacity: 0;
 }

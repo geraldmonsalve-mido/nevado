@@ -138,8 +138,7 @@ function updateClock() {
   if (dateEl) dateEl.textContent = capitalize(date);
 }
 
-setInterval(updateClock, 1000);
-updateClock();
+// Clock started inside bootFounderPanel()
 
 /* ---- HELPERS ------------------------------------------------------- */
 
@@ -671,35 +670,55 @@ function renderAll() {
 /* ---- BOOT ---------------------------------------------------------- */
 
 function bootFounderPanel() {
-  console.log('[NEVADO][PANEL DEL FUNDADOR] Iniciando...');
+  // Reloj — crítico, visible de inmediato
+  updateClock();
+  setInterval(updateClock, 1000);
 
   founderState = loadEcosystemState();
-  renderAll();
 
+  // Render crítico: lo que está above-the-fold
+  renderKPIs();
+  renderEvaluaciones();
+
+  // Render secundario: diferido al siguiente frame libre
+  const renderSecondary = () => {
+    renderActividad();
+    renderNiveles();
+    renderSalud();
+    renderLogs();
+    renderConfiguracion();
+    document.body.classList.remove('fp-loading');
+  };
+  (window.requestIdleCallback || setTimeout)(renderSecondary, 0);
+
+  // Interacciones críticas
   initializeNavigation();
   initializeQuickActions();
   initializeFormCroquetas();
   initializeFormAscenso();
   initializeModeracion();
   initializeConfiguracion();
-  initializeSecurityLayer();
-  initializeLivePulse();
-  initializeDepthEffects();
   initializeLogout();
+  initializeSecurityLayer();
 
-  // Listen for cross-tab ecosystem updates
+  // Efectos decorativos — diferidos al idle
+  (window.requestIdleCallback || setTimeout)(initializeDepthEffects, 200);
+
+  // Pulso en vivo — diferido 4s para no competir con el render inicial
+  setTimeout(initializeLivePulse, 4000);
+
   window.addEventListener('storage', e => {
     if (e.key === STORAGE_KEY) {
       founderState = loadEcosystemState();
-      renderAll();
+      renderKPIs();
+      renderActividad();
+      renderLogs();
     }
   });
 
   setTimeout(() => {
     showToast('Panel del Fundador conectado al ecosistema', 'success');
   }, 1200);
-
-  console.log('[NEVADO][PANEL DEL FUNDADOR] Listo. Estado:', founderState);
 }
 
 document.addEventListener('DOMContentLoaded', bootFounderPanel);
