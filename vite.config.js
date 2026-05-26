@@ -17,7 +17,8 @@ export default defineConfig({
           )
           .replace(
             '</body>',
-            '  <script src="/home-mobile-ui.js" defer></script>\n</body>'
+            '  <script src="/home-mobile-ui.js" defer></script>\n' +
+            '  <script src="/home-footer.js" defer></script>\n</body>'
           );
       },
     },

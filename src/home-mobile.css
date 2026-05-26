@@ -47,6 +47,17 @@
     display: none !important;
   }
 
+  /* Sysbar oculto aunque home-footer.js lo mueva al #home-footer */
+  #home-footer #sysbar { display: none !important; }
+
+  /* Footer mobile — solo muestra tricolor + ticker */
+  #home-footer {
+    z-index: 200;
+  }
+  .mobile-scroll-wrapper {
+    bottom: 26px; /* tricolor 2px + ticker 24px */
+  }
+
   /* ── Canvas 3D — queda como fondo visual del perro ─────────── */
   #nevado-canvas-container {
     position: fixed;
@@ -59,10 +70,8 @@
      Tricolor top stripe ya existe en home-overrides.css
      ════════════════════════════════════════════════════════════ */
   #ticker {
-    bottom: 0 !important;   /* sysbar oculto: bajar al piso */
     height: 24px !important;
     font-size: 10px !important;
-    z-index: 200;
   }
   .ticker-item { font-size: 10px !important; }
 
