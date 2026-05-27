@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
     let query = supabase
       .from('usuarios')
-      .select('clerk_id,nombre,username,email,croquetas,rango')
+      .select('clerk_id,nombre,email,croquetas,nivel,rango')
       .limit(1);
 
     if (clerk_id) query = query.eq('clerk_id', clerk_id);
