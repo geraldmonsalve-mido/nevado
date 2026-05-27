@@ -32,6 +32,7 @@ export function initNevadoMode() {
   const hitZone = document.createElement('div');
   hitZone.id = 'nm-hit-zone';
   hitZone.setAttribute('aria-label', 'Abrir Modo Nevado');
+  hitZone.style.cssText = 'position:fixed;left:50%;top:35%;transform:translateX(-50%);width:220px;height:220px;z-index:10;cursor:pointer;background:transparent;';
   document.body.appendChild(hitZone);
   hitZone.addEventListener('click', open);
 

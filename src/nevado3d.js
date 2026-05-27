@@ -161,10 +161,10 @@ export function initNevado3D() {
         const idleClip = gltf.animations[0];
         idleClip.tracks = idleClip.tracks.filter(t => {
           const name = t.name.toLowerCase();
-          return !name.startsWith('head.') &&
-                 !name.startsWith('headend.') &&
-                 !name.startsWith('earend.') &&
-                 !name.startsWith('r_earend.');
+          return name.startsWith('head') ||
+                 name.startsWith('neck') ||
+                 name.startsWith('ear')  ||
+                 name.startsWith('r_ear');
         });
         idleAction = mixer.clipAction(idleClip);
         idleAction.play();
@@ -229,20 +229,7 @@ export function initNevado3D() {
         bones.chest.quaternion.slerp(_qChest, 0.04);
       }
 
-      // Frontlegs — reuse _qLeg and _qLegDelta
-      if (bones.frontleg1 && bones.r_frontleg1 && bones.frontleg1._baseQ) {
-        const flexL = dx < 0 ? THREE.MathUtils.clamp(dx * -0.10, 0, 0.08) : 0;
-        _euler.set(flexL, 0, 0, 'YXZ');
-        _qLegDelta.setFromEuler(_euler);
-        _qLeg.copy(bones.frontleg1._baseQ).multiply(_qLegDelta);
-        bones.frontleg1.quaternion.slerp(_qLeg, 0.03);
-
-        const flexR = dx > 0 ? THREE.MathUtils.clamp(dx * 0.10, 0, 0.08) : 0;
-        _euler.set(flexR, 0, 0, 'YXZ');
-        _qLegDelta.setFromEuler(_euler);
-        _qLeg.copy(bones.r_frontleg1._baseQ).multiply(_qLegDelta);
-        bones.r_frontleg1.quaternion.slerp(_qLeg, 0.03);
-      }
+      // Frontlegs — animación eliminada, solo cabeza y pecho siguen el cursor
     }
 
     if (dirty) { renderer.render(scene, camera); dirty = false; }
