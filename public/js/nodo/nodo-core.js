@@ -3,13 +3,15 @@
 (function () {
   'use strict';
 
-  var SB_URL = window.NEVADO_SUPABASE_URL  || '';
-  var SB_KEY = window.NEVADO_SUPABASE_ANON_KEY || '';
+  var SB_URL = window.NEVADO_SUPABASE_URL  || 'https://icxrduatkbazvwysvxrg.supabase.co';
+  var SB_KEY = window.NEVADO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
 
-  /* ── Supabase client singleton ──────────────────────────────────────────── */
-  var sb = null;
-  if (window.supabase && SB_URL && SB_KEY) {
-    sb = window.supabase.createClient(SB_URL, SB_KEY);
+  /* ── Supabase client singleton — asignado en window.NODO.sb inmediatamente ── */
+  window.NODO = window.NODO || {};
+  var sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY) : null;
+  window.NODO.sb = sb;
+  if (typeof (sb && sb.from) !== 'function') {
+    console.error('[NODO] Supabase no inicializado correctamente — window.supabase:', typeof window.supabase);
   }
 
   /* ── Session UI ─────────────────────────────────────────────────────────── */
