@@ -10,25 +10,22 @@
     src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
     type="text/javascript"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    window.nevadoDb = window.supabase.createClient("https://icxrduatkbazvwysvxrg.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljeHJkdWF0a2JhenZ3eXN2eHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ3NTEsImV4cCI6MjA5NTMyMDc1MX0.dKNGHz9jEmtVn7hmruzNp2KipMq9BDFb0ABRmlGgqNE");
-  </script>
-
   <style>
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(rgba(2,3,10,.45), rgba(2,3,10,.94)), url('/fondo.png');
-      background-size: cover;
-      background-position: center;
-      color: white;
+      background:
+        linear-gradient(rgba(2,3,10,.45), rgba(2,3,10,.94)),
+        url('/fondo.png') center / cover no-repeat;
+      color: #fff;
       font-family: Inter, system-ui, sans-serif;
       display: grid;
       place-items: center;
       padding: 40px 18px;
     }
+
     .card {
       width: min(780px, 94vw);
       padding: 42px;
@@ -39,6 +36,15 @@
       text-align: center;
       box-shadow: 0 30px 90px rgba(0,0,0,.52);
     }
+
+    #profile-loading {
+      color: rgba(255,255,255,.5);
+      font-size: 14px;
+      letter-spacing: .1em;
+      padding: 40px 0;
+    }
+
+    /* ── AVATAR ────────────────────────────────────── */
     .avatar {
       width: 116px;
       height: 116px;
@@ -48,41 +54,136 @@
       background: rgba(255,255,255,.06);
       margin-bottom: 22px;
     }
+
+    /* ── NOMBRE ────────────────────────────────────── */
     h1 {
-      margin: 0;
+      margin: 0 0 28px;
       font-family: Georgia, serif;
-      font-size: clamp(38px, 7vw, 62px);
+      font-size: clamp(32px, 6vw, 52px);
       font-weight: 400;
       letter-spacing: .08em;
     }
-    .rank {
-      margin: 14px 0 28px;
-      color: #c8a74d;
-      letter-spacing: .32em;
+
+    /* ── RANK CARD ─────────────────────────────────── */
+    .nvd-rank-card {
+      background: linear-gradient(145deg,
+        rgba(255,255,255,0.04),
+        rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      margin: 0 0 24px;
+      text-align: center;
+      transition: border-color .3s, box-shadow .3s;
+    }
+
+    .nvd-rank-card.is-high-rank {
+      border-color: rgba(184,148,74,0.2);
+      box-shadow: 0 0 30px rgba(184,148,74,0.06);
+    }
+
+    .nvd-rank-img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 20px rgba(184,148,74,0.25));
+      margin-bottom: 12px;
+    }
+
+    .nvd-rank-label-txt {
+      font-size: 9px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      font-size: 12px;
-      font-weight: 800;
+      color: rgba(232,228,220,0.3);
+      margin: 0 0 4px;
     }
-    .grid {
+
+    .nvd-rank-name {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #F0EDE8;
+      margin: 0 0 16px;
+    }
+
+    .nvd-sep {
+      height: 1px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      margin: 16px 0;
+    }
+
+    .nvd-stats-row {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr 1fr;
       gap: 16px;
-      margin: 28px 0;
     }
-    .metric {
-      padding: 22px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.055);
-      border: 1px solid rgba(255,255,255,.08);
+
+    .nvd-stat-val {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.3;
     }
-    .metric span {
-      display: block;
-      opacity: .65;
+
+    .nvd-stat-val.is-croquetas { color: #B8944A; }
+    .nvd-stat-val.is-nivel     { color: #F0EDE8; }
+
+    .nvd-stat-lbl {
+      font-size: 12px;
+      color: rgba(232,228,220,0.45);
+      margin-top: 4px;
+    }
+
+    .nvd-next-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(232,228,220,0.3);
+      text-align: left;
+      margin: 0 0 8px;
+    }
+
+    .nvd-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 8px;
     }
-    .metric strong {
-      font-size: 26px;
+
+    .nvd-bar-track {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
     }
+
+    .nvd-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #B8944A, #F4D03F);
+      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+      width: 0%;
+    }
+
+    .nvd-bar-pct {
+      font-size: 11px;
+      color: rgba(232,228,220,0.4);
+      white-space: nowrap;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .nvd-faltan {
+      font-size: 12px;
+      color: rgba(232,228,220,0.45);
+      text-align: left;
+      margin: 0;
+    }
+
+    .nvd-faltan.is-max { color: #F4D03F; }
+
+    /* ── INFO SECTION ──────────────────────────────── */
     .info {
       text-align: left;
       line-height: 1.7;
@@ -90,17 +191,32 @@
       border-radius: 22px;
       background: rgba(255,255,255,.045);
       border: 1px solid rgba(255,255,255,.08);
-      margin: 26px 0;
+      margin: 0 0 24px;
+      font-size: 14px;
+      color: rgba(255,255,255,.8);
     }
-    .info b { color: #f6d98b; }
+
+    .info a {
+      color: #f6d98b;
+      text-decoration: none;
+      font-weight: 600;
+      border: none;
+      background: none;
+      padding: 0;
+      font-size: inherit;
+    }
+    .info a:hover { text-decoration: underline; }
+
+    /* ── ACTIONS ────────────────────────────────────── */
     .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       justify-content: center;
-      margin-top: 24px;
     }
-    a, button {
+
+    .actions a,
+    .actions button {
       padding: 14px 18px;
       border-radius: 15px;
       border: 1px solid rgba(255,255,255,.14);
@@ -108,141 +224,298 @@
       color: white;
       text-decoration: none;
       font-weight: 800;
+      font-size: 14px;
       cursor: pointer;
+      font-family: inherit;
+      transition: background .2s;
     }
+
+    .actions a:hover,
+    .actions button:hover { background: rgba(255,255,255,.09); }
+
     .founder-btn {
-      border-color: rgba(255,215,120,.45);
-      background: rgba(200,148,44,.20);
-      color: #f6d98b;
+      border-color: rgba(255,215,120,.45) !important;
+      background: rgba(200,148,44,.20) !important;
+      color: #f6d98b !important;
       box-shadow: 0 0 24px rgba(200,148,44,.14);
     }
+
     .founder-btn:hover {
-      background: rgba(200,148,44,.34);
-      color: #fff2c4;
+      background: rgba(200,148,44,.34) !important;
+      color: #fff2c4 !important;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 520px) {
+      .card { padding: 28px 20px; }
+      .nvd-stats-row { gap: 10px; }
     }
   </style>
 </head>
 
 <body>
-  <main id="profile-card" class="card">Cargando perfil...</main>
+  <main class="card">
+
+    <div id="profile-loading">Cargando perfil...</div>
+
+    <div id="profile-content" hidden>
+
+      <img id="nvd-avatar" class="avatar" src="/NevadoUtil.png"
+           alt="Avatar" onerror="this.src='/NevadoUtil.png'" />
+
+      <h1 id="nvd-nombre">—</h1>
+
+      <!-- ── Tarjeta de Rango / Croquetas ─────────── -->
+      <div id="nvd-rank-card" class="nvd-rank-card">
+
+        <img id="nvd-rank-img"
+             class="nvd-rank-img"
+             src="/rangos/rango1-cachorro-bronce.png"
+             alt="Insignia de rango" />
+
+        <p class="nvd-rank-label-txt">RANGO ACTUAL</p>
+        <p id="nvd-rank-name" class="nvd-rank-name">—</p>
+
+        <hr class="nvd-sep" />
+
+        <div class="nvd-stats-row">
+          <div>
+            <div id="nvd-croquetas" class="nvd-stat-val is-croquetas">—</div>
+            <div class="nvd-stat-lbl">🦴 Croquetas</div>
+          </div>
+          <div>
+            <div id="nvd-nivel" class="nvd-stat-val is-nivel">—</div>
+            <div class="nvd-stat-lbl">Nivel actual</div>
+          </div>
+        </div>
+
+        <hr class="nvd-sep" />
+
+        <p id="nvd-next-label" class="nvd-next-label">PRÓXIMO RANGO: —</p>
+        <div class="nvd-bar-wrap">
+          <div class="nvd-bar-track">
+            <div id="nvd-bar-fill" class="nvd-bar-fill"></div>
+          </div>
+          <span id="nvd-bar-pct" class="nvd-bar-pct">0%</span>
+        </div>
+        <p id="nvd-faltan" class="nvd-faltan">—</p>
+
+      </div>
+
+      <!-- ── Info general ──────────────────────────── -->
+      <section class="info">
+        En NEVADO no basta con acumular Croquetas: los rangos altos existen para reconocer
+        permanencia, aporte real, criterio comunitario y compromiso con el ecosistema.
+        <br><br>
+        <a href="/rangos.html">Ver sistema completo de rangos →</a>
+      </section>
+
+      <!-- ── Acciones ──────────────────────────────── -->
+      <section class="actions">
+        <span id="nvd-founder-slot"></span>
+        <a href="/">Volver al ecosistema</a>
+        <button id="nvd-logout">Cerrar sesión</button>
+      </section>
+
+    </div>
+  </main>
 
   <script>
-const rankNames = {
-      cachorro: "Cachorro",
-      explorador: "Explorador",
-      guardian: "Guardián",
-      montanista: "Montañista",
-      guia: "Guía",
-      protector: "Protector",
-      leyenda_andina: "Leyenda Andina"
-    };
+    (function () {
+      var FOUNDER_EMAILS = [
+        'nevado.pro7@gmail.com',
+        'nevadopro7@gmail.com',
+        'gerald.monsalve@gmail.com'
+      ];
 
-    const nextRank = {
-      cachorro: { name: "Explorador", required: 1000 },
-      explorador: { name: "Guardián", required: 2000 },
-      guardian: { name: "Montañista", required: 3200 },
-      montanista: { name: "Guía", required: 5450 },
-      guia: { name: "Protector", required: 8450 },
-      protector: { name: "Leyenda Andina", required: 16450 },
-      leyenda_andina: { name: "Rango máximo", required: 0 }
-    };
+      var RANK_IMG = {
+        'Cachorro':       '/rangos/rango1-cachorro-bronce.png',
+        'Explorador':     '/rangos/rango2-explorador-bronce.png',
+        'Guardián':       '/rangos/rango3-guardian-plata.png',
+        'Montañista':     '/rangos/rango4-montanista-plata.png',
+        'Guía':           '/rangos/rango5-guia-plata.png',
+        'Protector':      '/rangos/rango6-protector-oro.png',
+        'Leyenda Andina': '/rangos/rango7-leyendaandina-oro-joyas.png'
+      };
 
-    function fallbackAvatar(profile) {
-      if (profile.username === "nevado") return "/NevadoDePie.png";
-      return window.Clerk?.user?.imageUrl || "/NevadoUtil.png";
-    }
+      var RANK_STEPS = [
+        { rango: 'Cachorro',       min: 0,     next: 'Explorador',     nextMin: 1000  },
+        { rango: 'Explorador',     min: 1000,  next: 'Guardián',       nextMin: 2000  },
+        { rango: 'Guardián',       min: 2000,  next: 'Montañista',     nextMin: 3200  },
+        { rango: 'Montañista',     min: 3200,  next: 'Guía',           nextMin: 5450  },
+        { rango: 'Guía',           min: 5450,  next: 'Protector',      nextMin: 8450  },
+        { rango: 'Protector',      min: 8450,  next: 'Leyenda Andina', nextMin: 16450 },
+        { rango: 'Leyenda Andina', min: 16450, next: null,             nextMin: null  }
+      ];
 
-    window.addEventListener("load", async () => {
-      const card = document.getElementById("profile-card");
-
-      try {
-        await window.Clerk.load();
-
-        const clerkUser = window.Clerk.user;
-        if (!clerkUser) {
-          window.location.href = "/auth.html";
-          return;
-        }
-
-        await window.nevadoDb
-          .from("usuarios")
-          .upsert({
-            clerk_id: clerkUser.id,
-            nombre: clerkUser.fullName || clerkUser.firstName,
-            email: clerkUser.primaryEmailAddress?.emailAddress,
-            ultima_actividad: new Date().toISOString()
-          }, { onConflict: "clerk_id" });
-
-        const { data: profile, error } = await window.nevadoDb
-          .from("profiles")
-          .select("*")
-          .eq("clerk_id", clerkUser.id)
-          .single();
-
-        console.log("CLERK USER", clerkUser);
-        console.log("PROFILE DATA", profile);
-        console.log("PROFILE ERROR", error);
-
-        if (error || !profile) {
-          card.innerHTML = "Error cargando perfil.";
-          return;
-        }
-
-        const rank = rankNames[profile.rank_key] || profile.rank_key || "Cachorro";
-        const next = nextRank[profile.rank_key] || nextRank.cachorro;
-        const needed = Math.max((next.required || 0) - Number(profile.croquetas || 0), 0);
-
-        const avatar = profile.avatar_url || fallbackAvatar(profile);
-
-        const founderButton = (
-          profile.is_founder === true ||
-          profile.username === "nevado" ||
-          profile.role === "FOUNDER"
-        )
-          ? '<a class="founder-btn" href="/founder-panel.html">Panel de Control</a>'
-          : '';
-
-        card.innerHTML = `
-          <img class="avatar" src="${avatar}" onerror="this.onerror=null; this.src='/NevadoUtil.png';" />
-          <h1>${profile.display_name || "Usuario NEVADO"}</h1>
-          <div class="rank">${rank}</div>
-
-          <section class="grid">
-            <div class="metric"><span>Nivel</span><strong>${profile.level || 1}</strong></div>
-            <div class="metric"><span>Croquetas</span><strong>${Number(profile.croquetas || 0).toLocaleString("es-VE")}</strong></div>
-            <div class="metric"><span>Rango actual</span><strong>${rank}</strong></div>
-            <div class="metric"><span>Croquetas para ascender</span><strong>${next.required === 0 ? "Rango máximo" : needed.toLocaleString("es-VE") + " 🦴"}</strong></div>
-          </section>
-
-          <section class="info">
-            ${next.required === 0
-              ? "Ya estás en el rango máximo del ecosistema NEVADO."
-              : `Para ascender de <b>${rank}</b> a <b>${next.name}</b>, debes alcanzar <b>${next.required.toLocaleString("es-VE")} Croquetas acumuladas</b>.`
-            }
-            <br><br>
-            En NEVADO no basta con acumular Croquetas: los rangos altos existen para reconocer permanencia, aporte real, criterio comunitario y compromiso con el ecosistema.
-            <br><br>
-            <a href="/rangos.html">Ver sistema completo de rangos</a>
-          </section>
-
-          <section class="actions">
-            ${founderButton}
-            <a href="/">Volver al ecosistema</a>
-            <button id="logout">Cerrar sesión</button>
-          </section>
-        `;
-
-        document.getElementById("logout").onclick = async () => {
-          await window.Clerk.signOut();
-          window.location.href = "/";
-        };
-
-      } catch (err) {
-        console.error("PROFILE PAGE ERROR", err);
-        card.innerHTML = "Error cargando perfil.";
+      function fmt(n) {
+        return Number(n || 0).toLocaleString('es-VE');
       }
-    });
+
+      function progressInfo(croquetas, rango) {
+        var c = Number(croquetas || 0);
+        var step = RANK_STEPS.find(function (s) { return s.rango === rango; });
+
+        if (!step || !step.next) {
+          return { next: null, pct: 100, missing: 0 };
+        }
+
+        var rangeSize = step.nextMin - step.min;
+        var progress = c - step.min;
+        var pct = Math.min(Math.max(Math.round((progress / rangeSize) * 100), 0), 100);
+        var missing = Math.max(step.nextMin - c, 0);
+
+        return { next: step.next, pct: pct, missing: missing };
+      }
+
+      function applyProfile(profile, clerkUser) {
+        var croquetas = Number(profile.croquetas || 0);
+        var rango     = profile.rango  || 'Cachorro';
+        var nivel     = profile.nivel  || 1;
+        var nombre    = profile.nombre || clerkUser.fullName || clerkUser.firstName || 'Usuario NEVADO';
+        var email     = profile.email  || clerkUser.primaryEmailAddress?.emailAddress || '';
+
+        // Avatar
+        var avatarEl = document.getElementById('nvd-avatar');
+        if (avatarEl && clerkUser.imageUrl) avatarEl.src = clerkUser.imageUrl;
+
+        // Nombre
+        var nombreEl = document.getElementById('nvd-nombre');
+        if (nombreEl) nombreEl.textContent = nombre;
+
+        // Rango
+        var rankCard = document.getElementById('nvd-rank-card');
+        var rankImg  = document.getElementById('nvd-rank-img');
+        var rankName = document.getElementById('nvd-rank-name');
+
+        if (rankImg) { rankImg.src = RANK_IMG[rango] || RANK_IMG['Cachorro']; rankImg.alt = rango; }
+        if (rankName) rankName.textContent = rango;
+
+        if (rankCard && (rango === 'Protector' || rango === 'Leyenda Andina')) {
+          rankCard.classList.add('is-high-rank');
+        }
+
+        // Croquetas y nivel
+        var croquetasEl = document.getElementById('nvd-croquetas');
+        var nivelEl     = document.getElementById('nvd-nivel');
+        if (croquetasEl) croquetasEl.textContent = fmt(croquetas);
+        if (nivelEl)     nivelEl.textContent     = nivel;
+
+        // Barra de progreso
+        var info       = progressInfo(croquetas, rango);
+        var nextLabel  = document.getElementById('nvd-next-label');
+        var barFill    = document.getElementById('nvd-bar-fill');
+        var barPct     = document.getElementById('nvd-bar-pct');
+        var faltanEl   = document.getElementById('nvd-faltan');
+
+        if (info.next) {
+          if (nextLabel) nextLabel.textContent = 'PRÓXIMO RANGO: ' + info.next;
+          if (barPct)   barPct.textContent    = info.pct + '%';
+          if (faltanEl) {
+            faltanEl.textContent = 'Te faltan ' + fmt(info.missing) + ' Croquetas para ascender';
+            faltanEl.classList.remove('is-max');
+          }
+          // Delay fill for CSS transition
+          setTimeout(function () {
+            if (barFill) barFill.style.width = info.pct + '%';
+          }, 80);
+        } else {
+          if (nextLabel) nextLabel.textContent = 'RANGO MÁXIMO';
+          if (barPct)   barPct.textContent    = '100%';
+          if (barFill)  barFill.style.width   = '100%';
+          if (faltanEl) {
+            faltanEl.textContent = 'Rango máximo del ecosistema';
+            faltanEl.classList.add('is-max');
+          }
+        }
+
+        // Botón founder
+        var founderSlot = document.getElementById('nvd-founder-slot');
+        if (founderSlot && FOUNDER_EMAILS.includes(email)) {
+          founderSlot.innerHTML =
+            '<a class="founder-btn" href="/founder-panel.html">Panel de Control</a>';
+        }
+
+        // Mostrar contenido
+        document.getElementById('profile-loading').hidden = true;
+        document.getElementById('profile-content').hidden = false;
+
+        // Logout
+        var logoutBtn = document.getElementById('nvd-logout');
+        if (logoutBtn) {
+          logoutBtn.onclick = async function () {
+            try { await window.Clerk.signOut(); } catch (_) {}
+            window.location.href = '/';
+          };
+        }
+      }
+
+      function waitForClerk(timeout) {
+        return new Promise(function (resolve, reject) {
+          if (window.Clerk) { resolve(window.Clerk); return; }
+          var start = Date.now();
+          function check() {
+            if (window.Clerk) { resolve(window.Clerk); return; }
+            if (Date.now() - start > timeout) { reject(new Error('Clerk timeout')); return; }
+            setTimeout(check, 100);
+          }
+          setTimeout(check, 100);
+        });
+      }
+
+      async function boot() {
+        var loadingEl = document.getElementById('profile-loading');
+
+        try {
+          var clerk = await waitForClerk(6000);
+          await clerk.load();
+
+          var clerkUser = clerk.user;
+          if (!clerkUser) {
+            window.location.href = '/auth.html?redirect=profile';
+            return;
+          }
+
+          var clerkId = clerkUser.id;
+          var email   = clerkUser.primaryEmailAddress?.emailAddress ||
+                        clerkUser.emailAddresses?.[0]?.emailAddress || '';
+
+          var params = new URLSearchParams();
+          if (clerkId) params.set('clerk_id', clerkId);
+          if (email)   params.set('email', email);
+
+          var res = await fetch('/api/usuario?' + params.toString(), {
+            headers: { Accept: 'application/json' },
+            cache: 'no-store'
+          });
+
+          if (!res.ok) {
+            if (loadingEl) loadingEl.textContent = 'Error al cargar perfil (' + res.status + ').';
+            return;
+          }
+
+          var profile = await res.json();
+          if (profile.error) {
+            if (loadingEl) loadingEl.textContent = 'Error: ' + profile.error;
+            return;
+          }
+
+          applyProfile(profile, clerkUser);
+
+        } catch (err) {
+          console.error('[NEVADO profile]', err);
+          if (loadingEl) loadingEl.textContent = 'Error al cargar perfil.';
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
   </script>
+
   <script src="/nevado-env.js"></script>
   <script src="/nevado-profile-sync.js"></script>
 </body>

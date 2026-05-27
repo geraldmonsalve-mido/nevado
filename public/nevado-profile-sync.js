@@ -120,6 +120,12 @@
   }
 
   function apply(profile) {
+    // New profile page uses fixed IDs and its own fetch — skip legacy DOM walking
+    if (document.getElementById('nvd-rank-card')) {
+      window.NEVADO_CURRENT_USER = profile;
+      return;
+    }
+
     const info = nextInfo(profile);
 
     setMainTexts(profile);
