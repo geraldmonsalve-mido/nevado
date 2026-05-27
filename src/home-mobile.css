@@ -844,3 +844,24 @@
   font-style: normal;
   color: rgba(255,255,255,.72);
 }
+
+/* Profile: fondo liviano usando WebP del inicio */
+body:has(#nevado-profile-summary),
+body.profile-page {
+  background-image:
+    linear-gradient(rgba(3,6,12,.74), rgba(3,6,12,.88)),
+    url('/NevadoMobilePoster.webp') !important;
+  background-size: 520px auto, 520px auto !important;
+  background-position: center top, center 40px !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+/* Evita que la imagen gigante vieja domine profile */
+body:has(#nevado-profile-summary) img[src*="rango"],
+body:has(#nevado-profile-summary) img[src*="cachorro"],
+body:has(#nevado-profile-summary) img[src*="bronce"] {
+  max-width: 120px !important;
+  height: auto !important;
+  object-fit: contain !important;
+}

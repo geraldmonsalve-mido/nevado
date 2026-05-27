@@ -25,119 +25,115 @@
   async function getProfile(user) {
     const email = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || '';
     const clerkId = user?.id || '';
-
     const params = new URLSearchParams();
+
     if (clerkId) params.set('clerk_id', clerkId);
     if (email) params.set('email', email);
 
     const res = await fetch('/api/usuario?' + params.toString(), {
-      headers: { Accept: 'application/json' }
+      headers: { Accept: 'application/json' },
+      cache: 'no-store'
     });
 
     if (!res.ok) return null;
     return await res.json();
   }
 
-  function format(n) {
+  function fmt(n) {
     return Number(n || 0).toLocaleString('es-CO');
   }
 
-  function nextCroquetas(rango, croquetas) {
-    const n = Number(croquetas || 0);
+  function nextInfo(profile) {
+    const c = Number(profile.croquetas || 0);
+    const rango = profile.rango || 'Cachorro';
+
     const steps = [
-      { rango: 'Cachorro', next: 'Explorador', target: 1000 },
-      { rango: 'Explorador', next: 'Guardián', target: 2000 },
-      { rango: 'Guardián', next: 'Montañista', target: 3200 },
-      { rango: 'Montañista', next: 'Guía', target: 5450 },
-      { rango: 'Guía', next: 'Protector', target: 8450 },
-      { rango: 'Protector', next: 'Leyenda Andina', target: 16450 }
+      ['Cachorro', 'Explorador', 1000],
+      ['Explorador', 'Guardián', 2000],
+      ['Guardián', 'Montañista', 3200],
+      ['Montañista', 'Guía', 5450],
+      ['Guía', 'Protector', 8450],
+      ['Protector', 'Leyenda Andina', 16450]
     ];
 
-    const current = steps.find(s => s.rango === rango) || steps.find(s => n < s.target);
-    if (!current) return { text: 'Rango máximo', next: 'Leyenda Andina' };
+    const current = steps.find(s => s[0] === rango) || steps.find(s => c < s[2]);
 
-    const faltan = Math.max(current.target - n, 0);
+    if (!current) {
+      return {
+        next: 'Rango máximo',
+        missing: 'Máximo',
+        phrase: 'Has alcanzado el rango máximo del ecosistema NEVADO.'
+      };
+    }
+
+    const missing = Math.max(current[2] - c, 0);
+
     return {
-      text: faltan ? format(faltan) + ' 🦴' : 'Listo para ascender',
-      next: current.next
+      next: current[1],
+      missing: missing ? `${fmt(missing)} 🦴` : 'Listo',
+      phrase: `Para ascender de <strong>${rango}</strong> a <strong>${current[1]}</strong>, debes alcanzar <strong>${fmt(current[2])} Croquetas acumuladas</strong>.`
     };
   }
 
-  function setValueAfterLabel(label, value) {
-    const nodes = [...document.querySelectorAll('div, span, p, strong, h1, h2, h3')];
-    const labelNode = nodes.find(el => (el.textContent || '').trim().toLowerCase() === label.toLowerCase());
+  function setMetric(label, value) {
+    const all = [...document.querySelectorAll('div, span, p, strong, small')];
+
+    const labelNode = all.find(el =>
+      (el.textContent || '').trim().toLowerCase() === label.toLowerCase()
+    );
 
     if (!labelNode) return false;
 
-    const container = labelNode.closest('div') || labelNode.parentElement;
-    if (!container) return false;
+    let box = labelNode.closest('div');
+    for (let i = 0; i < 4 && box; i++) {
+      const children = [...box.querySelectorAll('div, span, strong, p')]
+        .filter(el => el !== labelNode);
 
-    const candidates = [...container.querySelectorAll('strong, span, div, p')]
-      .filter(el => el !== labelNode && (el.textContent || '').trim());
+      const valueNode = children.find(el => {
+        const t = (el.textContent || '').trim();
+        return t && !/Nivel|Croquetas|Rango actual|Croquetas para ascender/i.test(t);
+      });
 
-    const valueNode = candidates[candidates.length - 1];
+      if (valueNode) {
+        valueNode.textContent = value;
+        return true;
+      }
 
-    if (valueNode) {
-      valueNode.textContent = value;
-      return true;
+      box = box.parentElement;
     }
 
     return false;
   }
 
-  function replaceTextExact(oldText, newText) {
-    [...document.querySelectorAll('div, span, p, strong, small, h1, h2, h3')]
-      .filter(el => (el.textContent || '').trim() === oldText)
-      .forEach(el => el.textContent = newText);
-  }
-
-  function removePreviousExtraCard() {
-    document.getElementById('nevado-profile-live-card')?.remove();
-    document.querySelectorAll('.npl-card').forEach(el => el.remove());
-  }
-
-  function injectCleanSummary(profile) {
-    if (document.getElementById('nevado-profile-summary')) return;
-
-    const card = document.createElement('section');
-    card.id = 'nevado-profile-summary';
-    card.innerHTML = `
-      <strong>${profile.nombre || profile.email}</strong>
-      <span>${format(profile.croquetas)} croquetas</span>
-      <em>${profile.rango} · Nivel ${profile.nivel || 1}</em>
-    `;
-
-    const target =
-      document.querySelector('.profile-card') ||
-      document.querySelector('main') ||
-      document.body;
-
-    target.prepend(card);
-  }
-
-  function applyProfile(profile) {
-    removePreviousExtraCard();
-
-    const croquetas = Number(profile.croquetas || 0);
+  function setMainTexts(profile) {
+    const name = profile.nombre || profile.email || 'Usuario Nevado';
     const rango = profile.rango || 'Cachorro';
-    const nivel = Number(profile.nivel || 1);
-    const next = nextCroquetas(rango, croquetas);
 
-    replaceTextExact('0', format(croquetas));
-    setValueAfterLabel('Croquetas', format(croquetas));
-    setValueAfterLabel('Nivel', String(nivel));
-    setValueAfterLabel('Rango actual', rango);
-    setValueAfterLabel('Croquetas para ascender', next.text);
+    const h1 = [...document.querySelectorAll('h1, h2')]
+      .find(el => /Gerald|Nevado|Monsalve|Usuario/i.test(el.textContent || ''));
 
-    replaceTextExact('Cachorro', rango);
+    if (h1) h1.textContent = name;
+
+    [...document.querySelectorAll('div, span, p, strong')]
+      .filter(el => (el.textContent || '').trim() === 'Cachorro')
+      .forEach(el => el.textContent = rango);
+  }
+
+  function apply(profile) {
+    const info = nextInfo(profile);
+
+    setMainTexts(profile);
+    setMetric('Nivel', String(profile.nivel || 1));
+    setMetric('Croquetas', fmt(profile.croquetas));
+    setMetric('Rango actual', profile.rango || 'Cachorro');
+    setMetric('Croquetas para ascender', info.missing);
 
     [...document.querySelectorAll('p, div')]
       .filter(el => /Para ascender de/i.test(el.textContent || ''))
-      .forEach(el => {
-        el.innerHTML = `Para ascender de <strong>${rango}</strong> a <strong>${next.next}</strong>, debes alcanzar <strong>${next.text.replace(' 🦴', ' Croquetas')}</strong>.`;
-      });
+      .forEach(el => { el.innerHTML = info.phrase; });
 
-    injectCleanSummary(profile);
+    window.NEVADO_CURRENT_USER = profile;
+    document.documentElement.dataset.nevadoProfileSynced = 'true';
   }
 
   async function boot() {
@@ -148,11 +144,7 @@
       const profile = await getProfile(user);
       if (!profile) return;
 
-      window.NEVADO_CURRENT_USER = profile;
-
-      setTimeout(() => applyProfile(profile), 300);
-      setTimeout(() => applyProfile(profile), 900);
-      setTimeout(() => applyProfile(profile), 1800);
+      [200, 700, 1400, 2400].forEach(t => setTimeout(() => apply(profile), t));
     } catch (e) {
       console.warn('[Nevado profile sync]', e);
     }
