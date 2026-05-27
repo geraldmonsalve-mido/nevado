@@ -1807,3 +1807,130 @@ textarea {
 .fp-loading .log-list li * {
   opacity: 0;
 }
+
+.founder-denied {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(rgba(2,3,10,.82), rgba(2,3,10,.94)),
+    url('/fondo-home.webp');
+  background-size: cover;
+  color: white;
+}
+
+.founder-denied section {
+  width: min(92vw, 620px);
+  padding: 42px;
+  border-radius: 28px;
+  background: rgba(10,12,18,.82);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(212,168,65,.32);
+  text-align: center;
+}
+
+.founder-denied h1 {
+  color: #d4a841;
+  font-size: 42px;
+}
+
+.founder-denied a {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  color: white;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,.16);
+}
+
+#founder-croquetas-real {
+  width: min(1180px, 92vw);
+  margin: 28px auto;
+}
+
+.fc-card {
+  padding: 28px;
+  border-radius: 28px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18,20,30,.88),
+      rgba(7,8,14,.94)
+    );
+
+  border: 1px solid rgba(212,168,65,.30);
+
+  backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.42);
+
+  color: white;
+}
+
+.fc-head h2 {
+  margin: 0 0 8px;
+  font-size: 32px;
+  color: #d4a841;
+}
+
+.fc-head p {
+  margin: 0 0 22px;
+  color: rgba(255,255,255,.70);
+}
+
+#fc-form {
+  display: grid;
+  grid-template-columns: 1.2fr .6fr 1.6fr auto;
+  gap: 14px;
+  align-items: end;
+}
+
+#fc-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255,255,255,.72);
+}
+
+#fc-form input {
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.05);
+  color: white;
+  padding: 0 14px;
+}
+
+#fc-form button {
+  height: 46px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  background:
+    linear-gradient(
+      180deg,
+      #d4a841,
+      #8d6518
+    );
+  color: #090909;
+}
+
+#fc-result {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(0,0,0,.28);
+  color: #d4a841;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+
+  #fc-form {
+    grid-template-columns: 1fr;
+  }
+
+}
