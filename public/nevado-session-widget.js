@@ -1,114 +1,129 @@
 (function () {
-  const RANGOS = [
-    { nombre: 'Cachorro', min: 0, icon: '/rangos/cachorro.png' },
-    { nombre: 'Explorador', min: 1000, icon: '/rangos/explorador.png' },
-    { nombre: 'Guardián', min: 2000, icon: '/rangos/guardian.png' },
-    { nombre: 'Montañista', min: 3200, icon: '/rangos/montanista.png' },
-    { nombre: 'Guía', min: 5450, icon: '/rangos/guia.png' },
-    { nombre: 'Protector', min: 8450, icon: '/rangos/protector.png' },
-    { nombre: 'Leyenda Andina', min: 16450, icon: '/rangos/leyenda-andina.png' }
-  ];
+  const CLERK_SRC = 'https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+  const CLERK_KEY = 'pk_live_Y2xlcmsubmV2YWRvLnBybyQ';
 
-  function rangoPorCroquetas(croquetas) {
-    return [...RANGOS].reverse().find(r => croquetas >= r.min) || RANGOS[0];
-  }
-
-  function compactNumber(n) {
-    return Number(n || 0).toLocaleString('es-CO');
+  function loadScript(src, attrs = {}) {
+    return new Promise((resolve, reject) => {
+      if ([...document.scripts].some(s => s.src === src)) return resolve();
+      const s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      Object.entries(attrs).forEach(([k, v]) => s.setAttribute(k, v));
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
   }
 
   function findSessionBox() {
     return [...document.querySelectorAll('div, a, button')]
-      .find(el => /Sesión verificada|Sesión Verificada|2FA activa/i.test(el.textContent || ''));
+      .find(el => /Sesión verificada|Sesión Verificada|Iniciar sesión|Modo Nevado|2FA activa/i.test(el.textContent || ''));
   }
 
-  function renderLogin(el) {
-    el.innerHTML = `
-      <span class="nv-session-icon">👤</span>
-      <span class="nv-session-copy">
-        <strong>Iniciar sesión</strong>
-        <small>Modo Nevado</small>
-      </span>
-    `;
+  function setLogin(el) {
+    el.innerHTML = `<span class="nv-session-icon">👤</span><strong>Iniciar sesión</strong>`;
     el.classList.add('nv-session-widget');
-    el.onclick = () => {
-      window.location.href = '/auth.html?redirect=/';
-    };
+    el.onclick = () => location.href = '/auth.html?redirect=/';
   }
 
-  function renderUser(el, user, profile) {
-    const croquetas = profile?.croquetas || 0;
-    const rango = rangoPorCroquetas(croquetas);
-    const username =
-      profile?.username ||
-      profile?.nombre ||
-      user?.username ||
-      user?.firstName ||
-      'usuario';
-
-    el.innerHTML = `
-      <img class="nv-rank-icon" src="${rango.icon}" alt="${rango.nombre}" />
-      <span class="nv-session-copy">
-        <strong>@${String(username).replace(/^@/, '')}</strong>
-        <small>${compactNumber(croquetas)} croquetas</small>
-      </span>
-    `;
-    el.classList.add('nv-session-widget', 'is-authenticated');
-    el.onclick = () => {
-      window.location.href = '/profile.html';
-    };
-  }
-
-  async function waitForClerk(timeout = 3500) {
-    const start = Date.now();
-    while (!window.Clerk && Date.now() - start < timeout) {
-      await new Promise(r => setTimeout(r, 80));
-    }
-    return window.Clerk || null;
+  function rangoIcon(rango) {
+    const key = String(rango || 'Cachorro')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/\s+/g, '-');
+    return `/rangos/${key}.png`;
   }
 
   async function getProfile(user) {
-    try {
-      if (!window.nevadoDb || !user?.id) return null;
-      const { data } = await window.nevadoDb
-        .from('usuarios')
+    const db = window.nevadoDb || window.NEVADO_AUTH?.supabase;
+    if (!db || !user?.id) return null;
+
+    const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress;
+
+    let res = await db.from('usuarios')
+      .select('nombre, username, email, croquetas, rango')
+      .eq('clerk_id', user.id)
+      .maybeSingle();
+
+    if (!res?.data && email) {
+      res = await db.from('usuarios')
         .select('nombre, username, email, croquetas, rango')
-        .eq('clerk_id', user.id)
-        .single();
-      return data;
-    } catch {
-      return null;
+        .eq('email', email)
+        .maybeSingle();
     }
+
+    return res?.data || null;
   }
 
-  async function boot() {
+  function setUser(el, user, profile) {
+    const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress || '';
+    const username = profile?.username || profile?.nombre || user.username || user.firstName || email.split('@')[0] || 'usuario';
+    const croquetas = Number(profile?.croquetas || 0);
+    const rango = profile?.rango || 'Cachorro';
+
+    el.innerHTML = `
+      <img class="nv-rank-icon" src="${rangoIcon(rango)}" alt="${rango}">
+      <span class="nv-session-copy">
+        <strong>@${String(username).replace(/^@/, '')}</strong>
+        <small>${croquetas.toLocaleString('es-CO')} croquetas</small>
+      </span>
+    `;
+    el.classList.add('nv-session-widget', 'is-authenticated');
+    el.onclick = () => location.href = '/profile.html';
+  }
+
+  async function bootSession() {
     const el = findSessionBox();
     if (!el) return;
 
-    el.classList.add('nv-session-widget');
-    renderLogin(el);
-
-    const Clerk = await waitForClerk();
-    if (!Clerk) return;
+    setLogin(el);
 
     try {
-      await Clerk.load();
-      const user = Clerk.user;
-      if (!user) {
-        renderLogin(el);
-        return;
-      }
+      await loadScript(CLERK_SRC, { 'data-clerk-publishable-key': CLERK_KEY });
+      await window.Clerk.load();
+
+      const user = window.Clerk.user;
+      if (!user) return setLogin(el);
 
       const profile = await getProfile(user);
-      renderUser(el, user, profile);
-    } catch {
-      renderLogin(el);
+      setUser(el, user, profile);
+    } catch (e) {
+      console.warn('[Nevado session]', e);
+      setLogin(el);
     }
   }
 
+  function bootDogClick() {
+    const dog = document.getElementById('nevado-canvas-container');
+    if (!dog) return;
+
+    dog.style.pointerEvents = 'auto';
+    dog.style.cursor = 'pointer';
+
+    dog.addEventListener('click', () => {
+      const possibleTrigger =
+        document.querySelector('[data-nevado-mode]') ||
+        document.querySelector('#nevado-mode-trigger') ||
+        document.querySelector('.nevado-mode-trigger') ||
+        document.querySelector('#mini-nevado');
+
+      if (possibleTrigger) {
+        possibleTrigger.click();
+        return;
+      }
+
+      window.dispatchEvent(new CustomEvent('open-nevado-mode'));
+      document.dispatchEvent(new CustomEvent('open-nevado-mode'));
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
+    document.addEventListener('DOMContentLoaded', () => {
+      bootSession();
+      bootDogClick();
+    });
   } else {
-    boot();
+    bootSession();
+    bootDogClick();
   }
 })();

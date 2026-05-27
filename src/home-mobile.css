@@ -676,3 +676,36 @@
     white-space: nowrap !important;
   }
 }
+
+/* Ajuste sesión superior + perro clickeable */
+@media (max-width: 767px) {
+  .nv-session-widget {
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .nv-session-widget strong {
+    color: #d4a841 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+  }
+
+  .nv-session-widget small {
+    color: rgba(255,255,255,.72) !important;
+    font-size: 12px !important;
+  }
+
+  .nv-rank-icon {
+    width: 34px !important;
+    height: 34px !important;
+    object-fit: contain !important;
+  }
+
+  #nevado-canvas-container {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+}
