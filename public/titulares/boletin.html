@@ -255,5 +255,6 @@
     function selectFreq(btn){document.querySelectorAll('.freq-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');}
     function subscribe(){const email=document.getElementById('emailInput').value;if(!email){document.getElementById('emailInput').style.borderColor='#E74C3C';return;}document.getElementById('emailInput').style.borderColor='';const box=document.getElementById('successBox');box.style.display='block';document.querySelector('.btn-accent').textContent='¡Ya estás suscrito!';document.querySelector('.btn-accent').style.background='#27AE60';}
   </script>
+  <script src="/nevado-env.js"></script>
 </body>
 </html>

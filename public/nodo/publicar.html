@@ -280,5 +280,6 @@
     function addTag(tag){const input=document.getElementById('tagsInput');const existing=input.value.trim();input.value=existing?(existing+', '+tag):tag;updatePreview();}
     function publishPost(){const toast=document.getElementById('toast');toast.style.display='block';setTimeout(()=>toast.style.display='none',3500);}
   </script>
+  <script src="/nevado-env.js"></script>
 </body>
 </html>

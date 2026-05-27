@@ -323,5 +323,6 @@
     function diagnose(){const a=document.getElementById('q1').value;const res=document.getElementById('diagResult');res.style.display='block';res.textContent=recs[a]||'Ruta recomendada: Comunicador Digital — Amplia demanda y entrada rápida al mercado remoto.';if(a==='dev')document.getElementById('route-dev').classList.add('highlighted');if(a==='design')document.getElementById('route-ux').classList.add('highlighted');}
     function toggleRoute(id){const card=document.getElementById(id);const exp=document.getElementById('exp-'+id);const isOpen=exp.style.display==='block';document.querySelectorAll('.route-expand').forEach(e=>e.style.display='none');if(!isOpen)exp.style.display='block';}
   </script>
+  <script src="/nevado-env.js"></script>
 </body>
 </html>
