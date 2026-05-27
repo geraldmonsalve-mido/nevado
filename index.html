@@ -8,6 +8,67 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230C0C0B'/><text x='16' y='22' text-anchor='middle' font-size='18' fill='%23B8944A' font-family='serif'>N</text></svg>" />
     <meta name="description" content="Infraestructura digital para reconstruir el capital humano venezolano." />
     <link rel="preload" as="image" href="/fondo-home.webp" fetchpriority="high">
+
+    <!-- Clerk: arranca en paralelo con todo, sin esperar al GLB -->
+    <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
+    <script
+      data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+      src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+      type="text/javascript">
+    </script>
+
+    <!-- Sesión: resuelve mientras el GLB carga, sin bloquear nada -->
+    <script>
+      (function () {
+        var FOUNDER_EMAIL = 'nevado.pro7@gmail.com';
+
+        function applyPill(user) {
+          var pill = document.getElementById('nvd-session-pill');
+          if (!pill) return;
+
+          if (!user) {
+            pill.innerHTML = '<a href="/profile.html" style="display:flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;transition:background .2s;">Iniciar sesión</a>';
+            return;
+          }
+
+          var email = (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) ||
+                      (user.emailAddresses && user.emailAddresses[0] && user.emailAddresses[0].emailAddress) || '';
+          var nombre = user.fullName || user.firstName || 'Usuario';
+          var img    = user.imageUrl || '/NevadoUtil.png';
+          var isFounder = email === FOUNDER_EMAIL;
+
+          pill.innerHTML =
+            '<a href="/profile.html" style="display:flex;align-items:center;gap:8px;padding:4px 14px 4px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;transition:background .2s;">' +
+              '<img src="' + img + '" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,215,120,' + (isFounder ? '.5' : '.2') + ');" onerror="this.src=\'/NevadoUtil.png\'" />' +
+              '<span>' + nombre + '</span>' +
+            '</a>';
+        }
+
+        function boot() {
+          var pill = document.getElementById('nvd-session-pill');
+          if (!pill) return; // DOM aún no existe, el widget lo manejará
+
+          function tryClerk() {
+            if (!window.Clerk) { setTimeout(tryClerk, 80); return; }
+            window.Clerk.load().then(function () {
+              applyPill(window.Clerk.user || null);
+            }).catch(function () {
+              applyPill(null);
+            });
+          }
+          tryClerk();
+        }
+
+        // Exponer para que nevado-session-widget.js también pueda llamarlo
+        window.__nvdApplyPill = applyPill;
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', boot);
+        } else {
+          boot();
+        }
+      })();
+    </script>
 </head>
   <body>
     <div id="app"></div>

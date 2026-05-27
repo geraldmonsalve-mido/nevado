@@ -27,6 +27,7 @@ document.querySelector('#app').innerHTML = `
       <span class="nav-item" data-hover>Ecosistema</span>
       <span class="nav-item" data-hover>Fundación</span>
       <button class="btn-plus" data-hover>Nevado Plus</button>
+      <div id="nvd-session-pill"></div>
     </nav>
   </header>
 
@@ -131,6 +132,18 @@ function buildTicker() {
   track.innerHTML = html + html;
 }
 buildTicker();
+
+// ─── Sesión — dispara inmediatamente tras el DOM, sin esperar el GLB ──────────
+if (window.__nvdApplyPill) {
+  (function trySession() {
+    if (!window.Clerk) { setTimeout(trySession, 80); return; }
+    window.Clerk.load().then(function () {
+      window.__nvdApplyPill(window.Clerk.user || null);
+    }).catch(function () {
+      window.__nvdApplyPill(null);
+    });
+  })();
+}
 
 // ─── Particles ────────────────────────────────────────────────────────────────
 
