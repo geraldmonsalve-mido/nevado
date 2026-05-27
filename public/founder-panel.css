@@ -309,6 +309,63 @@ body {
 
 .fp-input::placeholder { color: var(--muted); }
 
+/* ── LOADING / GENERIC STATES ────────────────────────────────────────── */
+
+.fp-loading {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+/* ── KPI cards (NODO metrics) ─────────────────────────────────────────── */
+.fp-kpi-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.fp-kpi-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.fp-kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.fp-kpi-warn .fp-kpi-val { color: #E74C3C; }
+
+/* ── Generic button (NODO panel) ──────────────────────────────────────── */
+.fp-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.fp-btn:hover { background: rgba(255,255,255,0.09); color: #fff; }
+.fp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.fp-btn-danger {
+  color: rgba(231,76,60,0.8);
+  border-color: rgba(231,76,60,0.25);
+}
+.fp-btn-danger:hover {
+  background: rgba(231,76,60,0.1);
+  color: #E74C3C;
+}
+
 /* ── BUTTONS ─────────────────────────────────────────────────────────── */
 
 .fp-btn-primary {

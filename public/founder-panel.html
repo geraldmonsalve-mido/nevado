@@ -213,6 +213,14 @@
         </details>
       </section>
 
+      <!-- ─── BLOQUE 4: NODO ──────────────────────────────────────── -->
+      <section class="fp-section" aria-label="Panel NODO">
+        <h2 class="fp-section-title">NODO — Comunidad</h2>
+        <div id="fp-nodo-container">
+          <div class="fp-loading">Inicializando módulo NODO…</div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -232,7 +240,19 @@
   <div id="fp-toast" class="fp-toast" hidden role="status" aria-live="polite"></div>
 
   <script src="/cursor.js"></script>
+  <script src="/nevado-env.js"></script>
   <script src="./founder-functional.js"></script>
   <script src="./founder-panel.js" defer></script>
+  <script src="/js/founder/founder-nodo.js"></script>
+  <script>
+    /* Init NODO section after founder auth */
+    window.addEventListener('nvd:founder-ready', async function () {
+      var container = document.getElementById('fp-nodo-container');
+      if (!container || !window.FOUNDER_NODO) return;
+      var clerkUser = window.Clerk && window.Clerk.user;
+      var modId = clerkUser ? clerkUser.id : '';
+      await window.FOUNDER_NODO.render(container, modId);
+    });
+  </script>
 </body>
 </html>

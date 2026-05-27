@@ -614,3 +614,221 @@ body { padding-bottom: 28px; }
 .std-tri div { width:28px; height:4px; border-radius:2px; }
 @media(max-width:768px) { .std-fg { grid-template-columns:1fr 1fr; } }
 @media(max-width:480px) { .std-fg { grid-template-columns:1fr; } }
+
+/* ─── NODO Live — New components ────────────────────────────────────────────── */
+
+/* Toast animation */
+@keyframes nodo-toast-in {
+  from { opacity:0; transform:translateX(-50%) translateY(6px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+
+/* Empty feed */
+.nodo-empty-feed {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--nodo-muted);
+  font-size: 14px;
+}
+
+/* Mod button in posts */
+.nodo-mod-btn {
+  color: rgba(231,76,60,0.5) !important;
+}
+.nodo-mod-btn:hover {
+  color: rgba(231,76,60,0.9) !important;
+  background: rgba(231,76,60,0.08) !important;
+}
+
+/* Sidebar chat quick link */
+.nodo-chat-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--nodo-muted);
+  padding: 7px 10px;
+  border-radius: 7px;
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+}
+.nodo-chat-link:hover {
+  color: var(--nodo-text);
+  background: rgba(255,255,255,0.04);
+}
+
+/* Metrics in right panel */
+.nodo-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--nodo-border);
+  font-size: 12px;
+  color: var(--nodo-muted);
+}
+.nodo-metric-row:last-child { border-bottom: none; }
+.nodo-metric-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nodo-text);
+}
+
+/* Loading state in feed */
+.nodo-feed-loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  color: var(--nodo-muted);
+  font-size: 13px;
+}
+
+/* Tag active state */
+.nodo-space-item.active .nodo-space-pulse {
+  box-shadow: 0 0 8px var(--nodo-accent);
+}
+
+/* Founder NODO panel styles */
+.fp-nodo-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.fp-kpi-warn .fp-kpi-val {
+  color: #E74C3C;
+}
+.fp-nodo-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 12px;
+}
+.fp-nodo-tab {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.fp-nodo-tab:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.15); }
+.fp-nodo-tab.active {
+  color: #E74C3C;
+  background: rgba(231,76,60,0.1);
+  border-color: rgba(231,76,60,0.3);
+}
+.fp-nodo-tab-content {
+  min-height: 200px;
+}
+.fp-nodo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fp-nodo-reporte, .fp-nodo-sancion {
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+}
+.fp-nodo-reporte-meta, .fp-nodo-sancion-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.fp-nodo-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: rgba(231,76,60,0.15);
+  color: #E74C3C;
+}
+.fp-badge-sancion {
+  background: rgba(184,148,74,0.15);
+  color: #B8944A;
+}
+.fp-nodo-time {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  margin-left: auto;
+}
+.fp-nodo-expiry {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+}
+.fp-nodo-reporte-motivo {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 4px;
+}
+.fp-nodo-reporte-desc, .fp-nodo-sancion-motivo {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+.fp-nodo-reporte-id, .fp-nodo-sancion-user {
+  font-size: 10px;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 8px;
+}
+.fp-nodo-reporte-actions {
+  display: flex;
+  gap: 6px;
+}
+.fp-btn-sm {
+  font-size: 10px !important;
+  padding: 4px 10px !important;
+}
+.fp-nodo-sancion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+.fp-input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #E8E8E0;
+  font-family: inherit;
+  outline: none;
+}
+.fp-input:focus { border-color: rgba(231,76,60,0.35); }
+.fp-nodo-result {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  min-height: 20px;
+}
+.fp-empty {
+  font-size: 13px;
+  color: rgba(255,255,255,0.28);
+  padding: 20px 0;
+}
+.fp-nodo-audit .fp-nodo-audit-row {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fp-nodo-audit code {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  font-family: monospace;
+}

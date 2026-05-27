@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hilo · NODO · NEVADO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/nodo.css" />
+  <style>
+    :root { --topbar-h: 52px; --page-accent: #E74C3C; }
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; color: rgba(232,228,220,0.88); text-decoration: none; font-family: 'Cormorant Garamond', serif; }
+    .topbar-logo span { color: #E74C3C; }
+    .topbar-back { font-size: 11px; color: rgba(255,255,255,0.45); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .topbar-back:hover { color: rgba(255,255,255,0.8); }
+    .hilo-page { max-width: 720px; margin: 0 auto; padding: 80px 24px 80px; }
+    .hilo-header { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+    .hilo-author-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .hilo-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(231,76,60,0.15); color: #E74C3C; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .hilo-author-name { font-size: 15px; font-weight: 500; color: #E8E8E0; display: flex; align-items: center; gap: 8px; }
+    .hilo-author-meta { font-size: 11px; color: rgba(255,255,255,0.38); margin-top: 2px; }
+    .hilo-body { font-size: 15px; line-height: 1.85; color: rgba(232,232,224,0.88); margin-bottom: 16px; }
+    .hilo-actions { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); }
+    .hilo-stat { font-size: 12px; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 5px; }
+    .hilo-like-btn.active { color: #E74C3C; }
+    .hilo-error { color: rgba(255,255,255,0.38); font-size: 14px; text-align: center; padding: 48px; }
+    .hilo-respuestas-label { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.34); margin-bottom: 16px; }
+    .hilo-resp { padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .hilo-resp:last-child { border-bottom: none; }
+    .hilo-resp-author-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .hilo-resp-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(231,76,60,0.12); color: #E74C3C; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .hilo-resp-avatar.hilo-resp-own { background: rgba(184,148,74,0.15); color: #B8944A; }
+    .hilo-resp-name { font-size: 13px; font-weight: 500; color: #E8E8E0; }
+    .hilo-resp-rank { font-size: 10px; color: rgba(255,255,255,0.35); margin-left: 6px; }
+    .hilo-resp-time { font-size: 10px; color: rgba(255,255,255,0.28); margin-left: 8px; }
+    .hilo-resp-body { font-size: 14px; line-height: 1.75; color: rgba(232,232,224,0.8); margin-left: 40px; }
+    .hilo-resp-actions { display: flex; gap: 4px; margin-left: 40px; margin-top: 8px; }
+    .hilo-resp-reply-btn { background: none; border: none; font-size: 11px; color: rgba(255,255,255,0.35); cursor: pointer; font-family: inherit; padding: 3px 8px; border-radius: 4px; transition: color 0.2s; }
+    .hilo-resp-reply-btn:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+    .hilo-no-resp { font-size: 13px; color: rgba(255,255,255,0.28); padding: 24px 0; text-align: center; }
+    .hilo-reply-form { margin-top: 28px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; }
+    .hilo-reply-form h3 { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.34); margin-bottom: 12px; }
+    #hilo-reply-input { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 14px; font-size: 14px; color: #E8E8E0; font-family: inherit; resize: vertical; min-height: 80px; outline: none; transition: border-color 0.2s; }
+    #hilo-reply-input:focus { border-color: rgba(231,76,60,0.35); }
+    #hilo-reply-send { margin-top: 10px; background: #E74C3C; color: #fff; border: none; padding: 8px 20px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+    #hilo-reply-send:hover { opacity: 0.85; }
+    #hilo-reply-send:disabled { opacity: 0.5; cursor: not-allowed; }
+    .hilo-login-hint { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 8px; }
+    .hilo-login-hint a { color: #E74C3C; }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <a class="topbar-back" href="/nodo.html">← Volver a NODO</a>
+    <div style="width:80px"></div>
+  </header>
+
+  <div class="hilo-page">
+    <div id="hilo-content">
+      <div style="padding:60px 0;text-align:center;color:rgba(255,255,255,0.28);font-size:14px;">Cargando hilo…</div>
+    </div>
+
+    <div id="hilo-respuestas-wrap">
+      <div class="hilo-respuestas-label" id="hilo-resp-label">Respuestas</div>
+      <div id="hilo-respuestas">
+        <div style="color:rgba(255,255,255,0.28);font-size:13px;">Cargando respuestas…</div>
+      </div>
+    </div>
+
+    <div class="hilo-reply-form" id="hilo-reply-form">
+      <h3>Tu respuesta</h3>
+      <textarea id="hilo-reply-input" placeholder="Escribe tu respuesta… (Cmd+Enter para enviar)"></textarea>
+      <button id="hilo-reply-send">Responder</button>
+      <p class="hilo-login-hint" id="hilo-login-hint" style="display:none">
+        <a href="/auth.html?redirect=/nodo.html">Inicia sesión</a> para responder.
+      </p>
+    </div>
+  </div>
+
+  <div id="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
+  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'18,340',l:'Miembros NODO'},{val:'89',l:'Espacios'},{val:'22',l:'Países'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
+
+  <script src="/cursor.js"></script>
+  <script src="/nevado-env.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script type="module" src="/src/auth.js"></script>
+  <script src="/js/nodo/nodo-core.js"></script>
+  <script src="/js/nodo/nodo-foro.js"></script>
+  <script src="/js/nodo/nodo-hilo-page.js"></script>
+  <script src="/croquetas.js"></script>
+
+  <script>
+    /* Show/hide reply form based on auth */
+    document.addEventListener('nodo:ready', function (e) {
+      var user = e.detail && e.detail.user;
+      var hint = document.getElementById('hilo-login-hint');
+      var btn  = document.getElementById('hilo-reply-send');
+      var inp  = document.getElementById('hilo-reply-input');
+      if (!user) {
+        if (hint) hint.style.display = '';
+        if (btn) btn.style.display = 'none';
+        if (inp) inp.disabled = true;
+      }
+    });
+  </script>
+</body>
+</html>
