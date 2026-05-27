@@ -137,6 +137,67 @@ function renderLogs(logs) {
     '</table>';
 }
 
+// ── MOTIVOS Y CANTIDADES RÁPIDAS ──────────────────────────────────────────
+
+var MOTIVOS_SUMAR = [
+  'Premio por participación activa',
+  'Recompensa por referido',
+  'Bonus de bienvenida',
+  'Logro desbloqueado',
+  'Contribución al NODO',
+  'Campaña Corazón completada',
+  'Corrección de saldo',
+  'Premio especial founder',
+  'Evento comunitario',
+  'Reconocimiento de mérito'
+];
+
+var MOTIVOS_RESTAR = [
+  'Corrección de error',
+  'Canje de recompensa',
+  'Penalización por incumplimiento',
+  'Ajuste administrativo',
+  'Reembolso de bonus incorrecto',
+  'Revisión de saldo',
+  'Sanción por comportamiento',
+  'Reversión de operación',
+  'Ajuste por campaña',
+  'Corrección manual founder'
+];
+
+var CANTIDADES_RAPIDAS = [20, 50, 100, 200, 1000];
+
+function updateMotivosDropdown(op) {
+  var sel = document.getElementById('fp-motivo-select');
+  if (!sel) return;
+  var motivos = op === 'restar' ? MOTIVOS_RESTAR : MOTIVOS_SUMAR;
+  sel.innerHTML = '<option value="">Seleccionar motivo...</option>' +
+    motivos.map(function (m) { return '<option value="' + m + '">' + m + '</option>'; }).join('');
+}
+
+function clearQuickActive() {
+  var btns = document.querySelectorAll('.fp-quick-btn');
+  btns.forEach(function (b) { b.classList.remove('fp-quick-btn-active'); });
+}
+
+function updateQuickAmounts(op) {
+  var wrap = document.getElementById('fp-quick-amounts');
+  if (!wrap) return;
+  var prefix = op === 'restar' ? '−' : '+';
+  wrap.innerHTML = CANTIDADES_RAPIDAS.map(function (n) {
+    return '<button type="button" class="fp-quick-btn" data-amount="' + n + '">' +
+      prefix + n.toLocaleString('es-VE') + '</button>';
+  }).join('');
+  wrap.querySelectorAll('.fp-quick-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var cantInput = document.getElementById('fp-op-cantidad');
+      if (cantInput) { cantInput.value = btn.dataset.amount; cantInput.dispatchEvent(new Event('input')); }
+      clearQuickActive();
+      btn.classList.add('fp-quick-btn-active');
+    });
+  });
+}
+
 // ── ESTADO DEL USUARIO ENCONTRADO ────────────────────────────────────────
 
 var currentUser = null;
@@ -165,6 +226,8 @@ function showUserCard(user) {
     form.reset();
     var warning = document.getElementById('fp-op-warning');
     if (warning) warning.hidden = true;
+    updateMotivosDropdown('sumar');
+    updateQuickAmounts('sumar');
   }
 }
 
@@ -282,10 +345,29 @@ function initCroquetasForm() {
     }
   }
 
-  if (cantInput) cantInput.addEventListener('input', checkWarning);
-  if (opForm) opForm.querySelectorAll('[name="operacion"]').forEach(function (r) {
-    r.addEventListener('change', checkWarning);
+  if (cantInput) cantInput.addEventListener('input', function () {
+    clearQuickActive();
+    checkWarning();
   });
+
+  if (opForm) opForm.querySelectorAll('[name="operacion"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      var op = r.value;
+      updateMotivosDropdown(op);
+      updateQuickAmounts(op);
+      var motivoInput = document.getElementById('fp-op-motivo');
+      if (motivoInput) motivoInput.value = '';
+      checkWarning();
+    });
+  });
+
+  var motivoSel = document.getElementById('fp-motivo-select');
+  if (motivoSel) {
+    motivoSel.addEventListener('change', function () {
+      var motivoInput = document.getElementById('fp-op-motivo');
+      if (motivoInput && motivoSel.value) motivoInput.value = motivoSel.value;
+    });
+  }
 
   // ── PASO C → D: submit del formulario ──────────────────────────────
   if (opForm) {
@@ -331,9 +413,10 @@ function initCroquetasForm() {
             if (!res.ok || data.error) {
               showToast(data.error || 'Error al aplicar cambio.', 'error');
             } else {
+              var verb = operacion === 'sumar' ? 'te ha otorgado' : 'ha retirado';
               showToast(
-                '✓ Cambio aplicado. ' + data.nombre + ' ahora tiene ' +
-                fmt(data.croquetas) + ' croquetas · ' + data.rango,
+                '@Nevado ' + verb + ' ' + fmt(monto) + ' Croquetas · ' + motivo +
+                ' · ' + data.nombre + ' ahora tiene ' + fmt(data.croquetas) + ' · ' + data.rango,
                 'success'
               );
               showUserCard(data);

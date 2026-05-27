@@ -451,6 +451,85 @@ body {
 .fp-radio-option:hover { background: rgba(255,255,255,0.06); }
 .fp-radio-option input[type="radio"] { accent-color: var(--gold); cursor: pointer; }
 
+/* ── FORM GROUP (label + control) ───────────────────────────────────── */
+
+.fp-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fp-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── QUICK AMOUNT BUTTONS ────────────────────────────────────────────── */
+
+.fp-quick-amounts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fp-quick-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), color var(--ease);
+  white-space: nowrap;
+}
+
+.fp-quick-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+
+.fp-quick-btn-active {
+  background: var(--gold-dim);
+  border-color: rgba(255,215,120,0.35);
+  color: var(--gold);
+}
+
+/* ── MOTIVO SELECT ───────────────────────────────────────────────────── */
+
+.fp-motivo-select {
+  width: 100%;
+  padding: 12px 40px 12px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.44)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat right 16px center;
+  color: var(--text2);
+  font-size: 14px;
+  font-family: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+
+.fp-motivo-select:focus {
+  border-color: rgba(255,215,120,0.4);
+  box-shadow: 0 0 0 3px rgba(255,215,120,0.07);
+}
+
+.fp-motivo-select option {
+  background: #0b1022;
+  color: var(--text);
+}
+
 /* ── MODAL ───────────────────────────────────────────────────────────── */
 
 .fp-modal-overlay {
