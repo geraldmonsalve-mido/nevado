@@ -41,6 +41,18 @@
     } catch (_) { return []; }
   }
 
+  /* ── Tipo mapping: UI names → valid DB enum values ─────────────────────── */
+  var TIPO_DB_MAP = {
+    insight:     'aporte',
+    recurso:     'aporte',
+    experiencia: 'aporte',
+    oportunidad: 'anuncio',
+    pregunta:    'pregunta',
+    aporte:      'aporte',
+    anuncio:     'anuncio',
+    evento:      'evento',
+  };
+
   /* ── Create hilo ────────────────────────────────────────────────────────── */
   async function createHilo(data) {
     var check = window.NODO.canPost();
@@ -51,13 +63,16 @@
     if (!contenido || contenido.length < 3) { window.NODO.showToast('Escribe al menos 3 caracteres.', 'error'); return null; }
     if (contenido.length > 1200) { window.NODO.showToast('Máximo 1,200 caracteres.', 'error'); return null; }
 
+    var tipoRaw = data.tipo || 'aporte';
+    var tipoDB  = TIPO_DB_MAP[tipoRaw] || 'aporte';
+
     var payload = {
       profile_id:   u.profile_id,
       autor_nombre: u.display_name || 'Usuario',
       autor_avatar: u.avatar_url || null,
       autor_rank:   u.rank_key || 'cachorro',
       contenido:    contenido,
-      tipo:         data.tipo || 'insight',
+      tipo:         tipoDB,
       categoria_id: data.categoria_id || null,
       estado:       'activo',
     };
@@ -143,7 +158,7 @@
         contenido:    String(contenido).trim(),
         estado:       'activo',
       };
-      if (parent_id) payload.parent_id = parent_id;
+      // parent_id not in DB schema — omitted
       var result = await sb().from('foro_respuestas').insert(payload).select().single();
       if (result.error) throw result.error;
       try { await sb().rpc('increment_hilo_respuestas', { p_hilo_id: hilo_id }); } catch (_) {}

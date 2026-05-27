@@ -4,7 +4,8 @@
   'use strict';
 
   var SB_URL = window.NEVADO_SUPABASE_URL  || 'https://icxrduatkbazvwysvxrg.supabase.co';
-  var SB_KEY = window.NEVADO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || '';
+  var SB_KEY = window.NEVADO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljeHJkdWF0a2JhenZ3eXN2eHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ3NTEsImV4cCI6MjA5NTMyMDc1MX0.dKNGHz9jEmtVn7hmruzNp2KipMq9BDFb0ABRmlGgqNE';
 
   /* ── Supabase client singleton — asignado en window.NODO.sb inmediatamente ── */
   window.NODO = window.NODO || {};
@@ -122,6 +123,7 @@
     var map = {
       insight: 'Insight', pregunta: 'Pregunta', recurso: 'Recurso',
       experiencia: 'Experiencia', oportunidad: 'Oportunidad',
+      aporte: 'Aporte', anuncio: 'Anuncio', evento: 'Evento',
     };
     return map[tipo] || tipo;
   }
@@ -130,6 +132,7 @@
     var map = {
       insight: 'badge-insight', pregunta: 'badge-pregunta', recurso: 'badge-recurso',
       experiencia: 'badge-experiencia', oportunidad: 'badge-oportunidad',
+      aporte: 'badge-insight', anuncio: 'badge-oportunidad', evento: 'badge-recurso',
     };
     return map[tipo] || 'badge-insight';
   }
