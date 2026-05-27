@@ -48,24 +48,28 @@
   }
 
   async function getProfile(user) {
-    const db = window.nevadoDb || window.NEVADO_AUTH?.supabase;
-    if (!db || !user?.id) return null;
+    const clerkId = user?.id || '';
+    const email = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || '';
 
-    const email = user.primaryEmailAddress?.emailAddress || user.emailAddresses?.[0]?.emailAddress;
+    const params = new URLSearchParams();
+    if (clerkId) params.set('clerk_id', clerkId);
+    if (email) params.set('email', email);
 
-    let res = await db.from('usuarios')
-      .select('nombre, username, email, croquetas, rango')
-      .eq('clerk_id', user.id)
-      .maybeSingle();
+    try {
+      const res = await fetch('/api/usuario?' + params.toString(), {
+        headers: { 'Accept': 'application/json' }
+      });
 
-    if (!res?.data && email) {
-      res = await db.from('usuarios')
-        .select('nombre, username, email, croquetas, rango')
-        .eq('email', email)
-        .maybeSingle();
+      if (!res.ok) {
+        console.warn('[Nevado session] API usuario:', res.status);
+        return null;
+      }
+
+      return await res.json();
+    } catch (e) {
+      console.warn('[Nevado session] API usuario error:', e);
+      return null;
     }
-
-    return res?.data || null;
   }
 
   function setUser(el, user, profile) {
