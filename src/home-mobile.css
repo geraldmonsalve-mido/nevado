@@ -800,3 +800,47 @@
     display: none !important;
   }
 }
+
+/* Corrección profile: resumen limpio y sin tarjeta rota */
+#nevado-profile-live-card,
+.npl-card {
+  display: none !important;
+}
+
+#nevado-profile-summary {
+  width: min(92vw, 720px);
+  margin: 24px auto 18px;
+  padding: 16px 20px;
+  border: 1px solid rgba(212,168,65,.35);
+  border-radius: 20px;
+  background: rgba(10,12,18,.76);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 50px rgba(0,0,0,.32);
+  color: white;
+  text-align: center;
+  position: relative;
+  z-index: 30;
+}
+
+#nevado-profile-summary strong,
+#nevado-profile-summary span,
+#nevado-profile-summary em {
+  display: block;
+}
+
+#nevado-profile-summary strong {
+  color: #d4a841;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+#nevado-profile-summary span {
+  margin-top: 5px;
+  font-size: 16px;
+}
+
+#nevado-profile-summary em {
+  margin-top: 4px;
+  font-style: normal;
+  color: rgba(255,255,255,.72);
+}
