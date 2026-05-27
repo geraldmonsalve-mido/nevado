@@ -1934,3 +1934,148 @@ textarea {
   }
 
 }
+
+#founder-command-compact {
+  width: min(1180px, 92vw);
+  margin: 28px auto 18px;
+  padding: 22px 26px;
+  border-radius: 24px;
+  border: 1px solid rgba(212,168,65,.26);
+  background: rgba(10,12,18,.72);
+  backdrop-filter: blur(18px);
+  color: white;
+}
+
+#founder-command-compact span {
+  color: #d4a841;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+#founder-command-compact h1 {
+  margin: 8px 0 4px;
+  font-size: 34px;
+}
+
+#founder-command-compact p {
+  margin: 0;
+  color: rgba(255,255,255,.66);
+}
+
+#founder-real-stats {
+  width: min(1180px, 92vw);
+  margin: 0 auto 22px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+#founder-real-stats article {
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(18,20,30,.72);
+  color: white;
+  min-height: 118px;
+}
+
+#founder-real-stats span {
+  display: block;
+  color: rgba(255,255,255,.62);
+  font-size: 13px;
+}
+
+#founder-real-stats strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 28px;
+  color: #d4a841;
+}
+
+#founder-real-stats small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255,255,255,.50);
+}
+
+.fc-search {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.fc-search label,
+#fc-form label {
+  display: grid;
+  gap: 8px;
+  color: rgba(255,255,255,.72);
+  font-size: 13px;
+}
+
+.fc-search input,
+#fc-form input,
+#fc-form select {
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.05);
+  color: white;
+  padding: 0 14px;
+}
+
+.fc-search button {
+  height: 46px;
+  align-self: end;
+  border-radius: 14px;
+  border: 1px solid rgba(212,168,65,.38);
+  background: rgba(212,168,65,.16);
+  color: #d4a841;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fc-user-card {
+  margin: 12px 0 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(0,0,0,.24);
+  border: 1px solid rgba(255,255,255,.08);
+  color: rgba(255,255,255,.78);
+}
+
+.fc-user-card strong,
+.fc-user-card span,
+.fc-user-card small {
+  display: block;
+}
+
+.fc-user-card strong {
+  color: white;
+  font-size: 18px;
+}
+
+.fc-user-card span {
+  color: rgba(255,255,255,.60);
+  margin-top: 3px;
+}
+
+.fc-user-card small {
+  color: #d4a841;
+  margin-top: 6px;
+}
+
+@media (max-width: 1100px) {
+  #founder-real-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  #founder-real-stats,
+  #fc-form,
+  .fc-search {
+    grid-template-columns: 1fr;
+  }
+}
