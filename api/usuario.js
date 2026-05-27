@@ -5,6 +5,19 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY
 );
 
+
+function nivelPorCroquetas(croquetas = 0) {
+  const c = Number(croquetas || 0);
+
+  if (c >= 29050) return 170;
+  if (c >= 16450) return 68 + Math.floor((c - 16450) / 200);
+  if (c >= 8450) return 48 + Math.floor((c - 8450) / 150);
+  if (c >= 5450) return 33 + Math.floor((c - 5450) / 150);
+  if (c >= 3200) return 21 + Math.floor((c - 3200) / 100);
+  if (c >= 2000) return 11 + Math.floor((c - 2000) / 100);
+  return Math.max(1, Math.floor(c / 100));
+}
+
 function rangoPorCroquetas(croquetas = 0) {
   const n = Number(croquetas || 0);
   if (n >= 16450) return 'Leyenda Andina';
@@ -38,11 +51,13 @@ export default async function handler(req, res) {
     if (!data) return res.status(404).json({ error: 'Usuario no encontrado' });
 
     const croquetas = Number(data.croquetas || 0);
-    const rango = data.rango || rangoPorCroquetas(croquetas);
+    const rango = rangoPorCroquetas(croquetas);
+    const nivel = nivelPorCroquetas(croquetas);
 
     return res.status(200).json({
       ...data,
       croquetas,
+      nivel,
       rango
     });
   } catch (err) {
