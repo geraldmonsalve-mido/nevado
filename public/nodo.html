@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NODO — Inteligencia Colectiva · NEVADO</title>
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript">
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -181,6 +187,7 @@
         <span><strong id="stat-hilos">—</strong> aportes</span>
         <span><strong>22</strong> países</span>
         <span class="nodo-live-badge">● VIVO</span>
+        <span style="font-size:11px;opacity:0.4;margin-left:6px;">v1.2</span>
       </div>
       <button class="nodo-publish-btn">+ Publicar aporte</button>
     </div>
@@ -572,5 +579,10 @@
   <script src="/croquetas.js"></script>
   <script src="/mini-nevado.js"></script>
   <script src="/nevado-bubble.js"></script>
+  <div id="nvd-session-pill" style="position:fixed;bottom:36px;right:24px;z-index:9800;">
+    <a href="/auth.html?redirect=/nodo.html" style="display:flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:rgba(232,228,220,0.85);text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;backdrop-filter:blur(12px);">Iniciar sesión</a>
+  </div>
+  <script src="/nevado-session-widget.js"></script>
+  <script src="/nevado-home-desktop-pill.js"></script>
 </body>
 </html>

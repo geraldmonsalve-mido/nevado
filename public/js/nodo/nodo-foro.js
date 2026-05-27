@@ -1,12 +1,7 @@
 /* NEVADO — NODO Foro v2.0
-   Schema v2: autor_id, estado, total_reacciones, total_respuestas, denormalized author. */
+   Schema v2: profile_id, autor_rank, likes, respuestas, created_at. */
 (function () {
   'use strict';
-
-  function waitForNodo(cb) {
-    if (window.NODO && window.NODO.state.ready) { cb(); return; }
-    document.addEventListener('nodo:ready', cb, { once: true });
-  }
 
   function esc(str) {
     return window.NODO
@@ -21,12 +16,12 @@
     var base = 'estado=eq.activo';
     var params;
     if (tab === 'destacado') {
-      params = base + '&destacado=eq.true&order=total_reacciones.desc&limit=20';
+      params = base + '&es_destacado=eq.true&order=likes.desc&limit=20';
     } else {
-      params = base + '&order=creado_en.desc&limit=20';
+      params = base + '&order=created_at.desc&limit=20';
     }
     if (categoriaId) params += '&categoria_id=eq.' + encodeURIComponent(categoriaId);
-    params += '&select=*,foro_categorias(nombre,slug,icono,color_acento)';
+    params += '&select=*,foro_categorias(nombre,slug,icono,color)';
     try {
       var hilos = await window.NODO.sb.select('foro_hilos', params);
       return Array.isArray(hilos) ? hilos : [];
@@ -38,16 +33,14 @@
     var check = window.NODO.canPost();
     if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
 
-    var u = window.NODO.state.user;
-    var ck = window.NODO.state.clerkUser;
+    var u = window.NODO_USER;
     var payload = {
-      autor_id:     u.clerk_id,
-      autor_nombre: u.nombre || 'Usuario',
-      autor_avatar: ck && ck.imageUrl ? ck.imageUrl : null,
-      autor_rango:  u.rango || 'Cachorro',
+      profile_id:   u.profile_id,
+      autor_nombre: u.display_name || 'Usuario',
+      autor_avatar: u.avatar_url || null,
+      autor_rank:   u.rank_key || 'cachorro',
       contenido:    String(data.contenido || '').trim(),
       tipo:         data.tipo || 'insight',
-      tags:         Array.isArray(data.tags) ? data.tags : [],
       categoria_id: data.categoria_id || null,
       estado:       'activo',
     };
@@ -55,9 +48,8 @@
     if (payload.contenido.length > 3000) { window.NODO.showToast('Máximo 3,000 caracteres.', 'error'); return null; }
 
     try {
-      var row = await window.NODO.sb.insert('foro_hilos', payload);
+      var row  = await window.NODO.sb.insert('foro_hilos', payload);
       var hilo = Array.isArray(row) ? row[0] : row;
-      await window.NODO.addReputacion('publicar_hilo');
       window.NODO.showToast('Aporte publicado.');
       return hilo;
     } catch (_) {
@@ -66,49 +58,42 @@
     }
   }
 
+  /* ── Local like tracking (no junction table in schema) ──────────────────── */
+  var _likedSet = new Set();
+
   /* ── Toggle like ────────────────────────────────────────────────────────── */
   async function toggleLike(hilo_id) {
-    if (!window.NODO.state.user) { window.NODO.showToast('Inicia sesión para reaccionar.', 'error'); return false; }
-    var uid = window.NODO.state.user.clerk_id;
+    if (!window.NODO_USER) { window.NODO.showToast('Inicia sesión para reaccionar.', 'error'); return false; }
+    var liked = _likedSet.has(hilo_id);
     try {
-      var existing = await window.NODO.sb.select('foro_reacciones',
-        'usuario_id=eq.' + encodeURIComponent(uid) + '&tipo=eq.like&hilo_id=eq.' + hilo_id
-      );
-      if (Array.isArray(existing) && existing.length > 0) {
-        await window.NODO.sb.delete('foro_reacciones',
-          'usuario_id=eq.' + encodeURIComponent(uid) + '&tipo=eq.like&hilo_id=eq.' + hilo_id
-        );
-        await window.NODO.sb.rpc('decrement_hilo_reacciones', { hilo_id: hilo_id });
+      if (liked) {
+        _likedSet.delete(hilo_id);
+        await window.NODO.sb.rpc('decrement_hilo_likes', { p_hilo_id: hilo_id });
         return false;
       } else {
-        await window.NODO.sb.insert('foro_reacciones', { usuario_id: uid, tipo: 'like', hilo_id: hilo_id });
-        await window.NODO.sb.rpc('increment_hilo_reacciones', { hilo_id: hilo_id });
-        await window.NODO.addReputacion('recibir_like');
+        _likedSet.add(hilo_id);
+        await window.NODO.sb.rpc('increment_hilo_likes', { p_hilo_id: hilo_id });
         return true;
       }
-    } catch (_) { return false; }
+    } catch (_) {
+      if (liked) _likedSet.add(hilo_id); else _likedSet.delete(hilo_id);
+      return liked;
+    }
   }
 
-  /* ── Get my likes ───────────────────────────────────────────────────────── */
+  /* ── Get my likes (session-only, no junction table) ─────────────────────── */
   async function getMyLikes(hilo_ids) {
-    if (!window.NODO.state.user || !hilo_ids.length) return [];
-    try {
-      var rows = await window.NODO.sb.select('foro_reacciones',
-        'usuario_id=eq.' + encodeURIComponent(window.NODO.state.user.clerk_id) +
-        '&tipo=eq.like&hilo_id=in.(' + hilo_ids.join(',') + ')'
-      );
-      return Array.isArray(rows) ? rows.map(function (r) { return r.hilo_id; }) : [];
-    } catch (_) { return []; }
+    return hilo_ids.filter(function (id) { return _likedSet.has(id); });
   }
 
   /* ── Report ─────────────────────────────────────────────────────────────── */
   async function reportHilo(hilo_id, motivo) {
-    if (!window.NODO.state.user) { window.NODO.showToast('Debes iniciar sesión para reportar.', 'error'); return; }
+    if (!window.NODO_USER) { window.NODO.showToast('Debes iniciar sesión para reportar.', 'error'); return; }
     try {
       await window.NODO.sb.insert('foro_reportes', {
-        reportante_id: window.NODO.state.user.clerk_id,
-        hilo_id: hilo_id,
-        motivo: motivo,
+        reportante_id: window.NODO_USER.profile_id,
+        hilo_id:       hilo_id,
+        motivo:        motivo,
       });
       window.NODO.showToast('Reporte enviado.');
     } catch (_) { window.NODO.showToast('Error al enviar reporte.', 'error'); }
@@ -118,7 +103,7 @@
   async function loadRespuestas(hilo_id) {
     try {
       var rows = await window.NODO.sb.select('foro_respuestas',
-        'hilo_id=eq.' + hilo_id + '&estado=eq.activo&order=creado_en.asc'
+        'hilo_id=eq.' + hilo_id + '&estado=eq.activo&order=created_at.asc'
       );
       return Array.isArray(rows) ? rows : [];
     } catch (_) { return []; }
@@ -129,22 +114,20 @@
     var check = window.NODO.canPost();
     if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
     if (!String(contenido || '').trim()) { window.NODO.showToast('Respuesta vacía.', 'error'); return null; }
-    var u  = window.NODO.state.user;
-    var ck = window.NODO.state.clerkUser;
+    var u = window.NODO_USER;
     try {
       var payload = {
         hilo_id:      hilo_id,
-        autor_id:     u.clerk_id,
-        autor_nombre: u.nombre || 'Usuario',
-        autor_avatar: ck && ck.imageUrl ? ck.imageUrl : null,
-        autor_rango:  u.rango || 'Cachorro',
+        profile_id:   u.profile_id,
+        autor_nombre: u.display_name || 'Usuario',
+        autor_avatar: u.avatar_url || null,
+        autor_rank:   u.rank_key || 'cachorro',
         contenido:    String(contenido).trim(),
         estado:       'activo',
       };
       if (parent_id) payload.parent_id = parent_id;
       var row = await window.NODO.sb.insert('foro_respuestas', payload);
-      await window.NODO.sb.rpc('increment_hilo_replies', { hilo_id: hilo_id });
-      await window.NODO.addReputacion('responder');
+      try { await window.NODO.sb.rpc('increment_hilo_respuestas', { p_hilo_id: hilo_id }); } catch (_) {}
       return Array.isArray(row) ? row[0] : row;
     } catch (_) {
       window.NODO.showToast('Error al responder.', 'error');
@@ -155,15 +138,12 @@
   /* ── Render post card ───────────────────────────────────────────────────── */
   function renderPost(hilo, myLikedIds, idx) {
     var nombre = esc(hilo.autor_nombre || 'Usuario');
-    var rango  = esc(hilo.autor_rango  || 'Cachorro');
+    var rank   = esc(hilo.autor_rank   || 'cachorro');
     var ti     = (hilo.autor_nombre || '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
     var badgeClass = window.NODO.tipoBadgeClass(hilo.tipo);
     var tipoLbl    = window.NODO.tipoLabel(hilo.tipo);
-    var time       = window.NODO.formatTime(hilo.creado_en);
+    var time       = window.NODO.formatTime(hilo.created_at);
     var liked      = myLikedIds.indexOf(hilo.id) !== -1;
-    var tags       = (hilo.tags || []).map(function (t) {
-      return '<span class="nodo-post-tag">#' + esc(t) + '</span>';
-    }).join('');
     var catPart = hilo.foro_categorias ? esc(hilo.foro_categorias.nombre) + ' · ' : '';
 
     return '<article class="nodo-post" style="--post-i:' + idx + '" data-hilo-id="' + hilo.id + '">' +
@@ -173,23 +153,22 @@
           '<div class="nodo-post-name">' + nombre +
             ' <span class="nodo-post-badge ' + badgeClass + '">' + tipoLbl + '</span>' +
           '</div>' +
-          '<div class="nodo-post-sub">' + rango + ' · ' + catPart + time + '</div>' +
+          '<div class="nodo-post-sub">' + rank + ' · ' + catPart + time + '</div>' +
         '</div>' +
-        '<button class="nodo-post-follow" data-autor="' + esc(hilo.autor_id || '') + '">+ Seguir</button>' +
+        '<button class="nodo-post-follow" data-autor="' + esc(hilo.profile_id || '') + '">+ Seguir</button>' +
       '</div>' +
       '<div class="nodo-post-body"><p>' + esc(hilo.contenido).replace(/\n/g, '</p><p>') + '</p></div>' +
-      (tags ? '<div class="nodo-post-tags">' + tags + '</div>' : '') +
       '<div class="nodo-post-footer">' +
         '<button class="nodo-post-action nodo-action-like' + (liked ? ' active' : '') + '" data-hilo="' + hilo.id + '">' +
           (liked
             ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z"/></svg>'
             : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>'
           ) +
-          '<span>' + (hilo.total_reacciones || 0) + '</span>' +
+          '<span>' + (hilo.likes || 0) + '</span>' +
         '</button>' +
         '<button class="nodo-post-action nodo-action-reply" data-hilo="' + hilo.id + '">' +
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>' +
-          '<span>' + (hilo.total_respuestas || 0) + '</span>' +
+          '<span>' + (hilo.respuestas || 0) + '</span>' +
         '</button>' +
         '<button class="nodo-post-action nodo-action-share" data-hilo="' + hilo.id + '">' +
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
@@ -210,7 +189,6 @@
 
     var sentinel = container.querySelector('#feed-sentinel');
     var loadMore = container.querySelector('.nodo-load-more');
-    /* Clear posts, keep sentinel and load-more */
     Array.from(container.children).forEach(function (el) {
       if (el.id !== 'feed-sentinel' && !el.classList.contains('nodo-load-more')) el.remove();
     });
@@ -248,12 +226,12 @@
     container.querySelectorAll('.nodo-action-like[data-hilo]').forEach(function (btn) {
       btn.addEventListener('click', async function () {
         var hilo_id = btn.getAttribute('data-hilo');
-        var liked = await toggleLike(hilo_id);
-        var span = btn.querySelector('span');
-        var n = parseInt(span.textContent.replace(/,/g, '')) || 0;
+        var liked   = await toggleLike(hilo_id);
+        var span    = btn.querySelector('span');
+        var n       = parseInt(span.textContent.replace(/,/g, '')) || 0;
         span.textContent = liked ? n + 1 : Math.max(0, n - 1);
         btn.classList.toggle('active', liked);
-        var svg = btn.querySelector('svg');
+        var svg  = btn.querySelector('svg');
         var path = btn.querySelector('path');
         if (liked) {
           svg.setAttribute('fill', 'currentColor');
@@ -298,7 +276,7 @@
               '<div class="comentario-avatar-mini">' + esc(ini) + '</div>' +
               '<div class="comentario-contenido">' +
                 '<div class="comentario-meta"><strong>' + esc(r.autor_nombre || 'Usuario') + '</strong> · ' +
-                window.NODO.formatTime(r.creado_en) + '</div>' +
+                window.NODO.formatTime(r.created_at) + '</div>' +
                 '<p>' + esc(r.contenido) + '</p>' +
               '</div></div>';
           }).join('');
@@ -316,14 +294,14 @@
             var resp = await createRespuesta(hilo_id, txt);
             if (resp) {
               ta.value = '';
-              var u  = window.NODO.state.user;
-              var ini = (u ? u.nombre : '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
+              var u   = window.NODO_USER;
+              var ini = (u ? u.display_name : '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
               var newItem = document.createElement('div');
               newItem.className = 'comentario-item actividad-nueva';
               newItem.innerHTML =
                 '<div class="comentario-avatar-mini">' + esc(ini) + '</div>' +
                 '<div class="comentario-contenido"><div class="comentario-meta"><strong>' +
-                esc(u ? u.nombre : 'Tú') + '</strong> · ahora</div><p>' + esc(txt) + '</p></div>';
+                esc(u ? u.display_name : 'Tú') + '</strong> · ahora</div><p>' + esc(txt) + '</p></div>';
               lista.appendChild(newItem);
               var rcSpan = btn.querySelector('span');
               if (rcSpan) rcSpan.textContent = parseInt(rcSpan.textContent || '0') + 1;
@@ -373,14 +351,15 @@
     submitBtn.dataset.bound = '1';
 
     submitBtn.addEventListener('click', async function () {
+      if (!window.NODO_USER) {
+        window.location.href = '/auth.html?redirect=/nodo.html';
+        return;
+      }
       var textarea    = document.getElementById('composer-textarea') || document.querySelector('.nodo-composer-textarea');
       var activeType  = document.querySelector('.nodo-type-btn.active');
-      var tags        = Array.from(document.querySelectorAll('.nodo-tag-pill')).map(function (t) {
-        return t.textContent.replace(/^#/, '').trim();
-      });
-      var activeSpace  = document.querySelector('#sidebar-espacios .nodo-space-item.active');
-      var categoriaId  = activeSpace ? activeSpace.getAttribute('data-cat-id') : null;
-      var contenido    = textarea ? textarea.value.trim() : '';
+      var activeSpace = document.querySelector('#sidebar-espacios .nodo-space-item.active');
+      var categoriaId = activeSpace ? activeSpace.getAttribute('data-cat-id') : null;
+      var contenido   = textarea ? textarea.value.trim() : '';
       if (!contenido) { window.NODO.showToast('Escribe algo antes de publicar.', 'error'); return; }
 
       submitBtn.disabled = true;
@@ -388,7 +367,6 @@
       var hilo = await createHilo({
         contenido:    contenido,
         tipo:         activeType ? activeType.dataset.type : 'insight',
-        tags:         tags,
         categoria_id: categoriaId,
       });
       submitBtn.disabled = false;
@@ -419,8 +397,8 @@
   /* ── Update composer avatar ─────────────────────────────────────────────── */
   function updateComposerAvatar() {
     var avatar = document.getElementById('composer-avatar') || document.querySelector('.nodo-composer-avatar');
-    if (!avatar || !window.NODO.state.user) return;
-    avatar.textContent = window.NODO.initials(window.NODO.state.user.nombre);
+    if (!avatar || !window.NODO_USER) return;
+    avatar.textContent = window.NODO.initials(window.NODO_USER.display_name);
   }
 
   /* ── Tab switching ──────────────────────────────────────────────────────── */
@@ -437,10 +415,10 @@
         currentTab = tab.dataset.tab;
         var container = document.getElementById('feed-principal') || document.querySelector('.nodo-posts');
         if (container) {
-          var s = container.querySelector('#feed-sentinel');
+          var s  = container.querySelector('#feed-sentinel');
           var lm = container.querySelector('.nodo-load-more');
           container.innerHTML = '';
-          if (s) container.appendChild(s);
+          if (s)  container.appendChild(s);
           if (lm) container.appendChild(lm);
           var loading = document.createElement('div');
           loading.className = 'feed-loading';
@@ -464,9 +442,9 @@
       btn.textContent = 'Cargando…';
       loadedOffset += 20;
       try {
-        var base = 'estado=eq.activo&order=creado_en.desc&limit=20&offset=' + loadedOffset;
+        var base = 'estado=eq.activo&order=created_at.desc&limit=20&offset=' + loadedOffset;
         if (currentCat) base += '&categoria_id=eq.' + encodeURIComponent(currentCat);
-        base += '&select=*,foro_categorias(nombre,slug,icono,color_acento)';
+        base += '&select=*,foro_categorias(nombre,slug,icono,color)';
         var rows = await window.NODO.sb.select('foro_hilos', base);
         if (rows && rows.length) {
           var container  = document.getElementById('feed-principal') || document.querySelector('.nodo-posts');
@@ -509,12 +487,6 @@
     bindLoadMore();
   }
 
-  waitForNodo(function () {
-    if (document.getElementById('feed-principal') || document.querySelector('.nodo-posts')) {
-      initForo();
-    }
-  });
-
   window.NODO = window.NODO || {};
   window.NODO.foro = {
     loadHilos:       loadHilos,
@@ -525,5 +497,6 @@
     createRespuesta: createRespuesta,
     renderFeed:      renderFeed,
     renderPost:      renderPost,
+    initForo:        initForo,
   };
 })();

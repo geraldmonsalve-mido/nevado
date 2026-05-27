@@ -1,22 +1,20 @@
-/* NEVADO — NODO Core v1.0
-   Inicializa window.NODO: estado, auth, Supabase REST helpers, utilidades. */
+/* NEVADO — NODO Core v2.0
+   window.NODO: sb helpers, auth via Clerk+profiles, utilidades. */
 (function () {
   'use strict';
 
-  var SB_URL     = window.NEVADO_SUPABASE_URL  || '';
-  var SB_KEY     = window.NEVADO_SUPABASE_ANON_KEY || '';
-  var FOUNDER_EMAIL = 'nevado.pro7@gmail.com';
-  var MODERADORES   = [FOUNDER_EMAIL];
+  var SB_URL = window.NEVADO_SUPABASE_URL  || '';
+  var SB_KEY = window.NEVADO_SUPABASE_ANON_KEY || '';
 
   /* ── Supabase REST helpers ──────────────────────────────────────────────── */
   function sbFetch(path, method, body, extra) {
     var opts = {
       method: method || 'GET',
       headers: Object.assign({
-        'apikey':          SB_KEY,
-        'Authorization':   'Bearer ' + SB_KEY,
-        'Content-Type':    'application/json',
-        'Accept':          'application/json',
+        'apikey':        SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type':  'application/json',
+        'Accept':        'application/json',
       }, extra || {}),
     };
     if (body !== undefined && body !== null) opts.body = JSON.stringify(body);
@@ -45,114 +43,100 @@
     },
   };
 
-  /* ── State ─────────────────────────────────────────────────────────────── */
-  var state = {
-    ready:      false,
-    user:       null,   /* { clerk_id, nombre, email, croquetas, rango, nivel } */
-    clerkUser:  null,   /* window.Clerk.user */
-    sanctions:  [],     /* active moderacion_sanciones rows */
-    isFounder:  false,
-    isMod:      false,
-  };
-
-  /* ── Wait for auth ─────────────────────────────────────────────────────── */
-  function waitForAuth() {
-    return new Promise(function (resolve) {
-      if (window.NEVADO_AUTH && window.NEVADO_AUTH.getUser()) { resolve(); return; }
-      var t = setInterval(function () {
-        if (window.NEVADO_AUTH) {
-          /* auth.js sets NEVADO_AUTH, but user may still be loading */
-          if (window.NEVADO_AUTH.getClerkUser && window.NEVADO_AUTH.getClerkUser()) {
-            clearInterval(t); resolve(); return;
-          }
-          /* No session — still resolve so NODO shows for guests */
-          clearInterval(t); resolve();
-        }
-      }, 150);
-      /* Timeout after 5s regardless */
-      setTimeout(function () { clearInterval(t); resolve(); }, 5000);
+  /* ── Session UI ─────────────────────────────────────────────────────────── */
+  function updateSessionUI(user) {
+    document.querySelectorAll('[data-show="logged-in"]').forEach(function (el) {
+      el.style.display = user ? '' : 'none';
     });
+    document.querySelectorAll('[data-show="logged-out"]').forEach(function (el) {
+      el.style.display = user ? 'none' : '';
+    });
+    var nameEl   = document.getElementById('nodo-user-name');
+    var avatarEl = document.getElementById('nodo-user-avatar');
+    if (nameEl   && user) nameEl.textContent = user.display_name;
+    if (avatarEl && user) avatarEl.src        = user.avatar_url;
   }
 
-  /* ── Load user profile ─────────────────────────────────────────────────── */
-  async function loadUserProfile() {
-    if (!window.NEVADO_AUTH) return;
-    var ck = window.NEVADO_AUTH.getClerkUser && window.NEVADO_AUTH.getClerkUser();
-    if (!ck) return;
-    state.clerkUser = ck;
-    try {
-      var res = await fetch('/api/usuario?clerk_id=' + encodeURIComponent(ck.id));
-      if (res.ok) state.user = await res.json();
-    } catch (_) {}
-    if (state.user) {
-      state.isFounder  = state.user.email === FOUNDER_EMAIL;
-      state.isMod      = MODERADORES.includes(state.user.email);
-      await loadSanctions(ck.id);
+  /* ── Clerk session init ─────────────────────────────────────────────────── */
+  async function initClerkSession() {
+    await new Promise(function (resolve) {
+      if (window.Clerk) { resolve(); return; }
+      var check = setInterval(function () {
+        if (window.Clerk) { clearInterval(check); resolve(); }
+      }, 80);
+    });
+
+    await window.Clerk.load();
+    window.NODO_USER = null;
+
+    var clerkUser = window.Clerk.user;
+    if (clerkUser) {
+      var email = (clerkUser.primaryEmailAddress && clerkUser.primaryEmailAddress.emailAddress) ||
+                  (clerkUser.emailAddresses && clerkUser.emailAddresses[0] && clerkUser.emailAddresses[0].emailAddress) || '';
+      try {
+        var profiles = await sb.select('profiles',
+          'clerk_id=eq.' + encodeURIComponent(clerkUser.id) +
+          '&select=id,display_name,avatar_url,rank_key,level,croquetas,role,is_founder,is_banned'
+        );
+        var profile = Array.isArray(profiles) ? profiles[0] : null;
+        if (profile) {
+          window.NODO_USER = {
+            clerk_id:     clerkUser.id,
+            profile_id:   profile.id,
+            display_name: profile.display_name || clerkUser.fullName || email,
+            avatar_url:   profile.avatar_url   || clerkUser.imageUrl || '',
+            rank_key:     profile.rank_key     || 'cachorro',
+            level:        profile.level        || 1,
+            croquetas:    profile.croquetas    || 0,
+            role:         profile.role         || 'USER',
+            is_founder:   profile.is_founder   || false,
+            is_banned:    profile.is_banned    || false,
+            email:        email,
+          };
+        }
+      } catch (_) {}
     }
+
+    updateSessionUI(window.NODO_USER);
+
+    window.Clerk.addListener(function (ev) {
+      if (!ev.user) { window.NODO_USER = null; updateSessionUI(null); }
+    });
+
+    document.dispatchEvent(new CustomEvent('nodo:ready', { detail: { user: window.NODO_USER } }));
+    return window.NODO_USER;
   }
 
-  async function loadSanctions(clerk_id) {
-    try {
-      var now = new Date().toISOString();
-      var rows = await sb.select('moderacion_sanciones',
-        'usuario_id=eq.' + encodeURIComponent(clerk_id) +
-        '&activa=eq.true' +
-        '&or=(expira_en.is.null,expira_en.gt.' + now + ')' +
-        '&order=creado_en.desc'
-      );
-      state.sanctions = Array.isArray(rows) ? rows : [];
-    } catch (_) {
-      state.sanctions = [];
-    }
+  /* ── Logout ─────────────────────────────────────────────────────────────── */
+  async function nodoLogout() {
+    await window.Clerk.signOut();
+    window.NODO_USER = null;
+    updateSessionUI(null);
+    window.location.href = '/';
   }
 
   /* ── Permission helpers ─────────────────────────────────────────────────── */
   function canPost() {
-    if (!state.user) return { ok: false, reason: 'Sin sesión. Inicia sesión para participar.' };
-    var banned = state.sanctions.find(function (s) {
-      return s.tipo === 'ban_perm' || s.tipo === 'ban_temp' || s.tipo === 'shadow_ban';
-    });
-    if (banned) return { ok: false, reason: 'Tu cuenta tiene restricciones de publicación.' };
-    var muted = state.sanctions.find(function (s) {
-      return s.tipo === 'mute_1h' || s.tipo === 'mute_24h' || s.tipo === 'mute_7d';
-    });
-    if (muted) return { ok: false, reason: 'Tienes silencio activo hasta que expire.' };
+    var user = window.NODO_USER;
+    if (!user) return { ok: false, reason: 'Sin sesión. Inicia sesión para participar.' };
+    if (user.is_banned) return { ok: false, reason: 'Tu cuenta tiene restricciones de publicación.' };
     return { ok: true };
-  }
-
-  function isShadowBanned() {
-    return state.sanctions.some(function (s) { return s.tipo === 'shadow_ban'; });
-  }
-
-  /* ── Reputation ────────────────────────────────────────────────────────── */
-  async function addReputacion(tipo) {
-    if (!state.user) return;
-    var pts = { publicar_hilo: 10, recibir_like: 2, responder: 5, shout: 3 };
-    var p = pts[tipo] || 0;
-    if (!p) return;
-    try {
-      await sb.insert('nodo_reputacion_eventos', {
-        clerk_id: state.user.clerk_id,
-        tipo: tipo,
-        puntos: p,
-      });
-    } catch (_) {}
   }
 
   /* ── Utilities ─────────────────────────────────────────────────────────── */
   function formatTime(iso) {
-    var d = new Date(iso);
+    var d    = new Date(iso);
     var diff = Math.floor((Date.now() - d.getTime()) / 1000);
-    if (diff < 60)   return 'hace ' + diff + 's';
-    if (diff < 3600) return 'hace ' + Math.floor(diff / 60) + 'min';
-    if (diff < 86400) return 'hace ' + Math.floor(diff / 3600) + 'h';
+    if (diff < 60)     return 'hace ' + diff + 's';
+    if (diff < 3600)   return 'hace ' + Math.floor(diff / 60) + 'min';
+    if (diff < 86400)  return 'hace ' + Math.floor(diff / 3600) + 'h';
     if (diff < 604800) return 'hace ' + Math.floor(diff / 86400) + 'd';
     return d.toLocaleDateString('es');
   }
 
   function escapeHtml(str) {
     return String(str || '').replace(/[&<>"']/g, function (c) {
-      return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c];
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
     });
   }
 
@@ -203,34 +187,18 @@
     setTimeout(function () { t.remove(); }, 2800);
   }
 
-  /* ── Init ──────────────────────────────────────────────────────────────── */
-  async function init() {
-    await waitForAuth();
-    await loadUserProfile();
-    state.ready = true;
-    document.dispatchEvent(new CustomEvent('nodo:ready', { detail: state }));
-  }
-
   /* ── Public API ─────────────────────────────────────────────────────────── */
   window.NODO = {
-    sb:           sb,
-    state:        state,
-    init:         init,
-    canPost:      canPost,
-    isShadowBanned: isShadowBanned,
-    addReputacion: addReputacion,
-    formatTime:   formatTime,
-    escapeHtml:   escapeHtml,
-    initials:     initials,
-    tipoLabel:    tipoLabel,
-    tipoBadgeClass: tipoBadgeClass,
-    showToast:    showToast,
+    sb:               sb,
+    initClerkSession: initClerkSession,
+    updateSessionUI:  updateSessionUI,
+    nodoLogout:       nodoLogout,
+    canPost:          canPost,
+    formatTime:       formatTime,
+    escapeHtml:       escapeHtml,
+    initials:         initials,
+    tipoLabel:        tipoLabel,
+    tipoBadgeClass:   tipoBadgeClass,
+    showToast:        showToast,
   };
-
-  /* Auto-init */
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
 })();
