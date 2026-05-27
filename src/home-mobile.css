@@ -915,3 +915,51 @@ body:has(#nevado-profile-summary) img[src*="bronce"] {
 #nv-desktop-user-pill {
   display: none !important;
 }
+
+/* Botón desktop liviano del usuario en home */
+#nv-home-desktop-pill {
+  position: fixed !important;
+  top: 88px !important;
+  left: calc(50% + 190px) !important;
+  z-index: 9999 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 7px 12px !important;
+  border: 1px solid rgba(212,168,65,.42) !important;
+  border-radius: 999px !important;
+  background: rgba(8,10,16,.82) !important;
+  color: white !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(14px) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.32) !important;
+  font-size: 13px !important;
+}
+
+#nv-home-desktop-pill img {
+  width: 24px !important;
+  height: 24px !important;
+  object-fit: contain !important;
+}
+
+#nv-home-desktop-pill span {
+  color: #d4a841 !important;
+  font-weight: 800 !important;
+  max-width: 120px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+#nv-home-desktop-pill strong,
+#nv-home-desktop-pill em {
+  color: rgba(255,255,255,.78) !important;
+  font-style: normal !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 767px) {
+  #nv-home-desktop-pill {
+    display: none !important;
+  }
+}
