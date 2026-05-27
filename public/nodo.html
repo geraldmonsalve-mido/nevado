@@ -162,12 +162,7 @@
     <div class="topbar-actions">
       <div class="topbar-divider"></div>
       <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
-      <button class="topbar-user" aria-label="Mi perfil">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="12" cy="8" r="4"/>
-          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-        </svg>
-      </button>
+      <div id="nvd-session-pill" style="display:flex;align-items:center;"></div>
     </div>
   </header>
 
@@ -579,9 +574,6 @@
   <script src="/croquetas.js"></script>
   <script src="/mini-nevado.js"></script>
   <script src="/nevado-bubble.js"></script>
-  <div id="nvd-session-pill" style="position:fixed;bottom:36px;right:24px;z-index:9800;">
-    <a href="/auth.html?redirect=/nodo.html" style="display:flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:rgba(232,228,220,0.85);text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;backdrop-filter:blur(12px);">Iniciar sesión</a>
-  </div>
   <script src="/nevado-session-widget.js"></script>
   <script src="/nevado-home-desktop-pill.js"></script>
 </body>
