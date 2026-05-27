@@ -6,13 +6,13 @@
 
   window.NEVADO_CROQUETAS = {
     rangos: [
-      { nombre: 'Cachorro',       min: 0,       max: 99,       emoji: '🐾', color: '#8B9DC3', img: '/rangos/rango1-cachorro-bronce.png' },
-      { nombre: 'Explorador',     min: 100,     max: 299,      emoji: '🧭', color: '#B8944A', img: '/rangos/rango2-explorador-bronce.png' },
-      { nombre: 'Guardián',       min: 300,     max: 699,      emoji: '🛡️', color: '#C0C0C0', img: '/rangos/rango3-guardian-plata.png' },
-      { nombre: 'Montañista',     min: 700,     max: 1499,     emoji: '⛰️', color: '#A8B4C8', img: '/rangos/rango4-montanista-plata.png' },
-      { nombre: 'Guía',           min: 1500,    max: 2999,     emoji: '🗺️', color: '#A8B4C8', img: '/rangos/rango5-guia-plata.png' },
-      { nombre: 'Protector',      min: 3000,    max: 5999,     emoji: '🦅', color: '#B8944A', img: '/rangos/rango6-protector-oro.png' },
-      { nombre: 'Leyenda Andina', min: 6000,    max: Infinity, emoji: '🏔️', color: '#F4D03F', img: '/rangos/rango7-leyendaandina-oro-joyas.png' },
+      { nombre: 'Cachorro',       min: 0,       max: 99,       emoji: '🐾', color: '#8B9DC3', img: '/rangos/rango1-cachorro-bronce-sm.webp' },
+      { nombre: 'Explorador',     min: 100,     max: 299,      emoji: '🧭', color: '#B8944A', img: '/rangos/rango2-explorador-bronce-sm.webp' },
+      { nombre: 'Guardián',       min: 300,     max: 699,      emoji: '🛡️', color: '#C0C0C0', img: '/rangos/rango3-guardian-plata-sm.webp' },
+      { nombre: 'Montañista',     min: 700,     max: 1499,     emoji: '⛰️', color: '#A8B4C8', img: '/rangos/rango4-montanista-plata-sm.webp' },
+      { nombre: 'Guía',           min: 1500,    max: 2999,     emoji: '🗺️', color: '#A8B4C8', img: '/rangos/rango5-guia-plata-sm.webp' },
+      { nombre: 'Protector',      min: 3000,    max: 5999,     emoji: '🦅', color: '#B8944A', img: '/rangos/rango6-protector-oro-sm.webp' },
+      { nombre: 'Leyenda Andina', min: 6000,    max: Infinity, emoji: '🏔️', color: '#F4D03F', img: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp' },
     ],
 
     getRango(pts) {

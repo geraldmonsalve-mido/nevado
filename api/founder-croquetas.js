@@ -12,13 +12,13 @@ const FOUNDER_EMAILS = [
 ];
 
 const RANGO_IMG = {
-  'Cachorro':       '/rangos/rango1-cachorro-bronce.png',
-  'Explorador':     '/rangos/rango2-explorador-bronce.png',
-  'Guardián':       '/rangos/rango3-guardian-plata.png',
-  'Montañista':     '/rangos/rango4-montanista-plata.png',
-  'Guía':           '/rangos/rango5-guia-plata.png',
-  'Protector':      '/rangos/rango6-protector-oro.png',
-  'Leyenda Andina': '/rangos/rango7-leyendaandina-oro-joyas.png'
+  'Cachorro':       '/rangos/rango1-cachorro-bronce-md.webp',
+  'Explorador':     '/rangos/rango2-explorador-bronce-md.webp',
+  'Guardián':       '/rangos/rango3-guardian-plata-md.webp',
+  'Montañista':     '/rangos/rango4-montanista-plata-md.webp',
+  'Guía':           '/rangos/rango5-guia-plata-md.webp',
+  'Protector':      '/rangos/rango6-protector-oro-md.webp',
+  'Leyenda Andina': '/rangos/rango7-leyendaandina-oro-joyas-md.webp'
 };
 
 function rangoPorCroquetas(c) {

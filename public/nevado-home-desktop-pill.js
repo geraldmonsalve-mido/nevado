@@ -6,13 +6,13 @@
   'use strict';
 
   var RANK_IMG = {
-    'Cachorro':       '/rangos/rango1-cachorro-bronce.png',
-    'Explorador':     '/rangos/rango2-explorador-bronce.png',
-    'Guardián':       '/rangos/rango3-guardian-plata.png',
-    'Montañista':     '/rangos/rango4-montanista-plata.png',
-    'Guía':           '/rangos/rango5-guia-plata.png',
-    'Protector':      '/rangos/rango6-protector-oro.png',
-    'Leyenda Andina': '/rangos/rango7-leyendaandina-oro-joyas.png'
+    'Cachorro':       '/rangos/rango1-cachorro-bronce-sm.webp',
+    'Explorador':     '/rangos/rango2-explorador-bronce-sm.webp',
+    'Guardián':       '/rangos/rango3-guardian-plata-sm.webp',
+    'Montañista':     '/rangos/rango4-montanista-plata-sm.webp',
+    'Guía':           '/rangos/rango5-guia-plata-sm.webp',
+    'Protector':      '/rangos/rango6-protector-oro-sm.webp',
+    'Leyenda Andina': '/rangos/rango7-leyendaandina-oro-joyas-sm.webp'
   };
 
   function fmt(n) {
