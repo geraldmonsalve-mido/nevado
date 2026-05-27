@@ -191,7 +191,12 @@
   /* ── Init ────────────────────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', async function () {
     initKeys();
-    window.NODO.initClerkSession().then(function () { loadFeed(); });
+    /* Feed loads at most 4 s after DOM ready — doesn't wait for Clerk */
+    var _feedGuard = setTimeout(function () { loadFeed(); }, 4000);
+    window.NODO.initClerkSession().then(function () {
+      clearTimeout(_feedGuard);
+      loadFeed();
+    });
     loadEspacios();
     loadShouts();
     loadStats();

@@ -336,10 +336,10 @@
         margin-bottom: 16px;
       ">
         <div id="npw-user-section" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-          <img id="npw-avatar" src="/NevadoUtil.png" style="
+          <img id="npw-avatar" src="" style="
             width:44px;height:44px;border-radius:50%;
-            border:2px solid #B8944A;object-fit:cover;
-          " onerror="this.src='/NevadoUtil.png'" />
+            border:2px solid #B8944A;object-fit:cover;display:none;
+          " onerror="this.onerror=null;this.style.display='none'" />
           <div>
             <div id="npw-nombre" style="color:#fff;font-weight:600;font-size:14px;">—</div>
             <div id="npw-rango" style="color:#B8944A;font-size:12px;">—</div>
@@ -645,7 +645,10 @@
         if (guest)     guest.style.display     = 'block';
         return;
       }
-      if (avatar)    avatar.src                          = user.avatar_url || '/NevadoUtil.png';
+      if (avatar) {
+        if (user.avatar_url) { avatar.src = user.avatar_url; avatar.style.display = ''; }
+        else { avatar.style.display = 'none'; }
+      }
       if (nombre)    nombre.textContent                  = user.display_name || 'Usuario';
       if (rango)     rango.textContent                   = user.rank_key    || 'cachorro';
       if (croquetas) croquetas.textContent               = (user.croquetas  || 0).toLocaleString('es');
