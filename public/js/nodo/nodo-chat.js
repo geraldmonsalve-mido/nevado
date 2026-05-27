@@ -4,34 +4,22 @@
 (function () {
   'use strict';
 
-  var supabaseLib = null; /* supabase-js client for realtime */
   var activeChannel = null;
   var activeSub = null;
 
   function waitForNodo(cb) {
-    if (window.NODO && window.NODO.state.ready) { cb(); return; }
+    if (window.NODO && window.NODO.sb) { cb(); return; }
     document.addEventListener('nodo:ready', cb, { once: true });
   }
 
-  /* ── Load supabase-js for realtime ───────────────────────────────────── */
-  function loadSupabaseLib() {
-    return new Promise(function (resolve) {
-      if (window.supabase) { supabaseLib = window.supabase; resolve(); return; }
-      var s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-      s.onload = function () { supabaseLib = window.supabase; resolve(); };
-      s.onerror = function () { resolve(); }; /* fail gracefully */
-      document.head.appendChild(s);
-    });
-  }
+  function sb() { return window.NODO && window.NODO.sb; }
 
   /* ── Get or create realtime client ──────────────────────────────────── */
   var rtClient = null;
-  async function getRealtimeClient() {
+  function getRealtimeClient() {
     if (rtClient) return rtClient;
-    await loadSupabaseLib();
-    if (!supabaseLib) return null;
-    rtClient = supabaseLib.createClient(
+    if (!window.supabase || !window.NEVADO_SUPABASE_URL || !window.NEVADO_SUPABASE_ANON_KEY) return null;
+    rtClient = window.supabase.createClient(
       window.NEVADO_SUPABASE_URL,
       window.NEVADO_SUPABASE_ANON_KEY,
       { realtime: { params: { eventsPerSecond: 10 } } }
@@ -42,19 +30,26 @@
   /* ── Load channels ───────────────────────────────────────────────────── */
   async function loadCanales() {
     try {
-      var rows = await window.NODO.sb.select('chat_canales', 'activo=eq.true&order=creado_en.asc');
-      return Array.isArray(rows) ? rows : [];
+      var result = await sb()
+        .from('chat_canales')
+        .select('*')
+        .eq('activo', true)
+        .order('created_at', { ascending: true });
+      return Array.isArray(result.data) ? result.data : [];
     } catch (_) { return []; }
   }
 
   /* ── Load messages ────────────────────────────────────────────────────── */
   async function loadMensajes(canal_id, limit) {
     try {
-      var rows = await window.NODO.sb.select('chat_mensajes',
-        'canal_id=eq.' + canal_id +
-        '&eliminado=eq.false&order=creado_en.asc&limit=' + (limit || 80)
-      );
-      return Array.isArray(rows) ? rows : [];
+      var result = await sb()
+        .from('chat_mensajes')
+        .select('*')
+        .eq('canal_id', canal_id)
+        .eq('eliminado', false)
+        .order('created_at', { ascending: true })
+        .limit(limit || 80);
+      return Array.isArray(result.data) ? result.data : [];
     } catch (_) { return []; }
   }
 
@@ -64,14 +59,18 @@
     if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
     if (!String(contenido || '').trim()) return null;
 
+    var u = window.NODO_USER;
     try {
-      var row = await window.NODO.sb.insert('chat_mensajes', {
-        canal_id: canal_id,
-        autor_clerk_id: window.NODO.state.user.clerk_id,
-        contenido: String(contenido).trim().slice(0, 500),
-        tipo: 'texto',
-      });
-      return Array.isArray(row) ? row[0] : row;
+      var result = await sb().from('chat_mensajes').insert({
+        canal_id:       canal_id,
+        autor_clerk_id: u.clerk_id,
+        autor_nombre:   u.display_name || 'Usuario',
+        autor_rank:     u.rank_key || 'cachorro',
+        contenido:      String(contenido).trim().slice(0, 500),
+        tipo:           'texto',
+      }).select().single();
+      if (result.error) throw result.error;
+      return result.data;
     } catch (_) {
       window.NODO.showToast('Error al enviar. Inténtalo de nuevo.', 'error');
       return null;
@@ -79,12 +78,12 @@
   }
 
   /* ── Render a single message ─────────────────────────────────────────── */
-  function renderMensaje(msg, author, isOwn) {
-    var e  = window.NODO.escapeHtml;
-    var ti = window.NODO.initials(author ? author.nombre : '?');
-    var nombre  = author ? e(author.nombre || 'Usuario') : 'Usuario';
-    var rango   = author ? e(author.rango || 'Cachorro') : '';
-    var time    = window.NODO.formatTime(msg.creado_en);
+  function renderMensaje(msg, isOwn) {
+    var e       = window.NODO.escapeHtml;
+    var nombre  = e(msg.autor_nombre || 'Usuario');
+    var rango   = e(msg.autor_rank   || '');
+    var ti      = window.NODO.initials(msg.autor_nombre || '?');
+    var time    = window.NODO.formatTime(msg.created_at || msg.creado_en);
 
     return '<div class="nodo-chat-msg' + (isOwn ? ' nodo-chat-msg-own' : '') + '" data-msg-id="' + msg.id + '">' +
       (!isOwn ? '<div class="nodo-chat-avatar">' + e(ti) + '</div>' : '') +
@@ -97,11 +96,10 @@
   }
 
   /* ── Subscribe to realtime ───────────────────────────────────────────── */
-  async function subscribeToCanal(canal_id, onMessage) {
-    var client = await getRealtimeClient();
+  function subscribeToCanal(canal_id, onMessage) {
+    var client = getRealtimeClient();
     if (!client) return null;
 
-    /* Clean up previous */
     if (activeSub) {
       try { client.removeChannel(activeSub); } catch (_) {}
       activeSub = null;
@@ -124,8 +122,8 @@
   }
 
   /* ── Unsubscribe ─────────────────────────────────────────────────────── */
-  async function unsubscribe() {
-    var client = await getRealtimeClient();
+  function unsubscribe() {
+    var client = getRealtimeClient();
     if (!client || !activeSub) return;
     try { client.removeChannel(activeSub); } catch (_) {}
     activeSub = null;
@@ -143,53 +141,41 @@
     var canales = await loadCanales();
     var curCanal = null;
 
-    /* Render channel list */
     canalesList.innerHTML = canales.map(function (c) {
       return '<button class="nodo-canal-item' + (c.tipo === 'anuncio' ? ' nodo-canal-anuncio' : '') +
-        '" data-canal-id="' + c.id + '" data-canal-slug="' + window.NODO.escapeHtml(c.slug) + '">' +
+        '" data-canal-id="' + c.id + '" data-canal-slug="' + window.NODO.escapeHtml(c.slug || '') + '">' +
         '# ' + window.NODO.escapeHtml(c.nombre) + '</button>';
-    }).join('');
+    }).join('') || '<div style="padding:12px 16px;font-size:12px;color:rgba(255,255,255,0.28);">Sin canales disponibles.</div>';
 
     async function openCanal(canal) {
       curCanal = canal;
-      /* Mark active */
       canalesList.querySelectorAll('.nodo-canal-item').forEach(function (b) {
         b.classList.toggle('active', b.dataset.canalId === canal.id);
       });
       if (chanTitle) chanTitle.textContent = '# ' + canal.nombre;
       msgArea.innerHTML = '<div class="nodo-chat-loading">Cargando mensajes…</div>';
 
-      /* Load history */
       var msgs = await loadMensajes(canal.id, 60);
-      msgArea.innerHTML = '';
+      var myId = window.NODO_USER ? window.NODO_USER.clerk_id : null;
 
       if (!msgs.length) {
         msgArea.innerHTML = '<div class="nodo-chat-empty">Sé el primero en escribir algo.</div>';
+      } else {
+        msgArea.innerHTML = msgs.map(function (m) {
+          return renderMensaje(m, m.autor_clerk_id === myId);
+        }).join('');
+        msgArea.scrollTop = msgArea.scrollHeight;
       }
 
-      var authorProm = msgs.map(function (m) { return window.NODO.foro ? window.NODO.foro.loadAuthor(m.autor_clerk_id) : Promise.resolve(null); });
-      var authors = await Promise.all(authorProm);
-      var myId = window.NODO.state.user ? window.NODO.state.user.clerk_id : null;
-
-      var html = msgs.map(function (m, i) {
-        return renderMensaje(m, authors[i], m.autor_clerk_id === myId);
-      }).join('');
-      msgArea.innerHTML = html || '<div class="nodo-chat-empty">Sé el primero en escribir algo.</div>';
-      msgArea.scrollTop = msgArea.scrollHeight;
-
-      /* Subscribe to new messages */
-      await subscribeToCanal(canal.id, async function (newMsg) {
-        var author = window.NODO.foro ? await window.NODO.foro.loadAuthor(newMsg.autor_clerk_id) : null;
-        var isOwn  = newMsg.autor_clerk_id === myId;
-        msgArea.insertAdjacentHTML('beforeend', renderMensaje(newMsg, author, isOwn));
+      subscribeToCanal(canal.id, function (newMsg) {
+        var isOwn = newMsg.autor_clerk_id === myId;
+        msgArea.insertAdjacentHTML('beforeend', renderMensaje(newMsg, isOwn));
         msgArea.scrollTop = msgArea.scrollHeight;
-        /* Remove empty placeholder */
         var empty = msgArea.querySelector('.nodo-chat-empty');
         if (empty) empty.remove();
       });
     }
 
-    /* Channel click */
     canalesList.addEventListener('click', function (e) {
       var btn = e.target.closest('.nodo-canal-item');
       if (!btn) return;
@@ -197,10 +183,9 @@
       if (canal) openCanal(canal);
     });
 
-    /* Send */
     async function doSend() {
       if (!curCanal) { window.NODO.showToast('Selecciona un canal.', 'error'); return; }
-      if (!window.NODO.state.user) { window.NODO.showToast('Inicia sesión para chatear.', 'error'); return; }
+      if (!window.NODO_USER) { window.NODO.showToast('Inicia sesión para chatear.', 'error'); return; }
       var text = input ? input.value.trim() : '';
       if (!text) return;
       input.value = '';
@@ -214,31 +199,22 @@
       });
     }
 
-    /* Open first channel by default */
     if (canales.length) openCanal(canales[0]);
-  }
-
-  /* ── Mini chat widget (for nodo.html sidebar) ───────────────────────── */
-  function initMiniChat() {
-    var widget = document.getElementById('nodo-mini-chat');
-    if (!widget) return;
-    /* Widget HTML injected by nodo.html */
   }
 
   /* ── Init ────────────────────────────────────────────────────────────── */
   waitForNodo(function () {
     if (document.getElementById('nodo-chat-messages')) initChatPage();
-    initMiniChat();
   });
 
   /* ── Public API ──────────────────────────────────────────────────────── */
   window.NODO = window.NODO || {};
   window.NODO.chat = {
-    loadCanales:       loadCanales,
-    loadMensajes:      loadMensajes,
-    sendMensaje:       sendMensaje,
-    subscribeToCanal:  subscribeToCanal,
-    unsubscribe:       unsubscribe,
-    renderMensaje:     renderMensaje,
+    loadCanales:      loadCanales,
+    loadMensajes:     loadMensajes,
+    sendMensaje:      sendMensaje,
+    subscribeToCanal: subscribeToCanal,
+    unsubscribe:      unsubscribe,
+    renderMensaje:    renderMensaje,
   };
 })();

@@ -11,20 +11,33 @@
         });
   }
 
+  function sb() { return window.NODO && window.NODO.sb; }
+
   /* ── Load feed ──────────────────────────────────────────────────────────── */
   async function loadHilos(tab, categoriaId) {
-    var base = 'estado=eq.activo';
-    var params;
-    if (tab === 'destacado') {
-      params = base + '&es_destacado=eq.true&order=likes.desc&limit=20';
-    } else {
-      params = base + '&order=created_at.desc&limit=20';
-    }
-    if (categoriaId) params += '&categoria_id=eq.' + encodeURIComponent(categoriaId);
-    params += '&select=*,foro_categorias(nombre,slug,icono,color)';
     try {
-      var hilos = await window.NODO.sb.select('foro_hilos', params);
-      return Array.isArray(hilos) ? hilos : [];
+      var client = sb();
+      if (!client) return [];
+      var query;
+      if (tab === 'destacado') {
+        query = client
+          .from('foro_hilos')
+          .select('*,foro_categorias(nombre,slug,icono,color)')
+          .eq('estado', 'activo')
+          .eq('es_destacado', true)
+          .order('likes', { ascending: false })
+          .limit(20);
+      } else {
+        query = client
+          .from('foro_hilos')
+          .select('*,foro_categorias(nombre,slug,icono,color)')
+          .eq('estado', 'activo')
+          .order('created_at', { ascending: false })
+          .limit(20);
+      }
+      if (categoriaId) query = query.eq('categoria_id', categoriaId);
+      var result = await query;
+      return Array.isArray(result.data) ? result.data : [];
     } catch (_) { return []; }
   }
 
@@ -34,24 +47,26 @@
     if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
 
     var u = window.NODO_USER;
+    var contenido = String(data.contenido || '').trim();
+    if (!contenido || contenido.length < 3) { window.NODO.showToast('Escribe al menos 3 caracteres.', 'error'); return null; }
+    if (contenido.length > 1200) { window.NODO.showToast('Máximo 1,200 caracteres.', 'error'); return null; }
+
     var payload = {
       profile_id:   u.profile_id,
       autor_nombre: u.display_name || 'Usuario',
       autor_avatar: u.avatar_url || null,
       autor_rank:   u.rank_key || 'cachorro',
-      contenido:    String(data.contenido || '').trim(),
+      contenido:    contenido,
       tipo:         data.tipo || 'insight',
       categoria_id: data.categoria_id || null,
       estado:       'activo',
     };
-    if (!payload.contenido) { window.NODO.showToast('El contenido no puede estar vacío.', 'error'); return null; }
-    if (payload.contenido.length > 3000) { window.NODO.showToast('Máximo 3,000 caracteres.', 'error'); return null; }
 
     try {
-      var row  = await window.NODO.sb.insert('foro_hilos', payload);
-      var hilo = Array.isArray(row) ? row[0] : row;
+      var result = await sb().from('foro_hilos').insert(payload).select().single();
+      if (result.error) throw result.error;
       window.NODO.showToast('Aporte publicado.');
-      return hilo;
+      return result.data;
     } catch (_) {
       window.NODO.showToast('Error al publicar. Inténtalo de nuevo.', 'error');
       return null;
@@ -68,11 +83,11 @@
     try {
       if (liked) {
         _likedSet.delete(hilo_id);
-        await window.NODO.sb.rpc('decrement_hilo_likes', { p_hilo_id: hilo_id });
+        await sb().rpc('decrement_hilo_likes', { p_hilo_id: hilo_id });
         return false;
       } else {
         _likedSet.add(hilo_id);
-        await window.NODO.sb.rpc('increment_hilo_likes', { p_hilo_id: hilo_id });
+        await sb().rpc('increment_hilo_likes', { p_hilo_id: hilo_id });
         return true;
       }
     } catch (_) {
@@ -90,7 +105,7 @@
   async function reportHilo(hilo_id, motivo) {
     if (!window.NODO_USER) { window.NODO.showToast('Debes iniciar sesión para reportar.', 'error'); return; }
     try {
-      await window.NODO.sb.insert('foro_reportes', {
+      await sb().from('foro_reportes').insert({
         reportante_id: window.NODO_USER.profile_id,
         hilo_id:       hilo_id,
         motivo:        motivo,
@@ -102,10 +117,13 @@
   /* ── Load respuestas ────────────────────────────────────────────────────── */
   async function loadRespuestas(hilo_id) {
     try {
-      var rows = await window.NODO.sb.select('foro_respuestas',
-        'hilo_id=eq.' + hilo_id + '&estado=eq.activo&order=created_at.asc'
-      );
-      return Array.isArray(rows) ? rows : [];
+      var result = await sb()
+        .from('foro_respuestas')
+        .select('*')
+        .eq('hilo_id', hilo_id)
+        .eq('estado', 'activo')
+        .order('created_at', { ascending: true });
+      return Array.isArray(result.data) ? result.data : [];
     } catch (_) { return []; }
   }
 
@@ -126,9 +144,10 @@
         estado:       'activo',
       };
       if (parent_id) payload.parent_id = parent_id;
-      var row = await window.NODO.sb.insert('foro_respuestas', payload);
-      try { await window.NODO.sb.rpc('increment_hilo_respuestas', { p_hilo_id: hilo_id }); } catch (_) {}
-      return Array.isArray(row) ? row[0] : row;
+      var result = await sb().from('foro_respuestas').insert(payload).select().single();
+      if (result.error) throw result.error;
+      try { await sb().rpc('increment_hilo_respuestas', { p_hilo_id: hilo_id }); } catch (_) {}
+      return result.data;
     } catch (_) {
       window.NODO.showToast('Error al responder.', 'error');
       return null;
@@ -442,10 +461,15 @@
       btn.textContent = 'Cargando…';
       loadedOffset += 20;
       try {
-        var base = 'estado=eq.activo&order=created_at.desc&limit=20&offset=' + loadedOffset;
-        if (currentCat) base += '&categoria_id=eq.' + encodeURIComponent(currentCat);
-        base += '&select=*,foro_categorias(nombre,slug,icono,color)';
-        var rows = await window.NODO.sb.select('foro_hilos', base);
+        var query = sb()
+          .from('foro_hilos')
+          .select('*,foro_categorias(nombre,slug,icono,color)')
+          .eq('estado', 'activo')
+          .order('created_at', { ascending: false })
+          .range(loadedOffset, loadedOffset + 19);
+        if (currentCat) query = query.eq('categoria_id', currentCat);
+        var result = await query;
+        var rows = result.data;
         if (rows && rows.length) {
           var container  = document.getElementById('feed-principal') || document.querySelector('.nodo-posts');
           var myLikedIds = await getMyLikes(rows.map(function (h) { return h.id; }));

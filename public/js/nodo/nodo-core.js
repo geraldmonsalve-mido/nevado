@@ -6,42 +6,11 @@
   var SB_URL = window.NEVADO_SUPABASE_URL  || '';
   var SB_KEY = window.NEVADO_SUPABASE_ANON_KEY || '';
 
-  /* ── Supabase REST helpers ──────────────────────────────────────────────── */
-  function sbFetch(path, method, body, extra) {
-    var opts = {
-      method: method || 'GET',
-      headers: Object.assign({
-        'apikey':        SB_KEY,
-        'Authorization': 'Bearer ' + SB_KEY,
-        'Content-Type':  'application/json',
-        'Accept':        'application/json',
-      }, extra || {}),
-    };
-    if (body !== undefined && body !== null) opts.body = JSON.stringify(body);
-    return fetch(SB_URL + '/rest/v1/' + path, opts).then(function (r) {
-      if (!r.ok) return r.json().then(function (e) { throw e; });
-      var ct = r.headers.get('content-type') || '';
-      return ct.includes('json') ? r.json() : null;
-    });
+  /* ── Supabase client singleton ──────────────────────────────────────────── */
+  var sb = null;
+  if (window.supabase && SB_URL && SB_KEY) {
+    sb = window.supabase.createClient(SB_URL, SB_KEY);
   }
-
-  var sb = {
-    select: function (table, query) {
-      return sbFetch(table + (query ? '?' + query : ''));
-    },
-    insert: function (table, data) {
-      return sbFetch(table, 'POST', data, { 'Prefer': 'return=representation' });
-    },
-    update: function (table, query, data) {
-      return sbFetch(table + '?' + query, 'PATCH', data, { 'Prefer': 'return=representation' });
-    },
-    delete: function (table, query) {
-      return sbFetch(table + '?' + query, 'DELETE');
-    },
-    rpc: function (fn, params) {
-      return sbFetch('rpc/' + fn, 'POST', params || {});
-    },
-  };
 
   /* ── Session UI ─────────────────────────────────────────────────────────── */
   function updateSessionUI(user) {
@@ -70,15 +39,16 @@
     window.NODO_USER = null;
 
     var clerkUser = window.Clerk.user;
-    if (clerkUser) {
+    if (clerkUser && sb) {
       var email = (clerkUser.primaryEmailAddress && clerkUser.primaryEmailAddress.emailAddress) ||
                   (clerkUser.emailAddresses && clerkUser.emailAddresses[0] && clerkUser.emailAddresses[0].emailAddress) || '';
       try {
-        var profiles = await sb.select('profiles',
-          'clerk_id=eq.' + encodeURIComponent(clerkUser.id) +
-          '&select=id,display_name,avatar_url,rank_key,level,croquetas,role,is_founder,is_banned'
-        );
-        var profile = Array.isArray(profiles) ? profiles[0] : null;
+        var result = await sb
+          .from('profiles')
+          .select('id,display_name,avatar_url,rank_key,level,croquetas,role,is_founder,is_banned')
+          .eq('clerk_id', clerkUser.id)
+          .limit(1);
+        var profile = result.data && result.data[0];
         if (profile) {
           window.NODO_USER = {
             clerk_id:     clerkUser.id,
