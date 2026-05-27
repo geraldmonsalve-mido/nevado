@@ -963,3 +963,72 @@ body:has(#nevado-profile-summary) img[src*="bronce"] {
     display: none !important;
   }
 }
+
+/* Desktop: reemplazar ecosistema activo por cápsula de usuario */
+@media (min-width: 768px) {
+
+  /* Ocultar texto viejo */
+  .ecosystem-status,
+  .status-pill,
+  [class*="ecosystem"],
+  [class*="status"] {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Reubicar cápsula viva */
+  #nv-home-desktop-pill {
+    position: fixed !important;
+    top: 18px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+
+    padding: 10px 18px !important;
+
+    border-radius: 999px !important;
+
+    border: 1px solid rgba(212,168,65,.36) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(14,16,24,.88),
+        rgba(7,8,14,.94)
+      ) !important;
+
+    backdrop-filter: blur(18px) !important;
+
+    box-shadow:
+      0 14px 40px rgba(0,0,0,.34),
+      inset 0 1px 0 rgba(255,255,255,.05) !important;
+
+    z-index: 9999 !important;
+  }
+
+  #nv-home-desktop-pill img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  #nv-home-desktop-pill span {
+    color: #d4a841 !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+  }
+
+  #nv-home-desktop-pill strong {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+  }
+
+  #nv-home-desktop-pill em {
+    color: rgba(255,255,255,.72) !important;
+    font-style: normal !important;
+    font-size: 12px !important;
+  }
+}
