@@ -832,3 +832,159 @@ body { padding-bottom: 28px; }
   color: rgba(255,255,255,0.35);
   font-family: monospace;
 }
+
+/* ─── NODO v2 — Feed states ─────────────────────────────────────────────── */
+.feed-loading {
+  font-size: 13px;
+  color: rgba(255,255,255,0.28);
+  text-align: center;
+  padding: 40px 0;
+  letter-spacing: 0.04em;
+}
+.feed-vacio {
+  font-size: 13px;
+  color: rgba(255,255,255,0.28);
+  text-align: center;
+  padding: 32px 0;
+}
+.feed-error {
+  font-size: 13px;
+  color: rgba(231,76,60,0.7);
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ─── Auth banner ───────────────────────────────────────────────────────── */
+.nodo-auth-banner {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.nodo-auth-banner a {
+  color: #E74C3C;
+  font-weight: 500;
+}
+
+/* ─── Inline comments panel ─────────────────────────────────────────────── */
+.post-comentarios-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 8px;
+}
+.post-comentarios-panel.open {
+  max-height: 600px;
+}
+.comentarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 8px;
+}
+.comentario-item {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+.comentario-avatar-mini {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(231,76,60,0.12);
+  color: #E74C3C;
+  font-size: 9px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.comentario-contenido {
+  flex: 1;
+}
+.comentario-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,0.38);
+  margin-bottom: 3px;
+}
+.comentario-meta strong {
+  color: rgba(255,255,255,0.75);
+  font-weight: 500;
+}
+.comentario-contenido p {
+  font-size: 13px;
+  color: rgba(232,232,224,0.82);
+  line-height: 1.5;
+  word-break: break-word;
+}
+.comentario-composer {
+  padding: 8px 0 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.comentario-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.comentario-textarea {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #E8E8E0;
+  font-family: 'Geist', sans-serif;
+  outline: none;
+  resize: none;
+  min-height: 36px;
+  max-height: 100px;
+  line-height: 1.45;
+  transition: border-color 0.2s;
+}
+.comentario-textarea:focus { border-color: rgba(231,76,60,0.3); }
+.comentario-textarea::placeholder { color: rgba(255,255,255,0.25); }
+.comentario-btn-publicar {
+  background: rgba(231,76,60,0.15);
+  border: 1px solid rgba(231,76,60,0.3);
+  color: #E74C3C;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.comentario-btn-publicar:hover { background: rgba(231,76,60,0.22); }
+.comentario-btn-publicar:disabled { opacity: 0.5; cursor: default; }
+
+/* ─── Like active state ──────────────────────────────────────────────────── */
+.nodo-post-action.nodo-action-like.active {
+  color: #EF4444;
+}
+
+/* ─── Espacio activo ─────────────────────────────────────────────────────── */
+.nodo-space-item.active .nodo-space-name {
+  color: #B8944A;
+}
+.nodo-space-item.active {
+  border-left: 2px solid rgba(184,148,74,0.5);
+  padding-left: 12px;
+}
+
+/* ─── Actividad live animation ───────────────────────────────────────────── */
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.actividad-nueva {
+  animation: fadeInLeft 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── Tendencias clickable ───────────────────────────────────────────────── */
+.nodo-trending-item { cursor: pointer; }
+.nodo-trending-item:hover .nodo-trending-tag { color: #E74C3C; }

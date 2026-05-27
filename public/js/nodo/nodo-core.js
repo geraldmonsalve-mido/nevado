@@ -95,7 +95,7 @@
     try {
       var now = new Date().toISOString();
       var rows = await sb.select('moderacion_sanciones',
-        'usuario_clerk_id=eq.' + encodeURIComponent(clerk_id) +
+        'usuario_id=eq.' + encodeURIComponent(clerk_id) +
         '&activa=eq.true' +
         '&or=(expira_en.is.null,expira_en.gt.' + now + ')' +
         '&order=creado_en.desc'

@@ -177,8 +177,8 @@
         <kbd>⌘K</kbd>
       </div>
       <div class="nodo-subheader-metrics">
-        <span><strong>18,340</strong> miembros</span>
-        <span><strong>89</strong> espacios</span>
+        <span><strong id="stat-miembros">—</strong> miembros</span>
+        <span><strong id="stat-hilos">—</strong> aportes</span>
         <span><strong>22</strong> países</span>
         <span class="nodo-live-badge">● VIVO</span>
       </div>
@@ -225,59 +225,12 @@
 
       <div class="nodo-sidebar-section">
         <div class="nodo-sidebar-label">Espacios</div>
-        <ul class="nodo-spaces-list">
-          <li class="nodo-space-item active">
+        <ul class="nodo-spaces-list" id="sidebar-espacios">
+          <li class="nodo-space-item" style="opacity:0.4;pointer-events:none">
             <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Programadores VE</span>
-            <span class="nodo-space-count">3,240</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Freelancers LATAM</span>
-            <span class="nodo-space-count">1,890</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Venezolanos en Madrid</span>
-            <span class="nodo-space-count">2,100</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">IA y Automatización</span>
-            <span class="nodo-space-count">980</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Startups Venezuela</span>
-            <span class="nodo-space-count">760</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Diseño &amp; Creatividad</span>
-            <span class="nodo-space-count">1,340</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Finanzas &amp; Crypto</span>
-            <span class="nodo-space-count">890</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Cultura Venezolana</span>
-            <span class="nodo-space-count">2,670</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Vida en la Diáspora</span>
-            <span class="nodo-space-count">3,890</span>
-          </li>
-          <li class="nodo-space-item">
-            <span class="nodo-space-pulse"></span>
-            <span class="nodo-space-name">Educación &amp; Becas</span>
-            <span class="nodo-space-count">1,120</span>
+            <span class="nodo-space-name">Cargando…</span>
           </li>
         </ul>
-        <button class="nodo-create-space-btn">+ Crear espacio</button>
       </div>
 
       <div class="nodo-sidebar-section">
@@ -311,11 +264,11 @@
       <!-- Composer -->
       <div class="nodo-composer" id="composerBox">
         <div class="nodo-composer-top">
-          <div class="nodo-composer-avatar">GM</div>
+          <div class="nodo-composer-avatar" id="composer-avatar">?</div>
           <input class="nodo-composer-input" id="composerInput" type="text" placeholder="¿Qué sabes hoy que pueda ayudar a alguien?" />
         </div>
         <div class="nodo-composer-expanded" id="composerExpanded">
-          <textarea class="nodo-composer-textarea" placeholder="Desarrolla tu aporte aquí… puedes incluir código, links, contexto…" rows="4"></textarea>
+          <textarea class="nodo-composer-textarea" id="composer-textarea" placeholder="Desarrolla tu aporte aquí… puedes incluir código, links, contexto…" rows="4"></textarea>
           <div class="nodo-composer-types">
             <button class="nodo-type-btn active" data-type="insight">💡 Insight</button>
             <button class="nodo-type-btn" data-type="pregunta">❓ Pregunta</button>
@@ -329,7 +282,7 @@
               <span class="nodo-tag-pill">#venezuela</span>
               <input type="text" placeholder="+ tag" class="nodo-tag-field" />
             </div>
-            <button class="nodo-composer-submit">Publicar</button>
+            <button class="nodo-composer-submit" id="btn-composer-publicar">Publicar</button>
           </div>
         </div>
       </div>
@@ -341,257 +294,26 @@
           <button class="nodo-shouts-toggle" id="shoutsToggle">ver todos</button>
         </div>
         <div class="nodo-shouts-track" id="shoutsTrack">
-          <div class="nodo-shout">
-            <div class="nodo-shout-avatar">LC</div>
+          <div class="nodo-shout" style="opacity:0.4">
+            <div class="nodo-shout-avatar">…</div>
             <div class="nodo-shout-body">
-              <div class="nodo-shout-name">Luis Colmenares</div>
-              <div class="nodo-shout-text">Acabo de conseguir mi primer cliente en Alemania vía Nevado 🇩🇪🎉</div>
-            </div>
-          </div>
-          <div class="nodo-shout">
-            <div class="nodo-shout-avatar">MR</div>
-            <div class="nodo-shout-body">
-              <div class="nodo-shout-name">María Rodríguez</div>
-              <div class="nodo-shout-text">Alguien más usando Cursor + Claude para desarrollo? Cambia todo</div>
-            </div>
-          </div>
-          <div class="nodo-shout">
-            <div class="nodo-shout-avatar">AC</div>
-            <div class="nodo-shout-body">
-              <div class="nodo-shout-name">Andrés Castro</div>
-              <div class="nodo-shout-text">Espacio de IA y Automatización llegó a 1000 miembros 🤖 gracias a todos</div>
-            </div>
-          </div>
-          <div class="nodo-shout">
-            <div class="nodo-shout-avatar">VH</div>
-            <div class="nodo-shout-body">
-              <div class="nodo-shout-name">Valeria Herrera</div>
-              <div class="nodo-shout-text">Beca completada en Berlín. El network de Nodo fue clave para orientarme</div>
+              <div class="nodo-shout-name">Cargando…</div>
+              <div class="nodo-shout-text">Los aportes más recientes aparecerán aquí</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Posts -->
-      <div class="nodo-posts">
-
-        <!-- Post 1 -->
-        <article class="nodo-post" style="--post-i:0">
-          <div class="nodo-post-header">
-            <div class="nodo-post-avatar">RC</div>
-            <div class="nodo-post-meta">
-              <div class="nodo-post-name">Rodrigo Camacho <span class="nodo-post-badge badge-insight">Insight</span></div>
-              <div class="nodo-post-sub">Senior Dev · Programadores VE · hace 2h</div>
-            </div>
-            <button class="nodo-post-follow">+ Seguir</button>
-          </div>
-          <div class="nodo-post-body">
-            <p>Llevaba 6 meses aplicando a empresas europeas sin respuesta. El error era el CV: demasiado denso, sin métricas, y en formato de Word de 2010. Lo reconstruí completamente usando la guía de Capital Humano en Nevado.</p>
-            <p>Resultado: 4 entrevistas en 3 semanas. Ahora trabajo en una startup en Barcelona.</p>
-            <p>El cambio principal fue pasar de <em>"desarrollé aplicaciones"</em> a <em>"reduje el tiempo de carga un 40% con lazy loading y code splitting"</em>. Las métricas importan más que la lista de tecnologías.</p>
-          </div>
-          <div class="nodo-post-tags">
-            <span class="nodo-post-tag">#empleo</span>
-            <span class="nodo-post-tag">#CV</span>
-            <span class="nodo-post-tag">#europa</span>
-            <span class="nodo-post-tag">#programación</span>
-          </div>
-          <div class="nodo-post-footer">
-            <button class="nodo-post-action nodo-action-like">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>142</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>38</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Compartir</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.5L12 5l-2.5 2.5.6 3.5L7 9.5 3.9 11l.6-3.5L2 5l3.5-.5L7 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>Guardar</span>
-            </button>
-          </div>
-        </article>
-
-        <!-- Post 2 -->
-        <article class="nodo-post" style="--post-i:1">
-          <div class="nodo-post-header">
-            <div class="nodo-post-avatar" style="background:rgba(39,174,96,0.15);color:#27AE60">SL</div>
-            <div class="nodo-post-meta">
-              <div class="nodo-post-name">Sofía Lara <span class="nodo-post-badge badge-recurso">Recurso</span></div>
-              <div class="nodo-post-sub">UX Designer · Diseño &amp; Creatividad · hace 5h</div>
-            </div>
-            <button class="nodo-post-follow">+ Seguir</button>
-          </div>
-          <div class="nodo-post-body">
-            <p>Lista de los 12 portafolios que más impresionaron a recruiters europeos este trimestre (con análisis de por qué funcionan):</p>
-            <ul>
-              <li>Caso de estudio &gt; galería de imágenes</li>
-              <li>Proceso visible: antes/después con decisiones documentadas</li>
-              <li>Métricas de impacto en cada proyecto</li>
-              <li>Modo oscuro + responsive sin errores</li>
-              <li>Un proyecto personal que muestre quién eres, no solo lo que sabes hacer</li>
-            </ul>
-            <p>Thread completo en el espacio de Diseño. Abro para preguntas.</p>
-          </div>
-          <div class="nodo-post-tags">
-            <span class="nodo-post-tag">#diseño</span>
-            <span class="nodo-post-tag">#portafolio</span>
-            <span class="nodo-post-tag">#ux</span>
-          </div>
-          <div class="nodo-post-footer">
-            <button class="nodo-post-action nodo-action-like active">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z"/></svg>
-              <span>89</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>21</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Compartir</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.5L12 5l-2.5 2.5.6 3.5L7 9.5 3.9 11l.6-3.5L2 5l3.5-.5L7 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>Guardar</span>
-            </button>
-          </div>
-        </article>
-
-        <!-- Post 3 -->
-        <article class="nodo-post" style="--post-i:2">
-          <div class="nodo-post-header">
-            <div class="nodo-post-avatar" style="background:rgba(192,57,43,0.15);color:#C0392B">JP</div>
-            <div class="nodo-post-meta">
-              <div class="nodo-post-name">Jesús Palma <span class="nodo-post-badge badge-pregunta">Pregunta</span></div>
-              <div class="nodo-post-sub">Freelancer · Venezolanos en Madrid · hace 9h</div>
-            </div>
-            <button class="nodo-post-follow">+ Seguir</button>
-          </div>
-          <div class="nodo-post-body">
-            <p>¿Cómo están manejando el tema de autónomos en España siendo venezolanos? Me pregunto si conviene más facturar como autónomo español o mantener empresa en Venezuela y facturar internacional.</p>
-            <p>Mi situación: residente en Madrid desde hace 8 meses, clientes 80% EEUU, 20% España. Ingreso mensual ~3.500€. NIE ya tramitado.</p>
-            <p>Agradezco experiencias concretas, no teoría general.</p>
-          </div>
-          <div class="nodo-post-tags">
-            <span class="nodo-post-tag">#freelance</span>
-            <span class="nodo-post-tag">#españa</span>
-            <span class="nodo-post-tag">#impuestos</span>
-            <span class="nodo-post-tag">#diáspora</span>
-          </div>
-          <div class="nodo-post-footer">
-            <button class="nodo-post-action nodo-action-like">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>34</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>47</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Compartir</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.5L12 5l-2.5 2.5.6 3.5L7 9.5 3.9 11l.6-3.5L2 5l3.5-.5L7 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>Guardar</span>
-            </button>
-          </div>
-        </article>
-
-        <!-- Post 4 -->
-        <article class="nodo-post" style="--post-i:3">
-          <div class="nodo-post-header">
-            <div class="nodo-post-avatar" style="background:rgba(184,148,74,0.15);color:#B8944A">KM</div>
-            <div class="nodo-post-meta">
-              <div class="nodo-post-name">Karla Méndez <span class="nodo-post-badge badge-oportunidad">Oportunidad</span></div>
-              <div class="nodo-post-sub">Tech Recruiter · Startups Venezuela · hace 14h</div>
-            </div>
-            <button class="nodo-post-follow">+ Seguir</button>
-          </div>
-          <div class="nodo-post-body">
-            <p>Tres startups del ecosistema Nevado están contratando esta semana:</p>
-            <p><strong>1. Arepas Digital (Miami)</strong> — Full Stack (React + Node). Remoto. $2,800–$3,500/mes. Inglés intermedio OK.</p>
-            <p><strong>2. ComuniData (Bogotá)</strong> — Data Analyst (Python + SQL). Híbrido. COP $8M–$12M/mes. Se prefiere venezolano con experiencia en sector público.</p>
-            <p><strong>3. Nómada Labs (Lisboa)</strong> — Product Designer. Remoto. €2,200–€2,800/mes. Visa D7 disponible si necesitas relocalizarte.</p>
-            <p>DM directo o aplica por Capital Humano. Estas ofertas tienen prioridad para miembros verificados.</p>
-          </div>
-          <div class="nodo-post-tags">
-            <span class="nodo-post-tag">#empleo</span>
-            <span class="nodo-post-tag">#remoto</span>
-            <span class="nodo-post-tag">#startups</span>
-          </div>
-          <div class="nodo-post-footer">
-            <button class="nodo-post-action nodo-action-like">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>203</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>56</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Compartir</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.5L12 5l-2.5 2.5.6 3.5L7 9.5 3.9 11l.6-3.5L2 5l3.5-.5L7 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>Guardar</span>
-            </button>
-          </div>
-        </article>
-
-        <!-- Post 5 -->
-        <article class="nodo-post" style="--post-i:4">
-          <div class="nodo-post-header">
-            <div class="nodo-post-avatar" style="background:rgba(41,128,185,0.18);color:#2980B9">OT</div>
-            <div class="nodo-post-meta">
-              <div class="nodo-post-name">Omar Torres <span class="nodo-post-badge badge-experiencia">Experiencia</span></div>
-              <div class="nodo-post-sub">IA Engineer · IA y Automatización · hace 1d</div>
-            </div>
-            <button class="nodo-post-follow">+ Seguir</button>
-          </div>
-          <div class="nodo-post-body">
-            <p>Después de 2 años trabajando con LLMs en producción, esto es lo que nadie te dice en los tutoriales:</p>
-            <p>Los prompts que funcionan en Playground no funcionan igual en producción bajo carga real. La latencia variable cambia el comportamiento. La temperatura que usas en dev es raramente la correcta para usuarios reales.</p>
-            <p>Lo que más me costó aprender: <strong>los modelos no fallan de manera consistente</strong>. Un mismo input puede dar outputs diferentes. Diseña para la varianza, no para el caso promedio.</p>
-            <p>Happy de responder preguntas específicas. Tengo +300 horas de logs de producción analizados.</p>
-          </div>
-          <div class="nodo-post-tags">
-            <span class="nodo-post-tag">#IA</span>
-            <span class="nodo-post-tag">#LLMs</span>
-            <span class="nodo-post-tag">#producción</span>
-            <span class="nodo-post-tag">#ingeniería</span>
-          </div>
-          <div class="nodo-post-footer">
-            <button class="nodo-post-action nodo-action-like">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>317</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>94</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Compartir</span>
-            </button>
-            <button class="nodo-post-action">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 3.5L12 5l-2.5 2.5.6 3.5L7 9.5 3.9 11l.6-3.5L2 5l3.5-.5L7 1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-              <span>Guardar</span>
-            </button>
-          </div>
-        </article>
-
-        <!-- Load more -->
+      <div id="banner-sin-sesion" class="nodo-auth-banner" style="display:none">
+        <a href="/auth.html?redirect=/nodo.html">Inicia sesión</a> para publicar aportes y participar en NODO.
+      </div>
+      <div class="nodo-posts" id="feed-principal">
+        <div class="feed-loading">Cargando aportes…</div>
+        <div id="feed-sentinel" style="height:20px;margin-top:8px"></div>
         <div class="nodo-load-more">
           <button class="nodo-load-btn">Cargar más aportes</button>
         </div>
-
       </div>
     </main>
 
@@ -601,41 +323,13 @@
       <!-- Trending -->
       <div class="nodo-panel-block">
         <div class="nodo-panel-title">Tendencias</div>
-        <ul class="nodo-trending-list">
-          <li class="nodo-trending-item">
+        <ul class="nodo-trending-list" id="tendencias-lista">
+          <li class="nodo-trending-item" style="opacity:0.35">
             <div class="nodo-trending-meta">
-              <span class="nodo-trending-tag">#empleo</span>
-              <span class="nodo-trending-count">1,240 posts</span>
+              <span class="nodo-trending-tag">Calculando…</span>
+              <span class="nodo-trending-count">—</span>
             </div>
-            <div class="nodo-trending-bar"><div class="nodo-trending-fill" style="width:94%"></div></div>
-          </li>
-          <li class="nodo-trending-item">
-            <div class="nodo-trending-meta">
-              <span class="nodo-trending-tag">#freelance</span>
-              <span class="nodo-trending-count">880 posts</span>
-            </div>
-            <div class="nodo-trending-bar"><div class="nodo-trending-fill" style="width:72%"></div></div>
-          </li>
-          <li class="nodo-trending-item">
-            <div class="nodo-trending-meta">
-              <span class="nodo-trending-tag">#IA</span>
-              <span class="nodo-trending-count">640 posts</span>
-            </div>
-            <div class="nodo-trending-bar"><div class="nodo-trending-fill" style="width:54%"></div></div>
-          </li>
-          <li class="nodo-trending-item">
-            <div class="nodo-trending-meta">
-              <span class="nodo-trending-tag">#diáspora</span>
-              <span class="nodo-trending-count">510 posts</span>
-            </div>
-            <div class="nodo-trending-bar"><div class="nodo-trending-fill" style="width:42%"></div></div>
-          </li>
-          <li class="nodo-trending-item">
-            <div class="nodo-trending-meta">
-              <span class="nodo-trending-tag">#CV</span>
-              <span class="nodo-trending-count">380 posts</span>
-            </div>
-            <div class="nodo-trending-bar"><div class="nodo-trending-fill" style="width:31%"></div></div>
+            <div class="nodo-trending-bar"><div class="nodo-trending-fill" style="width:0%"></div></div>
           </li>
         </ul>
       </div>
@@ -675,12 +369,8 @@
       <!-- Actividad en vivo -->
       <div class="nodo-panel-block">
         <div class="nodo-panel-title">Actividad en vivo</div>
-        <ul class="nodo-live-list">
-          <li class="nodo-live-item"><span class="nodo-live-dot"></span> Carlos se unió a Programadores VE</li>
-          <li class="nodo-live-item"><span class="nodo-live-dot"></span> Nuevo aporte en IA y Automatización</li>
-          <li class="nodo-live-item"><span class="nodo-live-dot"></span> Ana guardó tu post sobre portafolios</li>
-          <li class="nodo-live-item"><span class="nodo-live-dot"></span> 3 personas leyeron tu aporte de ayer</li>
-          <li class="nodo-live-item"><span class="nodo-live-dot"></span> Nuevo espacio creado: Marketing Digital</li>
+        <ul class="nodo-live-list" id="actividad-live-lista">
+          <li class="nodo-live-item" style="opacity:0.35"><span class="nodo-live-dot"></span> Cargando actividad reciente…</li>
         </ul>
       </div>
 
@@ -726,35 +416,28 @@
   </div>
 
   <script>
-    // ── Tabs ──────────────────────────────────────────────────────
-    document.querySelectorAll('.nodo-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.nodo-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-      });
-    });
-
-    // ── Composer expand ───────────────────────────────────────────
-    const composerInput    = document.getElementById('composerInput');
-    const composerExpanded = document.getElementById('composerExpanded');
-    composerInput.addEventListener('focus', () => composerExpanded.classList.add('open'));
-    document.addEventListener('click', e => {
-      if (!document.getElementById('composerBox').contains(e.target))
-        composerExpanded.classList.remove('open');
+    // ── Composer expand/collapse ──────────────────────────────────
+    var _ci = document.getElementById('composerInput');
+    var _ce = document.getElementById('composerExpanded');
+    _ci && _ci.addEventListener('focus', function () { _ce && _ce.classList.add('open'); });
+    document.addEventListener('click', function (e) {
+      var box = document.getElementById('composerBox');
+      if (box && !box.contains(e.target)) _ce && _ce.classList.remove('open');
     });
 
     // ── Composer type buttons ─────────────────────────────────────
-    document.querySelectorAll('.nodo-type-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.nodo-type-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nodo-type-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.nodo-type-btn').forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
       });
     });
 
     // ── Tag field ─────────────────────────────────────────────────
-    document.querySelector('.nodo-tag-field')?.addEventListener('keydown', e => {
+    var _tf = document.querySelector('.nodo-tag-field');
+    _tf && _tf.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && e.target.value.trim()) {
-        const pill = document.createElement('span');
+        var pill = document.createElement('span');
         pill.className = 'nodo-tag-pill';
         pill.textContent = '#' + e.target.value.trim().replace(/^#/, '');
         e.target.parentNode.insertBefore(pill, e.target);
@@ -763,67 +446,37 @@
       }
     });
 
-    // ── Like buttons ──────────────────────────────────────────────
-    document.querySelectorAll('.nodo-action-like').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const active = btn.classList.toggle('active');
-        const span = btn.querySelector('span');
-        const n = parseInt(span.textContent.replace(',', '')) || 0;
-        span.textContent = active ? (n + 1).toLocaleString('es') : Math.max(0, n - 1).toLocaleString('es');
-      });
-    });
-
-    // ── Follow buttons ────────────────────────────────────────────
-    document.querySelectorAll('.nodo-post-follow, .nodo-top-follow').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const isFollowing = btn.classList.toggle('following');
-        if (btn.classList.contains('nodo-post-follow'))
-          btn.textContent = isFollowing ? '✓ Siguiendo' : '+ Seguir';
-        else
-          btn.textContent = isFollowing ? '✓' : '+';
-      });
-    });
-
     // ── Shouts toggle ─────────────────────────────────────────────
-    const shoutsTrack  = document.getElementById('shoutsTrack');
-    const shoutsToggle = document.getElementById('shoutsToggle');
-    let shoutsExpanded = false;
-    shoutsToggle?.addEventListener('click', () => {
-      shoutsExpanded = !shoutsExpanded;
-      shoutsTrack.classList.toggle('expanded', shoutsExpanded);
-      shoutsToggle.textContent = shoutsExpanded ? 'colapsar' : 'ver todos';
+    var _st = document.getElementById('shoutsTrack');
+    var _sg = document.getElementById('shoutsToggle');
+    var _se = false;
+    _sg && _sg.addEventListener('click', function () {
+      _se = !_se;
+      _st && _st.classList.toggle('expanded', _se);
+      _sg.textContent = _se ? 'colapsar' : 'ver todos';
     });
 
-    // ── Create space button ───────────────────────────────────────
-    document.querySelector('.nodo-create-space-btn')?.addEventListener('click', () => {
-      const name = prompt('Nombre del nuevo espacio:');
-      if (name && name.trim()) {
-        const list = document.querySelector('.nodo-spaces-list');
-        const li = document.createElement('li');
-        li.className = 'nodo-space-item';
-        li.innerHTML = `<span class="nodo-space-pulse"></span><span class="nodo-space-name">${name.trim()}</span><span class="nodo-space-count">1</span>`;
-        list.appendChild(li);
-      }
-    });
+    // ── Publish button → focus composer ──────────────────────────
+    document.querySelector('.nodo-publish-btn') &&
+      document.querySelector('.nodo-publish-btn').addEventListener('click', function () {
+        _ci && _ci.focus();
+        _ce && _ce.classList.add('open');
+      });
 
-    // ── Publish button ────────────────────────────────────────────
-    document.querySelector('.nodo-publish-btn')?.addEventListener('click', () => {
-      composerInput.focus();
-      composerExpanded.classList.add('open');
-    });
-
-    // ── Search keyboard shortcut ──────────────────────────────────
-    document.addEventListener('keydown', e => {
+    // ── Search ⌘K shortcut ────────────────────────────────────────
+    document.addEventListener('keydown', function (e) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        document.querySelector('.nodo-search')?.focus();
+        var s = document.querySelector('.nodo-search');
+        s && s.focus();
       }
     });
 
-    // ── Load more ─────────────────────────────────────────────────
-    document.querySelector('.nodo-load-btn')?.addEventListener('click', function() {
-      this.textContent = 'Cargando…';
-      setTimeout(() => { this.textContent = 'Cargar más aportes'; }, 1200);
+    // ── Top profiles follow ───────────────────────────────────────
+    document.querySelectorAll('.nodo-top-follow').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btn.textContent = btn.classList.toggle('following') ? '✓' : '+';
+      });
     });
   </script>
   <footer id="std-footer">
@@ -856,7 +509,7 @@
       </div>
     </div>
     <div class="std-fb">
-      <span class="std-fc-copy">© 2026 NEVADO · NODO · Modo demostración</span>
+      <span class="std-fc-copy">© 2026 NEVADO · NODO</span>
       <div class="std-tri">
         <div style="background:#F4D03F"></div>
         <div style="background:#2980B9"></div>
@@ -914,7 +567,7 @@
   <script type="module" src="/src/auth.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
   <script src="/js/nodo/nodo-foro.js"></script>
-  <script src="/js/nodo/nodo-moderacion.js"></script>
+  <script src="/js/nodo/nodo-init.js"></script>
   <script src="/nevado-plus.js"></script>
   <script src="/croquetas.js"></script>
   <script src="/mini-nevado.js"></script>
