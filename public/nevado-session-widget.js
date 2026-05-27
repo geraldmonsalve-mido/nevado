@@ -89,6 +89,28 @@
     el.onclick = () => location.href = '/profile.html';
   }
 
+  function renderDesktopEcosystemPill(profile) {
+    if (!profile || window.innerWidth < 768) return;
+    if (document.getElementById('nv-desktop-user-pill')) return;
+
+    const ecosystem = [...document.querySelectorAll('div, span, p')]
+      .find(el => /Ecosistema activo/i.test(el.textContent || ''));
+
+    if (!ecosystem) return;
+
+    const pill = document.createElement('button');
+    pill.id = 'nv-desktop-user-pill';
+    pill.innerHTML = `
+      <img src="${rangoIcon(profile.rango)}" alt="${profile.rango}">
+      <span>@${String(profile.nombre || profile.email || 'usuario').split(' ')[0].replace(/^@/, '')}</span>
+      <strong>${Number(profile.croquetas || 0).toLocaleString('es-CO')}</strong>
+      <em>${profile.rango || 'Cachorro'}</em>
+    `;
+    pill.onclick = () => location.href = '/profile.html';
+
+    ecosystem.insertAdjacentElement('afterend', pill);
+  }
+
   async function bootSession() {
     const el = findSessionBox();
     if (!el) return;
@@ -104,6 +126,7 @@
 
       const profile = await getProfile(user);
       setUser(el, user, profile);
+      renderDesktopEcosystemPill(profile);
     } catch (e) {
       console.warn('[Nevado session]', e);
       setLogin(el);

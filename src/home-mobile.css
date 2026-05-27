@@ -709,3 +709,94 @@
     cursor: pointer !important;
   }
 }
+
+/* Perfil sincronizado con Supabase */
+#nevado-profile-live-card {
+  width: min(92vw, 720px);
+  margin: 20px auto;
+  position: relative;
+  z-index: 20;
+}
+
+.npl-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(212,168,65,.35);
+  border-radius: 24px;
+  background: rgba(10,12,18,.72);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 22px 60px rgba(0,0,0,.38);
+}
+
+.npl-card img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.npl-card strong,
+.npl-card span,
+.npl-card small {
+  display: block;
+}
+
+.npl-card strong {
+  color: #d4a841;
+  font-size: 18px;
+}
+
+.npl-card span {
+  color: white;
+  font-size: 15px;
+  margin-top: 3px;
+}
+
+.npl-card small {
+  color: rgba(255,255,255,.68);
+  margin-top: 2px;
+}
+
+/* Botón desktop usuario/rango junto a Ecosistema activo */
+#nv-desktop-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 14px;
+  padding: 7px 12px;
+  border: 1px solid rgba(212,168,65,.38);
+  border-radius: 999px;
+  background: rgba(12,14,20,.72);
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  vertical-align: middle;
+}
+
+#nv-desktop-user-pill img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+#nv-desktop-user-pill span {
+  color: #d4a841;
+  font-weight: 700;
+}
+
+#nv-desktop-user-pill strong {
+  color: white;
+  font-weight: 700;
+}
+
+#nv-desktop-user-pill em {
+  color: rgba(255,255,255,.72);
+  font-style: normal;
+}
+
+@media (max-width: 767px) {
+  #nv-desktop-user-pill {
+    display: none !important;
+  }
+}
