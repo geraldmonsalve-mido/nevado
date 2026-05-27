@@ -30,8 +30,21 @@
   function rangoIcon(rango) {
     const key = String(rango || 'Cachorro')
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase().replace(/\s+/g, '-');
-    return `/rangos/${key}.png`;
+      .toLowerCase()
+      .replace(/\s+/g, '');
+
+    const icons = {
+      cachorro: '/rangos/rango1-cachorro-bronce.png',
+      explorador: '/rangos/rango2-explorador-bronce.png',
+      guardian: '/rangos/rango3-guardian-plata.png',
+      montanista: '/rangos/rango4-montanista-plata.png',
+      montanista: '/rangos/rango4-montanista-plata.png',
+      guia: '/rangos/rango5-guia-plata.png',
+      protector: '/rangos/rango6-protector-oro.png',
+      leyendaandina: '/rangos/rango7-leyendaandina-oro-joyas.png'
+    };
+
+    return icons[key] || icons.cachorro;
   }
 
   async function getProfile(user) {
