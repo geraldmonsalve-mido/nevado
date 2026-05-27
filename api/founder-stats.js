@@ -6,43 +6,61 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
+  const out = {
+    usuarios_total:  null,
+    croquetas_total: null,
+    activos_24h:     null,
+    guardian_plus:   null,
+    logs_recientes:  []
+  };
+
   try {
-    const { count: usuarios } = await supabase
+    const { count } = await supabase
       .from('usuarios')
       .select('*', { count: 'exact', head: true });
+    out.usuarios_total = count ?? null;
+  } catch (_) {}
 
-    const { data: croquetasRows } = await supabase
-      .from('usuarios')
-      .select('croquetas');
+  try {
+    const { data } = await supabase.from('usuarios').select('croquetas');
+    out.croquetas_total = data
+      ? data.reduce((s, u) => s + Number(u.croquetas || 0), 0)
+      : null;
+  } catch (_) {}
 
-    const croquetas = croquetasRows?.reduce((s, u) => s + Number(u.croquetas || 0), 0) || 0;
-
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-    const { count: activos } = await supabase
+  try {
+    const since = new Date(Date.now() - 86400000).toISOString();
+    const { count } = await supabase
       .from('usuarios')
       .select('*', { count: 'exact', head: true })
       .gte('ultima_actividad', since);
+    out.activos_24h = count ?? null;
+  } catch (_) {}
 
-    const { count: guardianPlus } = await supabase
+  try {
+    const { count } = await supabase
       .from('usuarios')
       .select('*', { count: 'exact', head: true })
       .in('rango', ['Guardián', 'Montañista', 'Guía', 'Protector', 'Leyenda Andina']);
+    out.guardian_plus = count ?? null;
+  } catch (_) {}
 
+  try {
     const { data: logs } = await supabase
       .from('croquetas_log')
-      .select('cantidad,motivo,creado_en')
+      .select('creado_en, usuario_email, clerk_id, operacion, cantidad, motivo, founder_email')
       .order('creado_en', { ascending: false })
-      .limit(5);
+      .limit(20);
 
-    return res.status(200).json({
-      usuarios: usuarios || 0,
-      croquetas,
-      activos: activos || 0,
-      guardianPlus: guardianPlus || 0,
-      logs: logs || []
-    });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+    out.logs_recientes = (logs || []).map(l => ({
+      fecha:         l.creado_en || null,
+      usuario_email: l.usuario_email || l.clerk_id || '—',
+      operacion:     l.operacion || (Number(l.cantidad) >= 0 ? 'sumar' : 'restar'),
+      cantidad:      Math.abs(Number(l.cantidad || 0)),
+      motivo:        l.motivo || '—',
+      founder_email: l.founder_email || '—'
+    }));
+  } catch (_) {}
+
+  return res.status(200).json(out);
 }

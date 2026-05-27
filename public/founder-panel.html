@@ -3,600 +3,224 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Panel administrativo del Fundador para el ecosistema NEVADO." />
+  <meta name="description" content="Panel administrativo del Fundador — NEVADO." />
   <meta name="theme-color" content="#050816" />
-  <title>NEVADO — Panel del Fundador</title>
+  <title>NEVADO — Founder Panel</title>
   <link rel="stylesheet" href="./founder-panel.css" />
-  <link rel="preload" as="image" href="/rangos/rango7-leyendaandina-oro-joyas.png" />
-
-<script
-  async
-  crossorigin="anonymous"
-  data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js">
-</script>
-
-  
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js">
+  </script>
 </head>
 
-<body class="founder-panel-page fp-loading" data-nevado-page="founder-panel">
+<body class="fp-page">
 
-  <div class="background-glow" aria-hidden="true"></div>
-  <div class="background-mountain" aria-hidden="true"></div>
-  <div class="background-grid" aria-hidden="true"></div>
+  <!-- Overlay de validación — visible inmediatamente, sin JS -->
+  <div id="fp-validating">Validando acceso...</div>
 
-  <div class="founder-shell">
+  <!-- Panel completo — oculto hasta que auth pase -->
+  <div id="fp-wrap" hidden>
 
-    <aside class="founder-sidebar" aria-label="Navegación administrativa">
-
-      <header class="sidebar-brand">
-        <a class="brand-link" href="./founder-panel.html" aria-label="Ir al resumen del Panel del Fundador">
-          <img class="brand-mark" src="./assets/nevado-mark.png" alt="Símbolo NEVADO" width="36" height="36" / loading="lazy">
-          <div class="brand-copy">
-            <span class="brand-name">NEVADO</span>
-            <span class="brand-subtitle">Ecosistema</span>
-          </div>
-        </a>
-      </header>
-
-      <div class="founder-identity-card">
-        <div class="founder-avatar-wrap">
-          <img class="founder-avatar" src="/rangos/rango7-leyendaandina-oro-joyas.png" alt="Insignia Leyenda Andina Fundador" loading="lazy" />
-          <span class="founder-avatar-ring" aria-hidden="true"></span>
-        </div>
-        <p class="founder-overline" aria-label="Sesión institucional">Sesión institucional</p>
-        <h2 class="founder-name">NEVADO</h2>
-        <p class="founder-rank">Leyenda Andina Fundador</p>
-        <p class="founder-level">Nivel 170</p>
-        <p class="founder-presence"><span class="presence-dot" aria-hidden="true"></span>Presencia institucional activa</p>
+    <!-- ─── BLOQUE 1: HEADER COMPACTO 64px ───────────────────────── -->
+    <header class="fp-header">
+      <div class="fp-header-left">
+        <span class="fp-brand">N·EVADO</span>
+        <span class="fp-badge">Founder Session</span>
       </div>
+      <div class="fp-header-center">
+        <span id="fp-user-name">—</span>
+        <small id="fp-user-email">—</small>
+      </div>
+      <div class="fp-header-right">
+        <time id="fp-clock" aria-label="Hora actual">00:00:00</time>
+        <button class="fp-logout-btn" id="fp-logout" type="button">Cerrar sesión</button>
+      </div>
+    </header>
 
-      <nav class="sidebar-nav" aria-label="Secciones del Panel del Fundador">
-        <p class="nav-group-label">Administración</p>
+    <!-- ─── MAIN ──────────────────────────────────────────────────── -->
+    <main class="fp-main">
 
-        <a class="nav-item active" href="#resumen">
-          <span class="nav-icon" aria-hidden="true">⌁</span>
-          <span>Resumen</span>
-        </a>
+      <!-- ─── BLOQUE 2: MÉTRICAS REALES ──────────────────────────── -->
+      <section class="fp-section" aria-label="Métricas del ecosistema">
+        <div class="fp-kpi-grid">
 
-        <a class="nav-item" href="#evaluaciones">
-          <span class="nav-icon" aria-hidden="true">▣</span>
-          <span>Evaluaciones</span>
-          <span class="nav-badge" id="badge-evaluaciones">12</span>
-        </a>
-
-        <a class="nav-item" href="#ascensos">
-          <span class="nav-icon" aria-hidden="true">↑</span>
-          <span>Ascensos</span>
-          <span class="nav-badge violet" id="badge-ascensos">5</span>
-        </a>
-
-        <a class="nav-item" href="#usuarios">
-          <span class="nav-icon" aria-hidden="true">◎</span>
-          <span>Usuarios</span>
-        </a>
-
-        <a class="nav-item" href="#moderacion">
-          <span class="nav-icon" aria-hidden="true">⚖</span>
-          <span>Moderación</span>
-        </a>
-
-        <a class="nav-item" href="#croquetas">
-          <span class="nav-icon" aria-hidden="true">◉</span>
-          <span>Croquetas</span>
-          <span class="nav-status" aria-label="Operativo"></span>
-        </a>
-
-        <a class="nav-item" href="#reportes">
-          <span class="nav-icon" aria-hidden="true">◇</span>
-          <span>Reportes</span>
-          <span class="nav-badge red" id="badge-reportes">7</span>
-        </a>
-
-        <a class="nav-item" href="#logs">
-          <span class="nav-icon" aria-hidden="true">☷</span>
-          <span>Logs del sistema</span>
-        </a>
-
-        <a class="nav-item" href="#configuracion">
-          <span class="nav-icon" aria-hidden="true">⚙</span>
-          <span>Configuración</span>
-        </a>
-
-        <p class="nav-group-label">Ecosistema</p>
-
-        <a class="nav-item" href="#estadisticas">
-          <span class="nav-icon" aria-hidden="true">↟</span>
-          <span>Estadísticas</span>
-        </a>
-
-        <a class="nav-item" href="#actividad-vivo">
-          <span class="nav-icon" aria-hidden="true">ϟ</span>
-          <span>Actividad en vivo</span>
-        </a>
-
-        <a class="nav-item" href="#salud-ecosistema">
-          <span class="nav-icon" aria-hidden="true">✦</span>
-          <span>Salud del ecosistema</span>
-        </a>
-      </nav>
-
-      <footer class="sidebar-footer">
-        <button class="ghost-action" type="button" data-action="logout">
-          <span aria-hidden="true">↩</span>
-          <span>Cerrar sesión</span>
-        </button>
-      </footer>
-
-    </aside>
-
-    <main class="founder-main" id="resumen">
-
-      <header class="topbar" aria-label="Barra superior">
-        <div class="topbar-title">
-          <p class="eyebrow">Panel del Fundador</p>
-          <h2>Control total del Ecosistema NEVADO</h2>
-        </div>
-        <div class="topbar-actions">
-          <div class="security-pill">
-            <span class="security-icon" aria-hidden="true">▣</span>
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-blue" aria-hidden="true">◎</span>
             <div>
-              <strong>Sesión verificada</strong>
-              <span>2FA activa</span>
+              <p class="fp-kpi-label">Usuarios registrados</p>
+              <strong class="fp-kpi-value" id="kpi-v-usuarios">—</strong>
             </div>
-          </div>
-          <div class="clock-card" aria-label="Hora actual">
-            <strong id="founder-clock">00:00:00</strong>
-            <span id="founder-date">Fecha del sistema</span>
-          </div>
-        </div>
-      </header>
+          </article>
 
-      <section class="founder-hero glass-card" aria-labelledby="hero-title">
-        <div class="hero-content">
-          <div class="hero-badge">
-            <span aria-hidden="true">♛</span>
-            <span>Leyenda Andina Fundador</span>
-          </div>
-          <h2 id="hero-title">Centro de mando institucional</h2>
-          <p>Supervisa evaluaciones, ascensos, croquetas, moderación, reportes, configuración del ecosistema y actividad en tiempo real. Todos los cambios persisten en el ecosistema.</p>
-          <div class="hero-metrics">
-            <div class="mini-metric">
-              <span>Rango máximo</span>
-              <strong>Nivel 170 / 170</strong>
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-gold" aria-hidden="true">◉</span>
+            <div>
+              <p class="fp-kpi-label">Croquetas distribuidas</p>
+              <strong class="fp-kpi-value" id="kpi-v-croquetas">—</strong>
             </div>
-            <div class="mini-metric">
-              <span>Croquetas para otorgar</span>
-              <strong>∞</strong>
+          </article>
+
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-green" aria-hidden="true">ϟ</span>
+            <div>
+              <p class="fp-kpi-label">Usuarios activos 24h</p>
+              <strong class="fp-kpi-value" id="kpi-v-activos">—</strong>
             </div>
-            <div class="mini-metric">
-              <span>Permiso superior</span>
-              <strong>Super Administrador</strong>
+          </article>
+
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-violet" aria-hidden="true">▣</span>
+            <div>
+              <p class="fp-kpi-label">Guardián o superior</p>
+              <strong class="fp-kpi-value" id="kpi-v-guardian">—</strong>
             </div>
-          </div>
-        </div>
-        <div class="hero-emblem" aria-hidden="true">
-          <img src="/rangos/rango7-leyendaandina-oro-joyas.png" alt="" loading="eager" />
-          <span class="emblem-aura"></span>
+          </article>
+
         </div>
       </section>
 
-      <section class="kpi-grid" aria-label="Indicadores principales">
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon blue" aria-hidden="true">◎</span>
-          <div>
-            <p>Usuarios totales</p>
-            <strong id="kpi-usuarios-total">128.420</strong>
-            <small>↑ 2.341 en 24h</small>
+      <!-- ─── BLOQUE 3: CAMBIOS DE CROQUETAS ─────────────────────── -->
+      <section class="fp-section" aria-label="Cambios de croquetas">
+        <h2 class="fp-section-title">Cambios de Croquetas</h2>
+
+        <!-- PASO A: Buscar usuario -->
+        <div class="fp-search-row">
+          <input
+            type="email"
+            id="fp-search-email"
+            class="fp-input"
+            placeholder="Email del usuario..."
+            autocomplete="off"
+          />
+          <button class="fp-btn-primary" id="fp-search-btn" type="button">Validar →</button>
+        </div>
+        <div id="fp-search-error" class="fp-error-msg" hidden></div>
+
+        <!-- PASO B: Datos del usuario (visible tras búsqueda exitosa) -->
+        <div id="fp-user-card" class="fp-user-card" hidden>
+          <img id="fp-user-badge" src="" alt="" class="fp-user-badge" />
+          <div class="fp-user-details">
+            <strong id="fp-uc-nombre">—</strong>
+            <span id="fp-uc-email">—</span>
+            <span class="fp-uc-croquetas">🦴 <strong id="fp-uc-croquetas">—</strong> Croquetas</span>
+            <span>Nivel <strong id="fp-uc-nivel">—</strong> · <strong id="fp-uc-rango">—</strong></span>
           </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon green" aria-hidden="true">ϟ</span>
-          <div>
-            <p>Usuarios activos</p>
-            <strong id="kpi-usuarios-activos">15.842</strong>
-            <small>↑ 1.205 en 24h</small>
+        </div>
+
+        <!-- PASO C: Formulario de operación (visible tras búsqueda exitosa) -->
+        <form id="fp-op-form" class="fp-op-form" hidden novalidate>
+
+          <div class="fp-radio-group" role="radiogroup" aria-label="Tipo de operación">
+            <label class="fp-radio-option">
+              <input type="radio" name="operacion" value="sumar" checked />
+              <span>⊕ Sumar</span>
+            </label>
+            <label class="fp-radio-option">
+              <input type="radio" name="operacion" value="restar" />
+              <span>⊖ Restar</span>
+            </label>
           </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon gold" aria-hidden="true">◉</span>
-          <div>
-            <p>Croquetas en circulación</p>
-            <strong id="kpi-croquetas">2.450.879.250</strong>
-            <small>↑ 85.210.450 en 24h</small>
-          </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon violet" aria-hidden="true">▣</span>
-          <div>
-            <p>Evaluaciones pendientes</p>
-            <strong id="kpi-evaluaciones">377</strong>
-            <small><a href="#evaluaciones">Ver evaluaciones →</a></small>
-          </div>
-        </article>
-        <article class="kpi-card glass-card">
-          <span class="kpi-icon red" aria-hidden="true">◇</span>
-          <div>
-            <p>Reportes pendientes</p>
-            <strong id="kpi-reportes">7</strong>
-            <small><a href="#reportes">Ver reportes →</a></small>
-          </div>
-        </article>
+
+          <input
+            type="number"
+            id="fp-op-cantidad"
+            class="fp-input"
+            placeholder="Cantidad de croquetas"
+            min="1"
+            step="1"
+            required
+          />
+
+          <div id="fp-op-warning" class="fp-op-warning" hidden></div>
+
+          <input
+            type="text"
+            id="fp-op-motivo"
+            class="fp-input"
+            placeholder="Motivo (obligatorio)"
+            required
+          />
+
+          <button class="fp-btn-primary" type="submit" id="fp-op-submit">Aplicar cambio</button>
+
+        </form>
       </section>
 
-      <section class="dashboard-grid">
+      <!-- ─── BLOQUE 4: LOGS RECIENTES ────────────────────────────── -->
+      <section class="fp-section" aria-label="Logs de croquetas">
+        <h2 class="fp-section-title">
+          Logs recientes
+          <small class="fp-refresh-note">Auto-actualiza cada 30s</small>
+        </h2>
+        <div id="fp-logs-wrap" class="fp-logs-wrap">
+          <p class="fp-empty">Sin movimientos registrados aún.</p>
+        </div>
+      </section>
 
-        <!-- ESTADÍSTICAS -->
-        <article class="panel-card glass-card" id="estadisticas">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Distribución</p>
-              <h3>Niveles del ecosistema</h3>
-            </div>
-            <span class="panel-meta">Usuarios</span>
-          </header>
-          <ol class="rank-list" id="rank-list-container">
-            <!-- Renderizado dinámico por JS -->
-          </ol>
-        </article>
+      <!-- ─── BLOQUE 5: PENDIENTES FUNCIONALES ────────────────────── -->
+      <section class="fp-pending-section" aria-label="Funcionalidades pendientes">
+        <details>
+          <summary class="fp-pending-summary">Funcionalidades Pendientes</summary>
+          <div class="fp-pending-list">
 
-        <!-- ACTIVIDAD EN VIVO -->
-        <article class="panel-card glass-card" id="actividad-vivo">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Pulso vivo</p>
-              <h3>Actividad en tiempo real</h3>
-            </div>
-            <a class="panel-header-link" href="#resumen">Ver todo →</a>
-          </header>
-          <ul class="activity-list" id="activity-feed">
-            <!-- Renderizado dinámico por JS -->
-          </ul>
-        </article>
-
-        <!-- SALUD DEL ECOSISTEMA -->
-        <article class="panel-card glass-card" id="salud-ecosistema">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Estado operativo</p>
-              <h3>Salud del ecosistema</h3>
-            </div>
-          </header>
-          <div class="health-layout">
-            <ul class="health-list" id="health-list">
-              <!-- Renderizado dinámico por JS -->
-            </ul>
-            <div class="health-orb">
-              <div class="orb-ring">
-                <span>Estado general</span>
-                <strong id="health-estado">ESTABLE</strong>
-              </div>
-              <p id="health-msg">Todo en orden</p>
-            </div>
-          </div>
-        </article>
-
-        <!-- SEGURIDAD -->
-        <article class="panel-card glass-card" id="seguridad">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Blindaje institucional</p>
-              <h3>Seguridad</h3>
-            </div>
-          </header>
-          <ul class="security-list">
-            <li>
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
               <div>
-                <strong>Autenticación en dos pasos</strong>
-                <span>Activada con Google Authenticator</span>
+                <strong>Desbloqueo manual Guardián → Montañista</strong>
+                <p>Requiere autorización founder — pendiente backend de validación de rangos</p>
               </div>
-              <span class="check">✓</span>
-            </li>
-            <li>
+            </div>
+
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
               <div>
-                <strong>Sesión actual</strong>
-                <span>IP segura · sesión activa</span>
+                <strong>Moderación de contenido NODO</strong>
+                <p>Requiere tabla de contenidos y API de moderación</p>
               </div>
-              <span class="check">✓</span>
-            </li>
-            <li>
+            </div>
+
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
               <div>
-                <strong>Actividad sospechosa</strong>
-                <span id="security-suspicious">No se han detectado actividades</span>
+                <strong>Reportes de campañas Corazón</strong>
+                <p>Requiere tabla de campañas y endpoints de métricas</p>
               </div>
-              <span class="check" id="security-check-suspicious">✓</span>
-            </li>
-          </ul>
-        </article>
-
-        <!-- LOGS -->
-        <article class="panel-card glass-card" id="logs">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Trazabilidad</p>
-              <h3>Logs institucionales</h3>
             </div>
-            <button class="btn-mini" type="button" id="btn-export-logs">Exportar</button>
-          </header>
-          <ul class="log-list" id="log-list">
-            <!-- Renderizado dinámico por JS -->
-          </ul>
-        </article>
 
-        <!-- ACCESOS RÁPIDOS -->
-        <article class="panel-card glass-card quick-access">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Centro operativo</p>
-              <h3>Accesos rápidos</h3>
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
+              <div>
+                <strong>Gestión de permisos avanzados</strong>
+                <p>Requiere tabla de roles/permisos y UI de gestión</p>
+              </div>
             </div>
-          </header>
-          <div class="quick-grid">
-            <button class="quick-action" type="button" data-panel="evaluaciones">
-              <span>▣</span>
-              <strong>Evaluaciones</strong>
-              <small>Revisar candidatos</small>
-              <em id="qa-badge-evaluaciones">12</em>
-            </button>
-            <button class="quick-action" type="button" data-panel="ascensos">
-              <span>↑</span>
-              <strong>Ascensos</strong>
-              <small>Gestionar niveles altos</small>
-              <em class="violet" id="qa-badge-ascensos">5</em>
-            </button>
-            <button class="quick-action" type="button" data-panel="croquetas">
-              <span>◉</span>
-              <strong>Croquetas</strong>
-              <small>Otorgar croquetas</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="usuarios">
-              <span>◎</span>
-              <strong>Usuarios</strong>
-              <small>Buscar usuarios</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="moderacion">
-              <span>⚖</span>
-              <strong>Moderación</strong>
-              <small>Acciones rápidas</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="reportes">
-              <span>◇</span>
-              <strong>Reportes</strong>
-              <small>Ver reportes</small>
-              <em class="red" id="qa-badge-reportes">7</em>
-            </button>
-            <button class="quick-action" type="button" data-panel="logs">
-              <span>☷</span>
-              <strong>Logs</strong>
-              <small>Ver registro</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="configuracion">
-              <span>⚙</span>
-              <strong>Config</strong>
-              <small>Ajustes globales</small>
-            </button>
-            <button class="quick-action" type="button" data-panel="anuncios">
-              <span>✦</span>
-              <strong>Anuncios</strong>
-              <small>Crear anuncio</small>
-            </button>
+
           </div>
-        </article>
-
-        <!-- EVALUACIONES -->
-        <article class="panel-card glass-card" id="evaluaciones">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Evaluativos</p>
-              <h3>Procesos pendientes</h3>
-            </div>
-            <span class="panel-meta" id="eval-count">0 pendientes</span>
-          </header>
-          <div class="evaluation-list" id="evaluaciones-list">
-            <!-- Renderizado dinámico por JS -->
-          </div>
-        </article>
-
-        <!-- CROQUETAS -->
-        <article class="panel-card glass-card" id="croquetas">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Economía interna</p>
-              <h3>Otorgar croquetas</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="grant-croquetas" novalidate>
-            <label>
-              <span>Usuario</span>
-              <input type="text" name="user" placeholder="@usuario o nombre..." autocomplete="off" required />
-            </label>
-            <label>
-              <span>Cantidad</span>
-              <div class="input-with-addon">
-                <input type="number" name="amount" placeholder="100000" min="1" max="999999999" required />
-                <button type="button" class="addon-btn" data-action="set-infinite">Máx.<br>∞</button>
-              </div>
-            </label>
-            <label>
-              <span>Motivo institucional</span>
-              <textarea name="reason" rows="3" placeholder="Reconocimiento por aporte tangible al ecosistema"></textarea>
-            </label>
-            <button class="cta-btn" type="submit">Otorgar croquetas</button>
-          </form>
-        </article>
-
-        <!-- ASCENSOS -->
-        <article class="panel-card glass-card" id="ascensos">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Ascenso ceremonial</p>
-              <h3>Iniciar proceso de ascenso</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="promotion" novalidate>
-            <label>
-              <span>Usuario</span>
-              <input type="text" name="promotionUser" placeholder="Buscar usuario..." autocomplete="off" required />
-            </label>
-            <label>
-              <span>Nuevo rango</span>
-              <select name="newRank" required>
-                <option value="">Seleccionar rango</option>
-                <option value="guardian">Guardián</option>
-                <option value="montanista">Montañista</option>
-                <option value="guia">Guía</option>
-                <option value="protector">Protector</option>
-                <option value="leyenda-andina">Leyenda Andina</option>
-              </select>
-            </label>
-            <p class="form-hint">Los ascensos a Protector y Leyenda Andina requieren evaluación directa del Fundador.</p>
-            <button class="cta-btn" type="submit">Confirmar ascenso</button>
-          </form>
-        </article>
-
-        <!-- MODERACIÓN -->
-        <article class="panel-card glass-card" id="moderacion">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Control disciplinario</p>
-              <h3>Acciones de moderación</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="moderation" novalidate>
-            <label>
-              <span>Usuario objetivo</span>
-              <input type="text" name="modUser" placeholder="@usuario..." autocomplete="off" required />
-            </label>
-            <label>
-              <span>Acción</span>
-              <select name="modAction" required>
-                <option value="">Seleccionar acción</option>
-                <option value="warn">Advertencia formal</option>
-                <option value="ban-24h">Suspensión 24 horas</option>
-                <option value="ban-7d">Suspensión 7 días</option>
-                <option value="ban-perm">Suspensión permanente</option>
-                <option value="unlock">Desbloquear usuario</option>
-              </select>
-            </label>
-            <label>
-              <span>Motivo institucional</span>
-              <textarea name="modReason" rows="2" placeholder="Describe el motivo de la acción..." required></textarea>
-            </label>
-            <button class="cta-btn cta-btn--warning" type="submit">Aplicar acción</button>
-          </form>
-        </article>
-
-        <!-- USUARIOS -->
-        <article class="panel-card glass-card" id="usuarios">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Directorio</p>
-              <h3>Buscar usuarios</h3>
-            </div>
-          </header>
-          <form class="founder-form" data-form="user-search" novalidate>
-            <label>
-              <span>Buscar por usuario, nivel o rango</span>
-              <input type="text" name="searchQuery" placeholder="@usuario, Guardián, nivel 45..." autocomplete="off" id="user-search-input" />
-            </label>
-            <button class="cta-btn cta-btn--secondary" type="submit">Buscar</button>
-          </form>
-          <div id="user-search-results" class="search-results" style="margin-top:1rem"></div>
-        </article>
-
-        <!-- REPORTES -->
-        <article class="panel-card glass-card" id="reportes">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Gestión de reportes</p>
-              <h3>Reportes pendientes</h3>
-            </div>
-            <span class="panel-meta" id="reportes-count">7 pendientes</span>
-          </header>
-          <div class="reports-list" id="reportes-list">
-            <p class="empty-state">Los reportes se cargan desde el sistema. Conecta la API para ver reportes en tiempo real.</p>
-          </div>
-        </article>
-
-        <!-- CONFIGURACIÓN -->
-        <article class="panel-card glass-card" id="configuracion">
-          <header class="panel-header">
-            <div>
-              <p class="eyebrow">Control global</p>
-              <h3>Configuración del ecosistema</h3>
-            </div>
-          </header>
-          <div class="config-grid">
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Modo mantenimiento</strong>
-                <span>Suspende el acceso público temporalmente</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-mantenimiento" role="switch" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Registro abierto</strong>
-                <span>Permite nuevos registros de usuarios</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-registro" role="switch" checked />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Evaluaciones activas</strong>
-                <span>Habilita el sistema de evaluaciones</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-evaluaciones" role="switch" checked />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-row">
-              <div class="config-info">
-                <strong>Notificaciones activas</strong>
-                <span>Envío de notificaciones al ecosistema</span>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-notificaciones" role="switch" checked />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="config-full">
-              <label>
-                <strong>Mensaje global del ecosistema</strong>
-                <span>Se muestra en todas las páginas activas</span>
-                <textarea id="mensaje-global" rows="3" placeholder="Escribe un mensaje para todos los usuarios del ecosistema..."></textarea>
-              </label>
-              <button class="cta-btn" type="button" id="btn-mensaje-global">Publicar mensaje global</button>
-            </div>
-            <div class="config-full config-danger">
-              <strong>Zona de peligro</strong>
-              <span>Restaura todos los datos del ecosistema a los valores por defecto</span>
-              <button class="cta-btn cta-btn--danger" type="button" id="btn-reset-datos">Restaurar datos por defecto</button>
-            </div>
-          </div>
-        </article>
-
+        </details>
       </section>
 
     </main>
   </div>
 
-  <!-- Auth + protection -->
-  <script>window.FOUNDER_EMAILS = ['nevadopro7@gmail.com'];</script>
+  <!-- Modal de confirmación -->
+  <div id="fp-modal-overlay" class="fp-modal-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="fp-modal-msg">
+    <div class="fp-modal">
+      <p id="fp-modal-msg" class="fp-modal-msg"></p>
+      <p id="fp-modal-motivo" class="fp-modal-motivo"></p>
+      <div class="fp-modal-actions">
+        <button class="fp-btn-ghost" id="fp-modal-cancel" type="button">Cancelar</button>
+        <button class="fp-btn-primary" id="fp-modal-confirm" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="fp-toast" class="fp-toast" hidden role="status" aria-live="polite"></div>
+
   <script src="/cursor.js"></script>
-  <script type="module" src="/src/nevado-key.js"></script>
-  <script type="module" src="/src/auth.js"></script>
-  <script src="/croquetas.js"></script>
+  <script src="./founder-functional.js"></script>
   <script src="./founder-panel.js" defer></script>
-  <script src="/nevado-env.js"></script>
-  
-  <script src="/founder-functional.js"></script>
 </body>
 </html>

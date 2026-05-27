@@ -1,186 +1,91 @@
 (function () {
+  'use strict';
 
-  const FOUNDER_EMAIL = 'nevado.pro7@gmail.com';
+  const FOUNDER_EMAILS = [
+    'nevado.pro7@gmail.com',
+    'nevadopro7@gmail.com',
+    'gerald.monsalve@gmail.com'
+  ];
 
-  function denyAccess() {
+  function showValidatingMsg(msg) {
+    const el = document.getElementById('fp-validating');
+    if (el) el.textContent = msg;
+  }
 
-    document.documentElement.style.visibility = 'visible';
-
+  function denyAccess(msg) {
     document.body.innerHTML = `
-      <main class="founder-denied">
-        <section>
+      <div class="fp-denied">
+        <div class="fp-denied-box">
           <h1>Acceso restringido</h1>
-          <p>Este panel pertenece exclusivamente al Founder de NEVADO.</p>
-          <a href="/">Volver al ecosistema</a>
-        </section>
-      </main>
-    `;
+          <p>${msg}</p>
+          <a href="/">← Ecosistema</a>
+        </div>
+      </div>`;
+  }
+
+  function waitForClerk(timeout) {
+    return new Promise(function (resolve, reject) {
+      if (window.Clerk) { resolve(window.Clerk); return; }
+      var start = Date.now();
+      function check() {
+        if (window.Clerk) { resolve(window.Clerk); return; }
+        if (Date.now() - start > timeout) { reject(new Error('Clerk no disponible')); return; }
+        setTimeout(check, 100);
+      }
+      setTimeout(check, 100);
+    });
   }
 
   async function boot() {
-
-    const timeout = setTimeout(() => {
-      location.href = '/auth.html?redirect=founder-panel';
-    }, 3000);
+    var fallback = setTimeout(function () {
+      showValidatingMsg('Error al validar sesión. Recarga la página.');
+    }, 4000);
 
     try {
+      var clerk = await waitForClerk(5000);
+      await clerk.load();
+      clearTimeout(fallback);
 
-      await window.Clerk.load();
-
-      clearTimeout(timeout);
-
-      const user = window.Clerk.user;
-
+      var user = clerk.user;
       if (!user) {
         location.href = '/auth.html?redirect=founder-panel';
         return;
       }
 
-      const email =
-        user.primaryEmailAddress?.emailAddress ||
-        user.emailAddresses?.[0]?.emailAddress ||
+      var email =
+        (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) ||
+        (user.emailAddresses && user.emailAddresses[0] && user.emailAddresses[0].emailAddress) ||
         '';
 
-      if (email !== FOUNDER_EMAIL) {
-        denyAccess();
+      if (!FOUNDER_EMAILS.includes(email)) {
+        denyAccess('Tu cuenta no tiene acceso al Panel del Fundador.');
         return;
       }
 
-      document.documentElement.style.visibility = 'visible';
+      window.FP_FOUNDER_EMAIL = email;
 
-      injectCroquetasPanel(email);
+      var nameEl  = document.getElementById('fp-user-name');
+      var emailEl = document.getElementById('fp-user-email');
+      if (nameEl)  nameEl.textContent  = user.fullName || user.firstName || 'Founder';
+      if (emailEl) emailEl.textContent = email;
 
-    } catch (e) {
+      var validating = document.getElementById('fp-validating');
+      if (validating) { validating.hidden = true; validating.style.display = 'none'; }
 
-      location.href = '/auth.html?redirect=founder-panel';
+      var wrap = document.getElementById('fp-wrap');
+      if (wrap) { wrap.hidden = false; wrap.style.display = ''; }
 
+      window.dispatchEvent(new CustomEvent('nvd:founder-ready', { detail: { email: email } }));
+
+    } catch (err) {
+      clearTimeout(fallback);
+      showValidatingMsg('Error al validar sesión. Recarga la página.');
     }
   }
 
-  function injectCroquetasPanel(founderEmail) {
-
-    if (document.getElementById('founder-croquetas-real')) {
-      return;
-    }
-
-    const section = document.createElement('section');
-
-    section.id = 'founder-croquetas-real';
-
-    section.innerHTML = `
-      <div class="fc-card">
-
-        <div class="fc-head">
-          <h2>Migración de Croquetas</h2>
-          <p>Otorga croquetas reales desde el founder.</p>
-        </div>
-
-        <form id="fc-form">
-
-          <label>
-            Usuario destino
-            <input
-              type="email"
-              name="to_email"
-              value="gerald.monsalve@gmail.com"
-              required
-            >
-          </label>
-
-          <label>
-            Cantidad
-            <input
-              type="number"
-              name="cantidad"
-              value="200"
-              min="1"
-              required
-            >
-          </label>
-
-          <label>
-            Motivo
-            <input
-              type="text"
-              name="motivo"
-              value="Migración institucional"
-              required
-            >
-          </label>
-
-          <button type="submit">
-            Otorgar Croquetas
-          </button>
-
-        </form>
-
-        <pre id="fc-result">
-Listo para transferir croquetas reales.
-        </pre>
-
-      </div>
-    `;
-
-    const main = document.querySelector('main') || document.body;
-
-    main.prepend(section);
-
-    document
-      .getElementById('fc-form')
-      .addEventListener('submit', async (e) => {
-
-        e.preventDefault();
-
-        const form = new FormData(e.currentTarget);
-
-        const result = document.getElementById('fc-result');
-
-        result.textContent = 'Procesando...';
-
-        try {
-
-          const response = await fetch('/api/founder-croquetas', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              founder_email: founderEmail,
-              to_email: form.get('to_email'),
-              cantidad: Number(form.get('cantidad')),
-              motivo: form.get('motivo')
-            })
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-
-            result.textContent =
-              'Error: ' + (data.error || 'No se pudo completar');
-
-            return;
-          }
-
-          result.textContent =
-`✓ Croquetas otorgadas correctamente
-
-Usuario: ${data.usuario}
-Croquetas: ${data.croquetas}
-Nivel: ${data.nivel}
-Rango: ${data.rango}`;
-
-        } catch (err) {
-
-          result.textContent =
-            'Error: ' + err.message;
-
-        }
-
-      });
-
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
-
-  boot();
-
 })();
