@@ -865,3 +865,47 @@ body:has(#nevado-profile-summary) img[src*="bronce"] {
   height: auto !important;
   object-fit: contain !important;
 }
+
+/* Botón desktop usuario/rango en home */
+#nv-desktop-user-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 9px !important;
+  margin-left: 16px !important;
+  padding: 8px 13px !important;
+  border: 1px solid rgba(212,168,65,.42) !important;
+  border-radius: 999px !important;
+  background: rgba(12,14,20,.76) !important;
+  color: white !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(14px) !important;
+  box-shadow: 0 12px 32px rgba(0,0,0,.28) !important;
+  vertical-align: middle !important;
+}
+
+#nv-desktop-user-pill img {
+  width: 25px !important;
+  height: 25px !important;
+  object-fit: contain !important;
+}
+
+#nv-desktop-user-pill span {
+  color: #d4a841 !important;
+  font-weight: 800 !important;
+}
+
+#nv-desktop-user-pill strong {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+#nv-desktop-user-pill em {
+  color: rgba(255,255,255,.72) !important;
+  font-style: normal !important;
+}
+
+@media (max-width: 767px) {
+  #nv-desktop-user-pill {
+    display: none !important;
+  }
+}
