@@ -909,3 +909,9 @@ body:has(#nevado-profile-summary) img[src*="bronce"] {
     display: none !important;
   }
 }
+
+
+/* Revert temporal: desactivar pill desktop que ralentizaba home */
+#nv-desktop-user-pill {
+  display: none !important;
+}
