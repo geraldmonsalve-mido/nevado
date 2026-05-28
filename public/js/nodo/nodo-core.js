@@ -31,14 +31,23 @@
 
   /* ── Clerk session init ─────────────────────────────────────────────────── */
   async function initClerkSession() {
-    await new Promise(function (resolve) {
-      if (window.Clerk) { resolve(); return; }
+    var clerk = await new Promise(function (resolve) {
+      if (window.Clerk) { resolve(window.Clerk); return; }
       var check = setInterval(function () {
-        if (window.Clerk) { clearInterval(check); resolve(); }
+        if (window.Clerk) { clearInterval(check); resolve(window.Clerk); }
       }, 80);
+      setTimeout(function () { clearInterval(check); resolve(null); }, 3000);
     });
 
-    await window.Clerk.load();
+    if (!clerk) {
+      console.warn('[NODO] Clerk timeout — cargando sin sesión');
+      window.NODO_USER = null;
+      updateSessionUI(null);
+      document.dispatchEvent(new CustomEvent('nodo:ready', { detail: { user: null } }));
+      return null;
+    }
+
+    await clerk.load();
     window.NODO_USER = null;
 
     var clerkUser = window.Clerk.user;

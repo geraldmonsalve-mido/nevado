@@ -194,6 +194,21 @@
           if (isNowLiked) { path.removeAttribute('stroke'); path.removeAttribute('stroke-width'); }
           else { path.setAttribute('stroke', 'currentColor'); path.setAttribute('stroke-width', '1.1'); }
         }
+      } else {
+        /* Fallback selector when btnEl is null */
+        var likeCountEl = document.querySelector('[data-hilo-id="' + hilo_id + '"] .like-count');
+        if (likeCountEl) likeCountEl.textContent = newCount;
+        var likeBtnEl = document.querySelector('[data-hilo-id="' + hilo_id + '"] .nodo-action-like');
+        if (likeBtnEl) {
+          likeBtnEl.classList.toggle('active', isNowLiked);
+          var svg2  = likeBtnEl.querySelector('svg');
+          var path2 = likeBtnEl.querySelector('path');
+          if (svg2) svg2.setAttribute('fill', isNowLiked ? 'currentColor' : 'none');
+          if (path2) {
+            if (isNowLiked) { path2.removeAttribute('stroke'); path2.removeAttribute('stroke-width'); }
+            else { path2.setAttribute('stroke', 'currentColor'); path2.setAttribute('stroke-width', '1.1'); }
+          }
+        }
       }
     } catch (_) {
       window.NODO.showToast('Error al procesar like.', 'error');
@@ -483,11 +498,11 @@
             ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z"/></svg>'
             : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>'
           ) +
-          '<span>' + (hilo.likes || 0) + '</span>' +
+          '<span class="like-count">' + (hilo.likes || 0) + '</span>' +
         '</button>' +
         '<button class="nodo-post-action nodo-action-reply" data-hilo="' + hilo.id + '">' +
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>' +
-          '<span>' + (hilo.respuestas || 0) + '</span>' +
+          '<span class="comment-count">' + (hilo.respuestas || 0) + '</span>' +
         '</button>' +
         '<button class="nodo-post-action nodo-action-share" data-hilo="' + hilo.id + '">' +
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
@@ -740,9 +755,10 @@
       try {
         var { data } = await sb()
           .from('profiles')
-          .select('display_name,username,avatar_url,rank_key,level,croquetas,bio,location')
+          .select('id, display_name, username, avatar_url, rank_key, level, croquetas, bio, location, is_verified, is_founder')
           .eq('id', profileId)
-          .single();
+          .maybeSingle();
+        console.log('[miniPerfil] profileId:', profileId, 'data:', data);
         profile = data;
       } catch (_) {}
 
