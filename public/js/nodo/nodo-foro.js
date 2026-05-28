@@ -959,9 +959,12 @@
 
       try {
         var { error: insErr } = await sb().from('foro_categorias').insert({
-          nombre: nombre,
-          slug:   slug,
-          activo: true,
+          nombre:      nombre,
+          slug:        slug,
+          descripcion: '',
+          activo:      true,
+          orden:       99,
+          color:       '#B8944A',
         });
         if (insErr) { console.error('[NODO] crear espacio:', insErr); throw insErr; }
         overlay.remove();
@@ -977,7 +980,10 @@
           lista.appendChild(li);
         }
       } catch (err) {
-        errorEl.textContent = (err && err.message) || 'Error al crear el espacio.';
+        var errMsg = (err && err.code === '23505')
+          ? 'Ya existe un espacio con ese nombre. Prueba otro.'
+          : (err && err.message) || 'Error al crear el espacio.';
+        errorEl.textContent = errMsg;
         errorEl.style.display = '';
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'Crear';

@@ -55,24 +55,28 @@
 
   /* ── Send message ────────────────────────────────────────────────────── */
   async function sendMensaje(canal_id, contenido) {
-    var check = window.NODO.canPost();
-    if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
+    var u = window.CHAT_USER || window.NODO_USER;
+    if (!u) { window.NODO.showToast('Sin sesión. Inicia sesión para chatear.', 'error'); return null; }
+    if (u.is_banned) { window.NODO.showToast('Tu cuenta tiene restricciones de publicación.', 'error'); return null; }
     if (!String(contenido || '').trim()) return null;
 
-    var u = window.NODO_USER;
+    var payload = {
+      canal_id:       canal_id,
+      profile_id:     u.profile_id,
+      autor_nombre:   u.display_name || 'Usuario',
+      autor_username: u.username || null,
+      autor_rank:     u.rank_key || 'cachorro',
+      contenido:      String(contenido).trim().slice(0, 500),
+      tipo:           'texto',
+    };
+    console.log('[chat] enviando:', { canal_id: canal_id, profile_id: u.profile_id, contenido: payload.contenido });
     try {
-      var result = await sb().from('chat_mensajes').insert({
-        canal_id:      canal_id,
-        profile_id:    u.profile_id,
-        autor_nombre:  u.display_name || 'Usuario',
-        autor_username: u.username || null,
-        autor_rank:    u.rank_key || 'cachorro',
-        contenido:     String(contenido).trim().slice(0, 500),
-        tipo:          'texto',
-      }).select().single();
-      if (result.error) throw result.error;
-      return result.data;
-    } catch (_) {
+      var { data, error } = await sb().from('chat_mensajes').insert(payload).select().single();
+      console.log('[chat] resultado INSERT:', data, error);
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error('[chat] error INSERT:', err);
       window.NODO.showToast('Error al enviar. Inténtalo de nuevo.', 'error');
       return null;
     }
@@ -128,7 +132,9 @@
       }, function (payload) {
         onMessage(payload.new);
       })
-      .subscribe();
+      .subscribe(function (status) {
+        console.log('[chat] realtime status:', status);
+      });
 
     activeSub = ch;
     return ch;
@@ -169,7 +175,8 @@
       msgArea.innerHTML = '<div class="nodo-chat-loading">Cargando mensajes…</div>';
 
       var msgs = await loadMensajes(canal.id, 60);
-      var myProfileId = window.NODO_USER ? window.NODO_USER.profile_id : null;
+      var curUser = window.CHAT_USER || window.NODO_USER;
+      var myProfileId = curUser ? curUser.profile_id : null;
 
       if (!msgs.length) {
         msgArea.innerHTML = '<div class="nodo-chat-empty">Sé el primero en escribir algo.</div>';
@@ -181,8 +188,10 @@
       }
 
       subscribeToCanal(canal.id, function (newMsg) {
-        var isOwn = newMsg.profile_id === myProfileId;
-        msgArea.insertAdjacentHTML('beforeend', renderMensaje(newMsg, isOwn));
+        /* Skip own messages — already rendered immediately in doSend() */
+        var myId = (window.CHAT_USER || window.NODO_USER) ? (window.CHAT_USER || window.NODO_USER).profile_id : null;
+        if (myId && newMsg.profile_id === myId) return;
+        msgArea.insertAdjacentHTML('beforeend', renderMensaje(newMsg, false));
         msgArea.scrollTop = msgArea.scrollHeight;
         var empty = msgArea.querySelector('.nodo-chat-empty');
         if (empty) empty.remove();
@@ -219,13 +228,28 @@
 
     async function doSend() {
       if (!curCanal) { window.NODO.showToast('Selecciona un canal.', 'error'); return; }
-      if (!window.NODO_USER) { window.NODO.showToast('Inicia sesión para chatear.', 'error'); return; }
+      var chatUser = window.CHAT_USER || window.NODO_USER;
+      if (!chatUser) { window.NODO.showToast('Inicia sesión para chatear.', 'error'); return; }
       var text = input ? input.value.trim() : '';
       if (!text) return;
-      input.value = '';
+
+      if (sendBtn) sendBtn.disabled = true;
       if (typingEl) typingEl.textContent = '';
       clearTimeout(typingTimer);
-      await sendMensaje(curCanal.id, text);
+
+      var result = await sendMensaje(curCanal.id, text);
+
+      if (sendBtn) sendBtn.disabled = false;
+
+      if (result) {
+        if (input) input.value = '';
+        /* Render own message immediately — realtime callback skips own */
+        msgArea.insertAdjacentHTML('beforeend', renderMensaje(result, true));
+        msgArea.scrollTop = msgArea.scrollHeight;
+        var empty = msgArea.querySelector('.nodo-chat-empty');
+        if (empty) empty.remove();
+      }
+      if (input) input.focus();
     }
 
     if (sendBtn) sendBtn.addEventListener('click', doSend);

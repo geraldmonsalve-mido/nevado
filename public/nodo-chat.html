@@ -313,7 +313,7 @@
 
       <div class="chat-input-row" id="chat-input-row">
         <textarea id="nodo-chat-input" rows="1" placeholder="Escribe un mensaje… (Enter para enviar)"></textarea>
-        <button id="nodo-chat-send" aria-label="Enviar">
+        <button id="nodo-chat-send" type="button" aria-label="Enviar">
           <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
             <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -348,21 +348,38 @@
     };
 
     document.addEventListener('nodo:ready', function (ev) {
-      var user       = ev.detail && ev.detail.user;
-      var inputRow   = document.getElementById('chat-input-row');
-      var emojiBar   = document.getElementById('chat-emoji-bar');
+      var user        = ev.detail && ev.detail.user;
+      var inputRow    = document.getElementById('chat-input-row');
+      var emojiBar    = document.getElementById('chat-emoji-bar');
       var loginNotice = document.getElementById('chat-login-notice');
-      var sessionEl  = document.getElementById('topbar-session');
+      var sessionEl   = document.getElementById('topbar-session');
+      var chatInput   = document.getElementById('nodo-chat-input');
+
+      /* Expose CHAT_USER for nodo-chat.js */
+      window.CHAT_USER = user || null;
+      console.log('[chat] nodo:ready — CHAT_USER:', window.CHAT_USER);
 
       if (!user) {
         if (inputRow)    inputRow.style.display    = 'none';
         if (emojiBar)    emojiBar.style.display    = 'none';
         if (loginNotice) loginNotice.style.display = '';
-      } else if (sessionEl) {
-        var rankSrc = RANK_SM_MAP[user.rank_key] || RANK_SM_MAP.cachorro;
-        sessionEl.innerHTML =
-          '<img class="topbar-session-rank" src="' + rankSrc + '" alt="" />' +
-          '<span class="topbar-session-name">' + (user.display_name || '') + '</span>';
+        if (chatInput) {
+          chatInput.disabled     = true;
+          chatInput.placeholder  = 'Inicia sesión para chatear';
+          chatInput.style.borderColor = 'rgba(231,76,60,0.35)';
+        }
+      } else {
+        window.CHAT_USER = user;
+        if (sessionEl) {
+          var rankSrc = RANK_SM_MAP[user.rank_key] || RANK_SM_MAP.cachorro;
+          sessionEl.innerHTML =
+            '<img class="topbar-session-rank" src="' + rankSrc + '" alt="" />' +
+            '<span class="topbar-session-name">' + (user.display_name || '') + '</span>';
+        }
+        if (chatInput) {
+          chatInput.disabled    = false;
+          chatInput.placeholder = 'Escribe un mensaje… (Enter para enviar)';
+        }
       }
     });
   </script>
