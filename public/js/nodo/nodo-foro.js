@@ -106,7 +106,7 @@
     }
   }
 
-  /* ── Toggle like (FIX 3D) — foro_likes table ────────────────────────────── */
+  /* ── Toggle like (FIX 6A) — maybeSingle + console.error ───────────────── */
   async function toggleLike(hilo_id, btnEl) {
     if (!window.NODO_USER) {
       window.location.href = '/auth.html?redirect=/nodo.html';
@@ -114,25 +114,34 @@
     }
     var profileId = window.NODO_USER.profile_id;
     try {
-      var { data: rows } = await sb()
+      var { data: existing, error: fetchErr } = await sb()
         .from('foro_likes')
         .select('id')
         .eq('profile_id', profileId)
         .eq('hilo_id', hilo_id)
-        .limit(1);
-      var existing = rows && rows[0];
+        .maybeSingle();
+      if (fetchErr) { console.error('[NODO] toggleLike fetch:', fetchErr); throw fetchErr; }
+
       var isNowLiked;
       if (existing) {
-        await sb().from('foro_likes').delete().eq('id', existing.id);
+        var { error: delErr } = await sb().from('foro_likes').delete().eq('id', existing.id);
+        if (delErr) { console.error('[NODO] toggleLike delete:', delErr); throw delErr; }
         isNowLiked = false;
       } else {
-        await sb().from('foro_likes').insert({ profile_id: profileId, hilo_id: hilo_id });
+        var { error: insErr } = await sb().from('foro_likes').insert({ profile_id: profileId, hilo_id: hilo_id });
+        if (insErr) { console.error('[NODO] toggleLike insert:', insErr); throw insErr; }
         isNowLiked = true;
       }
-      /* Sync count in foro_hilos from actual foro_likes rows */
-      var { data: allLikes } = await sb().from('foro_likes').select('id').eq('hilo_id', hilo_id);
-      var newCount = allLikes ? allLikes.length : 0;
+
+      /* Sync count with count=exact,head=true — no row data transferred */
+      var { count: likeCount, error: cntErr } = await sb()
+        .from('foro_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('hilo_id', hilo_id);
+      if (cntErr) console.error('[NODO] toggleLike count:', cntErr);
+      var newCount = typeof likeCount === 'number' ? likeCount : 0;
       await sb().from('foro_hilos').update({ likes: newCount }).eq('id', hilo_id);
+
       /* Update DOM */
       if (btnEl) {
         var span = btnEl.querySelector('span');
@@ -279,7 +288,19 @@
       };
       var result = await sb().from('foro_respuestas').insert(payload).select().single();
       if (result.error) throw result.error;
-      try { await sb().rpc('increment_hilo_respuestas', { p_hilo_id: hilo_id }); } catch (_) {}
+      /* FIX 6B: sync respuestas count from DB */
+      try {
+        var { count: rc, error: rcErr } = await sb()
+          .from('foro_respuestas')
+          .select('*', { count: 'exact', head: true })
+          .eq('hilo_id', hilo_id)
+          .eq('estado', 'activo');
+        if (rcErr) console.error('[NODO] createRespuesta count:', rcErr);
+        if (typeof rc === 'number') {
+          await sb().from('foro_hilos').update({ respuestas: rc }).eq('id', hilo_id);
+          result.data._respuestasCount = rc;
+        }
+      } catch (_) {}
       return result.data;
     } catch (_) {
       window.NODO.showToast('Error al responder.', 'error');
@@ -345,7 +366,11 @@
           else section.appendChild(item);
           if (replyBtn) {
             var rcSpan = replyBtn.querySelector('span');
-            if (rcSpan) rcSpan.textContent = parseInt(rcSpan.textContent || '0') + 1;
+            if (rcSpan) {
+              rcSpan.textContent = typeof resp._respuestasCount === 'number'
+                ? resp._respuestasCount
+                : parseInt(rcSpan.textContent || '0') + 1;
+            }
           }
         }
         sendBtn.disabled = false;
@@ -628,6 +653,95 @@
     });
   }
 
+  /* ── Modal crear espacio (FIX 6C) ──────────────────────────────────────── */
+  function mostrarModalCrearEspacio() {
+    if (!window.NODO_USER) {
+      window.location.href = '/auth.html?redirect=/nodo.html';
+      return;
+    }
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);' +
+      'z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+
+    overlay.innerHTML =
+      '<div style="background:rgba(13,13,20,.97);border:1px solid rgba(255,255,255,.12);' +
+        'border-radius:18px;padding:32px;max-width:380px;width:90%;font-family:Geist,sans-serif;' +
+        'backdrop-filter:blur(24px);">' +
+        '<h3 style="color:#fff;margin:0 0 6px;font-size:16px;font-weight:600;">Crear espacio</h3>' +
+        '<p style="color:rgba(255,255,255,.45);font-size:13px;margin:0 0 20px;">Dale un nombre al nuevo espacio de la comunidad.</p>' +
+        '<input id="nuevo-espacio-nombre" placeholder="Nombre del espacio…" maxlength="40" ' +
+          'style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);' +
+          'border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:10px;' +
+          'padding:10px 14px;font-size:14px;outline:none;margin-bottom:8px;" />' +
+        '<p id="crear-espacio-error" style="color:#E74C3C;font-size:12px;margin:0 0 16px;display:none;"></p>' +
+        '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+          '<button id="btn-cancelar-espacio" style="background:rgba(255,255,255,.06);' +
+            'border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);' +
+            'padding:10px 20px;border-radius:10px;cursor:pointer;font-size:13px;">Cancelar</button>' +
+          '<button id="btn-confirmar-espacio" style="background:#E74C3C;border:none;' +
+            'color:#fff;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">Crear</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    var inputEl    = overlay.querySelector('#nuevo-espacio-nombre');
+    var errorEl    = overlay.querySelector('#crear-espacio-error');
+    var cancelBtn  = overlay.querySelector('#btn-cancelar-espacio');
+    var confirmBtn = overlay.querySelector('#btn-confirmar-espacio');
+
+    cancelBtn.onclick = function () { overlay.remove(); };
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+    setTimeout(function () { if (inputEl) inputEl.focus(); }, 60);
+
+    confirmBtn.onclick = async function () {
+      var nombre = inputEl ? inputEl.value.trim() : '';
+      if (nombre.length < 2) {
+        errorEl.textContent = 'El nombre debe tener al menos 2 caracteres.';
+        errorEl.style.display = '';
+        return;
+      }
+      var slug = nombre.toLowerCase()
+        .replace(/[áàä]/g, 'a').replace(/[éèë]/g, 'e').replace(/[íìï]/g, 'i')
+        .replace(/[óòö]/g, 'o').replace(/[úùü]/g, 'u').replace(/ñ/g, 'n')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || ('espacio-' + Date.now());
+
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Creando…';
+
+      try {
+        var { error: insErr } = await sb().from('foro_categorias').insert({
+          nombre: nombre,
+          slug:   slug,
+          activo: true,
+        });
+        if (insErr) { console.error('[NODO] crear espacio:', insErr); throw insErr; }
+        overlay.remove();
+        window.NODO.showToast('Espacio "' + nombre + '" creado.');
+        /* Optimistic sidebar update — loadEspacios() lives in nodo-init.js */
+        var lista = document.getElementById('sidebar-espacios');
+        if (lista) {
+          var li = document.createElement('li');
+          li.className = 'nodo-space-item';
+          li.innerHTML = '<span class="nodo-space-pulse"></span>' +
+            '<span class="nodo-space-name">' + esc(nombre) + '</span>' +
+            '<span class="nodo-space-count" style="color:#E74C3C;">◉</span>';
+          lista.appendChild(li);
+        }
+      } catch (err) {
+        errorEl.textContent = (err && err.message) || 'Error al crear el espacio.';
+        errorEl.style.display = '';
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Crear';
+      }
+    };
+
+    inputEl.onkeydown = function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); confirmBtn.click(); }
+    };
+  }
+
   /* ── Main init ──────────────────────────────────────────────────────────── */
   async function initForo() {
     var container = document.getElementById('feed-principal') || document.querySelector('.nodo-posts');
@@ -648,16 +762,17 @@
 
   window.NODO = window.NODO || {};
   window.NODO.foro = {
-    loadHilos:       loadHilos,
-    createHilo:      createHilo,
-    toggleLike:      toggleLike,
-    reportarHilo:    reportarHilo,
-    loadRespuestas:  loadRespuestas,
-    createRespuesta: createRespuesta,
-    renderFeed:      renderFeed,
-    renderPost:      renderPost,
-    initForo:        initForo,
-    rankToLevel:     rankToLevel,
-    rankImg:         rankImg,
+    loadHilos:                loadHilos,
+    createHilo:               createHilo,
+    toggleLike:               toggleLike,
+    reportarHilo:             reportarHilo,
+    loadRespuestas:           loadRespuestas,
+    createRespuesta:          createRespuesta,
+    renderFeed:               renderFeed,
+    renderPost:               renderPost,
+    initForo:                 initForo,
+    rankToLevel:              rankToLevel,
+    rankImg:                  rankImg,
+    mostrarModalCrearEspacio: mostrarModalCrearEspacio,
   };
 })();

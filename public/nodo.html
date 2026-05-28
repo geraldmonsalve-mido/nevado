@@ -570,14 +570,7 @@
 
     // ── Create space button ───────────────────────────────────────
     document.querySelector('.nodo-create-space-btn')?.addEventListener('click', () => {
-      const name = prompt('Nombre del nuevo espacio:');
-      if (name && name.trim()) {
-        const list = document.querySelector('.nodo-spaces-list');
-        const li = document.createElement('li');
-        li.className = 'nodo-space-item';
-        li.innerHTML = `<span class="nodo-space-pulse"></span><span class="nodo-space-name">${name.trim()}</span><span class="nodo-space-count">1</span>`;
-        list.appendChild(li);
-      }
+      window.NODO?.foro?.mostrarModalCrearEspacio();
     });
 
     // ── Publish button ────────────────────────────────────────────
