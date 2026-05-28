@@ -486,11 +486,17 @@
     });
   }
 
-  /* ── Update composer avatar ─────────────────────────────────────────────── */
+  /* ── Update composer avatar (FIX 4E) ───────────────────────────────────── */
   function updateComposerAvatar() {
     var avatar = document.getElementById('composer-avatar') || document.querySelector('.nodo-composer-avatar');
     if (!avatar || !window.NODO_USER) return;
-    avatar.textContent = window.NODO.initials(window.NODO_USER.display_name);
+    var rk = (window.NODO_USER.rank_key || 'cachorro').toLowerCase();
+    if (avatar.tagName === 'IMG') {
+      avatar.src = rankImg(rk);
+      avatar.alt = rk;
+    } else {
+      avatar.textContent = window.NODO.initials(window.NODO_USER.display_name);
+    }
   }
 
   /* ── Tab switching ──────────────────────────────────────────────────────── */
