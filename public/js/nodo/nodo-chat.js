@@ -1,11 +1,13 @@
-/* NEVADO — NODO Chat v1.0
-   Chat en tiempo real con Supabase Realtime.
+/* NEVADO — NODO Chat v2.0
+   Chat en tiempo real con Supabase Realtime + polling fallback.
    Requiere nodo-core.js cargado antes. */
 (function () {
   'use strict';
 
   var activeChannel = null;
-  var activeSub = null;
+  var activeSub     = null;
+  var pollingTimer  = null;
+  var lastMsgTime   = null;
 
   function waitForNodo(cb) {
     if (window.NODO && window.NODO.sb && window.NODO_USER !== undefined) { cb(); return; }
@@ -14,7 +16,7 @@
 
   function sb() { return window.NODO && window.NODO.sb; }
 
-  /* ── Get or create realtime client ──────────────────────────────────── */
+  /* ── Realtime client (separate instance for subscriptions) ──────────── */
   var rtClient = null;
   function getRealtimeClient() {
     if (rtClient) return rtClient;
@@ -39,7 +41,7 @@
     } catch (_) { return []; }
   }
 
-  /* ── Load messages ────────────────────────────────────────────────────── */
+  /* ── Load messages ───────────────────────────────────────────────────── */
   async function loadMensajes(canal_id, limit) {
     try {
       var result = await sb()
@@ -82,7 +84,33 @@
     }
   }
 
-  /* ── Rank image (sm) ────────────────────────────────────────────────── */
+  /* ── Limit check: mark oldest 50 as deleted if > 300 ────────────────── */
+  async function verificarLimite(canalId) {
+    try {
+      var countRes = await sb()
+        .from('chat_mensajes')
+        .select('id', { count: 'exact', head: true })
+        .eq('canal_id', canalId)
+        .eq('eliminado', false);
+      if ((countRes.count || 0) > 300) {
+        var oldest = await sb()
+          .from('chat_mensajes')
+          .select('id')
+          .eq('canal_id', canalId)
+          .eq('eliminado', false)
+          .order('created_at', { ascending: true })
+          .limit(50);
+        if (oldest.data && oldest.data.length) {
+          var ids = oldest.data.map(function (m) { return m.id; });
+          await sb().from('chat_mensajes').update({ eliminado: true }).in('id', ids);
+        }
+      }
+    } catch (err) {
+      console.warn('[chat] verificarLimite error:', err);
+    }
+  }
+
+  /* ── Rank image map (sm) ─────────────────────────────────────────────── */
   var RANK_SM = {
     cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
     explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
@@ -93,7 +121,7 @@
     leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
   };
 
-  /* ── Render a single message ─────────────────────────────────────────── */
+  /* ── Render a single message as HTML string ──────────────────────────── */
   function renderMensaje(msg, isOwn) {
     var e       = window.NODO.escapeHtml;
     var nombre  = e(msg.autor_nombre || 'Usuario');
@@ -112,7 +140,46 @@
     '</div>';
   }
 
-  /* ── Subscribe to realtime ───────────────────────────────────────────── */
+  /* ── Append a message with data-msg-id deduplication ────────────────── */
+  function appendMensaje(msg, scroll) {
+    var msgArea = document.getElementById('nodo-chat-messages');
+    if (!msgArea) return;
+    if (msgArea.querySelector('[data-msg-id="' + msg.id + '"]')) return;
+    var curUser     = window.CHAT_USER || window.NODO_USER;
+    var myProfileId = curUser ? curUser.profile_id : null;
+    var isOwn       = !!(myProfileId && msg.profile_id === myProfileId);
+    msgArea.insertAdjacentHTML('beforeend', renderMensaje(msg, isOwn));
+    var placeholder = msgArea.querySelector('.nodo-chat-empty, .nodo-chat-loading');
+    if (placeholder) placeholder.remove();
+    if (scroll) msgArea.scrollTop = msgArea.scrollHeight;
+  }
+
+  /* ── Polling fallback (3 s interval) ────────────────────────────────── */
+  function startPolling(canalId) {
+    if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null; }
+    pollingTimer = setInterval(async function () {
+      if (!lastMsgTime) return;
+      try {
+        var result = await sb()
+          .from('chat_mensajes')
+          .select('*')
+          .eq('canal_id', canalId)
+          .eq('eliminado', false)
+          .gt('created_at', lastMsgTime)
+          .order('created_at', { ascending: true });
+        if (result.data && result.data.length) {
+          result.data.forEach(function (msg) {
+            appendMensaje(msg, true);
+            if (msg.created_at > lastMsgTime) lastMsgTime = msg.created_at;
+          });
+        }
+      } catch (err) {
+        console.warn('[chat] polling error:', err);
+      }
+    }, 3000);
+  }
+
+  /* ── Realtime subscription ───────────────────────────────────────────── */
   function subscribeToCanal(canal_id, onMessage) {
     var client = getRealtimeClient();
     if (!client) return null;
@@ -148,7 +215,7 @@
     activeSub = null;
   }
 
-  /* ── Chat panel UI (for nodo-chat.html) ─────────────────────────────── */
+  /* ── Chat page UI ────────────────────────────────────────────────────── */
   async function initChatPage() {
     var canalesList = document.getElementById('nodo-canales-list');
     var msgArea     = document.getElementById('nodo-chat-messages');
@@ -157,7 +224,7 @@
     var chanTitle   = document.getElementById('nodo-chan-title');
     if (!canalesList || !msgArea) return;
 
-    var canales = await loadCanales();
+    var canales  = await loadCanales();
     var curCanal = null;
 
     canalesList.innerHTML = canales.map(function (c) {
@@ -167,7 +234,10 @@
     }).join('') || '<div style="padding:12px 16px;font-size:12px;color:rgba(255,255,255,0.28);">Sin canales disponibles.</div>';
 
     async function openCanal(canal) {
-      curCanal = canal;
+      curCanal    = canal;
+      lastMsgTime = null;
+      if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null; }
+
       canalesList.querySelectorAll('.nodo-canal-item').forEach(function (b) {
         b.classList.toggle('active', b.dataset.canalId === canal.id);
       });
@@ -175,27 +245,27 @@
       msgArea.innerHTML = '<div class="nodo-chat-loading">Cargando mensajes…</div>';
 
       var msgs = await loadMensajes(canal.id, 60);
-      var curUser = window.CHAT_USER || window.NODO_USER;
-      var myProfileId = curUser ? curUser.profile_id : null;
+      msgArea.innerHTML = '';
 
       if (!msgs.length) {
         msgArea.innerHTML = '<div class="nodo-chat-empty">Sé el primero en escribir algo.</div>';
+        lastMsgTime = new Date().toISOString();
       } else {
-        msgArea.innerHTML = msgs.map(function (m) {
-          return renderMensaje(m, m.profile_id === myProfileId);
-        }).join('');
+        msgs.forEach(function (m) { appendMensaje(m, false); });
         msgArea.scrollTop = msgArea.scrollHeight;
+        lastMsgTime = msgs[msgs.length - 1].created_at;
       }
 
+      /* Realtime — receives new INSERTs instantly (requires REPLICA IDENTITY FULL) */
       subscribeToCanal(canal.id, function (newMsg) {
-        /* Skip own messages — already rendered immediately in doSend() */
-        var myId = (window.CHAT_USER || window.NODO_USER) ? (window.CHAT_USER || window.NODO_USER).profile_id : null;
-        if (myId && newMsg.profile_id === myId) return;
-        msgArea.insertAdjacentHTML('beforeend', renderMensaje(newMsg, false));
-        msgArea.scrollTop = msgArea.scrollHeight;
-        var empty = msgArea.querySelector('.nodo-chat-empty');
-        if (empty) empty.remove();
+        appendMensaje(newMsg, true);
+        if (!lastMsgTime || newMsg.created_at > lastMsgTime) lastMsgTime = newMsg.created_at;
       });
+
+      /* Polling fallback — always active as safety net */
+      startPolling(canal.id);
+
+      verificarLimite(canal.id);
     }
 
     canalesList.addEventListener('click', function (e) {
@@ -205,7 +275,7 @@
       if (canal) openCanal(canal);
     });
 
-    /* ── Typing indicator (local) ──────────────────────────────────── */
+    /* ── Typing indicator ──────────────────────────────────────────── */
     var typingEl   = document.getElementById('chat-typing-indicator');
     var typingTimer = null;
     function showTyping() {
@@ -243,11 +313,10 @@
 
       if (result) {
         if (input) input.value = '';
-        /* Render own message immediately — realtime callback skips own */
-        msgArea.insertAdjacentHTML('beforeend', renderMensaje(result, true));
-        msgArea.scrollTop = msgArea.scrollHeight;
-        var empty = msgArea.querySelector('.nodo-chat-empty');
-        if (empty) empty.remove();
+        /* Update baseline so polling skips this message */
+        if (result.created_at) lastMsgTime = result.created_at;
+        /* Render immediately — appendMensaje dedup prevents double-render from realtime/polling */
+        appendMensaje(result, true);
       }
       if (input) input.focus();
     }
@@ -277,5 +346,6 @@
     subscribeToCanal: subscribeToCanal,
     unsubscribe:      unsubscribe,
     renderMensaje:    renderMensaje,
+    appendMensaje:    appendMensaje,
   };
 })();

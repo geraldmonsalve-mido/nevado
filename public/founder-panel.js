@@ -10,6 +10,7 @@ function initFpSb() {
   if (fpSb) return;
   if (!window.supabase || !window.NEVADO_SUPABASE_URL || !window.NEVADO_SUPABASE_ANON_KEY) return;
   fpSb = window.supabase.createClient(window.NEVADO_SUPABASE_URL, window.NEVADO_SUPABASE_ANON_KEY);
+  window.FP_SB = fpSb;
 }
 
 // ── RANK HELPERS ──────────────────────────────────────────────────────────
@@ -344,22 +345,26 @@ function showUserCard(user) {
   /* Ban / Verify action buttons */
   var actionsEl = document.getElementById('fp-user-actions');
   if (actionsEl) {
+    var btnStyle = 'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;';
     actionsEl.innerHTML =
       '<button id="fp-btn-verify" style="' +
         'background:' + (user.is_verified ? 'rgba(39,174,96,.15)' : 'rgba(255,255,255,.06)') + ';' +
         'border:1px solid ' + (user.is_verified ? 'rgba(39,174,96,.4)' : 'rgba(255,255,255,.12)') + ';' +
-        'color:' + (user.is_verified ? '#27AE60' : 'rgba(255,255,255,.6)') + ';' +
-        'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;' +
+        'color:' + (user.is_verified ? '#27AE60' : 'rgba(255,255,255,.6)') + ';' + btnStyle +
       '">' + (user.is_verified ? '✓ Verificado' : 'Verificar') + '</button>' +
       '<button id="fp-btn-ban" style="' +
         'background:' + (user.is_banned ? 'rgba(231,76,60,.15)' : 'rgba(255,255,255,.06)') + ';' +
         'border:1px solid ' + (user.is_banned ? 'rgba(231,76,60,.4)' : 'rgba(255,255,255,.12)') + ';' +
-        'color:' + (user.is_banned ? '#E74C3C' : 'rgba(255,255,255,.6)') + ';' +
-        'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;' +
-      '">' + (user.is_banned ? 'Desbanear' : 'Banear') + '</button>';
+        'color:' + (user.is_banned ? '#E74C3C' : 'rgba(255,255,255,.6)') + ';' + btnStyle +
+      '">' + (user.is_banned ? 'Desbanear' : 'Banear') + '</button>' +
+      '<button id="fp-btn-nota" style="' +
+        'background:rgba(184,148,74,.1);border:1px solid rgba(184,148,74,.3);' +
+        'color:rgba(184,148,74,.9);' + btnStyle +
+      '">📝 Nota founder</button>';
 
     var verifyBtn = document.getElementById('fp-btn-verify');
     var banBtn    = document.getElementById('fp-btn-ban');
+    var notaBtn   = document.getElementById('fp-btn-nota');
 
     if (verifyBtn) {
       verifyBtn.onclick = async function () {
@@ -376,6 +381,9 @@ function showUserCard(user) {
         if (ok) { user.is_banned = !user.is_banned; showUserCard(user); }
         else { banBtn.disabled = false; }
       };
+    }
+    if (notaBtn) {
+      notaBtn.onclick = function () { window.founderAgregarNota(user.id); };
     }
   }
 }
@@ -590,6 +598,35 @@ async function loadNodoStats() {
     console.error('[FOUNDER] loadNodoStats:', err);
   }
 }
+
+// ── GLOBAL FOUNDER ACTIONS ────────────────────────────────────────────────
+
+window.founderBanear = async function (profileId) {
+  if (!currentUser || currentUser.id !== profileId) return;
+  var ok = await toggleBan(profileId, currentUser.is_banned);
+  if (ok) { currentUser.is_banned = !currentUser.is_banned; showUserCard(currentUser); }
+};
+
+window.founderVerificar = async function (profileId) {
+  if (!currentUser || currentUser.id !== profileId) return;
+  var ok = await toggleVerify(profileId, currentUser.is_verified);
+  if (ok) { currentUser.is_verified = !currentUser.is_verified; showUserCard(currentUser); }
+};
+
+window.founderAgregarNota = async function (profileId) {
+  var nota = prompt('Nota founder para este usuario:', (currentUser && currentUser.founder_notes) || '');
+  if (nota === null) return;
+  if (!fpSb) { showToast('Supabase no inicializado.', 'error'); return; }
+  try {
+    var { error } = await fpSb.from('profiles').update({ founder_notes: nota }).eq('id', profileId);
+    if (error) throw error;
+    if (currentUser && currentUser.id === profileId) currentUser.founder_notes = nota;
+    showToast('Nota guardada.', 'success');
+  } catch (err) {
+    console.error('[FOUNDER] agregarNota:', err);
+    showToast('Error al guardar nota: ' + (err.message || ''), 'error');
+  }
+};
 
 // ── BAN / VERIFY ──────────────────────────────────────────────────────────
 
