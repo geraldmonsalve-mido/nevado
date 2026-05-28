@@ -484,6 +484,14 @@ body {
   font-weight: 600;
 }
 
+.fp-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .fp-badge-role {
   display: inline-block;
   padding: 2px 8px;

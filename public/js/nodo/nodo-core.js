@@ -67,7 +67,7 @@
             profile_id:     profile.id,
             display_name:   profile.display_name || clerkUser.fullName || email,
             username:       profile.username || null,
-            avatar_url:     profile.avatar_url   || clerkUser.imageUrl || '',
+            avatar_url:     clerkUser.imageUrl || profile.avatar_url || '',
             rank_key:       profile.rank_key     || 'cachorro',
             level:          profile.level        || 1,
             croquetas:      profile.croquetas    || 0,
@@ -83,6 +83,10 @@
             permissions:    profile.permissions  || [],
             email:          email,
           };
+          /* Sync Google avatar back to profiles when not stored */
+          if (!profile.avatar_url && clerkUser.imageUrl) {
+            sb.from('profiles').update({ avatar_url: clerkUser.imageUrl }).eq('id', profile.id).then(function () {});
+          }
         }
       } catch (_) {}
     }

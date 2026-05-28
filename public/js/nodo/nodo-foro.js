@@ -128,6 +128,7 @@
       autor_nombre:    u.display_name || 'Usuario',
       autor_avatar:    u.avatar_url || null,
       autor_rank:      u.rank_key || 'cachorro',
+      autor_nivel:     u.level   || 1,
       autor_username:  u.username || null,
       contenido:       contenido,
       tipo:            TIPO_DB_MAP[data.tipo || 'aporte'] || 'aporte',
@@ -438,12 +439,16 @@
           var inputRow = section.querySelector('.comment-input-row');
           if (inputRow) section.insertBefore(item, inputRow);
           else section.appendChild(item);
+          var newCommentCount = typeof resp._respuestasCount === 'number' ? resp._respuestasCount : null;
           if (replyBtn) {
-            var rcSpan = replyBtn.querySelector('span');
+            var rcSpan = replyBtn.querySelector('.comment-count') || replyBtn.querySelector('span');
             if (rcSpan) {
-              rcSpan.textContent = typeof resp._respuestasCount === 'number'
-                ? resp._respuestasCount
-                : parseInt(rcSpan.textContent || '0') + 1;
+              rcSpan.textContent = newCommentCount !== null ? newCommentCount : parseInt(rcSpan.textContent || '0') + 1;
+            }
+          } else {
+            var ccEl = articleEl.querySelector('.comment-count');
+            if (ccEl) {
+              ccEl.textContent = newCommentCount !== null ? newCommentCount : parseInt(ccEl.textContent || '0') + 1;
             }
           }
         }
@@ -893,6 +898,10 @@
 
   /* ── Modal crear espacio (FIX 6C) ──────────────────────────────────────── */
   function mostrarModalCrearEspacio() {
+    if (window.NODO_USER === undefined) {
+      setTimeout(mostrarModalCrearEspacio, 500);
+      return;
+    }
     if (!window.NODO_USER) {
       window.location.href = '/auth.html?redirect=/nodo.html';
       return;

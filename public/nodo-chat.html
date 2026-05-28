@@ -332,6 +332,11 @@
   <script src="/js/nodo/nodo-chat.js"></script>
 
   <script>
+    /* FIX 9E — kick off session resolution so nodo:ready fires */
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+    });
+
     var RANK_SM_MAP = {
       cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
       explorador:     '/rangos/rango2-explorador-bronce-sm.webp',

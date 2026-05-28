@@ -20,21 +20,35 @@
   <script src="/nevado-env.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
   <script>
-    window.addEventListener('load', function () {
-      function tryRedirect() {
-        if (window.NODO_USER) {
-          var username = window.NODO_USER.username;
-          window.location.replace(username
-            ? '/u/perfil.html?user=' + encodeURIComponent(username)
-            : '/profile.html');
-        } else if (window.NODO_USER === null) {
-          window.location.replace('/auth.html?redirect=/nodo/perfil.html');
-        } else {
-          setTimeout(tryRedirect, 100);
-        }
+    var redirectDone = false;
+
+    function doRedirect(user) {
+      if (redirectDone) return;
+      redirectDone = true;
+      if (user && user.username) {
+        window.location.replace('/u/perfil.html?user=' + encodeURIComponent(user.username));
+      } else if (user) {
+        window.location.replace('/profile.html');
+      } else {
+        window.location.replace('/auth.html?redirect=/nodo/perfil.html');
       }
-      setTimeout(tryRedirect, 600);
-    });
+    }
+
+    document.addEventListener('nodo:ready', function (ev) {
+      doRedirect(ev.detail && ev.detail.user);
+    }, { once: true });
+
+    /* Hard 5s fallback in case Clerk never fires */
+    setTimeout(function () { doRedirect(null); }, 5000);
+
+    /* Kick off session resolution */
+    if (window.NODO && window.NODO.initClerkSession) {
+      window.NODO.initClerkSession();
+    } else {
+      document.addEventListener('DOMContentLoaded', function () {
+        if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+      });
+    }
   </script>
 </body>
 </html>

@@ -108,6 +108,7 @@
             <span class="fp-uc-croquetas">🦴 <strong id="fp-uc-croquetas">—</strong> Croquetas</span>
             <span>Nivel <strong id="fp-uc-nivel">—</strong> · <strong id="fp-uc-rango">—</strong></span>
           </div>
+          <div id="fp-user-actions" class="fp-user-actions"></div>
         </div>
 
         <!-- PASO C: Formulario de operación (visible tras búsqueda exitosa) -->
@@ -214,11 +215,31 @@
         </details>
       </section>
 
-      <!-- ─── BLOQUE 4: NODO ──────────────────────────────────────── -->
-      <section class="fp-section" aria-label="Panel NODO">
+      <!-- ─── BLOQUE 5: NODO COMUNIDAD ─────────────────────────── -->
+      <section class="fp-section" aria-label="NODO — Comunidad">
         <h2 class="fp-section-title">NODO — Comunidad</h2>
-        <div id="fp-nodo-container">
-          <div class="fp-loading">Inicializando módulo NODO…</div>
+        <div class="fp-kpi-grid">
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-blue" aria-hidden="true">◎</span>
+            <div>
+              <p class="fp-kpi-label">Aportes publicados</p>
+              <strong class="fp-kpi-value" id="kpi-v-hilos">—</strong>
+            </div>
+          </article>
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-green" aria-hidden="true">◉</span>
+            <div>
+              <p class="fp-kpi-label">Respuestas</p>
+              <strong class="fp-kpi-value" id="kpi-v-respuestas">—</strong>
+            </div>
+          </article>
+          <article class="fp-kpi">
+            <span class="fp-kpi-icon fp-icon-violet" aria-hidden="true">▣</span>
+            <div>
+              <p class="fp-kpi-label">Mensajes de chat</p>
+              <strong class="fp-kpi-value" id="kpi-v-mensajes">—</strong>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -244,16 +265,5 @@
   <script src="/nevado-env.js"></script>
   <script src="./founder-functional.js"></script>
   <script src="./founder-panel.js" defer></script>
-  <script src="/js/founder/founder-nodo.js"></script>
-  <script>
-    /* Init NODO section after founder auth */
-    window.addEventListener('nvd:founder-ready', async function () {
-      var container = document.getElementById('fp-nodo-container');
-      if (!container || !window.FOUNDER_NODO) return;
-      var clerkUser = window.Clerk && window.Clerk.user;
-      var modId = clerkUser ? clerkUser.id : '';
-      await window.FOUNDER_NODO.render(container, modId);
-    });
-  </script>
 </body>
 </html>

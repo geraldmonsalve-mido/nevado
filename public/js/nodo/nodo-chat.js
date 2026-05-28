@@ -8,7 +8,7 @@
   var activeSub = null;
 
   function waitForNodo(cb) {
-    if (window.NODO && window.NODO.sb) { cb(); return; }
+    if (window.NODO && window.NODO.sb && window.NODO_USER !== undefined) { cb(); return; }
     document.addEventListener('nodo:ready', cb, { once: true });
   }
 

@@ -340,6 +340,44 @@ function showUserCard(user) {
     updateMotivosDropdown('sumar');
     updateQuickAmounts('sumar');
   }
+
+  /* Ban / Verify action buttons */
+  var actionsEl = document.getElementById('fp-user-actions');
+  if (actionsEl) {
+    actionsEl.innerHTML =
+      '<button id="fp-btn-verify" style="' +
+        'background:' + (user.is_verified ? 'rgba(39,174,96,.15)' : 'rgba(255,255,255,.06)') + ';' +
+        'border:1px solid ' + (user.is_verified ? 'rgba(39,174,96,.4)' : 'rgba(255,255,255,.12)') + ';' +
+        'color:' + (user.is_verified ? '#27AE60' : 'rgba(255,255,255,.6)') + ';' +
+        'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;' +
+      '">' + (user.is_verified ? '✓ Verificado' : 'Verificar') + '</button>' +
+      '<button id="fp-btn-ban" style="' +
+        'background:' + (user.is_banned ? 'rgba(231,76,60,.15)' : 'rgba(255,255,255,.06)') + ';' +
+        'border:1px solid ' + (user.is_banned ? 'rgba(231,76,60,.4)' : 'rgba(255,255,255,.12)') + ';' +
+        'color:' + (user.is_banned ? '#E74C3C' : 'rgba(255,255,255,.6)') + ';' +
+        'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;' +
+      '">' + (user.is_banned ? 'Desbanear' : 'Banear') + '</button>';
+
+    var verifyBtn = document.getElementById('fp-btn-verify');
+    var banBtn    = document.getElementById('fp-btn-ban');
+
+    if (verifyBtn) {
+      verifyBtn.onclick = async function () {
+        verifyBtn.disabled = true;
+        var ok = await toggleVerify(user.id, user.is_verified);
+        if (ok) { user.is_verified = !user.is_verified; showUserCard(user); }
+        else { verifyBtn.disabled = false; }
+      };
+    }
+    if (banBtn) {
+      banBtn.onclick = async function () {
+        banBtn.disabled = true;
+        var ok = await toggleBan(user.id, user.is_banned);
+        if (ok) { user.is_banned = !user.is_banned; showUserCard(user); }
+        else { banBtn.disabled = false; }
+      };
+    }
+  }
 }
 
 function hideUserCard() {
@@ -532,6 +570,57 @@ function initCroquetasForm() {
   });
 }
 
+// ── NODO COMMUNITY STATS ─────────────────────────────────────────────────
+
+async function loadNodoStats() {
+  if (!fpSb) return;
+  try {
+    var results = await Promise.all([
+      fpSb.from('foro_hilos').select('id', { count: 'exact', head: true }).neq('estado', 'eliminado'),
+      fpSb.from('foro_respuestas').select('id', { count: 'exact', head: true }).eq('estado', 'activo'),
+      fpSb.from('chat_mensajes').select('id', { count: 'exact', head: true }).eq('eliminado', false),
+    ]);
+    var elHilos    = document.getElementById('kpi-v-hilos');
+    var elResp     = document.getElementById('kpi-v-respuestas');
+    var elMensajes = document.getElementById('kpi-v-mensajes');
+    if (elHilos)    elHilos.textContent    = fmt(results[0].count || 0);
+    if (elResp)     elResp.textContent     = fmt(results[1].count || 0);
+    if (elMensajes) elMensajes.textContent = fmt(results[2].count || 0);
+  } catch (err) {
+    console.error('[FOUNDER] loadNodoStats:', err);
+  }
+}
+
+// ── BAN / VERIFY ──────────────────────────────────────────────────────────
+
+async function toggleBan(profileId, isBanned) {
+  if (!fpSb) return false;
+  try {
+    var { error } = await fpSb.from('profiles').update({ is_banned: !isBanned }).eq('id', profileId);
+    if (error) throw error;
+    showToast(isBanned ? 'Cuenta desbloqueada.' : 'Cuenta baneada.', 'success');
+    return true;
+  } catch (err) {
+    console.error('[FOUNDER] toggleBan:', err);
+    showToast('Error al cambiar estado de ban: ' + (err.message || ''), 'error');
+    return false;
+  }
+}
+
+async function toggleVerify(profileId, isVerified) {
+  if (!fpSb) return false;
+  try {
+    var { error } = await fpSb.from('profiles').update({ is_verified: !isVerified }).eq('id', profileId);
+    if (error) throw error;
+    showToast(isVerified ? 'Verificación removida.' : 'Usuario verificado.', 'success');
+    return true;
+  } catch (err) {
+    console.error('[FOUNDER] toggleVerify:', err);
+    showToast('Error al cambiar verificación: ' + (err.message || ''), 'error');
+    return false;
+  }
+}
+
 // ── LOGOUT ────────────────────────────────────────────────────────────────
 
 function initLogout() {
@@ -562,6 +651,7 @@ function bootPanel() {
   initFpSb();
   startClock();
   loadStats();
+  loadNodoStats();
   initCroquetasForm();
   initLogout();
   startAutoRefresh();

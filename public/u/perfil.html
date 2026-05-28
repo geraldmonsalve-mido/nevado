@@ -414,6 +414,20 @@
       return d.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
+    function showToast(msg) {
+      var old = document.getElementById('perfil-toast');
+      if (old) old.remove();
+      var t = document.createElement('div');
+      t.id = 'perfil-toast';
+      t.style.cssText = 'position:fixed;bottom:48px;left:50%;transform:translateX(-50%);' +
+        'background:rgba(10,10,18,.95);border:1px solid rgba(255,255,255,.1);color:#fff;' +
+        'padding:8px 20px;border-radius:8px;font-size:13px;font-family:Geist,sans-serif;' +
+        'z-index:9000;pointer-events:none;';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function () { t.remove(); }, 2800);
+    }
+
     function waitFor(condFn, ms) {
       return new Promise(function (resolve) {
         if (condFn()) { resolve(); return; }
@@ -506,7 +520,7 @@
 
       var rk = (profile.rank_key || 'cachorro').toLowerCase();
       var avatarEl = el('p-avatar');
-      if (avatarEl && profile.avatar_url) avatarEl.src = profile.avatar_url;
+      if (avatarEl) avatarEl.src = profile.avatar_url || RANK_IMGS_MD[rk] || '/NevadoUtil.png';
 
       var badgeEl = el('p-rank-badge');
       if (badgeEl) badgeEl.src = RANK_IMGS[rk] || RANK_IMGS.cachorro;
@@ -564,7 +578,11 @@
           actionsEl.innerHTML =
             '<button id="btn-follow" class="btn-follow' + (yaSignue ? ' following' : '') + '">' +
             (yaSignue ? 'Siguiendo ✓' : '+ Seguir') + '</button>' +
-            '<button class="btn-outline" onclick="alert(\'Mensajería próximamente\')">Mensaje</button>';
+            '<button id="btn-mensaje" class="btn-outline">Mensaje</button>';
+          var mensajeBtn = el('btn-mensaje');
+          if (mensajeBtn) {
+            mensajeBtn.onclick = function () { showToast('Mensajería próximamente'); };
+          }
           var followBtn = el('btn-follow');
           if (followBtn) {
             followBtn.onclick = async function () {
