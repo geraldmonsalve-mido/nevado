@@ -220,6 +220,10 @@
       try { sb().removeChannel(window._chatRealtimeSub); } catch (_) {}
       window._chatRealtimeSub = null;
     }
+    if (window._typingChannel) {
+      try { sb().removeChannel(window._typingChannel); } catch (_) {}
+      window._typingChannel = null;
+    }
   }
 
   /* ── Chat page UI ────────────────────────────────────────────────────── */
@@ -229,7 +233,7 @@
     var input       = document.getElementById('nodo-chat-input');
     var sendBtn     = document.getElementById('nodo-chat-send');
     var chanTitle   = document.getElementById('nodo-chan-title');
-    var typingEl    = document.getElementById('chat-typing-indicator');
+    var typingEl    = document.getElementById('typing-indicator');
     if (!canalesList || !msgArea) return;
 
     var canales  = await loadCanales();
@@ -245,7 +249,8 @@
     async function openCanal(canal) {
       curCanal = canal;
       unsubscribeAll();
-      if (typingEl) { typingEl.textContent = ''; clearTimeout(typingTimer); }
+      var tiEl = document.getElementById('typing-indicator');
+      if (tiEl) { tiEl.textContent = ''; tiEl.style.display = 'none'; clearTimeout(tiEl._t); }
 
       canalesList.querySelectorAll('.nodo-canal-item').forEach(function (b) {
         b.classList.toggle('active', b.dataset.canalId === canal.id);
@@ -263,20 +268,31 @@
         msgArea.scrollTop = msgArea.scrollHeight;
       }
 
-      /* 2. Iniciar realtime (postgres_changes + typing broadcast) */
-      startRealtime(
-        canal.id,
-        null, /* appendMensaje already called inside startRealtime */
-        function (payload) {
-          if (!typingEl) return;
-          var nombre = (payload && payload.username) ? payload.username : 'Alguien';
-          typingEl.textContent = nombre + ' está escribiendo...';
-          clearTimeout(typingTimer);
-          typingTimer = setTimeout(function () { typingEl.textContent = ''; }, 2000);
-        }
-      );
+      /* 2. Iniciar realtime (postgres_changes) */
+      startRealtime(canal.id, null, null);
 
-      /* 3. Iniciar polling como fallback */
+      /* 3. Canal dedicado de typing via broadcast */
+      if (window._typingChannel) {
+        try { sb().removeChannel(window._typingChannel); } catch (_) {}
+        window._typingChannel = null;
+      }
+      window._typingChannel = sb()
+        .channel('typing-' + canal.id)
+        .on('broadcast', { event: 'typing' }, function (ev) {
+          var nombre     = (ev.payload && ev.payload.username) ? ev.payload.username : 'Alguien';
+          var chatUser   = window.CHAT_USER || window.NODO_USER;
+          var myUsername = chatUser ? (chatUser.username || chatUser.display_name) : null;
+          if (myUsername && nombre === myUsername) return; /* no mostrar el propio */
+          var el = document.getElementById('typing-indicator');
+          if (!el) return;
+          el.textContent  = nombre + ' está escribiendo...';
+          el.style.display = 'block';
+          clearTimeout(el._t);
+          el._t = setTimeout(function () { el.style.display = 'none'; }, 2000);
+        })
+        .subscribe();
+
+      /* 4. Iniciar polling como fallback */
       startPolling(canal.id);
 
       verificarLimite(canal.id);
@@ -300,12 +316,12 @@
       });
     }
 
-    /* ── Typing broadcast (no local indicator) ─────────────────────────── */
+    /* ── Typing broadcast via dedicated channel ────────────────────────── */
     function broadcastTyping() {
-      if (!window._chatRealtimeSub) return;
+      if (!window._typingChannel) return;
       var chatUser = window.CHAT_USER || window.NODO_USER;
       if (!chatUser) return;
-      window._chatRealtimeSub.send({
+      window._typingChannel.send({
         type:    'broadcast',
         event:   'typing',
         payload: { username: chatUser.username || chatUser.display_name || 'Alguien' },
@@ -320,7 +336,8 @@
       if (!text) return;
 
       if (sendBtn) sendBtn.disabled = true;
-      if (typingEl) { typingEl.textContent = ''; clearTimeout(typingTimer); }
+      var tiEl2 = document.getElementById('typing-indicator');
+      if (tiEl2) { tiEl2.textContent = ''; tiEl2.style.display = 'none'; }
 
       var result = await sendMensaje(curCanal.id, text);
 

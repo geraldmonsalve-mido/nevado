@@ -300,8 +300,6 @@
         <div class="nodo-chat-loading">Selecciona un canal.</div>
       </div>
 
-      <div id="chat-typing-indicator"></div>
-
       <div id="chat-emoji-bar">
         <button class="chat-emoji-btn" data-emoji="👍" type="button">👍</button>
         <button class="chat-emoji-btn" data-emoji="🔥" type="button">🔥</button>
@@ -310,6 +308,8 @@
         <button class="chat-emoji-btn" data-emoji="😂" type="button">😂</button>
         <button class="chat-emoji-btn" data-emoji="✅" type="button">✅</button>
       </div>
+
+      <div id="typing-indicator" style="display:none;color:rgba(255,255,255,.4);font-size:11px;padding:4px 20px;font-style:italic;"></div>
 
       <div class="chat-input-row" id="chat-input-row">
         <textarea id="nodo-chat-input" rows="1" placeholder="Escribe un mensaje… (Enter para enviar)"></textarea>
