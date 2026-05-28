@@ -578,26 +578,326 @@ function initCroquetasForm() {
   });
 }
 
+// ── TOAST ALIAS ──────────────────────────────────────────────────────────
+
+function fpMostrarToast(msg, type) { showToast(msg, type || 'success'); }
+
+// ── TIME AGO ──────────────────────────────────────────────────────────────
+
+function timeAgo(iso) {
+  if (!iso) return '—';
+  var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60)   return 'hace ' + diff + 's';
+  if (diff < 3600) return 'hace ' + Math.floor(diff / 60) + 'm';
+  if (diff < 86400) return 'hace ' + Math.floor(diff / 3600) + 'h';
+  return 'hace ' + Math.floor(diff / 86400) + 'd';
+}
+
 // ── NODO COMMUNITY STATS ─────────────────────────────────────────────────
 
 async function loadNodoStats() {
   if (!fpSb) return;
   try {
-    var results = await Promise.all([
-      fpSb.from('foro_hilos').select('id', { count: 'exact', head: true }).neq('estado', 'eliminado'),
-      fpSb.from('foro_respuestas').select('id', { count: 'exact', head: true }).eq('estado', 'activo'),
-      fpSb.from('chat_mensajes').select('id', { count: 'exact', head: true }).eq('eliminado', false),
+    const [hilos, resp, msgs, likes, espacios, canales] = await Promise.all([
+      fpSb.from('foro_hilos').select('*', { count: 'exact', head: true }).neq('estado', 'eliminado'),
+      fpSb.from('foro_respuestas').select('*', { count: 'exact', head: true }).eq('estado', 'activo'),
+      /* Sección 1: no filtrar por eliminado (columna no existe en chat_mensajes) */
+      fpSb.from('chat_mensajes').select('*', { count: 'exact', head: true }),
+      fpSb.from('foro_likes').select('*', { count: 'exact', head: true }).catch(() => ({ count: 0 })),
+      fpSb.from('foro_categorias').select('*', { count: 'exact', head: true }).eq('activo', true),
+      fpSb.from('chat_canales').select('*', { count: 'exact', head: true }).eq('activo', true),
     ]);
-    var elHilos    = document.getElementById('kpi-v-hilos');
-    var elResp     = document.getElementById('kpi-v-respuestas');
-    var elMensajes = document.getElementById('kpi-v-mensajes');
-    if (elHilos)    elHilos.textContent    = fmt(results[0].count || 0);
-    if (elResp)     elResp.textContent     = fmt(results[1].count || 0);
-    if (elMensajes) elMensajes.textContent = fmt(results[2].count || 0);
+    var set = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = fmt(val || 0); };
+    set('kpi-v-hilos',     hilos.count);
+    set('kpi-v-respuestas', resp.count);
+    set('kpi-v-mensajes',  msgs.count);
+    set('kpi-v-likes',     likes.count);
+    set('kpi-v-espacios',  espacios.count);
+    set('kpi-v-canales',   canales.count);
   } catch (err) {
     console.error('[FOUNDER] loadNodoStats:', err);
   }
 }
+
+// ── LOGS RECIENTES DIRECTO DESDE SUPABASE ────────────────────────────────
+
+async function cargarLogsRecientes() {
+  if (!fpSb) return;
+  const wrap = document.getElementById('fp-logs-wrap');
+  if (!wrap) return;
+
+  try {
+    const { data: logs, error } = await fpSb
+      .from('croquetas_log')
+      .select('clerk_id, cantidad, motivo, creado_en')
+      .order('creado_en', { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+    if (!logs || !logs.length) {
+      wrap.innerHTML = '<p class="fp-empty">Sin movimientos registrados aún.</p>';
+      return;
+    }
+
+    /* Batch profile lookup — one query for all clerk_ids */
+    const clerkIds = [...new Set(logs.map(function (l) { return l.clerk_id; }).filter(Boolean))];
+    const { data: profiles } = await fpSb
+      .from('profiles')
+      .select('clerk_id, display_name, username')
+      .in('clerk_id', clerkIds);
+
+    const profileMap = {};
+    (profiles || []).forEach(function (p) { profileMap[p.clerk_id] = p; });
+
+    const rows = logs.map(function (l) {
+      const prof  = profileMap[l.clerk_id] || {};
+      const quien = prof.username
+        ? '@' + prof.username
+        : (prof.display_name || (l.clerk_id ? l.clerk_id.slice(0, 8) + '…' : '—'));
+      const signo   = l.cantidad >= 0 ? '+' : '';
+      const opClass = l.cantidad >= 0 ? 'fp-op-suma' : 'fp-op-resta';
+      return '<tr>' +
+        '<td>' + fmtDate(l.creado_en) + '</td>' +
+        '<td class="fp-log-email">' + quien + '</td>' +
+        '<td class="' + opClass + '">' + signo + fmt(Math.abs(l.cantidad)) + '</td>' +
+        '<td>' + (l.motivo || '—') + '</td>' +
+        '<td style="color:rgba(255,255,255,.35);font-size:11px;">' + timeAgo(l.creado_en) + '</td>' +
+      '</tr>';
+    }).join('');
+
+    wrap.innerHTML =
+      '<table class="fp-logs-table">' +
+        '<thead><tr>' +
+          '<th>Fecha</th><th>Usuario</th><th>Croquetas</th><th>Motivo</th><th>Hace</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>';
+  } catch (err) {
+    console.error('[FOUNDER] cargarLogsRecientes:', err);
+    wrap.innerHTML = '<p class="fp-empty">Error al cargar logs.</p>';
+  }
+}
+
+// ── CONTROL DE CANALES DE CHAT ────────────────────────────────────────────
+
+async function cargarCanales() {
+  if (!fpSb) return;
+  const container = document.getElementById('fp-canales-list');
+  if (!container) return;
+  container.innerHTML = '<p class="fp-empty">Cargando…</p>';
+
+  try {
+    const { data: canales, error } = await fpSb
+      .from('chat_canales')
+      .select('id, nombre, slug, activo, estado, orden')
+      .order('orden', { ascending: true });
+
+    if (error) throw error;
+    if (!canales || !canales.length) {
+      container.innerHTML = '<p class="fp-empty">No hay canales configurados.</p>';
+      return;
+    }
+
+    const canalesConCount = await Promise.all(canales.map(async function (c) {
+      const total  = await fpSb.from('chat_mensajes').select('*', { count: 'exact', head: true }).eq('canal_id', c.id);
+      const hoy    = await fpSb.from('chat_mensajes').select('*', { count: 'exact', head: true })
+        .eq('canal_id', c.id)
+        .gte('created_at', new Date(Date.now() - 86400000).toISOString());
+      return Object.assign({}, c, { total: total.count || 0, hoy: hoy.count || 0 });
+    }));
+
+    const estadoBadges = {
+      activo:    '<span style="color:#27AE60;font-size:11px;">● ACTIVO</span>',
+      congelado: '<span style="color:#3498DB;font-size:11px;">❄ CONGELADO</span>',
+      solo_mod:  '<span style="color:#F39C12;font-size:11px;">⭐ SOLO MOD</span>',
+    };
+
+    const bStyle = 'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;';
+
+    container.innerHTML = canalesConCount.map(function (c) {
+      const estado = c.estado || 'activo';
+      const badge  = estadoBadges[estado] || estadoBadges.activo;
+      const oculto = !c.activo
+        ? '<span style="color:#E74C3C;font-size:11px;margin-left:8px;">👁 OCULTO</span>'
+        : '';
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:12px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
+          '<div>' +
+            '<span style="color:#fff;font-size:16px;font-weight:600;"># ' + c.nombre + '</span> ' +
+            badge + oculto +
+            '<div style="color:rgba(255,255,255,.4);font-size:12px;margin-top:4px;">' +
+              c.total + ' mensajes totales · ' + c.hoy + ' hoy' +
+              ' <a href="/nodo-chat.html" target="_blank" style="color:#B8944A;margin-left:8px;font-size:11px;">→ Abrir canal</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button onclick="fpCanalEstado(\'' + c.id + '\',\'' + estado + '\')" style="' + bStyle + 'background:rgba(52,152,219,.15);border:1px solid #3498DB;color:#3498DB;">' +
+            (estado === 'congelado' ? '▶ Descongelar' : '❄ Congelar') +
+          '</button>' +
+          '<button onclick="fpCanalOcultar(\'' + c.id + '\',' + c.activo + ')" style="' + bStyle + 'background:rgba(231,76,60,.15);border:1px solid #E74C3C;color:#E74C3C;">' +
+            (c.activo ? '👁 Ocultar' : '👁 Mostrar') +
+          '</button>' +
+          '<button onclick="fpCanalSoloMod(\'' + c.id + '\',\'' + estado + '\')" style="' + bStyle + 'background:rgba(243,156,18,.15);border:1px solid #F39C12;color:#F39C12;">' +
+            (estado === 'solo_mod' ? '👥 Abrir a todos' : '⭐ Solo Mod') +
+          '</button>' +
+          '<button onclick="fpCanalVaciar(\'' + c.id + '\',\'' + c.nombre + '\')" style="' + bStyle + 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);">' +
+            '🗑 Vaciar canal' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch (err) {
+    console.error('[FOUNDER] cargarCanales:', err);
+    container.innerHTML = '<p class="fp-empty">Error al cargar canales.</p>';
+  }
+}
+
+window.fpCanalEstado = async function (canalId, estadoActual) {
+  if (!fpSb) return;
+  const nuevoEstado = estadoActual === 'congelado' ? 'activo' : 'congelado';
+  await fpSb.from('chat_canales').update({ estado: nuevoEstado }).eq('id', canalId);
+  fpMostrarToast(nuevoEstado === 'congelado' ? 'Canal congelado ❄' : 'Canal activado ▶');
+  cargarCanales();
+};
+
+window.fpCanalOcultar = async function (canalId, activoActual) {
+  if (!fpSb) return;
+  await fpSb.from('chat_canales').update({ activo: !activoActual }).eq('id', canalId);
+  fpMostrarToast(!activoActual ? 'Canal visible' : 'Canal oculto 👁');
+  cargarCanales();
+};
+
+window.fpCanalSoloMod = async function (canalId, estadoActual) {
+  if (!fpSb) return;
+  const nuevoEstado = estadoActual === 'solo_mod' ? 'activo' : 'solo_mod';
+  await fpSb.from('chat_canales').update({ estado: nuevoEstado }).eq('id', canalId);
+  fpMostrarToast(nuevoEstado === 'solo_mod' ? 'Solo moderadores pueden escribir' : 'Abierto a todos');
+  cargarCanales();
+};
+
+window.fpCanalVaciar = async function (canalId, nombre) {
+  if (!fpSb) return;
+  if (!confirm('¿Vaciar TODOS los mensajes de #' + nombre + '? Esta acción no se puede deshacer.')) return;
+  const { error } = await fpSb.from('chat_mensajes').delete().eq('canal_id', canalId);
+  if (!error) { fpMostrarToast('Canal #' + nombre + ' vaciado 🗑'); cargarCanales(); }
+  else { fpMostrarToast('Error al vaciar canal.', 'error'); }
+};
+
+// ── CONTROL DE ESPACIOS (FORO) ────────────────────────────────────────────
+
+async function cargarEspacios() {
+  if (!fpSb) return;
+  const container = document.getElementById('fp-espacios-list');
+  if (!container) return;
+  container.innerHTML = '<p class="fp-empty">Cargando…</p>';
+
+  try {
+    const { data: espacios, error } = await fpSb
+      .from('foro_categorias')
+      .select('id, nombre, slug, activo, estado, orden')
+      .order('orden', { ascending: true });
+
+    if (error) throw error;
+    if (!espacios || !espacios.length) {
+      container.innerHTML = '<p class="fp-empty">No hay espacios configurados.</p>';
+      return;
+    }
+
+    const espaciosConCount = await Promise.all(espacios.map(async function (e) {
+      const total    = await fpSb.from('foro_hilos').select('*', { count: 'exact', head: true })
+        .eq('categoria_id', e.id).neq('estado', 'eliminado');
+      const recientes = await fpSb.from('foro_hilos').select('*', { count: 'exact', head: true })
+        .eq('categoria_id', e.id).neq('estado', 'eliminado')
+        .gte('created_at', new Date(Date.now() - 86400000).toISOString());
+      const ultimo = await fpSb.from('foro_hilos').select('autor_nombre, contenido, created_at')
+        .eq('categoria_id', e.id).neq('estado', 'eliminado')
+        .order('created_at', { ascending: false }).limit(1).maybeSingle();
+      return Object.assign({}, e, {
+        total: total.count || 0,
+        recientes: recientes.count || 0,
+        ultimo: ultimo.data || null,
+      });
+    }));
+
+    const estadoBadges = {
+      activo:    '<span style="color:#27AE60;font-size:11px;">● ACTIVO</span>',
+      congelado: '<span style="color:#3498DB;font-size:11px;">❄ CONGELADO</span>',
+      solo_mod:  '<span style="color:#F39C12;font-size:11px;">⭐ SOLO MOD</span>',
+    };
+
+    const bStyle = 'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;';
+
+    container.innerHTML = espaciosConCount.map(function (e) {
+      const estado = e.estado || 'activo';
+      const badge  = estadoBadges[estado] || estadoBadges.activo;
+      const ultimoTexto = e.ultimo
+        ? 'Último: "' + (e.ultimo.contenido || '').substring(0, 40) + '…" por ' + e.ultimo.autor_nombre
+        : 'Sin aportes aún';
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:12px;">' +
+        '<div style="margin-bottom:12px;">' +
+          '<span style="color:#fff;font-size:16px;font-weight:600;">' + e.nombre + '</span> ' +
+          badge +
+          (!e.activo ? ' <span style="color:#E74C3C;font-size:11px;">OCULTO</span>' : '') +
+          '<div style="color:rgba(255,255,255,.4);font-size:12px;margin-top:4px;">' +
+            e.total + ' aportes · ' + e.recientes + ' hoy' +
+          '</div>' +
+          '<div style="color:rgba(255,255,255,.3);font-size:11px;margin-top:2px;font-style:italic;">' +
+            ultimoTexto +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button onclick="fpEspacioEstado(\'' + e.id + '\',\'' + estado + '\')" style="' + bStyle + 'background:rgba(52,152,219,.15);border:1px solid #3498DB;color:#3498DB;">' +
+            (estado === 'congelado' ? '▶ Descongelar' : '❄ Congelar') +
+          '</button>' +
+          '<button onclick="fpEspacioOcultar(\'' + e.id + '\',' + e.activo + ')" style="' + bStyle + 'background:rgba(231,76,60,.15);border:1px solid #E74C3C;color:#E74C3C;">' +
+            (e.activo ? '👁 Ocultar' : '👁 Mostrar') +
+          '</button>' +
+          '<button onclick="fpEspacioSoloMod(\'' + e.id + '\',\'' + estado + '\')" style="' + bStyle + 'background:rgba(243,156,18,.15);border:1px solid #F39C12;color:#F39C12;">' +
+            (estado === 'solo_mod' ? '👥 Abrir a todos' : '⭐ Solo Mod') +
+          '</button>' +
+          '<button onclick="fpEspacioVaciar(\'' + e.id + '\',\'' + e.nombre + '\')" style="' + bStyle + 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);">' +
+            '🗑 Vaciar espacio' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch (err) {
+    console.error('[FOUNDER] cargarEspacios:', err);
+    container.innerHTML = '<p class="fp-empty">Error al cargar espacios.</p>';
+  }
+}
+
+window.fpEspacioEstado = async function (id, estadoActual) {
+  if (!fpSb) return;
+  const nuevoEstado = estadoActual === 'congelado' ? 'activo' : 'congelado';
+  await fpSb.from('foro_categorias').update({ estado: nuevoEstado }).eq('id', id);
+  fpMostrarToast(nuevoEstado === 'congelado' ? 'Espacio congelado ❄' : 'Espacio activado');
+  cargarEspacios();
+};
+
+window.fpEspacioOcultar = async function (id, activoActual) {
+  if (!fpSb) return;
+  await fpSb.from('foro_categorias').update({ activo: !activoActual }).eq('id', id);
+  fpMostrarToast(!activoActual ? 'Espacio visible' : 'Espacio oculto');
+  cargarEspacios();
+};
+
+window.fpEspacioSoloMod = async function (id, estadoActual) {
+  if (!fpSb) return;
+  const nuevoEstado = estadoActual === 'solo_mod' ? 'activo' : 'solo_mod';
+  await fpSb.from('foro_categorias').update({ estado: nuevoEstado }).eq('id', id);
+  fpMostrarToast(nuevoEstado === 'solo_mod' ? 'Solo moderadores' : 'Abierto a todos');
+  cargarEspacios();
+};
+
+window.fpEspacioVaciar = async function (id, nombre) {
+  if (!fpSb) return;
+  if (!confirm('¿Eliminar TODOS los aportes de "' + nombre + '"? No se puede deshacer.')) return;
+  await fpSb.from('foro_hilos').update({ estado: 'eliminado' }).eq('categoria_id', id);
+  fpMostrarToast('Espacio "' + nombre + '" vaciado');
+  cargarEspacios();
+};
 
 // ── GLOBAL FOUNDER ACTIONS ────────────────────────────────────────────────
 
@@ -689,6 +989,9 @@ function bootPanel() {
   startClock();
   loadStats();
   loadNodoStats();
+  cargarLogsRecientes();
+  cargarCanales();
+  cargarEspacios();
   initCroquetasForm();
   initLogout();
   startAutoRefresh();

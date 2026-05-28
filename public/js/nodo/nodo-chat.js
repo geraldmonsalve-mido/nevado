@@ -59,6 +59,30 @@
       contenido:      String(contenido).trim().slice(0, 500),
       tipo:           'texto',
     };
+    /* Sección 5: verificar estado del canal antes de enviar */
+    try {
+      var { data: canalCheck } = await sb()
+        .from('chat_canales')
+        .select('estado, activo')
+        .eq('id', canal_id)
+        .single();
+      if (!canalCheck || !canalCheck.activo) {
+        window.NODO.showToast('Este canal no está disponible.', 'error');
+        return null;
+      }
+      if (canalCheck.estado === 'congelado') {
+        window.NODO.showToast('❄ Este canal está congelado. Solo lectura.', 'error');
+        return null;
+      }
+      if (canalCheck.estado === 'solo_mod') {
+        var rangosPermitidos = ['guardian', 'montanista', 'guia', 'protector', 'leyenda_andina'];
+        if (!rangosPermitidos.includes(u.rank_key)) {
+          window.NODO.showToast('⭐ Solo moderadores pueden escribir en este canal.', 'error');
+          return null;
+        }
+      }
+    } catch (_) { /* si falla el check, continuar */ }
+
     console.log('[chat] enviando:', payload);
     try {
       var { data, error } = await sb().from('chat_mensajes').insert(payload).select().single();

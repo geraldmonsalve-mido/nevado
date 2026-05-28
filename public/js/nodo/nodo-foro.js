@@ -123,6 +123,30 @@
     var contenido = String(data.contenido || '').trim();
     if (!contenido || contenido.length < 3) { window.NODO.showToast('Escribe al menos 3 caracteres.', 'error'); return null; }
     if (contenido.length > 1200) { window.NODO.showToast('Máximo 1,200 caracteres.', 'error'); return null; }
+
+    /* Sección 5: verificar estado del espacio antes de publicar */
+    if (data.categoria_id) {
+      try {
+        var catCheck = await sb()
+          .from('foro_categorias')
+          .select('estado, activo')
+          .eq('id', data.categoria_id)
+          .single();
+        var cat = catCheck.data;
+        if (cat && cat.estado === 'congelado') {
+          window.NODO.showToast('❄ Este espacio está congelado temporalmente.', 'error');
+          return null;
+        }
+        if (cat && cat.estado === 'solo_mod') {
+          var rangosPermitidosForo = ['guardian', 'montanista', 'guia', 'protector', 'leyenda_andina'];
+          if (!rangosPermitidosForo.includes(u.rank_key)) {
+            window.NODO.showToast('⭐ Solo moderadores pueden publicar en este espacio.', 'error');
+            return null;
+          }
+        }
+      } catch (_) { /* si falla el check, continuar */ }
+    }
+
     var payload = {
       profile_id:      u.profile_id,
       autor_nombre:    u.display_name || 'Usuario',
