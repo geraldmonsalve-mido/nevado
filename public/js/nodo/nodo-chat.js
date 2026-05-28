@@ -1,33 +1,18 @@
-/* NEVADO — NODO Chat v2.1
+/* NEVADO — NODO Chat v2.2
    Chat en tiempo real con Supabase Realtime + polling fallback.
    Requiere nodo-core.js cargado antes. */
 (function () {
   'use strict';
 
-  var activeSub    = null;   // messages + typing broadcast channel
-  var pollingTimer = null;
-  var lastMsgTime  = null;
-  var typingTimer  = null;   // auto-hide timer for the typing indicator
+  var typingTimer = null;
 
   function waitForNodo(cb) {
     if (window.NODO && window.NODO.sb && window.NODO_USER !== undefined) { cb(); return; }
     document.addEventListener('nodo:ready', cb, { once: true });
   }
 
+  /* Main Supabase client — same instance used for everything */
   function sb() { return window.NODO && window.NODO.sb; }
-
-  /* ── Realtime client (separate instance for subscriptions) ──────────── */
-  var rtClient = null;
-  function getRealtimeClient() {
-    if (rtClient) return rtClient;
-    if (!window.supabase || !window.NEVADO_SUPABASE_URL || !window.NEVADO_SUPABASE_ANON_KEY) return null;
-    rtClient = window.supabase.createClient(
-      window.NEVADO_SUPABASE_URL,
-      window.NEVADO_SUPABASE_ANON_KEY,
-      { realtime: { params: { eventsPerSecond: 10 } } }
-    );
-    return rtClient;
-  }
 
   /* ── Load channels ───────────────────────────────────────────────────── */
   async function loadCanales() {
@@ -62,6 +47,9 @@
     if (u.is_banned) { window.NODO.showToast('Tu cuenta tiene restricciones de publicación.', 'error'); return null; }
     if (!String(contenido || '').trim()) return null;
 
+    /* BUG 5 — rank_key comes from profiles via CHAT_USER set in nodo:ready */
+    console.log('[chat] CHAT_USER.rank_key:', u.rank_key, '| profile_id:', u.profile_id);
+
     var payload = {
       canal_id:       canal_id,
       profile_id:     u.profile_id,
@@ -71,7 +59,7 @@
       contenido:      String(contenido).trim().slice(0, 500),
       tipo:           'texto',
     };
-    console.log('[chat] enviando:', { canal_id: canal_id, profile_id: u.profile_id, contenido: payload.contenido });
+    console.log('[chat] enviando:', payload);
     try {
       var { data, error } = await sb().from('chat_mensajes').insert(payload).select().single();
       console.log('[chat] resultado INSERT:', data, error);
@@ -110,7 +98,7 @@
     }
   }
 
-  /* ── Rank image map (sm) ─────────────────────────────────────────────── */
+  /* ── Rank image map (sm) — BUG 4 ────────────────────────────────────── */
   var RANK_SM = {
     cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
     explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
@@ -122,25 +110,23 @@
   };
 
   /* ── Render a single message as HTML string ──────────────────────────── */
-  /* FIX 2: always render rank image and author name for all messages       */
   function renderMensaje(msg, isOwn) {
     var e       = window.NODO.escapeHtml;
     var nombre  = e(msg.autor_nombre  || 'Usuario');
-    var rango   = e(msg.autor_rank    || '');
     var usr     = msg.autor_username
       ? '<span class="nodo-chat-username">@' + e(msg.autor_username) + '</span>'
       : '';
     var time    = window.NODO.formatTime(msg.created_at || msg.creado_en);
+    /* BUG 4: use -sm.webp image, no text label for rank key */
     var rankSrc = RANK_SM[msg.autor_rank] || RANK_SM.cachorro;
 
     return (
       '<div class="nodo-chat-msg' + (isOwn ? ' nodo-chat-msg-own' : '') + '" data-msg-id="' + msg.id + '">' +
-        '<img class="nodo-chat-rank-img" src="' + rankSrc + '" alt="' + rango + '" />' +
+        '<img class="nodo-chat-rank-img" src="' + rankSrc + '" alt="" />' +
         '<div class="nodo-chat-bubble">' +
           '<div class="nodo-chat-author">' +
             '<span class="nodo-chat-author-name">' + nombre + '</span>' +
             usr +
-            '<span class="nodo-chat-author-rank">' + rango + '</span>' +
           '</div>' +
           '<div class="nodo-chat-text">' + e(msg.contenido) + '</div>' +
           '<div class="nodo-chat-time">' + time + '</div>' +
@@ -153,7 +139,7 @@
   function appendMensaje(msg, scroll) {
     var msgArea = document.getElementById('nodo-chat-messages');
     if (!msgArea) return;
-    if (msgArea.querySelector('[data-msg-id="' + msg.id + '"]')) return;
+    if (document.querySelector('[data-msg-id="' + msg.id + '"]')) return;
     var curUser     = window.CHAT_USER || window.NODO_USER;
     var myProfileId = curUser ? curUser.profile_id : null;
     var isOwn       = !!(myProfileId && msg.profile_id === myProfileId);
@@ -163,70 +149,77 @@
     if (scroll) msgArea.scrollTop = msgArea.scrollHeight;
   }
 
-  /* ── Polling fallback (3 s interval) ────────────────────────────────── */
-  /* FIX 3: no profile_id filter — all messages fetched, dedup by data-msg-id */
+  /* ── BUG 1: Polling — fetch last 10 DESC, reverse, dedup by data-msg-id ─ */
   function startPolling(canalId) {
-    if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null; }
-    pollingTimer = setInterval(async function () {
-      if (!lastMsgTime) return;
+    if (window._chatPollInterval) {
+      clearInterval(window._chatPollInterval);
+      window._chatPollInterval = null;
+    }
+
+    window._chatPollInterval = setInterval(async function () {
       try {
         var result = await sb()
           .from('chat_mensajes')
-          .select('*')
+          .select('id, canal_id, profile_id, autor_nombre, autor_rank, autor_username, contenido, created_at')
           .eq('canal_id', canalId)
-          .eq('eliminado', false)
-          .gt('created_at', lastMsgTime)
-          .order('created_at', { ascending: true });
-        if (result.data && result.data.length) {
-          result.data.forEach(function (msg) {
-            appendMensaje(msg, true);
-            if (msg.created_at > lastMsgTime) lastMsgTime = msg.created_at;
-          });
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (result.error) {
+          console.error('[poll] error:', result.error.message);
+          return;
         }
+        if (!result.data || !result.data.length) return;
+
+        var msgs = result.data.slice().reverse();
+        msgs.forEach(function (m) { appendMensaje(m, true); });
       } catch (err) {
-        console.warn('[chat] polling error:', err);
+        console.error('[poll] excepción:', err);
       }
-    }, 3000);
+    }, 2000);
   }
 
-  /* ── Realtime subscription + typing broadcast on the same channel ────── */
-  /* FIX 1: onTyping callback receives typing broadcasts from OTHER users   */
-  function subscribeToCanal(canal_id, onMessage, onTyping) {
-    var client = getRealtimeClient();
-    if (!client) return null;
-
-    if (activeSub) {
-      try { client.removeChannel(activeSub); } catch (_) {}
-      activeSub = null;
+  /* ── BUG 2: Realtime — main sb() client, unique channel name ─────────── */
+  function startRealtime(canalId, onMessage, onTyping) {
+    if (window._chatRealtimeSub) {
+      try { sb().removeChannel(window._chatRealtimeSub); } catch (_) {}
+      window._chatRealtimeSub = null;
     }
 
-    var ch = client
-      .channel('nodo-chat-' + canal_id)
-      .on('postgres_changes', {
-        event:  'INSERT',
-        schema: 'public',
-        table:  'chat_mensajes',
-        filter: 'canal_id=eq.' + canal_id,
-      }, function (payload) {
-        onMessage(payload.new);
-      })
+    var ch = sb()
+      .channel('chat-' + canalId + '-' + Date.now())
+      .on(
+        'postgres_changes',
+        {
+          event:  'INSERT',
+          schema: 'public',
+          table:  'chat_mensajes',
+          filter: 'canal_id=eq.' + canalId,
+        },
+        function (payload) {
+          console.log('[realtime] mensaje recibido:', payload.new);
+          appendMensaje(payload.new, true);
+          if (onMessage) onMessage(payload.new);
+        }
+      )
       .on('broadcast', { event: 'typing' }, function (ev) {
         if (onTyping) onTyping(ev.payload);
       })
-      .subscribe(function (status) {
-        console.log('[chat] realtime status:', status);
+      .subscribe(function (status, err) {
+        console.log('[realtime] status:', status, err || '');
       });
 
-    activeSub = ch;
+    window._chatRealtimeSub = ch;
     return ch;
   }
 
-  /* ── Unsubscribe ─────────────────────────────────────────────────────── */
-  function unsubscribe() {
-    var client = getRealtimeClient();
-    if (!client || !activeSub) return;
-    try { client.removeChannel(activeSub); } catch (_) {}
-    activeSub = null;
+  /* ── Unsubscribe all ─────────────────────────────────────────────────── */
+  function unsubscribeAll() {
+    if (window._chatPollInterval) { clearInterval(window._chatPollInterval); window._chatPollInterval = null; }
+    if (window._chatRealtimeSub) {
+      try { sb().removeChannel(window._chatRealtimeSub); } catch (_) {}
+      window._chatRealtimeSub = null;
+    }
   }
 
   /* ── Chat page UI ────────────────────────────────────────────────────── */
@@ -248,10 +241,10 @@
         '# ' + window.NODO.escapeHtml(c.nombre) + '</button>';
     }).join('') || '<div style="padding:12px 16px;font-size:12px;color:rgba(255,255,255,0.28);">Sin canales disponibles.</div>';
 
+    /* BUG 3: openCanal order — history → realtime → polling */
     async function openCanal(canal) {
-      curCanal    = canal;
-      lastMsgTime = null;
-      if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null; }
+      curCanal = canal;
+      unsubscribeAll();
       if (typingEl) { typingEl.textContent = ''; clearTimeout(typingTimer); }
 
       canalesList.querySelectorAll('.nodo-canal-item').forEach(function (b) {
@@ -260,28 +253,21 @@
       if (chanTitle) chanTitle.textContent = '# ' + canal.nombre;
       msgArea.innerHTML = '<div class="nodo-chat-loading">Cargando mensajes…</div>';
 
+      /* 1. Cargar historial */
       var msgs = await loadMensajes(canal.id, 60);
       msgArea.innerHTML = '';
-
       if (!msgs.length) {
         msgArea.innerHTML = '<div class="nodo-chat-empty">Sé el primero en escribir algo.</div>';
-        lastMsgTime = new Date().toISOString();
       } else {
         msgs.forEach(function (m) { appendMensaje(m, false); });
         msgArea.scrollTop = msgArea.scrollHeight;
-        lastMsgTime = msgs[msgs.length - 1].created_at;
       }
 
-      /* Realtime: postgres changes + typing broadcasts on the same channel */
-      subscribeToCanal(
+      /* 2. Iniciar realtime (postgres_changes + typing broadcast) */
+      startRealtime(
         canal.id,
-        function (newMsg) {
-          /* FIX 3: no profile_id skip — appendMensaje dedup handles it */
-          appendMensaje(newMsg, true);
-          if (!lastMsgTime || newMsg.created_at > lastMsgTime) lastMsgTime = newMsg.created_at;
-        },
+        null, /* appendMensaje already called inside startRealtime */
         function (payload) {
-          /* FIX 1: show who is typing — broadcast received only from OTHER users */
           if (!typingEl) return;
           var nombre = (payload && payload.username) ? payload.username : 'Alguien';
           typingEl.textContent = nombre + ' está escribiendo...';
@@ -290,7 +276,7 @@
         }
       );
 
-      /* Polling fallback — always active as safety net */
+      /* 3. Iniciar polling como fallback */
       startPolling(canal.id);
 
       verificarLimite(canal.id);
@@ -314,12 +300,12 @@
       });
     }
 
-    /* ── FIX 1: broadcast typing to other users (no local indicator) ───── */
+    /* ── Typing broadcast (no local indicator) ─────────────────────────── */
     function broadcastTyping() {
-      if (!activeSub) return;
+      if (!window._chatRealtimeSub) return;
       var chatUser = window.CHAT_USER || window.NODO_USER;
       if (!chatUser) return;
-      activeSub.send({
+      window._chatRealtimeSub.send({
         type:    'broadcast',
         event:   'typing',
         payload: { username: chatUser.username || chatUser.display_name || 'Alguien' },
@@ -342,8 +328,7 @@
 
       if (result) {
         if (input) input.value = '';
-        if (result.created_at) lastMsgTime = result.created_at;
-        /* Render immediately — data-msg-id dedup prevents duplicate from realtime/polling */
+        /* Render immediately — dedup prevents duplicate from realtime/polling */
         appendMensaje(result, true);
       }
       if (input) input.focus();
@@ -351,7 +336,7 @@
 
     if (sendBtn) sendBtn.addEventListener('click', doSend);
     if (input) {
-      input.addEventListener('input', broadcastTyping);  /* FIX 1 */
+      input.addEventListener('input', broadcastTyping);
       input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
       });
@@ -368,12 +353,10 @@
   /* ── Public API ──────────────────────────────────────────────────────── */
   window.NODO = window.NODO || {};
   window.NODO.chat = {
-    loadCanales:      loadCanales,
-    loadMensajes:     loadMensajes,
-    sendMensaje:      sendMensaje,
-    subscribeToCanal: subscribeToCanal,
-    unsubscribe:      unsubscribe,
-    renderMensaje:    renderMensaje,
-    appendMensaje:    appendMensaje,
+    loadCanales:   loadCanales,
+    loadMensajes:  loadMensajes,
+    sendMensaje:   sendMensaje,
+    renderMensaje: renderMensaje,
+    appendMensaje: appendMensaje,
   };
 })();
