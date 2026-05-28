@@ -83,6 +83,20 @@
             permissions:    profile.permissions  || [],
             email:          email,
           };
+          /* Recalculate nivel + rango_key via API (corrects legacy DB values) */
+          try {
+            var apiResp = await fetch('/api/usuario?email=' + encodeURIComponent(email));
+            if (apiResp.ok) {
+              var apiData = await apiResp.json();
+              if (apiData.rango_key) window.NODO_USER.rank_key = apiData.rango_key;
+              if (apiData.nivel)     window.NODO_USER.level    = apiData.nivel;
+              var profileNeedsSync = apiData.rango_key !== profile.rank_key || apiData.nivel !== profile.level;
+              if (profileNeedsSync) {
+                sb.from('profiles').update({ rank_key: apiData.rango_key, level: apiData.nivel })
+                  .eq('id', profile.id).then(function () {});
+              }
+            }
+          } catch (_) {}
           /* Sync Google avatar back to profiles when not stored */
           if (!profile.avatar_url && clerkUser.imageUrl) {
             sb.from('profiles').update({ avatar_url: clerkUser.imageUrl }).eq('id', profile.id).then(function () {});

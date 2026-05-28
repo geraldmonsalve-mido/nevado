@@ -6,11 +6,16 @@
 
 var fpSb = null;
 
-function initFpSb() {
-  if (fpSb) return;
-  if (!window.supabase || !window.NEVADO_SUPABASE_URL || !window.NEVADO_SUPABASE_ANON_KEY) return;
-  fpSb = window.supabase.createClient(window.NEVADO_SUPABASE_URL, window.NEVADO_SUPABASE_ANON_KEY);
+async function initFpSb() {
+  if (fpSb) return fpSb;
+  if (!window.supabase) { console.error('[FOUNDER] window.supabase no disponible'); return null; }
+  var url = window.NEVADO_SUPABASE_URL || 'https://icxrduatkbazvwysvxrg.supabase.co';
+  var key = window.NEVADO_SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljeHJkdWF0a2JhenZ3eXN2eHJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NDQ3NTEsImV4cCI6MjA5NTMyMDc1MX0.dKNGHz9jEmtVn7hmruzNp2KipMq9BDFb0ABRmlGgqNE';
+  fpSb = window.supabase.createClient(url, key);
   window.FP_SB = fpSb;
+  console.log('[FOUNDER] fpSb inicializado:', !!fpSb);
+  return fpSb;
 }
 
 // ── RANK HELPERS ──────────────────────────────────────────────────────────
@@ -31,14 +36,23 @@ var RANK_IMGS_MD = {
   leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-md.webp',
 };
 
-function calcularRango(croquetas) {
+function nivelPorCroquetas(croquetas) {
   var c = Number(croquetas || 0);
-  if (c >= 16450) return 'leyenda_andina';
-  if (c >= 8450)  return 'protector';
-  if (c >= 5450)  return 'guia';
-  if (c >= 3200)  return 'montanista';
-  if (c >= 2000)  return 'guardian';
-  if (c >= 1000)  return 'explorador';
+  if (c >= 29050) return 108 + Math.min(62, Math.floor((c - 29050) / 200));
+  if (c >= 16450) return 68  + Math.floor((c - 16450) / 200);
+  if (c >= 8450)  return 48  + Math.floor((c - 8450)  / 150);
+  if (c >= 5450)  return 33  + Math.floor((c - 5450)  / 150);
+  if (c >= 3200)  return 21  + Math.floor((c - 3200)  / 100);
+  if (c >= 1000)  return 11  + Math.floor((c - 1000)  / 100);
+  return Math.max(1, Math.floor(c / 100) + 1);
+}
+
+function rangoAutomaticoPorCroquetas(croquetas, rangoActual) {
+  var c = Number(croquetas || 0);
+  var rangosAltos = ['montanista', 'guia', 'protector', 'leyenda_andina'];
+  if (rangosAltos.includes(rangoActual)) return rangoActual;
+  if (c >= 2000) return 'guardian';
+  if (c >= 1000) return 'explorador';
   return 'cachorro';
 }
 
@@ -66,15 +80,15 @@ async function buscarUsuario(query) {
 async function aplicarCroquetasDirecto(profileId, clerkId, cantidad, motivo, tipo) {
   if (!fpSb) throw new Error('Supabase no inicializado');
 
-  var { data: profile } = await fpSb.from('profiles').select('croquetas,level').eq('id', profileId).single();
+  var { data: profile } = await fpSb.from('profiles').select('croquetas,level,rank_key').eq('id', profileId).single();
   if (!profile) throw new Error('Perfil no encontrado');
 
   var nuevasCroquetas = tipo === 'sumar'
     ? profile.croquetas + cantidad
     : Math.max(0, profile.croquetas - cantidad);
 
-  var nuevoNivel  = Math.max(1, Math.floor(nuevasCroquetas / 100));
-  var nuevoRango  = calcularRango(nuevasCroquetas);
+  var nuevoNivel  = nivelPorCroquetas(nuevasCroquetas);
+  var nuevoRango  = rangoAutomaticoPorCroquetas(nuevasCroquetas, profile.rank_key);
 
   await fpSb.from('profiles').update({
     croquetas:  nuevasCroquetas,
@@ -595,36 +609,40 @@ function timeAgo(iso) {
 
 // ── NODO COMMUNITY STATS ─────────────────────────────────────────────────
 
-async function loadNodoStats() {
+async function cargarMetricasComunidad() {
   if (!fpSb) return;
   try {
     const [hilos, resp, msgs, likes, espacios, canales] = await Promise.all([
       fpSb.from('foro_hilos').select('*', { count: 'exact', head: true }).neq('estado', 'eliminado'),
       fpSb.from('foro_respuestas').select('*', { count: 'exact', head: true }).eq('estado', 'activo'),
-      /* Sección 1: no filtrar por eliminado (columna no existe en chat_mensajes) */
       fpSb.from('chat_mensajes').select('*', { count: 'exact', head: true }),
-      fpSb.from('foro_likes').select('*', { count: 'exact', head: true }).catch(() => ({ count: 0 })),
+      fpSb.from('foro_likes').select('*', { count: 'exact', head: true }),
       fpSb.from('foro_categorias').select('*', { count: 'exact', head: true }).eq('activo', true),
       fpSb.from('chat_canales').select('*', { count: 'exact', head: true }).eq('activo', true),
     ]);
+    console.log('[FOUNDER] métricas:', { hilos: hilos.count, resp: resp.count, msgs: msgs.count, likes: likes.count, espacios: espacios.count, canales: canales.count });
     var set = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = fmt(val || 0); };
-    set('kpi-v-hilos',     hilos.count);
-    set('kpi-v-respuestas', resp.count);
-    set('kpi-v-mensajes',  msgs.count);
-    set('kpi-v-likes',     likes.count);
-    set('kpi-v-espacios',  espacios.count);
-    set('kpi-v-canales',   canales.count);
+    set('fp-hilos-count',      hilos.count);
+    set('fp-respuestas-count', resp.count);
+    set('fp-mensajes-count',   msgs.count);
+    set('fp-likes-count',      likes.count);
+    set('fp-espacios-count',   espacios.count);
+    set('fp-canales-count',    canales.count);
   } catch (err) {
-    console.error('[FOUNDER] loadNodoStats:', err);
+    console.error('[FOUNDER] cargarMetricasComunidad:', err);
   }
 }
 
 // ── LOGS RECIENTES DIRECTO DESDE SUPABASE ────────────────────────────────
 
+var _logsLoading = false;
+
 async function cargarLogsRecientes() {
   if (!fpSb) return;
+  if (_logsLoading) return;
+  _logsLoading = true;
   const wrap = document.getElementById('fp-logs-wrap');
-  if (!wrap) return;
+  if (!wrap) { _logsLoading = false; return; }
 
   try {
     const { data: logs, error } = await fpSb
@@ -675,6 +693,8 @@ async function cargarLogsRecientes() {
   } catch (err) {
     console.error('[FOUNDER] cargarLogsRecientes:', err);
     wrap.innerHTML = '<p class="fp-empty">Error al cargar logs.</p>';
+  } finally {
+    _logsLoading = false;
   }
 }
 
@@ -754,6 +774,7 @@ async function cargarCanales() {
 }
 
 window.fpCanalEstado = async function (canalId, estadoActual) {
+  console.log('[FOUNDER] fpCanalEstado:', canalId, estadoActual, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   const nuevoEstado = estadoActual === 'congelado' ? 'activo' : 'congelado';
   await fpSb.from('chat_canales').update({ estado: nuevoEstado }).eq('id', canalId);
@@ -762,6 +783,7 @@ window.fpCanalEstado = async function (canalId, estadoActual) {
 };
 
 window.fpCanalOcultar = async function (canalId, activoActual) {
+  console.log('[FOUNDER] fpCanalOcultar:', canalId, activoActual, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   await fpSb.from('chat_canales').update({ activo: !activoActual }).eq('id', canalId);
   fpMostrarToast(!activoActual ? 'Canal visible' : 'Canal oculto 👁');
@@ -769,6 +791,7 @@ window.fpCanalOcultar = async function (canalId, activoActual) {
 };
 
 window.fpCanalSoloMod = async function (canalId, estadoActual) {
+  console.log('[FOUNDER] fpCanalSoloMod:', canalId, estadoActual, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   const nuevoEstado = estadoActual === 'solo_mod' ? 'activo' : 'solo_mod';
   await fpSb.from('chat_canales').update({ estado: nuevoEstado }).eq('id', canalId);
@@ -777,6 +800,7 @@ window.fpCanalSoloMod = async function (canalId, estadoActual) {
 };
 
 window.fpCanalVaciar = async function (canalId, nombre) {
+  console.log('[FOUNDER] fpCanalVaciar:', canalId, nombre, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   if (!confirm('¿Vaciar TODOS los mensajes de #' + nombre + '? Esta acción no se puede deshacer.')) return;
   const { error } = await fpSb.from('chat_mensajes').delete().eq('canal_id', canalId);
@@ -869,6 +893,7 @@ async function cargarEspacios() {
 }
 
 window.fpEspacioEstado = async function (id, estadoActual) {
+  console.log('[FOUNDER] fpEspacioEstado:', id, estadoActual, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   const nuevoEstado = estadoActual === 'congelado' ? 'activo' : 'congelado';
   await fpSb.from('foro_categorias').update({ estado: nuevoEstado }).eq('id', id);
@@ -877,6 +902,7 @@ window.fpEspacioEstado = async function (id, estadoActual) {
 };
 
 window.fpEspacioOcultar = async function (id, activoActual) {
+  console.log('[FOUNDER] fpEspacioOcultar:', id, activoActual, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   await fpSb.from('foro_categorias').update({ activo: !activoActual }).eq('id', id);
   fpMostrarToast(!activoActual ? 'Espacio visible' : 'Espacio oculto');
@@ -884,6 +910,7 @@ window.fpEspacioOcultar = async function (id, activoActual) {
 };
 
 window.fpEspacioSoloMod = async function (id, estadoActual) {
+  console.log('[FOUNDER] fpEspacioSoloMod:', id, estadoActual, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   const nuevoEstado = estadoActual === 'solo_mod' ? 'activo' : 'solo_mod';
   await fpSb.from('foro_categorias').update({ estado: nuevoEstado }).eq('id', id);
@@ -892,11 +919,102 @@ window.fpEspacioSoloMod = async function (id, estadoActual) {
 };
 
 window.fpEspacioVaciar = async function (id, nombre) {
+  console.log('[FOUNDER] fpEspacioVaciar:', id, nombre, 'fpSb:', !!fpSb);
   if (!fpSb) return;
   if (!confirm('¿Eliminar TODOS los aportes de "' + nombre + '"? No se puede deshacer.')) return;
   await fpSb.from('foro_hilos').update({ estado: 'eliminado' }).eq('categoria_id', id);
   fpMostrarToast('Espacio "' + nombre + '" vaciado');
   cargarEspacios();
+};
+
+// ── ASCENSOS PENDIENTES ───────────────────────────────────────────────────
+
+var UMBRALES_ASCENSO  = { guardian: 3200, montanista: 5450, guia: 8450, protector: 16450 };
+var SIGUIENTE_RANGO   = { guardian: 'montanista', montanista: 'guia', guia: 'protector', protector: 'leyenda_andina' };
+
+async function cargarAscensosPendientes() {
+  if (!fpSb) return;
+  const container = document.getElementById('fp-ascensos-list');
+  if (!container) return;
+  container.innerHTML = '<p class="fp-empty">Cargando…</p>';
+
+  try {
+    const { data: candidatos, error } = await fpSb
+      .from('profiles')
+      .select('id, clerk_id, display_name, username, rank_key, croquetas')
+      .gte('croquetas', 3200)
+      .in('rank_key', ['guardian', 'montanista', 'guia', 'protector'])
+      .order('croquetas', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    const pendientes = (candidatos || []).filter(function (u) {
+      var umbral = UMBRALES_ASCENSO[u.rank_key];
+      return umbral && u.croquetas >= umbral;
+    });
+
+    if (!pendientes.length) {
+      container.innerHTML = '<p class="fp-empty">Sin solicitudes de ascenso pendientes.</p>';
+      return;
+    }
+
+    const bStyle = 'padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-family:inherit;';
+
+    container.innerHTML = pendientes.map(function (u) {
+      var siguiente      = SIGUIENTE_RANGO[u.rank_key] || '?';
+      var siguienteNombre = RANGO_NOMBRES[siguiente] || siguiente;
+      var rankNombre     = RANGO_NOMBRES[u.rank_key] || u.rank_key;
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(184,148,74,.2);border-radius:14px;padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px;">' +
+        '<div style="flex:1;">' +
+          '<strong style="color:#E8E8E0;font-size:14px;">' + (u.display_name || '—') + '</strong>' +
+          (u.username ? ' <span style="color:#B8944A;font-size:11px;">@' + u.username + '</span>' : '') +
+          '<div style="color:rgba(255,255,255,.4);font-size:12px;margin-top:4px;">' +
+            '🦴 ' + fmt(u.croquetas) + ' croquetas · ' +
+            rankNombre + ' → <strong style="color:#B8944A;">' + siguienteNombre + '</strong>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-shrink:0;">' +
+          '<button onclick="fpAprobarAscenso(\'' + u.id + '\',\'' + u.clerk_id + '\',\'' + siguiente + '\')" style="' + bStyle + 'background:rgba(39,174,96,.15);border:1px solid #27AE60;color:#27AE60;">✓ Aprobar</button>' +
+          '<button onclick="fpRechazarAscenso(\'' + u.id + '\')" style="' + bStyle + 'background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:rgba(231,76,60,.7);">✗ Rechazar</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } catch (err) {
+    console.error('[FOUNDER] cargarAscensosPendientes:', err);
+    container.innerHTML = '<p class="fp-empty">Error al cargar solicitudes.</p>';
+  }
+}
+
+var NIVEL_BASE_RANGO = { montanista: 33, guia: 48, protector: 68, leyenda_andina: 108 };
+
+window.fpAprobarAscenso = async function (profileId, clerkId, nuevoRango) {
+  console.log('[FOUNDER] fpAprobarAscenso:', profileId, clerkId, nuevoRango, 'fpSb:', !!fpSb);
+  if (!fpSb) return;
+  var nuevoNombre = RANGO_NOMBRES[nuevoRango] || nuevoRango;
+  var nivelBase   = NIVEL_BASE_RANGO[nuevoRango] || 1;
+  if (!confirm('¿Aprobar ascenso a ' + nuevoNombre + '?')) return;
+  try {
+    var { error } = await fpSb.from('profiles').update({
+      rank_key:   nuevoRango,
+      level:      nivelBase,
+      updated_at: new Date().toISOString(),
+    }).eq('id', profileId);
+    if (error) throw error;
+    try {
+      await fpSb.from('usuarios').update({ rango: nuevoNombre, nivel: nivelBase }).eq('clerk_id', clerkId);
+    } catch (_) {}
+    fpMostrarToast('Ascenso aprobado: ' + nuevoNombre + ' ✓', 'success');
+    cargarAscensosPendientes();
+  } catch (err) {
+    console.error('[FOUNDER] fpAprobarAscenso error:', err);
+    fpMostrarToast('Error al aprobar ascenso.', 'error');
+  }
+};
+
+window.fpRechazarAscenso = function (profileId) {
+  console.log('[FOUNDER] fpRechazarAscenso:', profileId);
+  fpMostrarToast('Ascenso marcado como pendiente.', 'success');
 };
 
 // ── GLOBAL FOUNDER ACTIONS ────────────────────────────────────────────────
@@ -913,19 +1031,38 @@ window.founderVerificar = async function (profileId) {
   if (ok) { currentUser.is_verified = !currentUser.is_verified; showUserCard(currentUser); }
 };
 
-window.founderAgregarNota = async function (profileId) {
-  var nota = prompt('Nota founder para este usuario:', (currentUser && currentUser.founder_notes) || '');
-  if (nota === null) return;
-  if (!fpSb) { showToast('Supabase no inicializado.', 'error'); return; }
-  try {
-    var { error } = await fpSb.from('profiles').update({ founder_notes: nota }).eq('id', profileId);
-    if (error) throw error;
-    if (currentUser && currentUser.id === profileId) currentUser.founder_notes = nota;
-    showToast('Nota guardada.', 'success');
-  } catch (err) {
-    console.error('[FOUNDER] agregarNota:', err);
-    showToast('Error al guardar nota: ' + (err.message || ''), 'error');
+window.founderAgregarNota = function (profileId) {
+  var overlay   = document.getElementById('fp-nota-overlay');
+  var textarea  = document.getElementById('fp-nota-textarea');
+  var cancelBtn = document.getElementById('fp-nota-cancel');
+  var guardarBtn = document.getElementById('fp-nota-guardar');
+  if (!overlay || !textarea) return;
+
+  textarea.value = (currentUser && currentUser.founder_notes) || '';
+  overlay.hidden = false;
+  textarea.focus();
+
+  function closeNotaModal() {
+    overlay.hidden = true;
+    if (cancelBtn)  cancelBtn.onclick  = null;
+    if (guardarBtn) guardarBtn.onclick = null;
   }
+
+  if (cancelBtn) cancelBtn.onclick = closeNotaModal;
+  if (guardarBtn) guardarBtn.onclick = async function () {
+    var nota = textarea.value;
+    closeNotaModal();
+    if (!fpSb) { showToast('Supabase no inicializado.', 'error'); return; }
+    try {
+      var { error } = await fpSb.from('profiles').update({ founder_notes: nota }).eq('id', profileId);
+      if (error) throw error;
+      if (currentUser && currentUser.id === profileId) currentUser.founder_notes = nota;
+      showToast('Nota guardada.', 'success');
+    } catch (err) {
+      console.error('[FOUNDER] agregarNota:', err);
+      showToast('Error al guardar nota: ' + (err.message || ''), 'error');
+    }
+  };
 };
 
 // ── BAN / VERIFY ──────────────────────────────────────────────────────────
@@ -969,32 +1106,27 @@ function initLogout() {
   });
 }
 
-// ── AUTO-REFRESH DE LOGS ──────────────────────────────────────────────────
-
-function startAutoRefresh() {
-  setInterval(async function () {
-    try {
-      var res = await fetch('/api/founder-stats');
-      if (!res.ok) return;
-      var data = await res.json();
-      renderLogs(data.logs_recientes || []);
-    } catch (_) {}
-  }, 30000);
-}
-
 // ── BOOT ──────────────────────────────────────────────────────────────────
 
-function bootPanel() {
-  initFpSb();
+window.addEventListener('nvd:founder-ready', async function () {
+  await initFpSb();
+
   startClock();
-  loadStats();
-  loadNodoStats();
-  cargarLogsRecientes();
-  cargarCanales();
-  cargarEspacios();
   initCroquetasForm();
   initLogout();
-  startAutoRefresh();
-}
 
-window.addEventListener('nvd:founder-ready', bootPanel);
+  Promise.all([
+    loadStats(),
+    cargarMetricasComunidad(),
+    cargarLogsRecientes(),
+    cargarCanales(),
+    cargarEspacios(),
+    cargarAscensosPendientes(),
+  ]);
+
+  /* Auto-refresh: only logs and metrics to avoid UI flickering */
+  setInterval(function () {
+    cargarLogsRecientes();
+    cargarMetricasComunidad();
+  }, 30000);
+});
