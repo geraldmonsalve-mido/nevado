@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil — NODO · NEVADO</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #05050A;
+      --ivory: #E8E4DC;
+      --accent: #E74C3C;
+      --gold: #B8944A;
+      --border: rgba(255,255,255,0.07);
+      --surface: rgba(14,14,22,0.92);
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      background-image:
+        linear-gradient(rgba(2,3,10,.5), rgba(2,3,10,.96)),
+        url('/fondo.webp');
+      background-size: cover;
+      background-attachment: fixed;
+      color: var(--ivory);
+      font-family: 'Geist', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Topbar ──────────────────────────────────────── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,.97); backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .topbar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px; font-weight: 600; letter-spacing: .14em;
+      color: rgba(232,228,220,.88); text-decoration: none;
+    }
+
+    .topbar-logo span { color: #E74C3C; }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .topbar-back {
+      font-size: 11px; letter-spacing: .08em; color: rgba(232,228,220,.4);
+      text-decoration: none; transition: color .2s;
+    }
+
+    .topbar-back:hover { color: #E74C3C; }
+
+    #nvd-session-pill { display: flex; align-items: center; min-width: 100px; }
+
+    /* ── Page layout ─────────────────────────────────── */
+    .page-wrap {
+      max-width: 860px; margin: 0 auto;
+      padding: 80px 24px 80px;
+    }
+
+    /* ── Profile hero ────────────────────────────────── */
+    .profile-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 36px 32px 28px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+    }
+
+    .profile-avatar-wrap { flex-shrink: 0; position: relative; }
+
+    .profile-avatar {
+      width: 90px; height: 90px; border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(184,148,74,.45);
+    }
+
+    .profile-rank-badge {
+      width: 38px; height: 38px;
+      position: absolute; bottom: -6px; right: -6px;
+      border-radius: 50%; object-fit: cover;
+      border: 2px solid var(--bg);
+    }
+
+    .profile-info { flex: 1; min-width: 0; }
+
+    .profile-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600; color: #fff;
+      margin-bottom: 2px; line-height: 1.1;
+    }
+
+    .profile-username {
+      font-size: 13px; color: var(--gold); margin-bottom: 8px;
+    }
+
+    .profile-bio {
+      font-size: 13px; color: rgba(232,228,220,.6);
+      line-height: 1.6; margin-bottom: 10px; max-width: 500px;
+    }
+
+    .profile-location {
+      font-size: 12px; color: rgba(232,228,220,.35);
+      margin-bottom: 14px;
+    }
+
+    .profile-stats {
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+
+    .profile-stat { text-align: center; }
+
+    .profile-stat-val {
+      font-size: 20px; font-weight: 700; color: #fff;
+      line-height: 1;
+    }
+
+    .profile-stat-val.gold { color: var(--gold); }
+
+    .profile-stat-lbl {
+      font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(232,228,220,.3);
+      margin-top: 3px;
+    }
+
+    /* ── Action buttons ─────────────────────────────── */
+    .profile-actions {
+      display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+    }
+
+    .btn-follow {
+      background: #E74C3C; border: none; color: #fff;
+      padding: 9px 20px; border-radius: 10px; font-size: 13px;
+      font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: opacity .2s;
+    }
+
+    .btn-follow:hover { opacity: .85; }
+    .btn-follow.following { background: rgba(231,76,60,.15); border: 1px solid rgba(231,76,60,.4); color: #E74C3C; }
+
+    .btn-outline {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+      color: rgba(232,228,220,.6); padding: 9px 18px; border-radius: 10px;
+      font-size: 13px; cursor: pointer; font-family: inherit;
+      text-decoration: none; display: inline-flex; align-items: center;
+      transition: background .2s;
+    }
+
+    .btn-outline:hover { background: rgba(255,255,255,.09); }
+
+    /* ── Rank panel ──────────────────────────────────── */
+    .rank-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 22px; padding: 24px 28px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 20px;
+    }
+
+    .rank-panel img { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
+
+    .rank-panel-info { flex: 1; }
+
+    .rank-label {
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(232,228,220,.3); margin-bottom: 4px;
+    }
+
+    .rank-name {
+      font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 6px;
+    }
+
+    .rank-level { font-size: 13px; color: var(--gold); }
+
+    /* ── Tabs ────────────────────────────────────────── */
+    .tabs-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 22px; overflow: hidden;
+    }
+
+    .tab-btns {
+      display: flex; border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1; background: transparent; border: none;
+      color: rgba(232,228,220,.38); font-size: 11px;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 14px 0; cursor: pointer; font-family: inherit;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color .2s, border-color .2s;
+    }
+
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+    .tab-panel { display: none; padding: 20px 24px; }
+    .tab-panel.active { display: block; }
+
+    /* ── Post cards ──────────────────────────────────── */
+    .post-card {
+      padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+
+    .post-card:last-child { border-bottom: none; }
+
+    .post-meta {
+      font-size: 11px; color: rgba(232,228,220,.3);
+      margin-bottom: 6px; display: flex; gap: 10px; align-items: center;
+    }
+
+    .post-cat { color: #E74C3C; text-transform: uppercase; letter-spacing: .06em; }
+
+    .post-text {
+      font-size: 13px; color: rgba(232,228,220,.8);
+      line-height: 1.6; margin-bottom: 8px;
+    }
+
+    .post-footer {
+      display: flex; gap: 16px;
+      font-size: 11px; color: rgba(232,228,220,.28);
+    }
+
+    /* ── States ──────────────────────────────────────── */
+    .state-loading {
+      text-align: center; padding: 40px 0;
+      color: rgba(255,255,255,.3); font-size: 13px;
+    }
+
+    .state-empty {
+      text-align: center; padding: 32px 0;
+      color: rgba(255,255,255,.25); font-size: 13px;
+    }
+
+    .state-error {
+      text-align: center; padding: 48px 24px;
+      color: rgba(231,76,60,.7); font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .profile-hero { flex-direction: column; gap: 16px; padding: 24px 20px; }
+      .profile-name { font-size: 22px; }
+      .page-wrap { padding: 72px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <div class="topbar-right">
+      <a class="topbar-back" href="/nodo.html">← NODO</a>
+      <div id="nvd-session-pill"></div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <div id="profile-loading" class="state-loading">Cargando perfil…</div>
+    <div id="profile-error" class="state-error" hidden></div>
+
+    <div id="profile-body" hidden>
+      <!-- ── Hero ───────────────────────────────────── -->
+      <div class="profile-hero">
+        <div class="profile-avatar-wrap">
+          <img id="p-avatar" class="profile-avatar" src="/NevadoUtil.png"
+               onerror="this.src='/NevadoUtil.png'" alt="avatar" />
+          <img id="p-rank-badge" class="profile-rank-badge" src="" alt="rango"
+               onerror="this.style.display='none'" />
+        </div>
+        <div class="profile-info">
+          <h1 id="p-name" class="profile-name">—</h1>
+          <div id="p-username" class="profile-username" hidden></div>
+          <p id="p-bio" class="profile-bio" hidden></p>
+          <div id="p-location" class="profile-location" hidden></div>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div id="p-croquetas" class="profile-stat-val gold">—</div>
+              <div class="profile-stat-lbl">Croquetas</div>
+            </div>
+            <div class="profile-stat">
+              <div id="p-nivel" class="profile-stat-val">—</div>
+              <div class="profile-stat-lbl">Nivel</div>
+            </div>
+            <div class="profile-stat">
+              <div id="p-aportes-count" class="profile-stat-val">—</div>
+              <div class="profile-stat-lbl">Aportes</div>
+            </div>
+            <div class="profile-stat">
+              <div id="p-likes-count" class="profile-stat-val">—</div>
+              <div class="profile-stat-lbl">Likes recibidos</div>
+            </div>
+          </div>
+          <div id="p-actions" class="profile-actions"></div>
+        </div>
+      </div>
+
+      <!-- ── Rank panel ──────────────────────────────── -->
+      <div class="rank-panel">
+        <img id="p-rank-img" src="" alt="insignia"
+             onerror="this.style.display='none'" />
+        <div class="rank-panel-info">
+          <div class="rank-label">Rango NEVADO</div>
+          <div id="p-rank-name" class="rank-name">—</div>
+          <div id="p-rank-level" class="rank-level">Nivel —</div>
+        </div>
+      </div>
+
+      <!-- ── Tabs ────────────────────────────────────── -->
+      <div class="tabs-wrap">
+        <div class="tab-btns">
+          <button class="tab-btn active" data-tab="aportes">Aportes</button>
+          <button class="tab-btn" data-tab="comentarios">Comentarios</button>
+        </div>
+        <div class="tab-panel active" id="tab-aportes">
+          <div class="state-loading">Cargando aportes…</div>
+        </div>
+        <div class="tab-panel" id="tab-comentarios">
+          <div class="state-loading">Cargando comentarios…</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/nevado-env.js"></script>
+  <script>
+  (function () {
+    var RANK_IMGS = {
+      cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
+      explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
+      guardian:       '/rangos/rango3-guardian-plata-sm.webp',
+      montanista:     '/rangos/rango4-montanista-plata-sm.webp',
+      guia:           '/rangos/rango5-guia-plata-sm.webp',
+      protector:      '/rangos/rango6-protector-oro-sm.webp',
+      leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
+    };
+
+    var RANK_NAMES = {
+      cachorro: 'Cachorro', explorador: 'Explorador', guardian: 'Guardián',
+      montanista: 'Montañista', guia: 'Guía', protector: 'Protector',
+      leyenda_andina: 'Leyenda Andina',
+    };
+
+    var RANK_IMGS_MD = {
+      cachorro:       '/rangos/rango1-cachorro-bronce-md.webp',
+      explorador:     '/rangos/rango2-explorador-bronce-md.webp',
+      guardian:       '/rangos/rango3-guardian-plata-md.webp',
+      montanista:     '/rangos/rango4-montanista-plata-md.webp',
+      guia:           '/rangos/rango5-guia-plata-md.webp',
+      protector:      '/rangos/rango6-protector-oro-md.webp',
+      leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-md.webp',
+    };
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function (c) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+      });
+    }
+
+    function timeAgo(dateStr) {
+      var d = new Date(dateStr), diff = Math.floor((Date.now() - d.getTime()) / 1000);
+      if (diff < 60)     return 'hace ' + diff + 's';
+      if (diff < 3600)   return 'hace ' + Math.floor(diff / 60) + 'min';
+      if (diff < 86400)  return 'hace ' + Math.floor(diff / 3600) + 'h';
+      if (diff < 604800) return 'hace ' + Math.floor(diff / 86400) + 'd';
+      return d.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function waitFor(condFn, ms) {
+      return new Promise(function (resolve) {
+        if (condFn()) { resolve(); return; }
+        var t = setInterval(function () {
+          if (condFn()) { clearInterval(t); resolve(); }
+        }, 80);
+        setTimeout(function () { clearInterval(t); resolve(); }, ms || 5000);
+      });
+    }
+
+    function showError(msg) {
+      document.getElementById('profile-loading').hidden = true;
+      var el = document.getElementById('profile-error');
+      el.textContent = msg;
+      el.hidden = false;
+    }
+
+    function el(id) { return document.getElementById(id); }
+    function setText(id, v) { var e = el(id); if (e) e.textContent = v; }
+
+    async function boot() {
+      /* Read ?user= query param */
+      var params = new URLSearchParams(location.search);
+      var userParam = params.get('user') || params.get('id') || '';
+      if (!userParam) { showError('No se especificó el usuario. Usa /u/perfil.html?user=tu-username'); return; }
+
+      await waitFor(function () { return !!window.NEVADO_SUPABASE_URL; }, 5000);
+      if (!window.supabase || !window.NEVADO_SUPABASE_URL) {
+        showError('Error de configuración. Recarga la página.');
+        return;
+      }
+
+      var sb = window.supabase.createClient(window.NEVADO_SUPABASE_URL, window.NEVADO_SUPABASE_ANON_KEY);
+
+      /* Fetch profile — try by username first, then by id */
+      var profileResult = await sb
+        .from('profiles')
+        .select('id,display_name,username,avatar_url,rank_key,level,croquetas,bio,location,website,privacy_public,is_founder,is_verified')
+        .eq('username', userParam)
+        .maybeSingle();
+
+      var profile = profileResult.data;
+
+      /* Fallback: try by clerk_id */
+      if (!profile && userParam.startsWith('user_')) {
+        var r2 = await sb.from('profiles').select('*').eq('clerk_id', userParam).maybeSingle();
+        profile = r2.data;
+      }
+
+      if (!profile) {
+        showError('Perfil no encontrado para "' + esc(userParam) + '".');
+        return;
+      }
+
+      /* Check privacy */
+      if (profile.privacy_public === false) {
+        showError('Este perfil es privado.');
+        return;
+      }
+
+      /* Determine if viewer is the profile owner */
+      await waitFor(function () { return !!(window.Clerk); }, 3000);
+      if (window.Clerk) {
+        try { await window.Clerk.load(); } catch (_) {}
+      }
+      var clerkUser = window.Clerk && window.Clerk.user;
+      var isMe = false;
+      if (clerkUser) {
+        /* Compare by fetching viewer's profile_id */
+        var myR = await sb.from('profiles').select('id').eq('clerk_id', clerkUser.id).maybeSingle();
+        isMe = !!(myR.data && myR.data.id === profile.id);
+      }
+
+      /* Fetch aportes count + total likes */
+      var countR = await sb
+        .from('foro_hilos')
+        .select('id,likes', { count: 'exact' })
+        .eq('profile_id', profile.id)
+        .neq('estado', 'eliminado');
+      var hilosData   = countR.data || [];
+      var aportesCount = countR.count || 0;
+      var totalLikes   = hilosData.reduce(function (sum, h) { return sum + (h.likes || 0); }, 0);
+
+      /* Render hero */
+      document.title = esc(profile.display_name) + ' — NODO · NEVADO';
+
+      var rk = (profile.rank_key || 'cachorro').toLowerCase();
+      var avatarEl = el('p-avatar');
+      if (avatarEl && profile.avatar_url) avatarEl.src = profile.avatar_url;
+
+      var badgeEl = el('p-rank-badge');
+      if (badgeEl) badgeEl.src = RANK_IMGS[rk] || RANK_IMGS.cachorro;
+
+      setText('p-name', profile.display_name || 'Usuario');
+
+      if (profile.username) {
+        var uEl = el('p-username');
+        if (uEl) { uEl.textContent = '@' + profile.username; uEl.hidden = false; }
+      }
+
+      if (profile.bio) {
+        var bioEl = el('p-bio');
+        if (bioEl) { bioEl.textContent = profile.bio; bioEl.hidden = false; }
+      }
+
+      if (profile.location) {
+        var locEl = el('p-location');
+        if (locEl) { locEl.textContent = '📍 ' + profile.location; locEl.hidden = false; }
+      }
+
+      setText('p-croquetas', Number(profile.croquetas || 0).toLocaleString('es'));
+      setText('p-nivel',     profile.level || 1);
+      setText('p-aportes-count', aportesCount);
+      setText('p-likes-count', totalLikes.toLocaleString('es'));
+
+      /* Rank panel */
+      var rankImgEl = el('p-rank-img');
+      if (rankImgEl) rankImgEl.src = RANK_IMGS_MD[rk] || RANK_IMGS_MD.cachorro;
+      setText('p-rank-name',  RANK_NAMES[rk] || rk);
+      setText('p-rank-level', 'Nivel ' + (profile.level || 1));
+
+      /* Action buttons */
+      var actionsEl = el('p-actions');
+      if (actionsEl) {
+        if (isMe) {
+          actionsEl.innerHTML =
+            '<a href="/profile.html" class="btn-outline" style="color:#B8944A;border-color:rgba(184,148,74,.3);">Editar mi perfil →</a>';
+        } else {
+          actionsEl.innerHTML =
+            '<button id="btn-follow" class="btn-follow">+ Seguir</button>' +
+            '<button class="btn-outline" onclick="alert(\'Mensajería próximamente\')">Mensaje</button>';
+          var followBtn = el('btn-follow');
+          if (followBtn) {
+            followBtn.onclick = function () {
+              followBtn.classList.toggle('following');
+              followBtn.textContent = followBtn.classList.contains('following') ? 'Siguiendo ✓' : '+ Seguir';
+            };
+          }
+        }
+      }
+
+      /* Show body */
+      el('profile-loading').hidden = true;
+      el('profile-body').hidden   = false;
+
+      /* Tabs */
+      document.querySelectorAll('.tab-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+          document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+          btn.classList.add('active');
+          var panel = el('tab-' + btn.dataset.tab);
+          if (panel) panel.classList.add('active');
+          if (btn.dataset.tab === 'comentarios') loadComentarios(sb, profile.id);
+        });
+      });
+
+      /* Load aportes */
+      loadAportes(sb, profile.id);
+
+      /* Session pill */
+      initSessionPill(sb);
+    }
+
+    function loadAportes(sb, profileId) {
+      var container = el('tab-aportes');
+      if (!container) return;
+      sb.from('foro_hilos')
+        .select('id,contenido,tipo,likes,respuestas,created_at,foro_categorias(nombre)')
+        .eq('profile_id', profileId)
+        .neq('estado', 'eliminado')
+        .order('created_at', { ascending: false })
+        .limit(12)
+        .then(function (result) {
+          var hilos = result.data || [];
+          if (!hilos.length) {
+            container.innerHTML = '<div class="state-empty">Aún no hay aportes publicados.</div>';
+            return;
+          }
+          container.innerHTML = hilos.map(function (h) {
+            var cat     = h.foro_categorias ? h.foro_categorias.nombre : 'NODO';
+            var preview = (h.contenido || '').slice(0, 200) + ((h.contenido || '').length > 200 ? '…' : '');
+            return '<div class="post-card">' +
+              '<div class="post-meta">' +
+                '<span class="post-cat">' + esc(cat) + '</span>' +
+                '<span>' + timeAgo(h.created_at) + '</span>' +
+              '</div>' +
+              '<p class="post-text">' + esc(preview) + '</p>' +
+              '<div class="post-footer">' +
+                '<span>❤ ' + (h.likes || 0) + '</span>' +
+                '<span>💬 ' + (h.respuestas || 0) + '</span>' +
+              '</div>' +
+            '</div>';
+          }).join('');
+        });
+    }
+
+    function loadComentarios(sb, profileId) {
+      var container = el('tab-comentarios');
+      if (!container || container.dataset.loaded) return;
+      container.dataset.loaded = '1';
+      sb.from('foro_respuestas')
+        .select('id,contenido,created_at,hilo_id')
+        .eq('profile_id', profileId)
+        .eq('estado', 'activo')
+        .order('created_at', { ascending: false })
+        .limit(12)
+        .then(function (result) {
+          var rows = result.data || [];
+          if (!rows.length) {
+            container.innerHTML = '<div class="state-empty">Aún no hay comentarios.</div>';
+            return;
+          }
+          container.innerHTML = rows.map(function (r) {
+            var preview = (r.contenido || '').slice(0, 200);
+            return '<div class="post-card">' +
+              '<p class="post-text">' + esc(preview) + '</p>' +
+              '<div class="post-footer"><span>' + timeAgo(r.created_at) + '</span></div>' +
+            '</div>';
+          }).join('');
+        });
+    }
+
+    async function initSessionPill(sb) {
+      var pillEl = el('nvd-session-pill');
+      if (!pillEl) return;
+      await waitFor(function () { return !!(window.Clerk); }, 4000);
+      if (!window.Clerk) return;
+      try { await window.Clerk.load(); } catch (_) {}
+      var user = window.Clerk.user;
+      if (!user) {
+        pillEl.innerHTML = '<a href="/auth.html?redirect=/nodo.html" style="font-size:11px;' +
+          'color:rgba(232,228,220,.45);text-decoration:none;padding:5px 12px;' +
+          'border:1px solid rgba(255,255,255,.1);border-radius:6px;">Iniciar sesión</a>';
+      } else {
+        var email = (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) || '';
+        var name  = user.fullName || email.split('@')[0] || 'Yo';
+        pillEl.innerHTML = '<a href="/profile.html" style="font-size:11px;color:rgba(232,228,220,.6);' +
+          'text-decoration:none;display:flex;align-items:center;gap:6px;">' +
+          '<img src="' + esc(user.imageUrl || '/NevadoUtil.png') + '" style="width:22px;height:22px;' +
+          'border-radius:50%;object-fit:cover;" onerror="this.style.display=\'none\'" />' +
+          esc(name) + '</a>';
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+  </script>
+</body>
+</html>

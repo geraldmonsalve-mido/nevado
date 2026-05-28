@@ -18,6 +18,30 @@
 
   function sb() { return window.NODO && window.NODO.sb; }
 
+  /* ── Time helpers (PASO 6) ─────────────────────────────────────────────── */
+  function timeAgo(dateStr) {
+    var date     = new Date(dateStr);
+    var now      = new Date();
+    var diffMs   = now - date;
+    var diffMins = Math.floor(diffMs / 60000);
+    var diffHrs  = Math.floor(diffMs / 3600000);
+    var diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'ahora mismo';
+    if (diffMins < 60) return 'hace ' + diffMins + 'min';
+
+    var yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    var isToday     = date.toDateString() === now.toDateString();
+    var isYesterday = date.toDateString() === yesterday.toDateString();
+    var timeStr     = date.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+
+    if (isToday)     return 'hoy a las ' + timeStr;
+    if (isYesterday) return 'ayer a las ' + timeStr;
+    if (diffDays < 7) return 'hace ' + diffDays + ' días';
+    return date.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
   /* ── Rank helpers (FIX 3B, 3C) ─────────────────────────────────────────── */
   var RANK_IMGS = {
     cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
@@ -326,6 +350,7 @@
             '<div style="font-size:12px;flex:1;">' +
               '<strong style="color:rgba(232,228,220,.9);">' + esc(r.autor_nombre || 'Usuario') + '</strong>' +
               '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + (r.autor_nivel || rankToLevel(r.autor_rank)) + '</span>' +
+              '<span style="color:rgba(255,255,255,.22);margin-left:8px;font-size:10px;">' + timeAgo(r.created_at) + '</span>' +
               '<p style="color:rgba(232,228,220,.75);margin:4px 0 0;">' + esc(r.contenido) + '</p>' +
             '</div></div>';
         }).join('')
@@ -402,7 +427,11 @@
       '<div class="nodo-post-header">' +
         avatarHtml +
         '<div class="nodo-post-meta">' +
-          '<div class="nodo-post-name">' + nombre +
+          '<div class="nodo-post-name">' +
+            '<span class="nodo-post-author-link" style="cursor:pointer;" ' +
+              'data-profile-id="' + esc(hilo.profile_id || '') + '" ' +
+              'data-author-name="' + esc(hilo.autor_nombre || '') + '" ' +
+              'data-author-rank="' + esc(hilo.autor_rank || '') + '">' + nombre + '</span>' +
             ' <span class="nodo-post-level">Lvl.' + lvl + '</span>' +
             ' <span class="nodo-post-badge ' + badgeClass + '">' + tipoLbl + '</span>' +
           '</div>' +
@@ -475,6 +504,18 @@
 
   /* ── Bind feed events ───────────────────────────────────────────────────── */
   function bindFeedEvents(container) {
+    /* Author mini-profile (PASO 5) */
+    container.querySelectorAll('.nodo-post-author-link').forEach(function (span) {
+      span.addEventListener('click', function (e) {
+        e.stopPropagation();
+        mostrarMiniPerfil(
+          span.getAttribute('data-author-name'),
+          span.getAttribute('data-author-rank'),
+          span.getAttribute('data-profile-id')
+        );
+      });
+    });
+
     /* Like (FIX 3D) */
     container.querySelectorAll('.nodo-action-like[data-hilo]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -653,6 +694,89 @@
     });
   }
 
+  /* ── Mini perfil modal (PASO 5) ────────────────────────────────────────── */
+  async function mostrarMiniPerfil(authorName, authorRank, profileId) {
+    var profile = null;
+    if (profileId) {
+      try {
+        var { data } = await sb()
+          .from('profiles')
+          .select('display_name,username,avatar_url,rank_key,level,croquetas,bio,location')
+          .eq('id', profileId)
+          .single();
+        profile = data;
+      } catch (_) {}
+    }
+
+    var nombre    = (profile && profile.display_name) || authorName || 'Usuario';
+    var username  = (profile && profile.username) ? '@' + profile.username : '';
+    var rk        = (profile && profile.rank_key) || authorRank || 'cachorro';
+    var img       = rankImg(rk);
+    var nivel     = (profile && profile.level) || rankToLevel(authorRank);
+    var croquetas = (profile && profile.croquetas) || 0;
+    var bio       = (profile && profile.bio) || '';
+    var loc       = (profile && profile.location) || '';
+    var esYo      = window.NODO_USER && window.NODO_USER.profile_id === profileId;
+    var perfilUrl = (profile && profile.username)
+      ? '/u/perfil.html?user=' + encodeURIComponent(profile.username)
+      : '/profile.html';
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);' +
+      'backdrop-filter:blur(4px);z-index:9998;display:flex;align-items:center;justify-content:center;';
+
+    overlay.innerHTML =
+      '<div style="background:rgba(13,13,20,.97);border:1px solid rgba(255,255,255,.1);' +
+        'border-radius:22px;padding:32px;max-width:360px;width:90%;text-align:center;font-family:Geist,sans-serif;">' +
+        '<img src="' + esc(img) + '" style="width:64px;height:64px;border-radius:50%;' +
+          'object-fit:cover;border:2px solid #B8944A;margin-bottom:12px;" ' +
+          'onerror="this.onerror=null;this.style.display=\'none\'" />' +
+        '<h3 style="color:#fff;margin:0 0 4px;font-size:18px;font-weight:600;">' + esc(nombre) + '</h3>' +
+        (username ? '<p style="color:#B8944A;font-size:13px;margin:0 0 8px;">' + esc(username) + '</p>' : '') +
+        (bio ? '<p style="color:rgba(255,255,255,.5);font-size:13px;margin:0 0 4px;line-height:1.5;">' + esc(bio) + '</p>' : '') +
+        (loc ? '<p style="color:rgba(255,255,255,.3);font-size:12px;margin:0 0 16px;">📍 ' + esc(loc) + '</p>' : '<div style="margin-bottom:16px;"></div>') +
+        '<div style="display:flex;justify-content:center;gap:28px;margin-bottom:20px;">' +
+          '<div><div style="color:#F4D03F;font-weight:700;font-size:20px;">' + Number(croquetas).toLocaleString('es') + '</div>' +
+            '<div style="color:rgba(255,255,255,.35);font-size:11px;margin-top:2px;">Croquetas</div></div>' +
+          '<div><div style="color:#fff;font-weight:700;font-size:20px;">' + nivel + '</div>' +
+            '<div style="color:rgba(255,255,255,.35);font-size:11px;margin-top:2px;">Nivel</div></div>' +
+        '</div>' +
+        (!esYo
+          ? '<div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px;">' +
+              '<button id="mini-seguir-btn" style="background:#E74C3C;border:none;color:#fff;' +
+                'padding:10px 20px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">' +
+                '+ Seguir</button>' +
+              '<a href="' + esc(perfilUrl) + '" style="background:rgba(255,255,255,.06);' +
+                'border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);' +
+                'padding:10px 20px;border-radius:10px;font-size:13px;text-decoration:none;' +
+                'display:inline-flex;align-items:center;">Ver perfil →</a>' +
+            '</div>'
+          : '<a href="/profile.html" style="display:inline-block;background:rgba(184,148,74,.15);' +
+              'border:1px solid rgba(184,148,74,.3);color:#B8944A;padding:10px 24px;' +
+              'border-radius:10px;font-size:13px;text-decoration:none;margin-bottom:12px;">' +
+              'Mi perfil →</a>'
+        ) +
+        '<button id="mini-cerrar-btn" style="display:block;width:100%;background:transparent;' +
+          'border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);' +
+          'padding:8px;border-radius:10px;cursor:pointer;font-size:12px;margin-top:4px;">Cerrar</button>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#mini-cerrar-btn').onclick = function () { overlay.remove(); };
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+
+    var seguirBtn = overlay.querySelector('#mini-seguir-btn');
+    if (seguirBtn) {
+      seguirBtn.onclick = function () {
+        seguirBtn.textContent = 'Siguiendo ✓';
+        seguirBtn.style.background = 'rgba(231,76,60,.2)';
+        seguirBtn.style.border = '1px solid rgba(231,76,60,.4)';
+        seguirBtn.style.color = '#E74C3C';
+      };
+    }
+  }
+
   /* ── Modal crear espacio (FIX 6C) ──────────────────────────────────────── */
   function mostrarModalCrearEspacio() {
     if (!window.NODO_USER) {
@@ -774,5 +898,6 @@
     rankToLevel:              rankToLevel,
     rankImg:                  rankImg,
     mostrarModalCrearEspacio: mostrarModalCrearEspacio,
+    mostrarMiniPerfil:        mostrarMiniPerfil,
   };
 })();

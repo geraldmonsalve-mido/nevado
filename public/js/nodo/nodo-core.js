@@ -48,23 +48,31 @@
       try {
         var result = await sb
           .from('profiles')
-          .select('id,display_name,avatar_url,rank_key,level,croquetas,role,is_founder,is_banned')
+          .select('id,display_name,avatar_url,rank_key,level,croquetas,role,is_founder,is_banned,username,bio,location,website,privacy_public,is_verified,croquetas_next_rank,permissions')
           .eq('clerk_id', clerkUser.id)
           .limit(1);
         var profile = result.data && result.data[0];
         if (profile) {
           window.NODO_USER = {
-            clerk_id:     clerkUser.id,
-            profile_id:   profile.id,
-            display_name: profile.display_name || clerkUser.fullName || email,
-            avatar_url:   profile.avatar_url   || clerkUser.imageUrl || '',
-            rank_key:     profile.rank_key     || 'cachorro',
-            level:        profile.level        || 1,
-            croquetas:    profile.croquetas    || 0,
-            role:         profile.role         || 'USER',
-            is_founder:   profile.is_founder   || false,
-            is_banned:    profile.is_banned    || false,
-            email:        email,
+            clerk_id:       clerkUser.id,
+            profile_id:     profile.id,
+            display_name:   profile.display_name || clerkUser.fullName || email,
+            username:       profile.username || null,
+            avatar_url:     profile.avatar_url   || clerkUser.imageUrl || '',
+            rank_key:       profile.rank_key     || 'cachorro',
+            level:          profile.level        || 1,
+            croquetas:      profile.croquetas    || 0,
+            croquetas_next: profile.croquetas_next_rank || 1000,
+            role:           profile.role         || 'USER',
+            is_founder:     profile.is_founder   || false,
+            is_banned:      profile.is_banned    || false,
+            is_verified:    profile.is_verified  || false,
+            bio:            profile.bio          || '',
+            location:       profile.location     || '',
+            website:        profile.website      || '',
+            privacy_public: profile.privacy_public !== false,
+            permissions:    profile.permissions  || [],
+            email:          email,
           };
         }
       } catch (_) {}
