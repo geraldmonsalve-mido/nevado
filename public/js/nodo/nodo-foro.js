@@ -164,32 +164,88 @@
     } catch (_) { return []; }
   }
 
-  /* ── Report (FIX 3F) — no prompt/alert ──────────────────────────────────── */
+  /* ── Report (FIX 5B) — modal con motivos ────────────────────────────────── */
   function reportarHilo(hilo_id, btnEl) {
     if (!window.NODO_USER) {
       window.location.href = '/auth.html?redirect=/nodo.html';
       return;
     }
-    if (btnEl) {
-      var sp = btnEl.querySelector('span');
-      if (sp) sp.textContent = '✓ Reportado';
-      btnEl.style.color = '#E74C3C';
-      btnEl.disabled = true;
-    }
-    var toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
-      'background:#1a1a1a;border:1px solid rgba(255,255,255,.12);color:#fff;' +
-      'padding:12px 24px;border-radius:12px;font-size:13px;z-index:9999;pointer-events:none;';
-    toast.textContent = 'Aporte reportado. El equipo lo revisará.';
-    document.body.appendChild(toast);
-    setTimeout(function () { toast.remove(); }, 3000);
-    try {
-      sb().from('foro_reportes').insert({
-        reportante_id: window.NODO_USER.profile_id,
-        hilo_id:       hilo_id,
-        motivo:        'Reporte de usuario',
-      });
-    } catch (_) {}
+
+    var MOTIVOS = [
+      'Contenido inapropiado',
+      'Desinformación o fake news',
+      'Spam o publicidad no autorizada',
+      'Acoso o contenido ofensivo',
+      'Contenido fuera de tema',
+      'Otro',
+    ];
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);' +
+      'z-index:9999;display:flex;align-items:center;justify-content:center;';
+
+    var radioRows = MOTIVOS.map(function (m) {
+      return '<label style="display:flex;align-items:center;gap:10px;cursor:pointer;' +
+        'padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.08);transition:background .15s;">' +
+        '<input type="radio" name="motivo-reporte" value="' + esc(m) + '" style="accent-color:#E74C3C;">' +
+        '<span style="color:rgba(255,255,255,.8);font-size:13px;">' + esc(m) + '</span>' +
+        '</label>';
+    }).join('');
+
+    overlay.innerHTML =
+      '<div style="background:#0D0D14;border:1px solid rgba(255,255,255,.12);' +
+        'border-radius:18px;padding:32px;max-width:400px;width:90%;font-family:inherit;">' +
+        '<h3 style="color:#fff;margin:0 0 8px;font-size:16px;">Reportar publicación</h3>' +
+        '<p style="color:rgba(255,255,255,.5);font-size:13px;margin:0 0 20px;">Selecciona el motivo del reporte:</p>' +
+        '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">' + radioRows + '</div>' +
+        '<p id="reporte-error" style="color:#E74C3C;font-size:12px;margin:0 0 12px;display:none;">Selecciona un motivo.</p>' +
+        '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+          '<button id="btn-cancelar-reporte" style="background:rgba(255,255,255,.06);' +
+            'border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);' +
+            'padding:10px 20px;border-radius:10px;cursor:pointer;font-size:13px;">Cancelar</button>' +
+          '<button id="btn-confirmar-reporte" style="background:#E74C3C;border:none;' +
+            'color:#fff;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">Reportar</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#btn-cancelar-reporte').onclick = function () { overlay.remove(); };
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+
+    overlay.querySelector('#btn-confirmar-reporte').onclick = async function () {
+      var motivoEl = overlay.querySelector('input[name="motivo-reporte"]:checked');
+      if (!motivoEl) {
+        var errEl = overlay.querySelector('#reporte-error');
+        if (errEl) errEl.style.display = '';
+        return;
+      }
+      var motivo = motivoEl.value;
+      overlay.remove();
+
+      if (btnEl) {
+        var sp = btnEl.querySelector('span');
+        if (sp) sp.textContent = '✓ Reportado';
+        btnEl.style.color = '#E74C3C';
+        btnEl.style.pointerEvents = 'none';
+      }
+
+      var toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
+        'background:#1a1a1a;border:1px solid rgba(255,255,255,.12);color:#fff;' +
+        'padding:12px 24px;border-radius:12px;font-size:13px;z-index:9999;pointer-events:none;';
+      toast.textContent = 'Reporte enviado: "' + motivo + '". El equipo lo revisará.';
+      document.body.appendChild(toast);
+      setTimeout(function () { toast.remove(); }, 3500);
+
+      try {
+        await sb().from('foro_reportes').insert({
+          reportante_id: window.NODO_USER.profile_id,
+          hilo_id:       hilo_id,
+          motivo:        motivo,
+        });
+      } catch (_) {}
+    };
   }
 
   /* ── Load respuestas ────────────────────────────────────────────────────── */
@@ -248,7 +304,7 @@
           return '<div style="display:flex;gap:10px;margin-bottom:12px;">' +
             '<div style="font-size:12px;flex:1;">' +
               '<strong style="color:rgba(232,228,220,.9);">' + esc(r.autor_nombre || 'Usuario') + '</strong>' +
-              '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + rankToLevel(r.autor_rank) + '</span>' +
+              '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + (r.autor_nivel || rankToLevel(r.autor_rank)) + '</span>' +
               '<p style="color:rgba(232,228,220,.75);margin:4px 0 0;">' + esc(r.contenido) + '</p>' +
             '</div></div>';
         }).join('')
@@ -281,7 +337,7 @@
           item.innerHTML =
             '<div style="font-size:12px;flex:1;">' +
               '<strong style="color:rgba(232,228,220,.9);">' + esc(window.NODO_USER.display_name) + '</strong>' +
-              '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + rankToLevel(window.NODO_USER.rank_key) + '</span>' +
+              '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + (window.NODO_USER.level || rankToLevel(window.NODO_USER.rank_key)) + '</span>' +
               '<p style="color:rgba(232,228,220,.75);margin:4px 0 0;">' + esc(texto) + '</p>' +
             '</div>';
           var inputRow = section.querySelector('.comment-input-row');
@@ -305,7 +361,7 @@
     var nombre     = esc(hilo.autor_nombre || 'Usuario');
     var rankKey    = (hilo.autor_rank || 'cachorro').toLowerCase();
     var img        = rankImg(rankKey);
-    var lvl        = rankToLevel(rankKey);
+    var lvl        = hilo.autor_nivel || rankToLevel(rankKey);
     var badgeClass = window.NODO.tipoBadgeClass(hilo.tipo);
     var tipoLbl    = window.NODO.tipoLabel(hilo.tipo).toUpperCase();
     var time       = window.NODO.formatTime(hilo.created_at);
