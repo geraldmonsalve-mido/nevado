@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#050816" />
   <title>NEVADO — Founder Panel</title>
   <link rel="stylesheet" href="./founder-panel.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script
     async
     crossorigin="anonymous"
@@ -88,10 +89,10 @@
         <!-- PASO A: Buscar usuario -->
         <div class="fp-search-row">
           <input
-            type="email"
+            type="text"
             id="fp-search-email"
             class="fp-input"
-            placeholder="Email del usuario..."
+            placeholder="Email, @username o nombre del usuario..."
             autocomplete="off"
           />
           <button class="fp-btn-primary" id="fp-search-btn" type="button">Validar →</button>

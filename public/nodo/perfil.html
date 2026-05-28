@@ -1,317 +1,40 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Perfil de Miembro — NODO · NEVADO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil — NODO · NEVADO</title>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#05050A;--ivory:#E8E4DC;--accent:#E74C3C;--gold:#B8944A;--border:rgba(255,255,255,0.07);--text-dim:rgba(232,228,220,0.34);--text-mid:rgba(232,228,220,0.60);--surface:rgba(22,22,20,0.88)}
-    html,body{width:100%;min-height:100%;background:var(--bg);color:var(--ivory);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;cursor:none;padding-top:80px;padding-bottom:28px}
-    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);pointer-events:none;z-index:0}
-    #topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,5,10,0.97);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06)}
-    .topbar-logo{font-size:13px;font-weight:600;letter-spacing:0.14em;color:rgba(232,228,220,0.88);text-decoration:none;flex-shrink:0;font-family:'Cormorant Garamond',serif}
-    .topbar-logo span{color:#E74C3C}
-    .topbar-nav{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
-    .nav-item{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,228,220,0.38);text-decoration:none;padding:5px 12px;border-radius:6px;transition:color 0.2s,background 0.2s;white-space:nowrap;cursor:none}
-    .nav-item:hover{color:rgba(232,228,220,0.75);background:rgba(255,255,255,0.05)}
-    .nav-item.active{color:#E74C3C;background:rgba(231,76,60,0.10);border:1px solid rgba(231,76,60,0.28);box-shadow:0 0 12px rgba(231,76,60,0.18)}
-    .topbar-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
-    .topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.10);margin:0 2px}
-    .btn-plus{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;cursor:none;background:transparent;color:#B8944A;border:1px solid rgba(184,148,74,0.35);transition:all 0.2s;font-family:inherit}
-    .topbar-user{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);display:flex;align-items:center;justify-content:center;cursor:none;color:rgba(232,228,220,0.45);transition:all 0.2s}
-    .nv-breadcrumb{position:fixed;top:52px;left:0;right:0;height:28px;display:flex;align-items:center;gap:8px;padding:0 28px;background:rgba(5,5,10,0.90);border-bottom:1px solid rgba(255,255,255,0.04);z-index:899}
-    .nv-bc-back{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.38);text-decoration:none;cursor:none}
-    .nv-bc-back:hover{color:#E74C3C}
-    .nv-bc-sep{color:rgba(232,228,220,0.20);font-size:10px}
-    .nv-bc-current{font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55)}
-    .page-content{padding:40px 10vw 80px;position:relative;z-index:10}
-    .profile-layout{display:grid;grid-template-columns:300px 1fr;gap:32px}
-    .profile-sidebar{}
-    .profile-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:20px}
-    .profile-avatar{width:80px;height:80px;border-radius:50%;background:rgba(231,76,60,0.15);border:2px solid rgba(231,76,60,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#E74C3C;margin:0 auto 16px}
-    .profile-name{font-size:18px;font-weight:600;color:var(--ivory);text-align:center;margin-bottom:4px}
-    .profile-role{font-size:12px;color:#E74C3C;text-align:center;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px}
-    .profile-country{font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:16px}
-    .reputation-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.3);border-radius:20px;padding:5px 14px;font-size:11px;color:#E74C3C;font-weight:600;margin:0 auto 16px;display:block;text-align:center}
-    .profile-bio{font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:20px}
-    .profile-actions{display:flex;gap:10px}
-    .btn-accent{background:#E74C3C;color:#fff;border:none;padding:9px 18px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;transition:opacity 0.2s;font-family:inherit;flex:1}
-    .btn-accent:hover{opacity:0.85}
-    .btn-outline{background:transparent;color:#E74C3C;border:1px solid rgba(231,76,60,0.35);padding:8px 16px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;cursor:none;font-family:inherit;flex:1}
-    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:20px}
-    .stat-box{background:var(--surface);padding:14px;text-align:center}
-    .stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#E74C3C;line-height:1}
-    .stat-lbl{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-top:2px}
-    .spaces-list{display:flex;flex-wrap:wrap;gap:6px}
-    .space-tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:4px;padding:4px 10px;font-size:11px;color:var(--text-mid)}
-    .section-label{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;margin-top:20px}
-    .badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-    .badge-item{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
-    .badge-icon{font-size:1.4rem;margin-bottom:4px}
-    .badge-name{font-size:10px;color:var(--text-mid)}
-    .feed-section{}
-    .feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-    .feed-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;color:var(--ivory)}
-    .aporte-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:16px}
-    .aporte-meta{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-    .aporte-space{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#E74C3C}
-    .aporte-time{font-size:11px;color:var(--text-dim)}
-    .aporte-title{font-size:15px;font-weight:600;color:var(--ivory);margin-bottom:8px}
-    .aporte-preview{font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:12px}
-    .aporte-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-    .tag{background:rgba(255,255,255,0.05);border-radius:4px;padding:3px 8px;font-size:11px;color:var(--text-dim)}
-    .aporte-reactions{display:flex;gap:16px}
-    .reaction{font-size:12px;color:var(--text-dim)}
-    .aporte-link{font-size:12px;color:#E74C3C;text-decoration:none;cursor:none}
-    #std-footer{background:#080810;border-top:1px solid rgba(255,255,255,0.06);padding:48px 10vw 56px;position:relative;z-index:10}
-    .std-fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:28px}
-    .std-fl-logo{font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:0.18em;color:#E74C3C;text-decoration:none}
-    .std-fl-desc{font-size:12px;color:rgba(232,228,220,0.50);line-height:1.7;max-width:240px;margin-top:12px}
-    .std-fc-title{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,228,220,0.34);margin-bottom:12px}
-    .std-fl{display:block;font-size:12px;color:rgba(232,228,220,0.50);margin-bottom:8px;text-decoration:none;transition:color .2s;cursor:none}
-    .std-fl:hover{color:#E74C3C}
-    .std-fb{display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)}
-    .std-fc-copy{font-size:11px;color:rgba(232,228,220,0.34)}
-    .std-tri{display:flex;flex-direction:column;gap:3px}
-    .std-tri div{width:28px;height:4px;border-radius:2px}
-    #ticker{position:fixed;bottom:0;left:0;right:0;height:28px;overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);z-index:90;background:rgba(5,5,10,0.96)}
-    .ticker-track{display:flex;white-space:nowrap;animation:ticker-scroll 32s linear infinite}
-    .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:10px;letter-spacing:0.08em;color:rgba(232,228,220,0.55);height:28px}
-    .ticker-val{color:#E74C3C;font-weight:500}
-    .ticker-sep{color:rgba(232,228,220,0.30)}
-    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-    .cursor-dot{position:fixed;top:0;left:0;width:7px;height:7px;border-radius:50%;background:var(--ivory);pointer-events:none;z-index:9999;mix-blend-mode:difference}
-    @media(max-width:900px){.profile-layout{grid-template-columns:1fr}.std-fg{grid-template-columns:1fr 1fr}}
+    body { background: #05050A; display: flex; align-items: center; justify-content: center;
+           min-height: 100vh; margin: 0; font-family: system-ui, sans-serif; color: rgba(255,255,255,.4); font-size: 13px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"></script>
 </head>
-<body data-page-context="NODO | perfil, reputación comunitaria" data-accent="red">
-  <header id="topbar">
-    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
-    <nav class="topbar-nav">
-      <a class="nav-item" href="/talento.html">Capital Humano</a>
-      <a class="nav-item" href="/avila.html">ÁVILA</a>
-      <a class="nav-item active" href="/nodo.html">NODO</a>
-      <a class="nav-item" href="/enterate.html">Titulares</a>
-      <a class="nav-item" href="/corazon-tricolor.html">Corazón</a>
-      <a class="nav-item" href="/servicios.html">Servicios</a>
-    </nav>
-    <div class="topbar-actions">
-      <div class="topbar-divider"></div>
-      <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
-      <button class="topbar-user" aria-label="Mi perfil">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      </button>
-    </div>
-  </header>
-  <div class="nv-breadcrumb">
-    <a href="/nodo.html" class="nv-bc-back">← NODO</a>
-    <span class="nv-bc-sep">·</span>
-    <span class="nv-bc-current">Perfil</span>
-  </div>
-
-  <main class="page-content">
-    <div class="profile-layout">
-      <aside class="profile-sidebar">
-        <div class="profile-card">
-          <div class="profile-avatar">CM</div>
-          <div class="profile-name">Carlos Méndez</div>
-          <div class="profile-role">Desarrollador Full-Stack</div>
-          <div class="profile-country">🇻🇪 Caracas, Venezuela</div>
-          <div class="reputation-badge">Nivel 3 · Colaborador Activo</div>
-          <p class="profile-bio">Full-Stack con 6 años de experiencia. Especializado en React y Node.js. Trabajo remotamente desde Caracas para clientes en EEUU y Europa. Apasionado por el ecosistema venezolano.</p>
-          <div class="profile-actions">
-            <button class="btn-accent" id="followBtn" onclick="toggleFollow()">Seguir</button>
-            <button class="btn-outline" onclick="alert('Mensajería próximamente')">Mensaje</button>
-          </div>
-        </div>
-
-        <div class="stats-row">
-          <div class="stat-box">
-            <div class="stat-val">47</div>
-            <div class="stat-lbl">Aportes</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val">1,240</div>
-            <div class="stat-lbl">Likes</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val">12</div>
-            <div class="stat-lbl">Días racha</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-val">Ene 25</div>
-            <div class="stat-lbl">Miembro desde</div>
-          </div>
-        </div>
-
-        <div class="profile-card">
-          <div class="section-label">Espacios activos</div>
-          <div class="spaces-list">
-            <span class="space-tag">Programadores VE</span>
-            <span class="space-tag">Trabajo Remoto</span>
-            <span class="space-tag">Freelancers</span>
-            <span class="space-tag">Open Source VE</span>
-          </div>
-          <div class="section-label">Logros</div>
-          <div class="badges-grid">
-            <div class="badge-item"><div class="badge-icon">✍️</div><div class="badge-name">Primer aporte</div></div>
-            <div class="badge-item"><div class="badge-icon">❤️</div><div class="badge-name">100 likes</div></div>
-            <div class="badge-item"><div class="badge-icon">🔥</div><div class="badge-name">Racha 7 días</div></div>
-            <div class="badge-item"><div class="badge-icon">⭐</div><div class="badge-name">Destacado</div></div>
-            <div class="badge-item"><div class="badge-icon">🤝</div><div class="badge-name">Conector</div></div>
-            <div class="badge-item"><div class="badge-icon">📚</div><div class="badge-name">Mentor</div></div>
-          </div>
-        </div>
-      </aside>
-
-      <div class="feed-section">
-        <div class="feed-header">
-          <div class="feed-title">APORTES RECIENTES</div>
-        </div>
-        <div class="aporte-card">
-          <div class="aporte-meta">
-            <span class="aporte-space">Programadores VE</span>
-            <span class="aporte-time">Hace 2 días</span>
-          </div>
-          <div class="aporte-title">Cómo conseguí mi primer trabajo remoto desde Venezuela en 2026</div>
-          <div class="aporte-preview">Después de 8 meses de búsqueda activa, finalmente conseguí mi primer cliente en EEUU. Aquí comparto exactamente qué hice, qué no funcionó, y las herramientas que cambiaron todo...</div>
-          <div class="aporte-tags">
-            <span class="tag">remoto</span><span class="tag">trabajo</span><span class="tag">Venezuela</span><span class="tag">consejos</span>
-          </div>
-          <div class="aporte-reactions">
-            <span class="reaction">❤️ 142</span>
-            <span class="reaction">💬 28</span>
-            <span class="reaction">🔖 67</span>
-            <a href="/nodo/aporte.html" class="aporte-link">Leer →</a>
-          </div>
-        </div>
-        <div class="aporte-card">
-          <div class="aporte-meta">
-            <span class="aporte-space">Open Source VE</span>
-            <span class="aporte-time">Hace 5 días</span>
-          </div>
-          <div class="aporte-title">Guía completa: Configurar pagos internacionales desde Venezuela en 2026</div>
-          <div class="aporte-preview">PayPal, Wise, Payoneer, criptomonedas — cuál usar, requisitos actualizados y experiencias de la comunidad...</div>
-          <div class="aporte-tags">
-            <span class="tag">pagos</span><span class="tag">finanzas</span><span class="tag">freelance</span>
-          </div>
-          <div class="aporte-reactions">
-            <span class="reaction">❤️ 89</span>
-            <span class="reaction">💬 41</span>
-            <span class="reaction">🔖 112</span>
-            <a href="/nodo/aporte.html" class="aporte-link">Leer →</a>
-          </div>
-        </div>
-        <div class="aporte-card">
-          <div class="aporte-meta">
-            <span class="aporte-space">Trabajo Remoto</span>
-            <span class="aporte-time">Hace 1 semana</span>
-          </div>
-          <div class="aporte-title">Recursos gratuitos para aprender TypeScript desde cero</div>
-          <div class="aporte-preview">Compilé los mejores recursos en español que usé para transicionar de JavaScript a TypeScript. Incluye ejercicios prácticos y proyectos reales...</div>
-          <div class="aporte-tags">
-            <span class="tag">TypeScript</span><span class="tag">aprendizaje</span><span class="tag">recursos</span>
-          </div>
-          <div class="aporte-reactions">
-            <span class="reaction">❤️ 203</span>
-            <span class="reaction">💬 15</span>
-            <span class="reaction">🔖 287</span>
-            <a href="/nodo/aporte.html" class="aporte-link">Leer →</a>
-          </div>
-        </div>
-        <div class="aporte-card">
-          <div class="aporte-meta">
-            <span class="aporte-space">Freelancers</span>
-            <span class="aporte-time">Hace 2 semanas</span>
-          </div>
-          <div class="aporte-title">Mi proceso para negociar tarifas con clientes internacionales</div>
-          <div class="aporte-preview">Cometí el error clásico de cobrar muy barato los primeros años. Aquí está el sistema que uso ahora para comunicar valor y cerrar proyectos en USD...</div>
-          <div class="aporte-tags">
-            <span class="tag">negociación</span><span class="tag">tarifas</span><span class="tag">freelance</span>
-          </div>
-          <div class="aporte-reactions">
-            <span class="reaction">❤️ 176</span>
-            <span class="reaction">💬 33</span>
-            <span class="reaction">🔖 94</span>
-            <a href="/nodo/aporte.html" class="aporte-link">Leer →</a>
-          </div>
-        </div>
-        <div class="aporte-card">
-          <div class="aporte-meta">
-            <span class="aporte-space">Programadores VE</span>
-            <span class="aporte-time">Hace 3 semanas</span>
-          </div>
-          <div class="aporte-title">¿Upwork o Toptal? Mi experiencia honesta después de 2 años</div>
-          <div class="aporte-preview">Probé las dos plataformas durante dos años desde Venezuela. Los resultados te sorprenderán...</div>
-          <div class="aporte-tags">
-            <span class="tag">upwork</span><span class="tag">plataformas</span><span class="tag">freelance</span>
-          </div>
-          <div class="aporte-reactions">
-            <span class="reaction">❤️ 312</span>
-            <span class="reaction">💬 58</span>
-            <span class="reaction">🔖 189</span>
-            <a href="/nodo/aporte.html" class="aporte-link">Leer →</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <footer id="std-footer">
-    <div class="std-fg">
-      <div>
-        <a class="std-fl-logo" href="/">N·EVADO</a>
-        <p class="std-fl-desc">Inteligencia colectiva del ecosistema venezolano global.</p>
-      </div>
-      <div>
-        <div class="std-fc-title">Ecosistema</div>
-        <a class="std-fl" href="/talento.html">Capital Humano</a>
-        <a class="std-fl" href="/avila.html">ÁVILA</a>
-        <a class="std-fl" href="/nodo.html">NODO</a>
-        <a class="std-fl" href="/enterate.html">Titulares</a>
-        <a class="std-fl" href="/corazon-tricolor.html">Corazón Tricolor</a>
-        <a class="std-fl" href="/servicios.html">Servicios</a>
-      </div>
-      <div>
-        <div class="std-fc-title">NODO</div>
-        <a class="std-fl" href="/nodo/espacio.html">Espacios</a>
-        <a class="std-fl" href="/nodo/publicar.html">Publicar Aporte</a>
-        <a class="std-fl" href="/nodo/eventos.html">Eventos</a>
-        <a class="std-fl" href="/nodo/perfil.html">Mi Perfil</a>
-      </div>
-      <div>
-        <div class="std-fc-title">Info</div>
-        <a class="std-fl" href="javascript:void(0)">Cómo funciona</a>
-        <a class="std-fl" href="/transparencia.html">Transparencia</a>
-        <a class="std-fl" href="javascript:void(0)">Contacto</a>
-      </div>
-    </div>
-    <div class="std-fb">
-      <span class="std-fc-copy">© 2026 NEVADO · NODO · Modo demostración</span>
-      <div class="std-tri">
-        <div style="background:#F4D03F"></div>
-        <div style="background:#2980B9"></div>
-        <div style="background:#E74C3C"></div>
-      </div>
-    </div>
-  </footer>
-
-  <div id="ticker"><div class="ticker-track" id="ticker-track"></div></div>
-  <script>(function(){const T=[{val:'48,291',l:'Venezolanos Activos'},{val:'340',l:'Rutas ÁVILA'},{val:'89',l:'Nodos Activos'},{val:'1,204',l:'Iniciativas'},{val:'12,430',l:'Profesionales'},{val:'$24,180',l:'Fondos Auditados'},{val:'180',l:'Historias'},{val:'2,180',l:'Freelancers'},{val:'22',l:'Países'},{val:'312',l:'Mentores'},{val:'v3.1',l:'NEVADO'}];const h=T.map(i=>`<span class="ticker-item"><span class="ticker-val">${i.val}</span><span class="ticker-sep">·</span>${i.l}</span>`).join('');document.getElementById('ticker-track').innerHTML=h+h;})();</script>
-  <script src="/cursor.js"></script>
-  <script type="module" src="/src/nevado-key.js"></script>
-  <script type="module" src="/src/auth.js"></script>
-  <script src="/nevado-plus.js"></script>
-  <script src="/croquetas.js"></script>
-  <script src="/mini-nevado.js"></script>
-  <script src="/nevado-bubble.js"></script>
-  <div class="cursor-dot" id="cursor-dot"></div>
-  <script>
-    let following=false;
-    function toggleFollow(){following=!following;const btn=document.getElementById('followBtn');btn.textContent=following?'Siguiendo':'Seguir';btn.style.background=following?'transparent':'#E74C3C';btn.style.color=following?'#E74C3C':'#fff';btn.style.border=following?'1px solid rgba(231,76,60,0.35)':'none'}
-  </script>
+<body>
+  <p>Redirigiendo a tu perfil…</p>
   <script src="/nevado-env.js"></script>
+  <script src="/js/nodo/nodo-core.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      function tryRedirect() {
+        if (window.NODO_USER) {
+          var username = window.NODO_USER.username;
+          window.location.replace(username
+            ? '/u/perfil.html?user=' + encodeURIComponent(username)
+            : '/profile.html');
+        } else if (window.NODO_USER === null) {
+          window.location.replace('/auth.html?redirect=/nodo/perfil.html');
+        } else {
+          setTimeout(tryRedirect, 100);
+        }
+      }
+      setTimeout(tryRedirect, 600);
+    });
+  </script>
 </body>
 </html>

@@ -42,7 +42,7 @@
     return date.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  /* ── Rank helpers (FIX 3B, 3C) ─────────────────────────────────────────── */
+  /* ── Rank helpers (FIX 3B, 3C, 8D) ────────────────────────────────────── */
   var RANK_IMGS = {
     cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
     explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
@@ -58,8 +58,22 @@
     montanista: 20, guia: 30, protector: 50, leyenda_andina: 170,
   };
 
+  var RANK_IMGS_MD = {
+    cachorro:       '/rangos/rango1-cachorro-bronce-md.webp',
+    explorador:     '/rangos/rango2-explorador-bronce-md.webp',
+    guardian:       '/rangos/rango3-guardian-plata-md.webp',
+    montanista:     '/rangos/rango4-montanista-plata-md.webp',
+    guia:           '/rangos/rango5-guia-plata-md.webp',
+    protector:      '/rangos/rango6-protector-oro-md.webp',
+    leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-md.webp',
+  };
+
   function rankImg(rankKey) {
     return RANK_IMGS[(rankKey || 'cachorro').toLowerCase()] || RANK_IMGS.cachorro;
+  }
+
+  function rankImgMd(rankKey) {
+    return RANK_IMGS_MD[(rankKey || 'cachorro').toLowerCase()] || RANK_IMGS_MD.cachorro;
   }
 
   function rankToLevel(rankKey) {
@@ -110,14 +124,15 @@
     if (!contenido || contenido.length < 3) { window.NODO.showToast('Escribe al menos 3 caracteres.', 'error'); return null; }
     if (contenido.length > 1200) { window.NODO.showToast('Máximo 1,200 caracteres.', 'error'); return null; }
     var payload = {
-      profile_id:   u.profile_id,
-      autor_nombre: u.display_name || 'Usuario',
-      autor_avatar: u.avatar_url || null,
-      autor_rank:   u.rank_key || 'cachorro',
-      contenido:    contenido,
-      tipo:         TIPO_DB_MAP[data.tipo || 'aporte'] || 'aporte',
-      categoria_id: data.categoria_id || null,
-      estado:       'activo',
+      profile_id:      u.profile_id,
+      autor_nombre:    u.display_name || 'Usuario',
+      autor_avatar:    u.avatar_url || null,
+      autor_rank:      u.rank_key || 'cachorro',
+      autor_username:  u.username || null,
+      contenido:       contenido,
+      tipo:            TIPO_DB_MAP[data.tipo || 'aporte'] || 'aporte',
+      categoria_id:    data.categoria_id || null,
+      estado:          'activo',
     };
     try {
       var result = await sb().from('foro_hilos').insert(payload).select().single();
@@ -152,6 +167,7 @@
         if (delErr) { console.error('[NODO] toggleLike delete:', delErr); throw delErr; }
         isNowLiked = false;
       } else {
+        console.log('[NODO] toggleLike insert — profile_id:', profileId, 'type:', typeof profileId, 'hilo_id:', hilo_id);
         var { error: insErr } = await sb().from('foro_likes').insert({ profile_id: profileId, hilo_id: hilo_id });
         if (insErr) { console.error('[NODO] toggleLike insert:', insErr); throw insErr; }
         isNowLiked = true;
@@ -302,13 +318,14 @@
     var u = window.NODO_USER;
     try {
       var payload = {
-        hilo_id:      hilo_id,
-        profile_id:   u.profile_id,
-        autor_nombre: u.display_name || 'Usuario',
-        autor_avatar: u.avatar_url || null,
-        autor_rank:   u.rank_key || 'cachorro',
-        contenido:    String(contenido).trim(),
-        estado:       'activo',
+        hilo_id:        hilo_id,
+        profile_id:     u.profile_id,
+        autor_nombre:   u.display_name || 'Usuario',
+        autor_avatar:   u.avatar_url || null,
+        autor_rank:     u.rank_key || 'cachorro',
+        autor_username: u.username || null,
+        contenido:      String(contenido).trim(),
+        estado:         'activo',
       };
       var result = await sb().from('foro_respuestas').insert(payload).select().single();
       if (result.error) throw result.error;
@@ -348,7 +365,13 @@
       ? respuestas.map(function (r) {
           return '<div style="display:flex;gap:10px;margin-bottom:12px;">' +
             '<div style="font-size:12px;flex:1;">' +
-              '<strong style="color:rgba(232,228,220,.9);">' + esc(r.autor_nombre || 'Usuario') + '</strong>' +
+              '<span class="nodo-comment-author-link" style="cursor:pointer;font-weight:600;color:rgba(232,228,220,.9);" ' +
+                'data-profile-id="' + esc(r.profile_id || '') + '" ' +
+                'data-author-name="' + esc(r.autor_nombre || '') + '" ' +
+                'data-author-rank="' + esc(r.autor_rank || '') + '">' +
+                esc(r.autor_nombre || 'Usuario') +
+              '</span>' +
+              (r.autor_username ? '<span style="color:#B8944A;font-size:10px;margin-left:4px;">@' + esc(r.autor_username) + '</span>' : '') +
               '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + (r.autor_nivel || rankToLevel(r.autor_rank)) + '</span>' +
               '<span style="color:rgba(255,255,255,.22);margin-left:8px;font-size:10px;">' + timeAgo(r.created_at) + '</span>' +
               '<p style="color:rgba(232,228,220,.75);margin:4px 0 0;">' + esc(r.contenido) + '</p>' +
@@ -367,6 +390,17 @@
       : '<p style="color:rgba(255,255,255,.3);font-size:12px;margin:8px 0 0;">Inicia sesión para comentar.</p>';
 
     section.innerHTML = commentsHtml + inputHtml;
+
+    /* Clickable commenter names → mini perfil */
+    section.querySelectorAll('.nodo-comment-author-link').forEach(function (span) {
+      span.addEventListener('click', function () {
+        mostrarMiniPerfil(
+          span.getAttribute('data-author-name'),
+          span.getAttribute('data-author-rank'),
+          span.getAttribute('data-profile-id')
+        );
+      });
+    });
 
     var sendBtn = section.querySelector('.comment-send');
     var input   = section.querySelector('.comment-input');
@@ -435,7 +469,10 @@
             ' <span class="nodo-post-level">Lvl.' + lvl + '</span>' +
             ' <span class="nodo-post-badge ' + badgeClass + '">' + tipoLbl + '</span>' +
           '</div>' +
-          '<div class="nodo-post-sub">' + catPart + time + '</div>' +
+          '<div class="nodo-post-sub">' +
+            (hilo.autor_username ? '<span style="color:#B8944A;font-size:10px;margin-right:6px;">@' + esc(hilo.autor_username) + '</span>' : '') +
+            catPart + time +
+          '</div>' +
         '</div>' +
         '<button class="nodo-post-follow" data-autor="' + esc(hilo.profile_id || '') + '">+ Seguir</button>' +
       '</div>' +
@@ -696,7 +733,9 @@
 
   /* ── Mini perfil modal (PASO 5) ────────────────────────────────────────── */
   async function mostrarMiniPerfil(authorName, authorRank, profileId) {
-    var profile = null;
+    var profile  = null;
+    var yaSignue = false;
+
     if (profileId) {
       try {
         var { data } = await sb()
@@ -706,12 +745,25 @@
           .single();
         profile = data;
       } catch (_) {}
+
+      /* Check if current user already follows */
+      if (window.NODO_USER && window.NODO_USER.profile_id && window.NODO_USER.profile_id !== profileId) {
+        try {
+          var { data: followData } = await sb()
+            .from('profile_follows')
+            .select('id')
+            .eq('follower_id', window.NODO_USER.profile_id)
+            .eq('following_id', profileId)
+            .maybeSingle();
+          yaSignue = !!followData;
+        } catch (_) {}
+      }
     }
 
     var nombre    = (profile && profile.display_name) || authorName || 'Usuario';
     var username  = (profile && profile.username) ? '@' + profile.username : '';
     var rk        = (profile && profile.rank_key) || authorRank || 'cachorro';
-    var img       = rankImg(rk);
+    var img       = rankImgMd(rk);
     var nivel     = (profile && profile.level) || rankToLevel(authorRank);
     var croquetas = (profile && profile.croquetas) || 0;
     var bio       = (profile && profile.bio) || '';
@@ -768,12 +820,58 @@
 
     var seguirBtn = overlay.querySelector('#mini-seguir-btn');
     if (seguirBtn) {
-      seguirBtn.onclick = function () {
+      if (yaSignue) {
         seguirBtn.textContent = 'Siguiendo ✓';
         seguirBtn.style.background = 'rgba(231,76,60,.2)';
         seguirBtn.style.border = '1px solid rgba(231,76,60,.4)';
         seguirBtn.style.color = '#E74C3C';
+      }
+      seguirBtn.onclick = async function () {
+        seguirBtn.disabled = true;
+        var nowFollowing = await toggleFollow(profileId, null);
+        seguirBtn.disabled = false;
+        if (nowFollowing) {
+          seguirBtn.textContent = 'Siguiendo ✓';
+          seguirBtn.style.background = 'rgba(231,76,60,.2)';
+          seguirBtn.style.border = '1px solid rgba(231,76,60,.4)';
+          seguirBtn.style.color = '#E74C3C';
+        } else {
+          seguirBtn.textContent = '+ Seguir';
+          seguirBtn.style.background = '#E74C3C';
+          seguirBtn.style.border = 'none';
+          seguirBtn.style.color = '#fff';
+        }
       };
+    }
+  }
+
+  /* ── Toggle follow (FIX 8G) ────────────────────────────────────────────── */
+  async function toggleFollow(targetProfileId, btnEl) {
+    if (!window.NODO_USER) {
+      window.location.href = '/auth.html?redirect=/nodo.html';
+      return false;
+    }
+    var myId = window.NODO_USER.profile_id;
+    if (!myId || myId === targetProfileId) return false;
+    try {
+      var { data: existing } = await sb()
+        .from('profile_follows')
+        .select('id')
+        .eq('follower_id', myId)
+        .eq('following_id', targetProfileId)
+        .maybeSingle();
+
+      if (existing) {
+        await sb().from('profile_follows').delete().eq('id', existing.id);
+        return false;
+      } else {
+        await sb().from('profile_follows').insert({ follower_id: myId, following_id: targetProfileId });
+        return true;
+      }
+    } catch (err) {
+      console.error('[NODO] toggleFollow:', err);
+      window.NODO.showToast('Error al procesar seguimiento.', 'error');
+      return false;
     }
   }
 
@@ -899,5 +997,7 @@
     rankImg:                  rankImg,
     mostrarModalCrearEspacio: mostrarModalCrearEspacio,
     mostrarMiniPerfil:        mostrarMiniPerfil,
+    toggleFollow:             toggleFollow,
+    rankImgMd:                rankImgMd,
   };
 })();

@@ -62,12 +62,13 @@
     var u = window.NODO_USER;
     try {
       var result = await sb().from('chat_mensajes').insert({
-        canal_id:       canal_id,
-        autor_clerk_id: u.clerk_id,
-        autor_nombre:   u.display_name || 'Usuario',
-        autor_rank:     u.rank_key || 'cachorro',
-        contenido:      String(contenido).trim().slice(0, 500),
-        tipo:           'texto',
+        canal_id:      canal_id,
+        profile_id:    u.profile_id,
+        autor_nombre:  u.display_name || 'Usuario',
+        autor_username: u.username || null,
+        autor_rank:    u.rank_key || 'cachorro',
+        contenido:     String(contenido).trim().slice(0, 500),
+        tipo:          'texto',
       }).select().single();
       if (result.error) throw result.error;
       return result.data;
@@ -77,18 +78,30 @@
     }
   }
 
+  /* ── Rank image (sm) ────────────────────────────────────────────────── */
+  var RANK_SM = {
+    cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
+    explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
+    guardian:       '/rangos/rango3-guardian-plata-sm.webp',
+    montanista:     '/rangos/rango4-montanista-plata-sm.webp',
+    guia:           '/rangos/rango5-guia-plata-sm.webp',
+    protector:      '/rangos/rango6-protector-oro-sm.webp',
+    leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
+  };
+
   /* ── Render a single message ─────────────────────────────────────────── */
   function renderMensaje(msg, isOwn) {
     var e       = window.NODO.escapeHtml;
     var nombre  = e(msg.autor_nombre || 'Usuario');
     var rango   = e(msg.autor_rank   || '');
-    var ti      = window.NODO.initials(msg.autor_nombre || '?');
+    var usr     = msg.autor_username ? '<span class="nodo-chat-username">@' + e(msg.autor_username) + '</span>' : '';
     var time    = window.NODO.formatTime(msg.created_at || msg.creado_en);
+    var rankSrc = RANK_SM[msg.autor_rank] || RANK_SM.cachorro;
 
     return '<div class="nodo-chat-msg' + (isOwn ? ' nodo-chat-msg-own' : '') + '" data-msg-id="' + msg.id + '">' +
-      (!isOwn ? '<div class="nodo-chat-avatar">' + e(ti) + '</div>' : '') +
+      (!isOwn ? '<img class="nodo-chat-rank-img" src="' + rankSrc + '" alt="' + rango + '" />' : '') +
       '<div class="nodo-chat-bubble">' +
-        (!isOwn ? '<div class="nodo-chat-author"><span class="nodo-chat-author-name">' + nombre + '</span><span class="nodo-chat-author-rank">' + rango + '</span></div>' : '') +
+        (!isOwn ? '<div class="nodo-chat-author"><span class="nodo-chat-author-name">' + nombre + '</span>' + usr + '<span class="nodo-chat-author-rank">' + rango + '</span></div>' : '') +
         '<div class="nodo-chat-text">' + e(msg.contenido) + '</div>' +
         '<div class="nodo-chat-time">' + time + '</div>' +
       '</div>' +
@@ -156,19 +169,19 @@
       msgArea.innerHTML = '<div class="nodo-chat-loading">Cargando mensajes…</div>';
 
       var msgs = await loadMensajes(canal.id, 60);
-      var myId = window.NODO_USER ? window.NODO_USER.clerk_id : null;
+      var myProfileId = window.NODO_USER ? window.NODO_USER.profile_id : null;
 
       if (!msgs.length) {
         msgArea.innerHTML = '<div class="nodo-chat-empty">Sé el primero en escribir algo.</div>';
       } else {
         msgArea.innerHTML = msgs.map(function (m) {
-          return renderMensaje(m, m.autor_clerk_id === myId);
+          return renderMensaje(m, m.profile_id === myProfileId);
         }).join('');
         msgArea.scrollTop = msgArea.scrollHeight;
       }
 
       subscribeToCanal(canal.id, function (newMsg) {
-        var isOwn = newMsg.autor_clerk_id === myId;
+        var isOwn = newMsg.profile_id === myProfileId;
         msgArea.insertAdjacentHTML('beforeend', renderMensaje(newMsg, isOwn));
         msgArea.scrollTop = msgArea.scrollHeight;
         var empty = msgArea.querySelector('.nodo-chat-empty');
@@ -183,17 +196,41 @@
       if (canal) openCanal(canal);
     });
 
+    /* ── Typing indicator (local) ──────────────────────────────────── */
+    var typingEl   = document.getElementById('chat-typing-indicator');
+    var typingTimer = null;
+    function showTyping() {
+      if (!typingEl || !window.NODO_USER) return;
+      typingEl.textContent = 'Escribiendo...';
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(function () { typingEl.textContent = ''; }, 2000);
+    }
+
+    /* ── Emoji bar ─────────────────────────────────────────────────── */
+    var emojiBar = document.getElementById('chat-emoji-bar');
+    if (emojiBar) {
+      emojiBar.addEventListener('click', function (e) {
+        var btn = e.target.closest('.chat-emoji-btn');
+        if (!btn || !input) return;
+        input.value += btn.dataset.emoji || btn.textContent;
+        input.focus();
+      });
+    }
+
     async function doSend() {
       if (!curCanal) { window.NODO.showToast('Selecciona un canal.', 'error'); return; }
       if (!window.NODO_USER) { window.NODO.showToast('Inicia sesión para chatear.', 'error'); return; }
       var text = input ? input.value.trim() : '';
       if (!text) return;
       input.value = '';
+      if (typingEl) typingEl.textContent = '';
+      clearTimeout(typingTimer);
       await sendMensaje(curCanal.id, text);
     }
 
     if (sendBtn) sendBtn.addEventListener('click', doSend);
     if (input) {
+      input.addEventListener('input', showTyping);
       input.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
       });

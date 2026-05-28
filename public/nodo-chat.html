@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat · NODO · NEVADO</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
   <script
     data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
@@ -28,11 +29,14 @@
     .topbar-logo span { color: #E74C3C; }
     .topbar-back { font-size: 11px; color: rgba(255,255,255,0.45); text-decoration: none; }
     .topbar-back:hover { color: rgba(255,255,255,0.8); }
+    .topbar-session { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .topbar-session-name { color: rgba(232,232,224,0.75); font-weight: 500; }
+    .topbar-session-rank { width: 22px; height: 22px; object-fit: contain; }
 
     /* ── Layout ── */
     .chat-layout {
       display: flex;
-      height: calc(100vh - var(--topbar-h) - 28px);
+      height: calc(100vh - var(--topbar-h));
       margin-top: var(--topbar-h);
       overflow: hidden;
     }
@@ -61,7 +65,6 @@
     }
     .nodo-canal-item {
       display: block;
-      width: 100%;
       padding: 8px 16px;
       font-size: 13px;
       color: rgba(255,255,255,0.45);
@@ -93,6 +96,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-shrink: 0;
     }
     #nodo-chan-title {
       font-size: 14px;
@@ -127,17 +131,14 @@
       align-items: flex-start;
       gap: 10px;
     }
-    .nodo-chat-msg-own {
-      flex-direction: row-reverse;
-    }
-    .nodo-chat-avatar {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: rgba(231,76,60,0.15);
-      color: #E74C3C;
-      font-size: 10px; font-weight: 600;
-      display: flex; align-items: center; justify-content: center;
+    .nodo-chat-msg-own { flex-direction: row-reverse; }
+
+    .nodo-chat-rank-img {
+      width: 30px; height: 30px;
+      object-fit: contain;
       flex-shrink: 0;
     }
+
     .nodo-chat-bubble {
       max-width: 65%;
       background: rgba(255,255,255,0.05);
@@ -152,17 +153,22 @@
     .nodo-chat-author {
       display: flex;
       align-items: baseline;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 4px;
+      flex-wrap: wrap;
     }
     .nodo-chat-author-name {
       font-size: 12px;
       font-weight: 600;
       color: #E8E8E0;
     }
+    .nodo-chat-username {
+      font-size: 10px;
+      color: rgba(184,148,74,0.85);
+    }
     .nodo-chat-author-rank {
       font-size: 10px;
-      color: rgba(255,255,255,0.35);
+      color: rgba(255,255,255,0.3);
     }
     .nodo-chat-text {
       font-size: 13px;
@@ -184,13 +190,43 @@
       padding: 32px 0;
     }
 
+    /* ── Typing indicator ── */
+    #chat-typing-indicator {
+      min-height: 18px;
+      padding: 0 20px 2px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.32);
+      font-style: italic;
+      flex-shrink: 0;
+    }
+
+    /* ── Emoji bar ── */
+    #chat-emoji-bar {
+      display: flex;
+      gap: 4px;
+      padding: 6px 20px 0;
+      flex-shrink: 0;
+    }
+    .chat-emoji-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 6px;
+      padding: 3px 7px;
+      font-size: 15px;
+      cursor: pointer;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .chat-emoji-btn:hover { background: rgba(255,255,255,0.06); }
+
     /* ── Input row ── */
     .chat-input-row {
-      padding: 12px 20px;
+      padding: 8px 20px 14px;
       border-top: 1px solid rgba(255,255,255,0.06);
       display: flex;
       gap: 8px;
       align-items: flex-end;
+      flex-shrink: 0;
     }
     #nodo-chat-input {
       flex: 1;
@@ -228,6 +264,7 @@
       font-size: 12px;
       color: rgba(255,255,255,0.38);
       text-align: center;
+      flex-shrink: 0;
     }
     .chat-login-notice a { color: #E74C3C; }
 
@@ -240,7 +277,7 @@
   <header id="topbar">
     <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
     <a class="topbar-back" href="/nodo.html">← NODO</a>
-    <div style="width:80px"></div>
+    <div id="topbar-session" class="topbar-session"></div>
   </header>
 
   <div class="chat-layout">
@@ -263,6 +300,17 @@
         <div class="nodo-chat-loading">Selecciona un canal.</div>
       </div>
 
+      <div id="chat-typing-indicator"></div>
+
+      <div id="chat-emoji-bar">
+        <button class="chat-emoji-btn" data-emoji="👍" type="button">👍</button>
+        <button class="chat-emoji-btn" data-emoji="🔥" type="button">🔥</button>
+        <button class="chat-emoji-btn" data-emoji="❤️" type="button">❤️</button>
+        <button class="chat-emoji-btn" data-emoji="🇻🇪" type="button">🇻🇪</button>
+        <button class="chat-emoji-btn" data-emoji="😂" type="button">😂</button>
+        <button class="chat-emoji-btn" data-emoji="✅" type="button">✅</button>
+      </div>
+
       <div class="chat-input-row" id="chat-input-row">
         <textarea id="nodo-chat-input" rows="1" placeholder="Escribe un mensaje… (Enter para enviar)"></textarea>
         <button id="nodo-chat-send" aria-label="Enviar">
@@ -277,24 +325,39 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="/cursor.js"></script>
   <script src="/nevado-env.js"></script>
-  <script type="module" src="/src/nevado-key.js"></script>
-  <script type="module" src="/src/auth.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
   <script src="/js/nodo/nodo-foro.js"></script>
   <script src="/js/nodo/nodo-chat.js"></script>
-  <script src="/croquetas.js"></script>
 
   <script>
+    var RANK_SM_MAP = {
+      cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
+      explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
+      guardian:       '/rangos/rango3-guardian-plata-sm.webp',
+      montanista:     '/rangos/rango4-montanista-plata-sm.webp',
+      guia:           '/rangos/rango5-guia-plata-sm.webp',
+      protector:      '/rangos/rango6-protector-oro-sm.webp',
+      leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
+    };
+
     document.addEventListener('nodo:ready', function (ev) {
-      var user = ev.detail && ev.detail.user;
-      var inputRow = document.getElementById('chat-input-row');
+      var user       = ev.detail && ev.detail.user;
+      var inputRow   = document.getElementById('chat-input-row');
+      var emojiBar   = document.getElementById('chat-emoji-bar');
       var loginNotice = document.getElementById('chat-login-notice');
+      var sessionEl  = document.getElementById('topbar-session');
+
       if (!user) {
-        if (inputRow) inputRow.style.display = 'none';
+        if (inputRow)    inputRow.style.display    = 'none';
+        if (emojiBar)    emojiBar.style.display    = 'none';
         if (loginNotice) loginNotice.style.display = '';
+      } else if (sessionEl) {
+        var rankSrc = RANK_SM_MAP[user.rank_key] || RANK_SM_MAP.cachorro;
+        sessionEl.innerHTML =
+          '<img class="topbar-session-rank" src="' + rankSrc + '" alt="" />' +
+          '<span class="topbar-session-name">' + (user.display_name || '') + '</span>';
       }
     });
   </script>

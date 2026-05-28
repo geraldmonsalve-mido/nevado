@@ -478,6 +478,27 @@ body {
   font-weight: 500;
 }
 
+.fp-uc-username {
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fp-badge-role {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.6;
+  width: fit-content;
+}
+
+.fp-badge-founder  { background: rgba(255,200,60,.15);  color: #ffc83c; border: 1px solid rgba(255,200,60,.3); }
+.fp-badge-verified { background: rgba(60,180,255,.12);  color: #3cb4ff; border: 1px solid rgba(60,180,255,.3); }
+.fp-badge-banned   { background: rgba(255,60,60,.12);   color: #ff6060; border: 1px solid rgba(255,60,60,.3);  }
+
 /* ── OP FORM ─────────────────────────────────────────────────────────── */
 
 .fp-op-form {

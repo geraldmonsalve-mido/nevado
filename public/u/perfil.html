@@ -254,6 +254,23 @@
       color: rgba(231,76,60,.7); font-size: 14px;
     }
 
+    /* ── Follow cards ────────────────────────────────── */
+    .follow-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .follow-card:last-child { border-bottom: none; }
+    .follow-card-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+    }
+    .follow-card-rank { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+    .follow-card-info { flex: 1; min-width: 0; }
+    .follow-card a { text-decoration: none; }
+    .follow-card-name { font-size: 13px; font-weight: 600; color: rgba(232,228,220,.85); }
+    .follow-card a:hover .follow-card-name { color: #E74C3C; }
+    .follow-card-username { font-size: 11px; color: rgba(184,148,74,.75); }
+
     @media (max-width: 600px) {
       .profile-hero { flex-direction: column; gap: 16px; padding: 24px 20px; }
       .profile-name { font-size: 22px; }
@@ -305,6 +322,14 @@
               <div id="p-likes-count" class="profile-stat-val">—</div>
               <div class="profile-stat-lbl">Likes recibidos</div>
             </div>
+            <div class="profile-stat">
+              <div id="p-siguiendo" class="profile-stat-val">—</div>
+              <div class="profile-stat-lbl">Siguiendo</div>
+            </div>
+            <div class="profile-stat">
+              <div id="p-seguidores" class="profile-stat-val">—</div>
+              <div class="profile-stat-lbl">Seguidores</div>
+            </div>
           </div>
           <div id="p-actions" class="profile-actions"></div>
         </div>
@@ -326,12 +351,20 @@
         <div class="tab-btns">
           <button class="tab-btn active" data-tab="aportes">Aportes</button>
           <button class="tab-btn" data-tab="comentarios">Comentarios</button>
+          <button class="tab-btn" data-tab="siguiendo">Siguiendo</button>
+          <button class="tab-btn" data-tab="seguidores">Seguidores</button>
         </div>
         <div class="tab-panel active" id="tab-aportes">
           <div class="state-loading">Cargando aportes…</div>
         </div>
         <div class="tab-panel" id="tab-comentarios">
           <div class="state-loading">Cargando comentarios…</div>
+        </div>
+        <div class="tab-panel" id="tab-siguiendo">
+          <div class="state-loading">Cargando…</div>
+        </div>
+        <div class="tab-panel" id="tab-seguidores">
+          <div class="state-loading">Cargando…</div>
         </div>
       </div>
     </div>
@@ -460,9 +493,13 @@
         .select('id,likes', { count: 'exact' })
         .eq('profile_id', profile.id)
         .neq('estado', 'eliminado');
-      var hilosData   = countR.data || [];
+      var hilosData    = countR.data || [];
       var aportesCount = countR.count || 0;
       var totalLikes   = hilosData.reduce(function (sum, h) { return sum + (h.likes || 0); }, 0);
+
+      /* Fetch follow counts */
+      var followingCountR = await sb.from('profile_follows').select('id', { count: 'exact', head: true }).eq('follower_id', profile.id);
+      var followersCountR = await sb.from('profile_follows').select('id', { count: 'exact', head: true }).eq('following_id', profile.id);
 
       /* Render hero */
       document.title = esc(profile.display_name) + ' — NODO · NEVADO';
@@ -491,16 +528,31 @@
         if (locEl) { locEl.textContent = '📍 ' + profile.location; locEl.hidden = false; }
       }
 
-      setText('p-croquetas', Number(profile.croquetas || 0).toLocaleString('es'));
-      setText('p-nivel',     profile.level || 1);
+      setText('p-croquetas',    Number(profile.croquetas || 0).toLocaleString('es'));
+      setText('p-nivel',        profile.level || 1);
       setText('p-aportes-count', aportesCount);
-      setText('p-likes-count', totalLikes.toLocaleString('es'));
+      setText('p-likes-count',  totalLikes.toLocaleString('es'));
+      setText('p-siguiendo',    followingCountR.count || 0);
+      setText('p-seguidores',   followersCountR.count || 0);
 
       /* Rank panel */
       var rankImgEl = el('p-rank-img');
       if (rankImgEl) rankImgEl.src = RANK_IMGS_MD[rk] || RANK_IMGS_MD.cachorro;
       setText('p-rank-name',  RANK_NAMES[rk] || rk);
       setText('p-rank-level', 'Nivel ' + (profile.level || 1));
+
+      /* Determine viewer's profile_id and initial follow state */
+      var myProfileId = null;
+      var yaSignue    = false;
+      if (clerkUser && !isMe) {
+        var myR2 = await sb.from('profiles').select('id').eq('clerk_id', clerkUser.id).maybeSingle();
+        myProfileId = myR2.data ? myR2.data.id : null;
+        if (myProfileId) {
+          var followR = await sb.from('profile_follows').select('id')
+            .eq('follower_id', myProfileId).eq('following_id', profile.id).maybeSingle();
+          yaSignue = !!followR.data;
+        }
+      }
 
       /* Action buttons */
       var actionsEl = el('p-actions');
@@ -510,13 +562,36 @@
             '<a href="/profile.html" class="btn-outline" style="color:#B8944A;border-color:rgba(184,148,74,.3);">Editar mi perfil →</a>';
         } else {
           actionsEl.innerHTML =
-            '<button id="btn-follow" class="btn-follow">+ Seguir</button>' +
+            '<button id="btn-follow" class="btn-follow' + (yaSignue ? ' following' : '') + '">' +
+            (yaSignue ? 'Siguiendo ✓' : '+ Seguir') + '</button>' +
             '<button class="btn-outline" onclick="alert(\'Mensajería próximamente\')">Mensaje</button>';
           var followBtn = el('btn-follow');
           if (followBtn) {
-            followBtn.onclick = function () {
-              followBtn.classList.toggle('following');
-              followBtn.textContent = followBtn.classList.contains('following') ? 'Siguiendo ✓' : '+ Seguir';
+            followBtn.onclick = async function () {
+              if (!myProfileId) {
+                window.location.href = '/auth.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+              }
+              followBtn.disabled = true;
+              try {
+                var existing = await sb.from('profile_follows').select('id')
+                  .eq('follower_id', myProfileId).eq('following_id', profile.id).maybeSingle();
+                if (existing.data) {
+                  await sb.from('profile_follows').delete().eq('id', existing.data.id);
+                  followBtn.classList.remove('following');
+                  followBtn.textContent = '+ Seguir';
+                  yaSignue = false;
+                } else {
+                  await sb.from('profile_follows').insert({ follower_id: myProfileId, following_id: profile.id });
+                  followBtn.classList.add('following');
+                  followBtn.textContent = 'Siguiendo ✓';
+                  yaSignue = true;
+                }
+              } catch (e) {
+                console.error('[perfil] follow:', e);
+              } finally {
+                followBtn.disabled = false;
+              }
             };
           }
         }
@@ -535,6 +610,8 @@
           var panel = el('tab-' + btn.dataset.tab);
           if (panel) panel.classList.add('active');
           if (btn.dataset.tab === 'comentarios') loadComentarios(sb, profile.id);
+          if (btn.dataset.tab === 'siguiendo')   loadSiguiendo(sb, profile.id);
+          if (btn.dataset.tab === 'seguidores')  loadSeguidores(sb, profile.id);
         });
       });
 
@@ -601,6 +678,60 @@
               '<div class="post-footer"><span>' + timeAgo(r.created_at) + '</span></div>' +
             '</div>';
           }).join('');
+        });
+    }
+
+    function renderFollowCard(p) {
+      var rk   = p.rank_key || 'cachorro';
+      var href = p.username ? '/u/perfil.html?user=' + encodeURIComponent(p.username) : '#';
+      return '<div class="follow-card">' +
+        '<img class="follow-card-avatar" src="' + esc(p.avatar_url || '/NevadoUtil.png') +
+          '" onerror="this.src=\'/NevadoUtil.png\'" alt="" />' +
+        '<img class="follow-card-rank" src="' + (RANK_IMGS[rk] || RANK_IMGS.cachorro) + '" alt="" />' +
+        '<div class="follow-card-info">' +
+          '<a href="' + esc(href) + '">' +
+            '<div class="follow-card-name">' + esc(p.display_name || 'Usuario') + '</div>' +
+            (p.username ? '<div class="follow-card-username">@' + esc(p.username) + '</div>' : '') +
+          '</a>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function loadSiguiendo(sb, profileId) {
+      var container = el('tab-siguiendo');
+      if (!container || container.dataset.loaded) return;
+      container.dataset.loaded = '1';
+      sb.from('profile_follows')
+        .select('following:following_id(id,display_name,username,avatar_url,rank_key)')
+        .eq('follower_id', profileId)
+        .order('created_at', { ascending: false })
+        .limit(40)
+        .then(function (result) {
+          var rows = result.data || [];
+          if (!rows.length) {
+            container.innerHTML = '<div class="state-empty">No sigue a nadie aún.</div>';
+            return;
+          }
+          container.innerHTML = rows.map(function (r) { return renderFollowCard(r.following || {}); }).join('');
+        });
+    }
+
+    function loadSeguidores(sb, profileId) {
+      var container = el('tab-seguidores');
+      if (!container || container.dataset.loaded) return;
+      container.dataset.loaded = '1';
+      sb.from('profile_follows')
+        .select('follower:follower_id(id,display_name,username,avatar_url,rank_key)')
+        .eq('following_id', profileId)
+        .order('created_at', { ascending: false })
+        .limit(40)
+        .then(function (result) {
+          var rows = result.data || [];
+          if (!rows.length) {
+            container.innerHTML = '<div class="state-empty">Aún no tiene seguidores.</div>';
+            return;
+          }
+          container.innerHTML = rows.map(function (r) { return renderFollowCard(r.follower || {}); }).join('');
         });
     }
 
