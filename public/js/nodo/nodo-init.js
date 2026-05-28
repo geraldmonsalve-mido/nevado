@@ -114,11 +114,16 @@
     var track = document.getElementById('shoutsTrack');
     if (!track) return;
     try {
-      var hilos = await sbGet(
-        'foro_hilos?estado=eq.activo&order=created_at.desc&limit=6' +
-        '&select=id,autor_nombre,contenido,tipo'
-      );
-      if (!Array.isArray(hilos) || !hilos.length) return;
+      var client = window.NODO && window.NODO.sb;
+      if (!client) return;
+      var result = await client
+        .from('foro_hilos')
+        .select('id,autor_nombre,contenido,tipo')
+        .neq('estado', 'eliminado')
+        .order('created_at', { ascending: false })
+        .limit(6);
+      var hilos = Array.isArray(result.data) ? result.data : [];
+      if (!hilos.length) return;
       track.innerHTML = hilos.map(function (h) {
         var ini   = (h.autor_nombre || '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
         var texto = (h.contenido || '').slice(0, 110) + ((h.contenido || '').length > 110 ? '…' : '');

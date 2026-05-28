@@ -23,7 +23,7 @@
         query = client
           .from('foro_hilos')
           .select('*,foro_categorias(nombre,slug,icono,color)')
-          .eq('estado', 'activo')
+          .neq('estado', 'eliminado')
           .eq('es_destacado', true)
           .order('likes', { ascending: false })
           .limit(20);
@@ -31,7 +31,7 @@
         query = client
           .from('foro_hilos')
           .select('*,foro_categorias(nombre,slug,icono,color)')
-          .eq('estado', 'activo')
+          .neq('estado', 'eliminado')
           .order('created_at', { ascending: false })
           .limit(20);
       }
@@ -479,7 +479,7 @@
         var query = sb()
           .from('foro_hilos')
           .select('*,foro_categorias(nombre,slug,icono,color)')
-          .eq('estado', 'activo')
+          .neq('estado', 'eliminado')
           .order('created_at', { ascending: false })
           .range(loadedOffset, loadedOffset + 19);
         if (currentCat) query = query.eq('categoria_id', currentCat);
