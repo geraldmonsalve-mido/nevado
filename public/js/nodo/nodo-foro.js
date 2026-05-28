@@ -1,5 +1,10 @@
-/* NEVADO — NODO Foro v2.0
-   Schema v2: profile_id, autor_rank, likes, respuestas, created_at. */
+/* NEVADO — NODO Foro v2.1
+   FIX 3A: order by created_at desc (already correct)
+   FIX 3B: rank image avatars
+   FIX 3C: Lvl.N display next to name
+   FIX 3D: likes via foro_likes table
+   FIX 3E: inline comments toggle
+   FIX 3F: report toast (no prompt/alert) */
 (function () {
   'use strict';
 
@@ -13,7 +18,31 @@
 
   function sb() { return window.NODO && window.NODO.sb; }
 
-  /* ── Load feed ──────────────────────────────────────────────────────────── */
+  /* ── Rank helpers (FIX 3B, 3C) ─────────────────────────────────────────── */
+  var RANK_IMGS = {
+    cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
+    explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
+    guardian:       '/rangos/rango3-guardian-plata-sm.webp',
+    montanista:     '/rangos/rango4-montanista-plata-sm.webp',
+    guia:           '/rangos/rango5-guia-plata-sm.webp',
+    protector:      '/rangos/rango6-protector-oro-sm.webp',
+    leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
+  };
+
+  var RANK_LEVELS = {
+    cachorro: 1, explorador: 5, guardian: 10,
+    montanista: 20, guia: 30, protector: 50, leyenda_andina: 170,
+  };
+
+  function rankImg(rankKey) {
+    return RANK_IMGS[(rankKey || 'cachorro').toLowerCase()] || RANK_IMGS.cachorro;
+  }
+
+  function rankToLevel(rankKey) {
+    return RANK_LEVELS[(rankKey || 'cachorro').toLowerCase()] || 1;
+  }
+
+  /* ── Load feed (FIX 3A: created_at desc confirmed) ──────────────────────── */
   async function loadHilos(tab, categoriaId) {
     try {
       var client = sb();
@@ -41,42 +70,31 @@
     } catch (_) { return []; }
   }
 
-  /* ── Tipo mapping: UI names → valid DB enum values ─────────────────────── */
+  /* ── Tipo mapping ───────────────────────────────────────────────────────── */
   var TIPO_DB_MAP = {
-    insight:     'aporte',
-    recurso:     'aporte',
-    experiencia: 'aporte',
-    oportunidad: 'anuncio',
-    pregunta:    'pregunta',
-    aporte:      'aporte',
-    anuncio:     'anuncio',
-    evento:      'evento',
+    insight: 'aporte', recurso: 'aporte', experiencia: 'aporte',
+    oportunidad: 'anuncio', pregunta: 'pregunta',
+    aporte: 'aporte', anuncio: 'anuncio', evento: 'evento',
   };
 
   /* ── Create hilo ────────────────────────────────────────────────────────── */
   async function createHilo(data) {
     var check = window.NODO.canPost();
     if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
-
     var u = window.NODO_USER;
     var contenido = String(data.contenido || '').trim();
     if (!contenido || contenido.length < 3) { window.NODO.showToast('Escribe al menos 3 caracteres.', 'error'); return null; }
     if (contenido.length > 1200) { window.NODO.showToast('Máximo 1,200 caracteres.', 'error'); return null; }
-
-    var tipoRaw = data.tipo || 'aporte';
-    var tipoDB  = TIPO_DB_MAP[tipoRaw] || 'aporte';
-
     var payload = {
       profile_id:   u.profile_id,
       autor_nombre: u.display_name || 'Usuario',
       autor_avatar: u.avatar_url || null,
       autor_rank:   u.rank_key || 'cachorro',
       contenido:    contenido,
-      tipo:         tipoDB,
+      tipo:         TIPO_DB_MAP[data.tipo || 'aporte'] || 'aporte',
       categoria_id: data.categoria_id || null,
       estado:       'activo',
     };
-
     try {
       var result = await sb().from('foro_hilos').insert(payload).select().single();
       if (result.error) throw result.error;
@@ -88,45 +106,90 @@
     }
   }
 
-  /* ── Local like tracking (no junction table in schema) ──────────────────── */
-  var _likedSet = new Set();
-
-  /* ── Toggle like ────────────────────────────────────────────────────────── */
-  async function toggleLike(hilo_id) {
-    if (!window.NODO_USER) { window.NODO.showToast('Inicia sesión para reaccionar.', 'error'); return false; }
-    var liked = _likedSet.has(hilo_id);
+  /* ── Toggle like (FIX 3D) — foro_likes table ────────────────────────────── */
+  async function toggleLike(hilo_id, btnEl) {
+    if (!window.NODO_USER) {
+      window.location.href = '/auth.html?redirect=/nodo.html';
+      return;
+    }
+    var profileId = window.NODO_USER.profile_id;
     try {
-      if (liked) {
-        _likedSet.delete(hilo_id);
-        await sb().rpc('decrement_hilo_likes', { p_hilo_id: hilo_id });
-        return false;
+      var { data: rows } = await sb()
+        .from('foro_likes')
+        .select('id')
+        .eq('profile_id', profileId)
+        .eq('hilo_id', hilo_id)
+        .limit(1);
+      var existing = rows && rows[0];
+      var isNowLiked;
+      if (existing) {
+        await sb().from('foro_likes').delete().eq('id', existing.id);
+        isNowLiked = false;
       } else {
-        _likedSet.add(hilo_id);
-        await sb().rpc('increment_hilo_likes', { p_hilo_id: hilo_id });
-        return true;
+        await sb().from('foro_likes').insert({ profile_id: profileId, hilo_id: hilo_id });
+        isNowLiked = true;
+      }
+      /* Sync count in foro_hilos from actual foro_likes rows */
+      var { data: allLikes } = await sb().from('foro_likes').select('id').eq('hilo_id', hilo_id);
+      var newCount = allLikes ? allLikes.length : 0;
+      await sb().from('foro_hilos').update({ likes: newCount }).eq('id', hilo_id);
+      /* Update DOM */
+      if (btnEl) {
+        var span = btnEl.querySelector('span');
+        if (span) span.textContent = newCount;
+        btnEl.classList.toggle('active', isNowLiked);
+        var svg  = btnEl.querySelector('svg');
+        var path = btnEl.querySelector('path');
+        if (svg) svg.setAttribute('fill', isNowLiked ? 'currentColor' : 'none');
+        if (path) {
+          if (isNowLiked) { path.removeAttribute('stroke'); path.removeAttribute('stroke-width'); }
+          else { path.setAttribute('stroke', 'currentColor'); path.setAttribute('stroke-width', '1.1'); }
+        }
       }
     } catch (_) {
-      if (liked) _likedSet.add(hilo_id); else _likedSet.delete(hilo_id);
-      return liked;
+      window.NODO.showToast('Error al procesar like.', 'error');
     }
   }
 
-  /* ── Get my likes (session-only, no junction table) ─────────────────────── */
+  /* ── Get my likes from foro_likes ─────────────────────────────────────── */
   async function getMyLikes(hilo_ids) {
-    return hilo_ids.filter(function (id) { return _likedSet.has(id); });
+    if (!window.NODO_USER || !hilo_ids.length) return [];
+    try {
+      var result = await sb()
+        .from('foro_likes')
+        .select('hilo_id')
+        .eq('profile_id', window.NODO_USER.profile_id)
+        .in('hilo_id', hilo_ids);
+      return (result.data || []).map(function (r) { return r.hilo_id; });
+    } catch (_) { return []; }
   }
 
-  /* ── Report ─────────────────────────────────────────────────────────────── */
-  async function reportHilo(hilo_id, motivo) {
-    if (!window.NODO_USER) { window.NODO.showToast('Debes iniciar sesión para reportar.', 'error'); return; }
+  /* ── Report (FIX 3F) — no prompt/alert ──────────────────────────────────── */
+  function reportarHilo(hilo_id, btnEl) {
+    if (!window.NODO_USER) {
+      window.location.href = '/auth.html?redirect=/nodo.html';
+      return;
+    }
+    if (btnEl) {
+      var sp = btnEl.querySelector('span');
+      if (sp) sp.textContent = '✓ Reportado';
+      btnEl.style.color = '#E74C3C';
+      btnEl.disabled = true;
+    }
+    var toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
+      'background:#1a1a1a;border:1px solid rgba(255,255,255,.12);color:#fff;' +
+      'padding:12px 24px;border-radius:12px;font-size:13px;z-index:9999;pointer-events:none;';
+    toast.textContent = 'Aporte reportado. El equipo lo revisará.';
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 3000);
     try {
-      await sb().from('foro_reportes').insert({
+      sb().from('foro_reportes').insert({
         reportante_id: window.NODO_USER.profile_id,
         hilo_id:       hilo_id,
-        motivo:        motivo,
+        motivo:        'Reporte de usuario',
       });
-      window.NODO.showToast('Reporte enviado.');
-    } catch (_) { window.NODO.showToast('Error al enviar reporte.', 'error'); }
+    } catch (_) {}
   }
 
   /* ── Load respuestas ────────────────────────────────────────────────────── */
@@ -143,7 +206,7 @@
   }
 
   /* ── Create respuesta ───────────────────────────────────────────────────── */
-  async function createRespuesta(hilo_id, contenido, parent_id) {
+  async function createRespuesta(hilo_id, contenido) {
     var check = window.NODO.canPost();
     if (!check.ok) { window.NODO.showToast(check.reason, 'error'); return null; }
     if (!String(contenido || '').trim()) { window.NODO.showToast('Respuesta vacía.', 'error'); return null; }
@@ -158,7 +221,6 @@
         contenido:    String(contenido).trim(),
         estado:       'activo',
       };
-      // parent_id not in DB schema — omitted
       var result = await sb().from('foro_respuestas').insert(payload).select().single();
       if (result.error) throw result.error;
       try { await sb().rpc('increment_hilo_respuestas', { p_hilo_id: hilo_id }); } catch (_) {}
@@ -169,25 +231,101 @@
     }
   }
 
-  /* ── Render post card ───────────────────────────────────────────────────── */
+  /* ── Toggle comments inline (FIX 3E) ───────────────────────────────────── */
+  async function toggleComments(hilo_id, articleEl, replyBtn) {
+    var existing = articleEl.querySelector('.comments-section');
+    if (existing) { existing.remove(); return; }
+
+    var section = document.createElement('div');
+    section.className = 'comments-section';
+    section.style.cssText = 'padding:16px;border-top:1px solid rgba(255,255,255,.06);';
+    articleEl.appendChild(section);
+
+    var respuestas = await loadRespuestas(hilo_id);
+
+    var commentsHtml = respuestas.length
+      ? respuestas.map(function (r) {
+          return '<div style="display:flex;gap:10px;margin-bottom:12px;">' +
+            '<div style="font-size:12px;flex:1;">' +
+              '<strong style="color:rgba(232,228,220,.9);">' + esc(r.autor_nombre || 'Usuario') + '</strong>' +
+              '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + rankToLevel(r.autor_rank) + '</span>' +
+              '<p style="color:rgba(232,228,220,.75);margin:4px 0 0;">' + esc(r.contenido) + '</p>' +
+            '</div></div>';
+        }).join('')
+      : '<p style="color:rgba(255,255,255,.3);font-size:13px;margin:0 0 12px;">Sin comentarios aún.</p>';
+
+    var inputHtml = window.NODO_USER
+      ? '<div class="comment-input-row" style="display:flex;gap:8px;margin-top:12px;">' +
+          '<input class="comment-input" placeholder="Escribe un comentario…" ' +
+            'style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);' +
+            'border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;" />' +
+          '<button class="comment-send" style="background:#E74C3C;border:none;border-radius:8px;' +
+            'padding:8px 16px;color:#fff;font-size:13px;cursor:pointer;">Enviar</button>' +
+        '</div>'
+      : '<p style="color:rgba(255,255,255,.3);font-size:12px;margin:8px 0 0;">Inicia sesión para comentar.</p>';
+
+    section.innerHTML = commentsHtml + inputHtml;
+
+    var sendBtn = section.querySelector('.comment-send');
+    var input   = section.querySelector('.comment-input');
+    if (sendBtn && input) {
+      sendBtn.onclick = async function () {
+        var texto = input.value.trim();
+        if (texto.length < 3) return;
+        sendBtn.disabled = true;
+        var resp = await createRespuesta(hilo_id, texto);
+        if (resp) {
+          input.value = '';
+          var item = document.createElement('div');
+          item.style.cssText = 'display:flex;gap:10px;margin-bottom:12px;';
+          item.innerHTML =
+            '<div style="font-size:12px;flex:1;">' +
+              '<strong style="color:rgba(232,228,220,.9);">' + esc(window.NODO_USER.display_name) + '</strong>' +
+              '<span style="color:rgba(255,255,255,.35);margin-left:6px;font-size:11px;">Lvl.' + rankToLevel(window.NODO_USER.rank_key) + '</span>' +
+              '<p style="color:rgba(232,228,220,.75);margin:4px 0 0;">' + esc(texto) + '</p>' +
+            '</div>';
+          var inputRow = section.querySelector('.comment-input-row');
+          if (inputRow) section.insertBefore(item, inputRow);
+          else section.appendChild(item);
+          if (replyBtn) {
+            var rcSpan = replyBtn.querySelector('span');
+            if (rcSpan) rcSpan.textContent = parseInt(rcSpan.textContent || '0') + 1;
+          }
+        }
+        sendBtn.disabled = false;
+      };
+      input.onkeydown = function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBtn.click(); }
+      };
+    }
+  }
+
+  /* ── Render post card (FIX 3B, 3C) ─────────────────────────────────────── */
   function renderPost(hilo, myLikedIds, idx) {
-    var nombre = esc(hilo.autor_nombre || 'Usuario');
-    var rank   = esc(hilo.autor_rank   || 'cachorro');
-    var ti     = (hilo.autor_nombre || '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
+    var nombre     = esc(hilo.autor_nombre || 'Usuario');
+    var rankKey    = (hilo.autor_rank || 'cachorro').toLowerCase();
+    var img        = rankImg(rankKey);
+    var lvl        = rankToLevel(rankKey);
     var badgeClass = window.NODO.tipoBadgeClass(hilo.tipo);
-    var tipoLbl    = window.NODO.tipoLabel(hilo.tipo);
+    var tipoLbl    = window.NODO.tipoLabel(hilo.tipo).toUpperCase();
     var time       = window.NODO.formatTime(hilo.created_at);
     var liked      = myLikedIds.indexOf(hilo.id) !== -1;
-    var catPart = hilo.foro_categorias ? esc(hilo.foro_categorias.nombre) + ' · ' : '';
+    var catPart    = hilo.foro_categorias ? esc(hilo.foro_categorias.nombre) + ' · ' : '';
+
+    var avatarHtml =
+      '<img src="' + esc(img) + '" class="nodo-post-avatar-img" ' +
+      'style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;" ' +
+      'onerror="this.onerror=null;this.style.display=\'none\'" alt="' + esc(rankKey) + '">';
 
     return '<article class="nodo-post" style="--post-i:' + idx + '" data-hilo-id="' + hilo.id + '">' +
       '<div class="nodo-post-header">' +
-        '<div class="nodo-post-avatar">' + esc(ti) + '</div>' +
+        avatarHtml +
         '<div class="nodo-post-meta">' +
           '<div class="nodo-post-name">' + nombre +
+            ' <span class="nodo-post-level">Lvl.' + lvl + '</span>' +
             ' <span class="nodo-post-badge ' + badgeClass + '">' + tipoLbl + '</span>' +
           '</div>' +
-          '<div class="nodo-post-sub">' + rank + ' · ' + catPart + time + '</div>' +
+          '<div class="nodo-post-sub">' + catPart + time + '</div>' +
         '</div>' +
         '<button class="nodo-post-follow" data-autor="' + esc(hilo.profile_id || '') + '">+ Seguir</button>' +
       '</div>' +
@@ -256,93 +394,18 @@
 
   /* ── Bind feed events ───────────────────────────────────────────────────── */
   function bindFeedEvents(container) {
-    /* Like */
+    /* Like (FIX 3D) */
     container.querySelectorAll('.nodo-action-like[data-hilo]').forEach(function (btn) {
-      btn.addEventListener('click', async function () {
-        var hilo_id = btn.getAttribute('data-hilo');
-        var liked   = await toggleLike(hilo_id);
-        var span    = btn.querySelector('span');
-        var n       = parseInt(span.textContent.replace(/,/g, '')) || 0;
-        span.textContent = liked ? n + 1 : Math.max(0, n - 1);
-        btn.classList.toggle('active', liked);
-        var svg  = btn.querySelector('svg');
-        var path = btn.querySelector('path');
-        if (liked) {
-          svg.setAttribute('fill', 'currentColor');
-          if (path) { path.removeAttribute('stroke'); path.removeAttribute('stroke-width'); }
-        } else {
-          svg.setAttribute('fill', 'none');
-          if (path) { path.setAttribute('stroke', 'currentColor'); path.setAttribute('stroke-width', '1.1'); }
-        }
+      btn.addEventListener('click', function () {
+        toggleLike(btn.getAttribute('data-hilo'), btn);
       });
     });
 
-    /* Reply — inline panel */
+    /* Comments inline (FIX 3E) */
     container.querySelectorAll('.nodo-action-reply[data-hilo]').forEach(function (btn) {
-      btn.addEventListener('click', async function () {
-        var hilo_id = btn.getAttribute('data-hilo');
+      btn.addEventListener('click', function () {
         var article = btn.closest('article.nodo-post');
-        if (!article) return;
-        var existing = article.querySelector('.post-comentarios-panel');
-        if (existing) { existing.classList.toggle('open'); return; }
-
-        var panel = document.createElement('div');
-        panel.className = 'post-comentarios-panel open';
-        var canP = window.NODO.canPost();
-        panel.innerHTML =
-          '<div class="comentarios-lista"><div class="feed-loading">Cargando comentarios…</div></div>' +
-          (canP.ok
-            ? '<div class="comentario-composer"><div class="comentario-input-row">' +
-              '<textarea class="comentario-textarea" placeholder="Escribe un comentario…"></textarea>' +
-              '<button class="comentario-btn-publicar">Enviar</button>' +
-              '</div></div>'
-            : '<p class="feed-vacio" style="padding:8px 12px;font-size:12px">' +
-              esc(canP.reason || 'Inicia sesión para comentar.') + '</p>'
-          );
-        article.appendChild(panel);
-
-        var respuestas = await loadRespuestas(hilo_id);
-        var lista = panel.querySelector('.comentarios-lista');
-        if (respuestas.length) {
-          lista.innerHTML = respuestas.map(function (r) {
-            var ini = (r.autor_nombre || '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
-            return '<div class="comentario-item">' +
-              '<div class="comentario-avatar-mini">' + esc(ini) + '</div>' +
-              '<div class="comentario-contenido">' +
-                '<div class="comentario-meta"><strong>' + esc(r.autor_nombre || 'Usuario') + '</strong> · ' +
-                window.NODO.formatTime(r.created_at) + '</div>' +
-                '<p>' + esc(r.contenido) + '</p>' +
-              '</div></div>';
-          }).join('');
-        } else {
-          lista.innerHTML = '<div class="feed-vacio">Sin comentarios aún. ¡Sé el primero!</div>';
-        }
-
-        var publishBtn = panel.querySelector('.comentario-btn-publicar');
-        if (publishBtn) {
-          publishBtn.addEventListener('click', async function () {
-            var ta  = panel.querySelector('.comentario-textarea');
-            var txt = ta ? ta.value.trim() : '';
-            if (!txt) return;
-            publishBtn.disabled = true;
-            var resp = await createRespuesta(hilo_id, txt);
-            if (resp) {
-              ta.value = '';
-              var u   = window.NODO_USER;
-              var ini = (u ? u.display_name : '?').split(' ').slice(0, 2).map(function (w) { return w[0] || ''; }).join('').toUpperCase();
-              var newItem = document.createElement('div');
-              newItem.className = 'comentario-item actividad-nueva';
-              newItem.innerHTML =
-                '<div class="comentario-avatar-mini">' + esc(ini) + '</div>' +
-                '<div class="comentario-contenido"><div class="comentario-meta"><strong>' +
-                esc(u ? u.display_name : 'Tú') + '</strong> · ahora</div><p>' + esc(txt) + '</p></div>';
-              lista.appendChild(newItem);
-              var rcSpan = btn.querySelector('span');
-              if (rcSpan) rcSpan.textContent = parseInt(rcSpan.textContent || '0') + 1;
-            }
-            publishBtn.disabled = false;
-          });
-        }
+        if (article) toggleComments(btn.getAttribute('data-hilo'), article, btn);
       });
     });
 
@@ -358,15 +421,10 @@
       });
     });
 
-    /* Report */
+    /* Report (FIX 3F) */
     container.querySelectorAll('.nodo-action-report[data-hilo]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var hilo_id = btn.getAttribute('data-hilo');
-        var motivos = ['Spam', 'Contenido inapropiado', 'Desinformación', 'Acoso', 'Otro'];
-        var sel = prompt('¿Por qué reportas?\n' + motivos.map(function (m, i) { return (i + 1) + '. ' + m; }).join('\n'));
-        if (!sel) return;
-        var idx = parseInt(sel) - 1;
-        reportHilo(hilo_id, motivos[idx] || sel);
+        reportarHilo(btn.getAttribute('data-hilo'), btn);
       });
     });
 
@@ -531,11 +589,13 @@
     loadHilos:       loadHilos,
     createHilo:      createHilo,
     toggleLike:      toggleLike,
-    reportHilo:      reportHilo,
+    reportarHilo:    reportarHilo,
     loadRespuestas:  loadRespuestas,
     createRespuesta: createRespuesta,
     renderFeed:      renderFeed,
     renderPost:      renderPost,
     initForo:        initForo,
+    rankToLevel:     rankToLevel,
+    rankImg:         rankImg,
   };
 })();
