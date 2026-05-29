@@ -618,54 +618,101 @@
 
   /* ── Editar hilo ────────────────────────────────────────────────────────── */
   function editarHilo(hiloId, articleEl) {
-    var titleEl  = articleEl.querySelector('.nodo-post-title');
-    var bodyEl   = articleEl.querySelector('.nodo-post-body');
-    var tsEl     = articleEl.querySelector('.nodo-post-timestamp');
-    var curTitle = titleEl ? titleEl.textContent.trim() : '';
-    var curBody  = Array.from(bodyEl.querySelectorAll('p')).map(function (p) { return p.textContent; }).join('\n');
+    var titleEl      = articleEl.querySelector('.nodo-post-title');
+    var bodyEl       = articleEl.querySelector('.nodo-post-body');
+    var tsEl         = articleEl.querySelector('.nodo-post-timestamp');
+    var tituloAct    = titleEl ? titleEl.textContent.trim() : '';
+    var contenidoAct = Array.from(bodyEl.querySelectorAll('p')).map(function (p) { return p.textContent; }).join('\n');
 
-    /* Build modal */
     var overlay = document.createElement('div');
     overlay.className = 'nodo-edit-modal-overlay';
     overlay.innerHTML =
       '<div class="nodo-edit-modal">' +
-        '<div class="nodo-edit-modal-header">' +
-          '<span>Editar publicación</span>' +
-          '<button class="nodo-edit-modal-close" type="button">✕</button>' +
+        '<p class="nodo-edit-modal-title">Editar publicación</p>' +
+        '<input class="nodo-edit-titulo-input" id="edit-titulo-inp"' +
+          ' placeholder="Título (opcional)" maxlength="120"' +
+          ' value="' + esc(tituloAct) + '" />' +
+        '<textarea class="nodo-edit-content-textarea" id="edit-content-ta"' +
+          ' maxlength="5000">' + esc(contenidoAct) + '</textarea>' +
+        '<p class="nodo-edit-char-count" id="edit-char-count">' + contenidoAct.length + ' / 5000</p>' +
+        '<div class="nodo-edit-modal-actions">' +
+          '<button class="nodo-edit-delete-btn" id="edit-delete-btn">Eliminar</button>' +
+          '<div style="display:flex;gap:10px;margin-left:auto;">' +
+            '<button class="nodo-edit-cancel-btn" id="edit-cancel-btn">Cancelar</button>' +
+            '<button class="nodo-edit-save-btn" id="edit-save-btn">Guardar cambios</button>' +
+          '</div>' +
         '</div>' +
-        (curTitle
-          ? '<input class="nodo-edit-modal-title" maxlength="120" value="' + esc(curTitle) + '" placeholder="Título (opcional)" />'
-          : '') +
-        '<textarea class="nodo-edit-modal-body" maxlength="5000">' + esc(curBody) + '</textarea>' +
-        '<div class="nodo-edit-modal-footer">' +
-          '<span class="nodo-edit-modal-counter">0 / 5000</span>' +
-          '<div>' +
-            '<button class="nodo-edit-modal-cancel" type="button">Cancelar</button>' +
-            '<button class="nodo-edit-modal-save" type="button">Guardar</button>' +
+        '<div class="nodo-delete-confirm" id="nodo-delete-confirm" style="display:none;">' +
+          '<div class="nodo-delete-confirm-inner">' +
+            '<p class="nodo-delete-confirm-title">¿Eliminar esta publicación?</p>' +
+            '<p class="nodo-delete-confirm-sub">Esta acción no se puede deshacer.</p>' +
+            '<div class="nodo-delete-confirm-actions">' +
+              '<button class="nodo-delete-cancel-btn" id="delete-cancel-btn">Cancelar</button>' +
+              '<button class="nodo-delete-confirm-btn" id="delete-confirm-btn">Sí, eliminar</button>' +
+            '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
 
     document.body.appendChild(overlay);
 
-    var textarea  = overlay.querySelector('.nodo-edit-modal-body');
-    var counter   = overlay.querySelector('.nodo-edit-modal-counter');
-    var saveBtn   = overlay.querySelector('.nodo-edit-modal-save');
-    var cancelBtn = overlay.querySelector('.nodo-edit-modal-cancel');
-    var closeBtn  = overlay.querySelector('.nodo-edit-modal-close');
-    var titleInput = overlay.querySelector('.nodo-edit-modal-title');
+    var textarea         = overlay.querySelector('#edit-content-ta');
+    var counter          = overlay.querySelector('#edit-char-count');
+    var saveBtn          = overlay.querySelector('#edit-save-btn');
+    var cancelBtn        = overlay.querySelector('#edit-cancel-btn');
+    var titleInput       = overlay.querySelector('#edit-titulo-inp');
+    var deleteBtn        = overlay.querySelector('#edit-delete-btn');
+    var deleteConfirm    = overlay.querySelector('#nodo-delete-confirm');
+    var deleteCancelBtn  = overlay.querySelector('#delete-cancel-btn');
+    var deleteConfirmBtn = overlay.querySelector('#delete-confirm-btn');
 
     function updateCounter() {
       counter.textContent = textarea.value.length + ' / 5000';
     }
-    updateCounter();
     textarea.addEventListener('input', updateCounter);
 
-    function closeModal() { overlay.remove(); }
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+    function cerrarModal() { overlay.remove(); }
+    cancelBtn.addEventListener('click', cerrarModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) cerrarModal(); });
 
+    /* ── Eliminar ── */
+    deleteBtn.addEventListener('click', function () {
+      deleteConfirm.style.display = 'flex';
+      deleteConfirm.style.animation = 'nodoDeleteIn 0.18s ease forwards';
+    });
+
+    deleteCancelBtn.addEventListener('click', function () {
+      deleteConfirm.style.display = 'none';
+    });
+
+    deleteConfirmBtn.addEventListener('click', async function () {
+      deleteConfirmBtn.disabled = true;
+      deleteConfirmBtn.textContent = 'Eliminando…';
+      try {
+        var { error } = await sb()
+          .from('foro_hilos')
+          .update({ estado: 'eliminado' })
+          .eq('id', hiloId)
+          .eq('profile_id', window.NODO_USER.profile_id);
+
+        if (error) throw error;
+
+        articleEl.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        articleEl.style.opacity = '0';
+        articleEl.style.transform = 'scale(0.97)';
+        setTimeout(function () { articleEl.remove(); }, 260);
+
+        window.NODO.showToast('Publicación eliminada.');
+        cerrarModal();
+      } catch (err) {
+        console.error('[NODO] eliminarHilo error:', err);
+        window.NODO.showToast('Error al eliminar.', 'error');
+        deleteConfirmBtn.disabled = false;
+        deleteConfirmBtn.textContent = 'Sí, eliminar';
+      }
+    });
+
+    /* ── Guardar ── */
     saveBtn.addEventListener('click', async function () {
       var newBody  = textarea.value.trim();
       var newTitle = titleInput ? titleInput.value.trim() : null;
@@ -685,11 +732,10 @@
       if (error) {
         window.NODO.showToast('Error al guardar. Intenta de nuevo.');
         saveBtn.disabled = false;
-        saveBtn.textContent = 'Guardar';
+        saveBtn.textContent = 'Guardar cambios';
         return;
       }
 
-      /* DOM update — no reload */
       bodyEl.innerHTML = '<p>' + esc(newBody).replace(/\n/g, '</p><p>') + '</p>';
       if (titleEl && newTitle !== null) {
         if (newTitle) { titleEl.textContent = newTitle; }
@@ -701,7 +747,7 @@
       }
 
       window.NODO.showToast('Publicación actualizada.');
-      closeModal();
+      cerrarModal();
     });
   }
 
