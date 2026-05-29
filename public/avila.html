@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ÁVILA — Plataforma de Formación · NEVADO</title>
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
+  <link rel="dns-prefetch" href="https://clerk.nevado.pro" />
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    async
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -457,6 +465,13 @@
       .sub-metrics { display:none; }
       .topbar-nav .nav-item:not(.active) { display:none; }
     }
+    /* Suprimir widgets de sesión inyectados fuera del topbar */
+    body > .nv-session-widget,
+    body > .nvd-session-widget,
+    body > [class*="nvd-"],
+    body > [id*="nvd-session"]:not(#nvd-session-pill) { display: none !important; }
+    .nv-rank-icon { width:28px !important; height:28px !important; object-fit:contain !important; vertical-align:middle !important; }
+    .nvd-dd-rank-img { max-width:36px !important; max-height:36px !important; }
   </style>
 </head>
 <body data-page-context="ÁVILA | formación, rutas de aprendizaje, certificaciones" data-accent="gold">
@@ -475,12 +490,7 @@
   <div class="topbar-actions">
     <div class="topbar-divider"></div>
     <button class="btn-plus" data-nevado-plus>Nevado Plus</button>
-    <button class="topbar-user" aria-label="Mi perfil">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-      </svg>
-    </button>
+    <div id="nvd-session-pill" style="display:flex;align-items:center;min-width:120px;"></div>
   </div>
 </header>
 
@@ -1269,10 +1279,17 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDiagnostic();
 <script src="/cursor.js"></script>
 <script type="module" src="/src/nevado-key.js"></script>
   <script type="module" src="/src/auth.js"></script>
-<script src="/nevado-plus.js"></script>
-<script src="/croquetas.js"></script>
-  <script src="/mini-nevado.js"></script>
+<script src="/nevado-env.js"></script>
+  <script src="/js/nodo/nodo-core.js"></script>
+  <script src="/nevado-session-widget.js"></script>
+  <script src="/nevado-home-desktop-pill.js"></script>
+  <script src="/nevado-plus.js"></script>
+  <script src="/croquetas.js"></script>
   <script src="/nevado-bubble.js"></script>
-  <script src="/nevado-env.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+    });
+  </script>
 </body>
 </html>

@@ -64,13 +64,20 @@
     #hilo-reply-send:disabled { opacity: 0.5; cursor: not-allowed; }
     .hilo-login-hint { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 8px; }
     .hilo-login-hint a { color: #E74C3C; }
+    /* Suprimir widgets de sesión inyectados fuera del topbar */
+    body > .nv-session-widget,
+    body > .nvd-session-widget,
+    body > [class*="nvd-"],
+    body > [id*="nvd-session"]:not(#nvd-session-pill) { display: none !important; }
+    .nv-rank-icon { width:28px !important; height:28px !important; object-fit:contain !important; vertical-align:middle !important; }
+    .nvd-dd-rank-img { max-width:36px !important; max-height:36px !important; }
   </style>
 </head>
 <body>
   <header id="topbar">
     <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
     <a class="topbar-back" href="/nodo.html">← Volver a NODO</a>
-    <div style="width:80px"></div>
+    <div id="nvd-session-pill" style="display:flex;align-items:center;min-width:120px;justify-content:flex-end;"></div>
   </header>
 
   <div class="hilo-page">
@@ -103,6 +110,8 @@
   <script type="module" src="/src/nevado-key.js"></script>
   <script type="module" src="/src/auth.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
+  <script src="/nevado-session-widget.js"></script>
+  <script src="/nevado-home-desktop-pill.js"></script>
   <script src="/js/nodo/nodo-foro.js"></script>
   <script src="/js/nodo/nodo-hilo-page.js"></script>
   <script src="/croquetas.js"></script>
