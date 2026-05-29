@@ -158,7 +158,7 @@
     var map = {
       insight: 'Insight', pregunta: 'Pregunta', recurso: 'Recurso',
       experiencia: 'Experiencia', oportunidad: 'Oportunidad',
-      aporte: 'Aporte', anuncio: 'Anuncio', evento: 'Evento',
+      aporte: 'Aporte', anuncio: 'Anuncio', evento: 'Evento', regla: 'Regla',
     };
     return map[tipo] || tipo;
   }
@@ -167,7 +167,7 @@
     var map = {
       insight: 'badge-insight', pregunta: 'badge-pregunta', recurso: 'badge-recurso',
       experiencia: 'badge-experiencia', oportunidad: 'badge-oportunidad',
-      aporte: 'badge-insight', anuncio: 'badge-oportunidad', evento: 'badge-recurso',
+      aporte: 'badge-insight', anuncio: 'badge-oportunidad', evento: 'badge-recurso', regla: 'badge-regla',
     };
     return map[tipo] || 'badge-insight';
   }

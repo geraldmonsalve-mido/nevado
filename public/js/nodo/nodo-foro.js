@@ -112,7 +112,7 @@
   var TIPO_DB_MAP = {
     insight: 'aporte', recurso: 'aporte', experiencia: 'aporte',
     oportunidad: 'anuncio', pregunta: 'pregunta',
-    aporte: 'aporte', anuncio: 'anuncio', evento: 'evento',
+    aporte: 'aporte', anuncio: 'anuncio', evento: 'evento', regla: 'regla',
   };
 
   /* ── Create hilo ────────────────────────────────────────────────────────── */
@@ -122,14 +122,14 @@
     var u = window.NODO_USER;
     var contenido = String(data.contenido || '').trim();
     if (!contenido || contenido.length < 3) { window.NODO.showToast('Escribe al menos 3 caracteres.', 'error'); return null; }
-    if (contenido.length > 1200) { window.NODO.showToast('Máximo 1,200 caracteres.', 'error'); return null; }
+    if (contenido.length > 5000) { window.NODO.showToast('Máximo 5,000 caracteres.', 'error'); return null; }
 
     /* Sección 5: verificar estado del espacio antes de publicar */
     if (data.categoria_id) {
       try {
         var catCheck = await sb()
           .from('foro_categorias')
-          .select('estado, activo')
+          .select('estado, activo, slug')
           .eq('id', data.categoria_id)
           .single();
         var cat = catCheck.data;
@@ -144,8 +144,22 @@
             return null;
           }
         }
+        /* ── Espacio REGLAS: solo Administradores y Founder pueden publicar ── */
+        if (cat && cat.slug === 'reglas') {
+          var esFounder = u.is_founder === true || u.role === 'superadmin';
+          var esAdmin   = u.role === 'admin' || u.role === 'superadmin';
+          if (!esFounder && !esAdmin) {
+            window.NODO.showToast('📋 Solo administradores pueden publicar en Reglas.', 'error');
+            return null;
+          }
+          data._esReglas = true; /* activa etiqueta REGLA automática */
+        }
       } catch (_) { /* si falla el check, continuar */ }
     }
+
+    /* Etiqueta REGLA automática cuando el espacio es 'reglas' */
+    var tipoFinal = TIPO_DB_MAP[data.tipo || 'aporte'] || 'aporte';
+    if (data._esReglas) tipoFinal = 'regla';
 
     var payload = {
       profile_id:      u.profile_id,
@@ -154,8 +168,9 @@
       autor_rank:      u.rank_key || 'cachorro',
       autor_nivel:     u.level   || 1,
       autor_username:  u.username || null,
+      titulo:          data.titulo || null,
       contenido:       contenido,
-      tipo:            TIPO_DB_MAP[data.tipo || 'aporte'] || 'aporte',
+      tipo:            tipoFinal,
       categoria_id:    data.categoria_id || null,
       estado:          'activo',
     };
@@ -495,6 +510,8 @@
     var time       = window.NODO.formatTime(hilo.created_at);
     var liked      = myLikedIds.indexOf(hilo.id) !== -1;
     var catPart    = hilo.foro_categorias ? esc(hilo.foro_categorias.nombre) + ' · ' : '';
+    var esReglas   = hilo.foro_categorias && hilo.foro_categorias.slug === 'reglas';
+    var tituloHilo = (hilo.titulo && hilo.titulo.trim()) ? hilo.titulo.trim() : null;
 
     var avatarHtml =
       '<img src="' + esc(img) + '" class="nodo-post-avatar-img" ' +
@@ -511,7 +528,10 @@
               'data-author-name="' + esc(hilo.autor_nombre || '') + '" ' +
               'data-author-rank="' + esc(hilo.autor_rank || '') + '">' + nombre + '</span>' +
             ' <span class="nodo-post-level">Lvl.' + lvl + '</span>' +
-            ' <span class="nodo-post-badge ' + badgeClass + '">' + tipoLbl + '</span>' +
+            ' ' + (esReglas
+              ? '<span class="nodo-badge-regla">📋 Regla</span>'
+              : '<span class="nodo-post-badge ' + badgeClass + '">' + tipoLbl + '</span>'
+            ) +
           '</div>' +
           '<div class="nodo-post-sub">' +
             (hilo.autor_username ? '<span style="color:#B8944A;font-size:10px;margin-right:6px;">@' + esc(hilo.autor_username) + '</span>' : '') +
@@ -520,19 +540,20 @@
         '</div>' +
         '<button class="nodo-post-follow" data-autor="' + esc(hilo.profile_id || '') + '">+ Seguir</button>' +
       '</div>' +
+      (tituloHilo ? '<h3 class="nodo-post-title">' + esc(tituloHilo) + '</h3>' : '') +
       '<div class="nodo-post-body"><p>' + esc(hilo.contenido).replace(/\n/g, '</p><p>') + '</p></div>' +
       '<div class="nodo-post-footer">' +
-        '<button class="nodo-post-action nodo-action-like' + (liked ? ' active' : '') + '" data-hilo="' + hilo.id + '">' +
+        (!esReglas ? '<button class="nodo-post-action nodo-action-like' + (liked ? ' active' : '') + '" data-hilo="' + hilo.id + '">' +
           (liked
             ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z"/></svg>'
             : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 12S1.5 8.5 1.5 4.5a3 3 0 015.5-1.6A3 3 0 0112.5 4.5C12.5 8.5 7 12 7 12z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>'
           ) +
           '<span class="like-count">' + (hilo.likes || 0) + '</span>' +
-        '</button>' +
-        '<button class="nodo-post-action nodo-action-reply" data-hilo="' + hilo.id + '">' +
+        '</button>' : '') +
+        (!esReglas ? '<button class="nodo-post-action nodo-action-reply" data-hilo="' + hilo.id + '">' +
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 2H3a1 1 0 00-1 1v6a1 1 0 001 1h2l2 2 2-2h2a1 1 0 001-1V3a1 1 0 00-1-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>' +
           '<span class="comment-count">' + (hilo.respuestas || 0) + '</span>' +
-        '</button>' +
+        '</button>' : '') +
         '<button class="nodo-post-action nodo-action-share" data-hilo="' + hilo.id + '">' +
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
           '<span>Compartir</span>' +
@@ -657,9 +678,23 @@
       var contenido   = textarea ? textarea.value.trim() : '';
       if (!contenido) { window.NODO.showToast('Escribe algo antes de publicar.', 'error'); return; }
 
+      /* Leer título — si botón "Sin título" está activo, se envía null */
+      var titleInput  = document.getElementById('composerTitleInput');
+      var noTitleBtn  = document.getElementById('composerNoTitleBtn');
+      var skipTitle   = noTitleBtn && noTitleBtn.classList.contains('active');
+      var titulo      = (!skipTitle && titleInput && titleInput.value.trim())
+                          ? titleInput.value.trim()
+                          : null;
+      if (!skipTitle && !titulo) {
+        window.NODO.showToast('Agrega un título o usa "Sin título".', 'error');
+        if (titleInput) titleInput.focus();
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Publicando…';
       var hilo = await createHilo({
+        titulo:       titulo,
         contenido:    contenido,
         tipo:         activeType ? activeType.dataset.type : 'insight',
         categoria_id: categoriaId,
@@ -669,6 +704,11 @@
 
       if (hilo) {
         if (textarea) textarea.value = '';
+        /* Limpiar título y resetear toggle */
+        var titleInp = document.getElementById('composerTitleInput');
+        var noTitleB = document.getElementById('composerNoTitleBtn');
+        if (titleInp) { titleInp.value = ''; titleInp.classList.remove('hidden-title'); titleInp.removeAttribute('data-skip'); titleInp.placeholder = 'Título del aporte…'; }
+        if (noTitleB) { noTitleB.classList.remove('active'); noTitleB.textContent = 'Sin título'; }
         var expanded = document.getElementById('composerExpanded');
         if (expanded) expanded.classList.remove('open');
         var container = document.getElementById('feed-principal') || document.querySelector('.nodo-posts');

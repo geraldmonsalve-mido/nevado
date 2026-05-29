@@ -165,6 +165,88 @@
       background:rgba(184,148,74,.1); border:1px solid rgba(184,148,74,.25);
       border-radius:4px; padding:1px 5px; vertical-align:middle;
     }
+
+    /* ── Compositor: título ─────────────────────────────────────────────── */
+    .nodo-composer-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .nodo-composer-title-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #E8E8E0;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s, background .2s;
+      letter-spacing: 0.01em;
+    }
+    .nodo-composer-title-input:focus {
+      border-color: rgba(231,76,60,0.4);
+      background: rgba(255,255,255,0.06);
+    }
+    .nodo-composer-title-input::placeholder { color: rgba(255,255,255,0.25); font-weight: 400; }
+    .nodo-composer-title-input.hidden-title {
+      opacity: 0.35;
+      text-decoration: line-through;
+      pointer-events: none;
+    }
+    .nodo-composer-notitle-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      color: rgba(255,255,255,0.38);
+      font-size: 11px;
+      font-family: inherit;
+      padding: 7px 11px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color .2s, border-color .2s, background .2s;
+      letter-spacing: 0.03em;
+    }
+    .nodo-composer-notitle-btn:hover {
+      color: rgba(255,255,255,0.65);
+      border-color: rgba(255,255,255,0.22);
+    }
+    .nodo-composer-notitle-btn.active {
+      background: rgba(231,76,60,0.1);
+      border-color: rgba(231,76,60,0.3);
+      color: #E74C3C;
+    }
+
+    /* ── Posts: título visible ──────────────────────────────────────────── */
+    .nodo-post-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #E8E8E0;
+      margin: 0 0 6px;
+      line-height: 1.35;
+      letter-spacing: 0.01em;
+    }
+    .nodo-post-body p { margin: 0 0 4px; }
+    .nodo-post-body p:last-child { margin-bottom: 0; }
+
+    /* ── Etiqueta REGLA ─────────────────────────────────────────────────── */
+    .nodo-badge-regla {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #B8944A;
+      background: rgba(184,148,74,0.1);
+      border: 1px solid rgba(184,148,74,0.28);
+      border-radius: 5px;
+      padding: 2px 7px;
+    }
   </style>
 </head>
 <body data-page-context="NODO | comunidad venezolana, aportes, red social" data-accent="blue">
@@ -339,7 +421,23 @@
           <input class="nodo-composer-input" id="composerInput" type="text" placeholder="¿Qué sabes hoy que pueda ayudar a alguien?" />
         </div>
         <div class="nodo-composer-expanded" id="composerExpanded">
-          <textarea class="nodo-composer-textarea" placeholder="Desarrolla tu aporte aquí… puedes incluir código, links, contexto…" rows="4"></textarea>
+          <!-- Título del aporte -->
+          <div class="nodo-composer-title-row" id="composerTitleRow">
+            <input
+              class="nodo-composer-title-input"
+              id="composerTitleInput"
+              type="text"
+              placeholder="Título del aporte…"
+              maxlength="120"
+            />
+            <button
+              class="nodo-composer-notitle-btn"
+              id="composerNoTitleBtn"
+              type="button"
+              title="Publicar sin título"
+            >Sin título</button>
+          </div>
+          <textarea class="nodo-composer-textarea" id="composer-textarea" placeholder="Desarrolla tu aporte aquí… puedes incluir código, links, contexto…" rows="4"></textarea>
           <div class="nodo-composer-types">
             <button class="nodo-type-btn active" data-type="insight">💡 Insight</button>
             <button class="nodo-type-btn" data-type="pregunta">❓ Pregunta</button>
@@ -533,6 +631,42 @@
         btn.classList.add('active');
       });
     });
+
+    // ── Compositor: toggle "Sin título" ───────────────────────────
+    (function () {
+      var noTitleBtn  = document.getElementById('composerNoTitleBtn');
+      var titleInput  = document.getElementById('composerTitleInput');
+      var titleRow    = document.getElementById('composerTitleRow');
+      if (!noTitleBtn || !titleInput) return;
+
+      noTitleBtn.addEventListener('click', function () {
+        var sinTitulo = noTitleBtn.classList.toggle('active');
+        if (sinTitulo) {
+          noTitleBtn.textContent = '✓ Sin título';
+          titleInput.classList.add('hidden-title');
+          titleInput.setAttribute('data-skip', '1');
+          titleInput.placeholder = '(sin título)';
+        } else {
+          noTitleBtn.textContent = 'Sin título';
+          titleInput.classList.remove('hidden-title');
+          titleInput.removeAttribute('data-skip');
+          titleInput.placeholder = 'Título del aporte…';
+          titleInput.focus();
+        }
+      });
+
+      // Limpiar estado al cerrar el compositor
+      document.addEventListener('click', function (e) {
+        var box = document.getElementById('composerBox');
+        if (box && !box.contains(e.target)) {
+          noTitleBtn.classList.remove('active');
+          noTitleBtn.textContent = 'Sin título';
+          titleInput.classList.remove('hidden-title');
+          titleInput.removeAttribute('data-skip');
+          titleInput.placeholder = 'Título del aporte…';
+        }
+      });
+    })();
 
     // ── Tag field ─────────────────────────────────────────────────
     document.querySelector('.nodo-tag-field')?.addEventListener('keydown', e => {
