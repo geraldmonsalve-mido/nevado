@@ -388,21 +388,29 @@
       pointer-events: auto;
     }
     div#composerInput:focus { outline: none; border-color: rgba(231,76,60,0.25); }
-    /* ═══════════════════════════════════════════════════════════════
-       CHAT WIDGET — Messenger Desktop style
-       ═══════════════════════════════════════════════════════════════ */
     #chat-widget {
-      position: fixed; bottom: 0; left: 220px; z-index: 8000;
+      position: fixed;
+      bottom: 0;
+      left: 220px;
+      z-index: 8000;
       font-family: 'Geist', system-ui, sans-serif;
-      display: flex; flex-direction: column; align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
     #cwg-trigger {
-      display: flex; align-items: center; gap: 7px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
       background: rgba(13,13,20,0.96);
       border: 1px solid rgba(255,255,255,0.1);
-      border-bottom: none; border-radius: 10px 10px 0 0;
-      padding: 8px 14px; cursor: pointer;
-      color: rgba(232,228,220,0.75); font-size: 12px; font-weight: 500;
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 8px 14px;
+      cursor: pointer;
+      color: rgba(232,228,220,0.75);
+      font-size: 12px;
+      font-weight: 500;
       letter-spacing: 0.03em;
       transition: background 0.2s, color 0.2s;
       user-select: none;
@@ -410,52 +418,82 @@
     }
     #cwg-trigger:hover { background: rgba(231,76,60,0.12); color: #E8E8E0; }
     .cwg-trigger-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #27AE60; box-shadow: 0 0 6px rgba(39,174,96,0.7);
-      flex-shrink: 0; animation: cwgPulse 2s ease-in-out infinite;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #27AE60;
+      box-shadow: 0 0 6px rgba(39,174,96,0.7);
+      flex-shrink: 0;
+      animation: cwgPulse 2s ease-in-out infinite;
     }
-    @keyframes cwgPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+    @keyframes cwgPulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
     .cwg-trigger-label { flex: 1; }
     #cwg-panel {
       display: none;
       flex-direction: column;
-      width: 320px; height: 420px;
+      width: 320px;
+      height: 420px;
       background: rgba(10,11,18,0.98);
       border: 1px solid rgba(255,255,255,0.09);
-      border-bottom: none; border-radius: 10px 10px 0 0;
-      overflow: hidden; box-shadow: 0 -8px 40px rgba(0,0,0,0.55);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      overflow: hidden;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.55);
     }
     #cwg-header {
-      display: flex; align-items: center; gap: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       padding: 10px 12px 8px;
       border-bottom: 1px solid rgba(255,255,255,0.07);
-      flex-shrink: 0; background: rgba(255,255,255,0.02);
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.02);
     }
     #cwg-canales {
-      display: flex; gap: 5px; flex: 1;
-      overflow-x: auto; scrollbar-width: none;
+      display: flex;
+      gap: 5px;
+      flex: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
     #cwg-canales::-webkit-scrollbar { display: none; }
     .cwg-canal-btn {
-      background: transparent; border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 500;
-      color: rgba(255,255,255,0.42); cursor: pointer; white-space: nowrap;
-      font-family: inherit; letter-spacing: 0.03em; flex-shrink: 0;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.42);
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      letter-spacing: 0.03em;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
+      flex-shrink: 0;
     }
     .cwg-canal-btn:hover { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.2); }
     .cwg-canal-btn.active {
-      background: rgba(231,76,60,0.15); border-color: rgba(231,76,60,0.45); color: #fff;
+      background: rgba(231,76,60,0.15);
+      border-color: rgba(231,76,60,0.45);
+      color: #fff;
     }
     #cwg-close {
-      background: none; border: none; color: rgba(255,255,255,0.3);
-      cursor: pointer; padding: 4px; display: flex; align-items: center;
-      flex-shrink: 0; border-radius: 4px; transition: color 0.2s, background 0.2s;
+      background: none; border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer; padding: 4px;
+      display: flex; align-items: center;
+      flex-shrink: 0; border-radius: 4px;
+      transition: color 0.2s, background 0.2s;
     }
     #cwg-close:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.06); }
     #cwg-messages {
-      flex: 1; overflow-y: auto; padding: 12px 12px 4px;
-      display: flex; flex-direction: column; gap: 10px; min-height: 0;
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 12px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
     }
     #cwg-messages::-webkit-scrollbar { width: 3px; }
     #cwg-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
@@ -467,39 +505,53 @@
     .cwg-msg-meta { font-size: 10px; color: rgba(255,255,255,0.3); margin-bottom: 2px; padding: 0 2px; }
     .cwg-msg-own .cwg-msg-meta { text-align: right; }
     .cwg-bubble {
-      padding: 7px 10px; border-radius: 2px 10px 10px 10px;
-      font-size: 13px; line-height: 1.45; color: rgba(232,228,220,0.9);
+      padding: 7px 10px;
+      border-radius: 2px 10px 10px 10px;
+      font-size: 13px; line-height: 1.45;
+      color: rgba(232,228,220,0.9);
       word-break: break-word;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
     }
     .cwg-msg-own .cwg-bubble {
       border-radius: 10px 2px 10px 10px;
-      background: rgba(231,76,60,0.18); border-color: rgba(231,76,60,0.25);
+      background: rgba(231,76,60,0.18);
+      border-color: rgba(231,76,60,0.25);
     }
     .cwg-empty, .cwg-loading {
-      text-align: center; font-size: 12px; color: rgba(255,255,255,0.25);
-      padding: 24px 0; flex: 1; display: flex; align-items: center; justify-content: center;
+      text-align: center; font-size: 12px;
+      color: rgba(255,255,255,0.25);
+      padding: 24px 0; flex: 1;
+      display: flex; align-items: center; justify-content: center;
     }
     #cwg-typing {
-      min-height: 16px; padding: 0 12px 2px; font-size: 11px;
-      font-style: italic; color: rgba(255,255,255,0.28); flex-shrink: 0;
+      min-height: 16px; padding: 0 12px 2px;
+      font-size: 11px; font-style: italic;
+      color: rgba(255,255,255,0.28); flex-shrink: 0;
     }
     #cwg-input-row {
-      display: flex; gap: 7px; padding: 8px 10px 10px;
-      border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+      display: flex; gap: 7px;
+      padding: 8px 10px 10px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
     }
     #cwg-input {
-      flex: 1; background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.09); border-radius: 8px;
-      padding: 8px 11px; font-size: 13px; color: #E8E8E0;
-      font-family: inherit; outline: none; transition: border-color 0.2s;
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 8px; padding: 8px 11px;
+      font-size: 13px; color: #E8E8E0;
+      font-family: inherit; outline: none;
+      transition: border-color 0.2s;
     }
     #cwg-input:focus { border-color: rgba(231,76,60,0.35); }
     #cwg-input::placeholder { color: rgba(255,255,255,0.22); }
     #cwg-send {
-      width: 34px; height: 34px; background: #E74C3C; border: none;
-      border-radius: 8px; color: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px;
+      background: #E74C3C; border: none;
+      border-radius: 8px; color: #fff;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
       flex-shrink: 0; transition: opacity 0.2s;
     }
     #cwg-send:hover { opacity: 0.85; }
@@ -1098,8 +1150,6 @@
   </script>
   <!-- ── Chat Widget — Messenger Desktop style ── -->
   <div id="chat-widget">
-
-    <!-- Trigger pill — visible cuando el panel está cerrado -->
     <div id="cwg-trigger">
       <span class="cwg-trigger-dot"></span>
       <span class="cwg-trigger-label">Chat en vivo</span>
@@ -1108,37 +1158,25 @@
           stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
       </svg>
     </div>
-
-    <!-- Panel principal -->
     <div id="cwg-panel">
-
-      <!-- Header con canales -->
       <div id="cwg-header">
         <div id="cwg-canales"></div>
-        <button id="cwg-close" aria-label="Cerrar chat">
+        <button id="cwg-close" aria-label="Cerrar">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5"
-              stroke-linecap="round"/>
+            <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </button>
       </div>
-
-      <!-- Área de mensajes -->
       <div id="cwg-messages"></div>
-
-      <!-- Typing indicator -->
       <div id="cwg-typing"></div>
-
-      <!-- Input -->
       <div id="cwg-input-row">
-        <input id="cwg-input" placeholder="Escribe algo…" maxlength="500" autocomplete="off" />
+        <input id="cwg-input" placeholder="Escribe algo…" maxlength="500" autocomplete="off"/>
         <button id="cwg-send" aria-label="Enviar">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M2 14L14 8 2 2v4.5l8 1.5-8 1.5V14z" fill="currentColor"/>
           </svg>
         </button>
       </div>
-
     </div>
   </div>
 
@@ -1158,205 +1196,173 @@
   <script src="/nevado-home-desktop-pill.js"></script>
 
   <script>
-  /* ── Chat Widget NEVADO — Messenger Desktop v2 ── */
-  (function () {
-    'use strict';
+(function () {
+  'use strict';
+  var _cache = {};
+  var _rtSubs = {};
+  var _activeCanalId = null;
+  var _panelOpen = false;
 
-    var _cache   = {};
-    var _rtSubs  = {};
-    var _activeCanalId   = null;
-    var _panelOpen = false;
+  var RANK_IMGS = {
+    cachorro: '/rangos/rango1-cachorro-bronce-sm.webp',
+    explorador: '/rangos/rango2-explorador-bronce-sm.webp',
+    guardian: '/rangos/rango3-guardian-plata-sm.webp',
+    montanista: '/rangos/rango4-montanista-plata-sm.webp',
+    guia: '/rangos/rango5-guia-plata-sm.webp',
+    protector: '/rangos/rango6-protector-oro-sm.webp',
+    leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
+  };
 
-    var RANK_IMGS = {
-      cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
-      explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
-      guardian:       '/rangos/rango3-guardian-plata-sm.webp',
-      montanista:     '/rangos/rango4-montanista-plata-sm.webp',
-      guia:           '/rangos/rango5-guia-plata-sm.webp',
-      protector:      '/rangos/rango6-protector-oro-sm.webp',
-      leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
-    };
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function sb() { return window.NODO && window.NODO.sb; }
+  function hora(iso) { return new Date(iso).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}); }
+  function whenReady(cb) {
+    if (window.NODO && window.NODO.sb) { cb(); return; }
+    document.addEventListener('nodo:ready', cb, { once: true });
+  }
 
-    function esc(s) {
-      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-    function sb() { return window.NODO && window.NODO.sb; }
-    function hora(iso) {
-      return new Date(iso).toLocaleTimeString('es', { hour:'2-digit', minute:'2-digit' });
-    }
+  function renderMsg(m, canalId) {
+    if (_activeCanalId !== canalId) return;
+    var msgEl = document.getElementById('cwg-messages');
+    if (!msgEl) return;
+    if (document.querySelector('[data-cwg-id="'+m.id+'"]')) return;
+    var myId = window.NODO_USER ? window.NODO_USER.profile_id : null;
+    var isMe = !!(myId && m.profile_id === myId);
+    var rank = RANK_IMGS[(m.autor_rank||'cachorro').toLowerCase()] || RANK_IMGS.cachorro;
+    var nombre = m.autor_username ? '@'+esc(m.autor_username) : esc(m.autor_nombre||'Usuario');
+    var ph = msgEl.querySelector('.cwg-empty,.cwg-loading');
+    if (ph) ph.remove();
+    var div = document.createElement('div');
+    div.className = 'cwg-msg'+(isMe?' cwg-msg-own':'');
+    div.dataset.cwgId = m.id;
+    div.innerHTML =
+      '<img class="cwg-rank-img" src="'+rank+'" alt="" onerror="this.style.display=\'none\'">' +
+      '<div class="cwg-bubble-wrap">' +
+        '<div class="cwg-msg-meta">'+nombre+' · '+hora(m.created_at)+'</div>' +
+        '<div class="cwg-bubble">'+esc(m.contenido)+'</div>' +
+      '</div>';
+    msgEl.appendChild(div);
+    msgEl.scrollTop = msgEl.scrollHeight;
+  }
 
-    function whenReady(cb) {
-      if (window.NODO && window.NODO.sb) { cb(); return; }
-      document.addEventListener('nodo:ready', cb, { once: true });
-    }
-
-    function renderMsg(m, prepend) {
-      var msgEl = document.getElementById('cwg-messages');
-      if (!msgEl) return;
-      if (document.querySelector('[data-cwg-id="' + m.id + '"]')) return;
-
-      var myId  = window.NODO_USER ? window.NODO_USER.profile_id : null;
-      var isMe  = !!(myId && m.profile_id === myId);
-      var rank  = RANK_IMGS[m.autor_rank] || RANK_IMGS.cachorro;
-      var nombre = m.autor_username ? '@' + esc(m.autor_username) : esc(m.autor_nombre || 'Usuario');
-
-      var ph = msgEl.querySelector('.cwg-empty, .cwg-loading');
-      if (ph) ph.remove();
-
-      var div = document.createElement('div');
-      div.className = 'cwg-msg' + (isMe ? ' cwg-msg-own' : '');
-      div.dataset.cwgId = m.id;
-      div.innerHTML =
-        '<img class="cwg-rank-img" src="' + rank + '" alt="" onerror="this.style.display=\'none\'">' +
-        '<div class="cwg-bubble-wrap">' +
-          '<div class="cwg-msg-meta">' + nombre + ' · ' + hora(m.created_at) + '</div>' +
-          '<div class="cwg-bubble">' + esc(m.contenido) + '</div>' +
-        '</div>';
-
-      if (prepend) {
-        msgEl.insertBefore(div, msgEl.firstChild);
+  async function abrirCanal(canalId) {
+    if (!sb()) return;
+    _activeCanalId = canalId;
+    var msgEl = document.getElementById('cwg-messages');
+    if (_cache[canalId] && _cache[canalId].loaded) {
+      msgEl.innerHTML = '';
+      var cached = _cache[canalId].msgs;
+      if (!cached.length) {
+        msgEl.innerHTML = '<div class="cwg-empty">Sin mensajes aún. ¡Sé el primero!</div>';
       } else {
-        msgEl.appendChild(div);
+        cached.forEach(function(m){ renderMsg(m, canalId); });
+        msgEl.scrollTop = msgEl.scrollHeight;
+      }
+    } else {
+      msgEl.innerHTML = '<div class="cwg-loading">Cargando…</div>';
+      _cache[canalId] = { msgs: [], loaded: false };
+      var r = await sb()
+        .from('chat_mensajes')
+        .select('id,profile_id,autor_nombre,autor_rank,autor_username,contenido,created_at')
+        .eq('canal_id', canalId)
+        .eq('eliminado', false)
+        .order('created_at', { ascending: true })
+        .limit(40);
+      var msgs = r.data || [];
+      _cache[canalId].msgs = msgs;
+      _cache[canalId].loaded = true;
+      msgEl.innerHTML = '';
+      if (!msgs.length) {
+        msgEl.innerHTML = '<div class="cwg-empty">Sin mensajes aún. ¡Sé el primero!</div>';
+      } else {
+        msgs.forEach(function(m){ renderMsg(m, canalId); });
         msgEl.scrollTop = msgEl.scrollHeight;
       }
     }
-
-    async function abrirCanal(canalId) {
-      if (!sb()) return;
-      _activeCanalId = canalId;
-
-      var msgEl = document.getElementById('cwg-messages');
-
-      if (_cache[canalId] && _cache[canalId].loaded) {
-        msgEl.innerHTML = '';
-        var cached = _cache[canalId].msgs;
-        if (!cached.length) {
-          msgEl.innerHTML = '<div class="cwg-empty">Sin mensajes aún. ¡Sé el primero!</div>';
-        } else {
-          cached.forEach(function (m) { renderMsg(m, false); });
-          msgEl.scrollTop = msgEl.scrollHeight;
-        }
-      } else {
-        msgEl.innerHTML = '<div class="cwg-loading">Cargando…</div>';
-        _cache[canalId] = { msgs: [], loaded: false };
-
-        var r = await sb()
-          .from('chat_mensajes')
-          .select('id,profile_id,autor_nombre,autor_rank,autor_username,contenido,created_at')
-          .eq('canal_id', canalId)
-          .eq('eliminado', false)
-          .order('created_at', { ascending: true })
-          .limit(40);
-
-        var msgs = r.data || [];
-        _cache[canalId].msgs   = msgs;
-        _cache[canalId].loaded = true;
-
-        msgEl.innerHTML = '';
-        if (!msgs.length) {
-          msgEl.innerHTML = '<div class="cwg-empty">Sin mensajes aún. ¡Sé el primero!</div>';
-        } else {
-          msgs.forEach(function (m) { renderMsg(m, false); });
-          msgEl.scrollTop = msgEl.scrollHeight;
-        }
-      }
-
-      if (!_rtSubs[canalId]) {
-        _rtSubs[canalId] = sb()
-          .channel('cwg-rt-' + canalId)
-          .on('postgres_changes', {
-            event: 'INSERT', schema: 'public',
-            table: 'chat_mensajes',
-            filter: 'canal_id=eq.' + canalId,
-          }, function (payload) {
-            var m = payload.new;
-            if (_cache[canalId]) {
-              var already = _cache[canalId].msgs.find(function (x) { return x.id === m.id; });
-              if (!already) _cache[canalId].msgs.push(m);
-            }
-            if (_activeCanalId === canalId) renderMsg(m, false);
-          })
-          .subscribe();
-      }
+    if (!_rtSubs[canalId]) {
+      _rtSubs[canalId] = sb()
+        .channel('cwg-rt-'+canalId)
+        .on('postgres_changes', {
+          event: 'INSERT', schema: 'public',
+          table: 'chat_mensajes',
+          filter: 'canal_id=eq.'+canalId,
+        }, function(payload) {
+          var m = payload.new;
+          if (_cache[canalId]) {
+            if (!_cache[canalId].msgs.find(function(x){return x.id===m.id;}))
+              _cache[canalId].msgs.push(m);
+          }
+          renderMsg(m, canalId);
+        })
+        .subscribe();
     }
+  }
 
-    async function initCanales() {
-      if (!sb()) return;
-      var r = await sb()
-        .from('chat_canales')
-        .select('id,nombre,slug')
-        .eq('activo', true)
-        .order('created_at', { ascending: true })
-        .limit(8);
-
-      var canales = r.data || [];
-      if (!canales.length) return;
-
-      var canalesEl = document.getElementById('cwg-canales');
-      canalesEl.innerHTML = canales.map(function (c, i) {
-        return '<button class="cwg-canal-btn' + (i === 0 ? ' active' : '') + '"' +
-          ' data-id="' + esc(c.id) + '"' +
-          ' data-slug="' + esc(c.slug) + '">' +
-          '# ' + esc(c.nombre) +
-          '</button>';
-      }).join('');
-
-      canalesEl.querySelectorAll('.cwg-canal-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          canalesEl.querySelectorAll('.cwg-canal-btn').forEach(function (b) { b.classList.remove('active'); });
-          btn.classList.add('active');
-          abrirCanal(btn.dataset.id);
-        });
+  async function initCanales() {
+    if (!sb()) return;
+    var r = await sb()
+      .from('chat_canales')
+      .select('id,nombre,slug')
+      .eq('activo', true)
+      .order('created_at', { ascending: true })
+      .limit(8);
+    var canales = r.data || [];
+    if (!canales.length) return;
+    var canalesEl = document.getElementById('cwg-canales');
+    canalesEl.innerHTML = canales.map(function(c,i){
+      return '<button class="cwg-canal-btn'+(i===0?' active':'')+'"'+
+        ' data-id="'+esc(c.id)+'"># '+esc(c.nombre)+'</button>';
+    }).join('');
+    canalesEl.querySelectorAll('.cwg-canal-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        canalesEl.querySelectorAll('.cwg-canal-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        abrirCanal(btn.dataset.id);
       });
-
-      abrirCanal(canales[0].id);
-    }
-
-    document.getElementById('cwg-trigger').addEventListener('click', function () {
-      _panelOpen = !_panelOpen;
-      var panel   = document.getElementById('cwg-panel');
-      var trigger = document.getElementById('cwg-trigger');
-      panel.style.display   = _panelOpen ? 'flex' : 'none';
-      trigger.style.display = _panelOpen ? 'none' : 'flex';
-      if (_panelOpen && !_activeCanalId) whenReady(initCanales);
     });
+    abrirCanal(canales[0].id);
+  }
 
-    document.getElementById('cwg-close').addEventListener('click', function () {
-      _panelOpen = false;
-      document.getElementById('cwg-panel').style.display   = 'none';
-      document.getElementById('cwg-trigger').style.display = 'flex';
+  document.getElementById('cwg-trigger').addEventListener('click', function(){
+    _panelOpen = true;
+    document.getElementById('cwg-panel').style.display = 'flex';
+    document.getElementById('cwg-trigger').style.display = 'none';
+    whenReady(initCanales);
+  });
+
+  document.getElementById('cwg-close').addEventListener('click', function(){
+    _panelOpen = false;
+    document.getElementById('cwg-panel').style.display = 'none';
+    document.getElementById('cwg-trigger').style.display = 'flex';
+  });
+
+  async function enviar() {
+    var user = window.NODO_USER;
+    if (!user) { window.location.href = '/auth.html?redirect=/nodo.html'; return; }
+    var input = document.getElementById('cwg-input');
+    var texto = (input.value||'').trim();
+    if (!texto || texto.length > 500 || !_activeCanalId) return;
+    input.value = '';
+    await sb().from('chat_mensajes').insert({
+      canal_id: _activeCanalId,
+      profile_id: user.profile_id,
+      autor_nombre: user.display_name,
+      autor_rank: user.rank_key || 'cachorro',
+      autor_username: user.username || null,
+      contenido: texto,
+      tipo: 'texto',
     });
+  }
 
-    async function enviar() {
-      var user = window.NODO_USER;
-      if (!user) { window.location.href = '/auth.html?redirect=/nodo.html'; return; }
-      var input = document.getElementById('cwg-input');
-      var texto = (input.value || '').trim();
-      if (!texto || texto.length > 500 || !_activeCanalId) return;
-      input.value = '';
+  document.getElementById('cwg-send').addEventListener('click', enviar);
+  document.getElementById('cwg-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
+  });
 
-      await sb().from('chat_mensajes').insert({
-        canal_id:       _activeCanalId,
-        profile_id:     user.profile_id,
-        autor_nombre:   user.display_name,
-        autor_rank:     user.rank_key || 'cachorro',
-        autor_username: user.username || null,
-        contenido:      texto,
-        tipo:           'texto',
-      });
-    }
-
-    document.getElementById('cwg-send').addEventListener('click', enviar);
-    document.getElementById('cwg-input').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
-    });
-
-    /* Precargar en background al cargar la página */
-    whenReady(function () {
-      setTimeout(initCanales, 1500);
-    });
-
-  })();
+  whenReady(function(){ setTimeout(initCanales, 1500); });
+})();
   </script>
 </body>
 </html>
