@@ -690,10 +690,10 @@
       deleteConfirmBtn.textContent = 'Eliminando…';
       try {
         var { error } = await sb()
-          .from('foro_hilos')
-          .update({ estado: 'eliminado' })
-          .eq('id', hiloId)
-          .eq('profile_id', window.NODO_USER.profile_id);
+          .rpc('soft_delete_hilo', {
+            hilo_id: hiloId,
+            pid:     window.NODO_USER.profile_id,
+          });
 
         if (error) throw error;
 
