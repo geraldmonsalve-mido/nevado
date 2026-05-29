@@ -511,6 +511,10 @@
     var liked      = myLikedIds.indexOf(hilo.id) !== -1;
     var catPart    = hilo.foro_categorias ? esc(hilo.foro_categorias.nombre) + ' · ' : '';
     var esReglas   = hilo.foro_categorias && hilo.foro_categorias.slug === 'reglas';
+    var editedAt   = hilo.updated_at && hilo.updated_at !== hilo.created_at ? hilo.updated_at : null;
+    var timeLabel  = editedAt ? 'editado ' + timeAgo(editedAt) : time;
+    var myPid      = window.NODO_USER ? window.NODO_USER.profile_id : null;
+    var esMio      = !!(myPid && hilo.profile_id === myPid);
     var tituloHilo = (hilo.titulo && hilo.titulo.trim()) ? hilo.titulo.trim() : null;
 
     var avatarHtml =
@@ -535,7 +539,7 @@
           '</div>' +
           '<div class="nodo-post-sub">' +
             (hilo.autor_username ? '<span style="color:#B8944A;font-size:10px;margin-right:6px;">@' + esc(hilo.autor_username) + '</span>' : '') +
-            catPart + time +
+            catPart + '<span class="nodo-post-timestamp' + (editedAt ? ' edited' : '') + '">' + timeLabel + '</span>' +
           '</div>' +
         '</div>' +
         '<button class="nodo-post-follow" data-autor="' + esc(hilo.profile_id || '') + '">+ Seguir</button>' +
@@ -562,6 +566,12 @@
           '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 5v3M7 10h.01" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M3.5 12.5l-1-10 4.5 2.5 4.5-2.5-1 10h-7z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>' +
           '<span>Reportar</span>' +
         '</button>' +
+        (esMio
+          ? '<button class="nodo-post-action nodo-action-edit" data-hilo="' + hilo.id + '">' +
+              '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>' +
+              '<span>Editar</span>' +
+            '</button>'
+          : '') +
       '</div>' +
     '</article>';
   }
@@ -602,6 +612,95 @@
       else container.appendChild(tmp.firstChild);
     }
     bindFeedEvents(container);
+  }
+
+  /* ── Editar hilo ────────────────────────────────────────────────────────── */
+  function editarHilo(hiloId, articleEl) {
+    var titleEl  = articleEl.querySelector('.nodo-post-title');
+    var bodyEl   = articleEl.querySelector('.nodo-post-body');
+    var tsEl     = articleEl.querySelector('.nodo-post-timestamp');
+    var curTitle = titleEl ? titleEl.textContent.trim() : '';
+    var curBody  = Array.from(bodyEl.querySelectorAll('p')).map(function (p) { return p.textContent; }).join('\n');
+
+    /* Build modal */
+    var overlay = document.createElement('div');
+    overlay.className = 'nodo-edit-modal-overlay';
+    overlay.innerHTML =
+      '<div class="nodo-edit-modal">' +
+        '<div class="nodo-edit-modal-header">' +
+          '<span>Editar publicación</span>' +
+          '<button class="nodo-edit-modal-close" type="button">✕</button>' +
+        '</div>' +
+        (curTitle
+          ? '<input class="nodo-edit-modal-title" maxlength="120" value="' + esc(curTitle) + '" placeholder="Título (opcional)" />'
+          : '') +
+        '<textarea class="nodo-edit-modal-body" maxlength="5000">' + esc(curBody) + '</textarea>' +
+        '<div class="nodo-edit-modal-footer">' +
+          '<span class="nodo-edit-modal-counter">0 / 5000</span>' +
+          '<div>' +
+            '<button class="nodo-edit-modal-cancel" type="button">Cancelar</button>' +
+            '<button class="nodo-edit-modal-save" type="button">Guardar</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    var textarea  = overlay.querySelector('.nodo-edit-modal-body');
+    var counter   = overlay.querySelector('.nodo-edit-modal-counter');
+    var saveBtn   = overlay.querySelector('.nodo-edit-modal-save');
+    var cancelBtn = overlay.querySelector('.nodo-edit-modal-cancel');
+    var closeBtn  = overlay.querySelector('.nodo-edit-modal-close');
+    var titleInput = overlay.querySelector('.nodo-edit-modal-title');
+
+    function updateCounter() {
+      counter.textContent = textarea.value.length + ' / 5000';
+    }
+    updateCounter();
+    textarea.addEventListener('input', updateCounter);
+
+    function closeModal() { overlay.remove(); }
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeModal(); });
+
+    saveBtn.addEventListener('click', async function () {
+      var newBody  = textarea.value.trim();
+      var newTitle = titleInput ? titleInput.value.trim() : null;
+      if (!newBody) return;
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Guardando…';
+
+      var update = { contenido: newBody, updated_at: new Date().toISOString() };
+      if (newTitle !== null) update.titulo = newTitle || null;
+
+      var myPid = window.NODO_USER ? window.NODO_USER.profile_id : null;
+      var q = sb().from('foro_hilos').update(update).eq('id', hiloId);
+      if (myPid) q = q.eq('profile_id', myPid);
+      var { error } = await q;
+
+      if (error) {
+        window.NODO.showToast('Error al guardar. Intenta de nuevo.');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar';
+        return;
+      }
+
+      /* DOM update — no reload */
+      bodyEl.innerHTML = '<p>' + esc(newBody).replace(/\n/g, '</p><p>') + '</p>';
+      if (titleEl && newTitle !== null) {
+        if (newTitle) { titleEl.textContent = newTitle; }
+        else { titleEl.remove(); }
+      }
+      if (tsEl) {
+        tsEl.textContent = 'editado ' + timeAgo(update.updated_at);
+        tsEl.classList.add('edited');
+      }
+
+      window.NODO.showToast('Publicación actualizada.');
+      closeModal();
+    });
   }
 
   /* ── Bind feed events ───────────────────────────────────────────────────── */
@@ -656,6 +755,14 @@
     container.querySelectorAll('.nodo-post-follow').forEach(function (btn) {
       btn.addEventListener('click', function () {
         btn.textContent = btn.classList.toggle('following') ? '✓ Siguiendo' : '+ Seguir';
+      });
+    });
+
+    /* Edit */
+    container.querySelectorAll('.nodo-action-edit[data-hilo]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var article = btn.closest('article.nodo-post');
+        if (article) editarHilo(btn.getAttribute('data-hilo'), article);
       });
     });
   }
