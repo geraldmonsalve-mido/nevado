@@ -108,7 +108,13 @@
   <script src="/croquetas.js"></script>
 
   <script>
-    /* Show/hide reply form based on auth */
+    /* Iniciar sesión Clerk y manejar estado del formulario de respuesta */
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.NODO && window.NODO.initClerkSession) {
+        window.NODO.initClerkSession();
+      }
+    });
+
     document.addEventListener('nodo:ready', function (e) {
       var user = e.detail && e.detail.user;
       var hint = document.getElementById('hilo-login-hint');
@@ -116,8 +122,12 @@
       var inp  = document.getElementById('hilo-reply-input');
       if (!user) {
         if (hint) hint.style.display = '';
-        if (btn) btn.style.display = 'none';
-        if (inp) inp.disabled = true;
+        if (btn)  btn.style.display  = 'none';
+        if (inp)  inp.disabled       = true;
+      } else {
+        if (hint) hint.style.display = 'none';
+        if (btn)  btn.style.display  = '';
+        if (inp)  inp.disabled       = false;
       }
     });
   </script>
