@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chat · NODO · NEVADO</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin />
   <script
@@ -15,141 +16,338 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/nodo.css" />
+
   <style>
-    :root { --topbar-h: 52px; --sidebar-w: 220px; }
+    /* ═══════════════════════════════════════════════════════
+       NEVADO CHAT — Design v3.0
+       Layout: Topbar fixed · Sidebar 260px · Main flex-1
+    ═══════════════════════════════════════════════════════ */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --topbar-h:  52px;
+      --sidebar-w: 260px;
+      --accent:    #E74C3C;
+      --gold:      #B8944A;
+      --carbon:    #05050A;
+      --green:     #27AE60;
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      background: var(--carbon);
+      color: #E8E8E0;
+      font-family: 'Geist', system-ui, sans-serif;
+      cursor: none;
+    }
+
+    /* ── Topbar ─────────────────────────────────────────── */
     #topbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
-      height: 52px; display: flex; align-items: center;
-      justify-content: space-between; padding: 0 28px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 12px;
       background: rgba(5,5,10,0.97);
       backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; color: rgba(232,228,220,0.88); text-decoration: none; font-family: 'Cormorant Garamond', serif; }
-    .topbar-logo span { color: #E74C3C; }
-    .topbar-back { font-size: 11px; color: rgba(255,255,255,0.45); text-decoration: none; }
-    .topbar-back:hover { color: rgba(255,255,255,0.8); }
-    .topbar-session { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .chat-sidebar-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.45);
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px 6px;
+      cursor: pointer;
+      transition: color 0.2s;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-sidebar-toggle:hover { color: rgba(255,255,255,0.8); }
+
+    .topbar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88);
+      text-decoration: none;
+    }
+    .topbar-logo span { color: var(--accent); }
+
+    .topbar-back {
+      font-size: 11px;
+      color: rgba(255,255,255,0.38);
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: color 0.2s;
+    }
+    .topbar-back:hover { color: rgba(255,255,255,0.7); }
+
+    .topbar-session {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
     .topbar-session-name { color: rgba(232,232,224,0.75); font-weight: 500; }
     .topbar-session-rank { width: 22px; height: 22px; object-fit: contain; }
 
-    /* ── Layout ── */
+    /* ── Main layout ────────────────────────────────────── */
     .chat-layout {
       display: flex;
-      height: calc(100vh - var(--topbar-h));
-      margin-top: var(--topbar-h);
+      height: 100vh;
+      padding-top: var(--topbar-h);
       overflow: hidden;
     }
 
-    /* ── Channels sidebar ── */
+    /* ── Sidebar ────────────────────────────────────────── */
     .chat-sidebar {
       width: var(--sidebar-w);
-      border-right: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+      background: rgba(5,5,10,0.6);
+      border-right: 1px solid rgba(255,255,255,0.05);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
+
     .chat-sidebar-header {
-      padding: 14px 16px 10px;
+      padding: 18px 16px 8px;
       font-size: 9px;
       font-weight: 600;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.34);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.25);
+      flex-shrink: 0;
     }
+
     #nodo-canales-list {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 0;
+      padding: 4px 0 8px;
     }
+    #nodo-canales-list::-webkit-scrollbar { width: 2px; }
+    #nodo-canales-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+    }
+
     .nodo-canal-item {
-      display: block;
-      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      width: calc(100% - 16px);
+      margin: 1px 8px;
+      padding: 9px 16px 9px 14px;
+      border-left: 2px solid transparent;
+      border-radius: 8px;
       font-size: 13px;
-      color: rgba(255,255,255,0.45);
+      color: rgba(255,255,255,0.55);
       background: none;
-      border: none;
+      border-top: none;
+      border-right: none;
+      border-bottom: none;
+      border-left: 2px solid transparent;
       text-align: left;
       cursor: pointer;
       font-family: inherit;
-      border-radius: 6px;
-      margin: 1px 8px;
-      width: calc(100% - 16px);
-      transition: color 0.2s, background 0.2s;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
-    .nodo-canal-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.04); }
-    .nodo-canal-item.active { color: #E74C3C; background: rgba(231,76,60,0.08); }
-    .nodo-canal-anuncio { color: #B8944A !important; }
-    .nodo-canal-anuncio.active { color: #B8944A !important; background: rgba(184,148,74,0.08) !important; }
+    .nodo-canal-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.78);
+    }
+    .nodo-canal-item.active {
+      background: rgba(231,76,60,0.1);
+      color: #E8E8E0;
+      border-left-color: var(--accent);
+    }
+    .nodo-canal-item.active::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
 
-    /* ── Main chat area ── */
+    .nodo-canal-anuncio { color: rgba(184,148,74,0.65); }
+    .nodo-canal-anuncio:hover { color: rgba(184,148,74,0.9); }
+    .nodo-canal-anuncio.active {
+      background: rgba(184,148,74,0.08) !important;
+      border-left-color: var(--gold) !important;
+      color: #E8E8E0 !important;
+    }
+    .nodo-canal-anuncio.active::after { background: var(--gold) !important; }
+
+    .chat-sidebar-loading {
+      padding: 16px 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* ── Sidebar footer (usuario actual) ────────────────── */
+    .chat-sidebar-footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      min-height: 48px;
+    }
+
+    .chat-sidebar-user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(231,76,60,0.15);
+      border: 1px solid rgba(231,76,60,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .chat-sidebar-presence {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      border: 1.5px solid var(--carbon);
+    }
+
+    .chat-sidebar-user-name {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── Chat main area ─────────────────────────────────── */
     .chat-main {
       flex: 1;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
+
+    /* ── Canal header ───────────────────────────────────── */
     .chat-header {
-      padding: 12px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      height: 52px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(5,5,10,0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       flex-shrink: 0;
     }
+
     #nodo-chan-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       color: #E8E8E0;
     }
+
     .chat-header-live {
+      display: inline-flex;
+      align-items: center;
       font-size: 9px;
       font-weight: 600;
       letter-spacing: 0.1em;
-      color: #27AE60;
-      background: rgba(39,174,96,0.1);
-      padding: 2px 7px;
+      color: var(--green);
+      background: rgba(39,174,96,0.08);
+      border: 1px solid rgba(39,174,96,0.18);
+      padding: 3px 8px;
       border-radius: 20px;
-      border: 1px solid rgba(39,174,96,0.2);
+      gap: 0;
+    }
+    .chat-header-live::before {
+      content: '●';
+      font-size: 7px;
+      margin-right: 5px;
+      color: var(--green);
+      animation: livePulse 1.4s ease-in-out infinite;
     }
 
-    /* ── Messages ── */
+    /* ── Messages area ──────────────────────────────────── */
     #nodo-chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 16px 20px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
+      scroll-behavior: smooth;
     }
     #nodo-chat-messages::-webkit-scrollbar { width: 4px; }
-    #nodo-chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    #nodo-chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+    }
 
+    /* ── Message bubbles ────────────────────────────────── */
     .nodo-chat-msg {
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       gap: 10px;
+      animation: msgIn 0.18s ease forwards;
     }
     .nodo-chat-msg-own { flex-direction: row-reverse; }
 
     .nodo-chat-rank-img {
-      width: 30px; height: 30px;
+      width: 28px;
+      height: 28px;
       object-fit: contain;
       flex-shrink: 0;
     }
 
+    /* Others */
     .nodo-chat-bubble {
       max-width: 65%;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 2px 14px 14px 14px;
+      padding: 9px 13px;
     }
+    /* Own */
     .nodo-chat-msg-own .nodo-chat-bubble {
-      background: rgba(231,76,60,0.1);
-      border-color: rgba(231,76,60,0.2);
+      background: rgba(231,76,60,0.12);
+      border-color: rgba(231,76,60,0.22);
+      border-radius: 14px 2px 14px 14px;
     }
+
     .nodo-chat-author {
       display: flex;
       align-items: baseline;
@@ -170,161 +368,262 @@
       font-size: 10px;
       color: rgba(255,255,255,0.3);
     }
+
     .nodo-chat-text {
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.55;
-      color: rgba(232,232,224,0.85);
+      color: rgba(232,232,224,0.88);
       word-break: break-word;
     }
+
     .nodo-chat-time {
       font-size: 10px;
-      color: rgba(255,255,255,0.28);
-      margin-top: 4px;
+      color: rgba(255,255,255,0.25);
       text-align: right;
+      margin-top: 4px;
     }
+    .nodo-chat-msg-own .nodo-chat-time { text-align: left; }
+
+    /* Grouped consecutive messages from same author */
+    .nodo-chat-msg-grouped { margin-top: -10px; }
+    .nodo-chat-msg-grouped .nodo-chat-rank-img { visibility: hidden; }
+    .nodo-chat-msg-grouped .nodo-chat-author   { display: none; }
+    .nodo-chat-msg-grouped .nodo-chat-bubble   { border-top-left-radius: 4px; }
+    .nodo-chat-msg-grouped.nodo-chat-msg-own .nodo-chat-bubble {
+      border-top-right-radius: 4px;
+      border-top-left-radius: 14px;
+    }
+
     .nodo-chat-loading,
     .nodo-chat-empty {
       font-size: 13px;
-      color: rgba(255,255,255,0.28);
+      color: rgba(255,255,255,0.25);
       text-align: center;
-      padding: 32px 0;
+      padding: 48px 0;
+      margin: auto;
     }
 
-    /* ── Typing indicator ── */
-    #chat-typing-indicator {
-      min-height: 18px;
-      padding: 0 20px 2px;
+    /* ── Typing indicator ───────────────────────────────── */
+    #typing-indicator {
+      min-height: 20px;
+      padding: 2px 24px;
       font-size: 11px;
-      color: rgba(255,255,255,0.32);
       font-style: italic;
+      color: rgba(255,255,255,0.35);
       flex-shrink: 0;
     }
 
-    /* ── Emoji bar ── */
+    /* ── Emoji bar ──────────────────────────────────────── */
     #chat-emoji-bar {
       display: flex;
       gap: 4px;
-      padding: 6px 20px 0;
+      padding: 4px 20px;
       flex-shrink: 0;
     }
+
     .chat-emoji-btn {
-      background: none;
+      background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 6px;
-      padding: 3px 7px;
-      font-size: 15px;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 16px;
       cursor: pointer;
       line-height: 1;
-      transition: background 0.15s;
+      transition: background 0.15s, transform 0.1s;
     }
-    .chat-emoji-btn:hover { background: rgba(255,255,255,0.06); }
+    .chat-emoji-btn:hover {
+      background: rgba(255,255,255,0.09);
+      transform: scale(1.15);
+    }
 
-    /* ── Input row ── */
+    /* ── Input row ──────────────────────────────────────── */
     .chat-input-row {
-      padding: 8px 20px 14px;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 16px 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
       display: flex;
       gap: 8px;
       align-items: flex-end;
       flex-shrink: 0;
     }
+
     #nodo-chat-input {
       flex: 1;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 10px 14px;
+      border-radius: 12px;
+      padding: 11px 14px;
       font-size: 14px;
       color: #E8E8E0;
       font-family: inherit;
       outline: none;
       resize: none;
-      min-height: 40px;
-      max-height: 120px;
-      line-height: 1.4;
-      transition: border-color 0.2s;
+      min-height: 42px;
+      max-height: 130px;
+      line-height: 1.45;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    #nodo-chat-input:focus { border-color: rgba(231,76,60,0.35); }
-    #nodo-chat-input::placeholder { color: rgba(255,255,255,0.28); }
+    #nodo-chat-input:focus {
+      border-color: rgba(231,76,60,0.4);
+      box-shadow: 0 0 0 3px rgba(231,76,60,0.06);
+    }
+    #nodo-chat-input::placeholder { color: rgba(255,255,255,0.22); }
+    #nodo-chat-input:disabled     { opacity: 0.45; }
+
     #nodo-chat-send {
-      background: #E74C3C;
-      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent);
       border: none;
-      width: 38px; height: 38px;
-      border-radius: 9px;
+      color: #fff;
       cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s, transform 0.15s;
     }
-    #nodo-chat-send:hover { opacity: 0.85; }
+    #nodo-chat-send:hover { opacity: 0.88; transform: scale(0.97); }
+
+    /* ── Login notice ───────────────────────────────────── */
     .chat-login-notice {
       padding: 12px 20px;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top: 1px solid rgba(255,255,255,0.05);
       font-size: 12px;
       color: rgba(255,255,255,0.38);
       text-align: center;
       flex-shrink: 0;
     }
-    .chat-login-notice a { color: #E74C3C; }
+    .chat-login-notice a { color: var(--accent); text-decoration: none; }
 
+    /* ── Mobile sidebar overlay ─────────────────────────── */
+    .chat-sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: var(--topbar-h);
+      background: rgba(0,0,0,0.5);
+      z-index: 490;
+    }
+    .chat-sidebar-overlay.visible { display: block; }
+
+    /* ── Animations ─────────────────────────────────────── */
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30%           { transform: translateY(-4px); }
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ── Mobile ─────────────────────────────────────────── */
     @media (max-width: 640px) {
-      .chat-sidebar { display: none; }
+      .chat-sidebar-toggle { display: flex; }
+
+      .chat-sidebar {
+        position: fixed;
+        left: 0;
+        top: var(--topbar-h);
+        bottom: 0;
+        z-index: 500;
+        width: var(--sidebar-w);
+        background: var(--carbon);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+      .chat-sidebar.open { transform: translateX(0); }
+
+      .nodo-chat-bubble    { max-width: 80%; }
+      .chat-input-row      { padding: 6px 10px 12px; }
+      #nodo-chat-messages  { padding: 16px 14px; gap: 12px; }
+      #topbar              { padding: 0 14px; }
     }
   </style>
 </head>
+
 <body>
+  <!-- ── Topbar ──────────────────────────────────────────── -->
   <header id="topbar">
-    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <div class="topbar-left">
+      <button id="chat-sidebar-toggle" class="chat-sidebar-toggle" aria-label="Canales">☰</button>
+      <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    </div>
     <a class="topbar-back" href="/nodo.html">← NODO</a>
     <div id="topbar-session" class="topbar-session"></div>
   </header>
 
+  <!-- Mobile overlay -->
+  <div id="chat-sidebar-overlay" class="chat-sidebar-overlay"></div>
+
+  <!-- ── Layout ──────────────────────────────────────────── -->
   <div class="chat-layout">
-    <!-- Channels -->
-    <aside class="chat-sidebar">
+
+    <!-- Sidebar canales -->
+    <aside class="chat-sidebar" id="chat-sidebar">
       <div class="chat-sidebar-header">Canales</div>
       <div id="nodo-canales-list">
-        <div style="padding:12px 16px;font-size:12px;color:rgba(255,255,255,0.28);">Cargando…</div>
+        <div class="chat-sidebar-loading">Cargando…</div>
       </div>
+      <div id="chat-sidebar-footer" class="chat-sidebar-footer"></div>
     </aside>
 
-    <!-- Chat main -->
+    <!-- Área principal -->
     <div class="chat-main">
+
+      <!-- Header del canal -->
       <div class="chat-header">
         <span id="nodo-chan-title"># general</span>
-        <span class="chat-header-live">● VIVO</span>
+        <span class="chat-header-live">VIVO</span>
       </div>
 
+      <!-- Mensajes -->
       <div id="nodo-chat-messages">
         <div class="nodo-chat-loading">Selecciona un canal.</div>
       </div>
 
+      <!-- Typing -->
+      <div id="typing-indicator" style="display:none"></div>
+
+      <!-- Emojis -->
       <div id="chat-emoji-bar">
-        <button class="chat-emoji-btn" data-emoji="👍" type="button">👍</button>
-        <button class="chat-emoji-btn" data-emoji="🔥" type="button">🔥</button>
-        <button class="chat-emoji-btn" data-emoji="❤️" type="button">❤️</button>
+        <button class="chat-emoji-btn" data-emoji="👍"  type="button">👍</button>
+        <button class="chat-emoji-btn" data-emoji="🔥"  type="button">🔥</button>
+        <button class="chat-emoji-btn" data-emoji="❤️"  type="button">❤️</button>
         <button class="chat-emoji-btn" data-emoji="🇻🇪" type="button">🇻🇪</button>
-        <button class="chat-emoji-btn" data-emoji="😂" type="button">😂</button>
-        <button class="chat-emoji-btn" data-emoji="✅" type="button">✅</button>
+        <button class="chat-emoji-btn" data-emoji="😂"  type="button">😂</button>
+        <button class="chat-emoji-btn" data-emoji="✅"  type="button">✅</button>
       </div>
 
-      <div id="typing-indicator" style="display:none;color:rgba(255,255,255,.4);font-size:11px;padding:4px 20px;font-style:italic;"></div>
-
+      <!-- Input -->
       <div class="chat-input-row" id="chat-input-row">
-        <textarea id="nodo-chat-input" rows="1" placeholder="Escribe un mensaje… (Enter para enviar)"></textarea>
+        <textarea
+          id="nodo-chat-input"
+          rows="1"
+          placeholder="Escribe un mensaje… (Enter para enviar)"
+        ></textarea>
         <button id="nodo-chat-send" type="button" aria-label="Enviar">
-          <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 14L14 8 2 2v4.5l8 1.5-8 1.5V14z" fill="currentColor"/>
           </svg>
         </button>
       </div>
+
+      <!-- Login notice -->
       <div class="chat-login-notice" id="chat-login-notice" style="display:none">
         <a href="/auth.html?redirect=/nodo-chat.html">Inicia sesión</a> para participar en el chat.
       </div>
+
     </div>
   </div>
 
+  <!-- ── Scripts — NO MODIFICAR ORDEN ────────────────────── -->
   <script src="/cursor.js"></script>
   <script src="/nevado-env.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
@@ -332,11 +631,30 @@
   <script src="/js/nodo/nodo-chat.js"></script>
 
   <script>
-    /* FIX 9E — kick off session resolution so nodo:ready fires */
+    /* ── Sidebar mobile drawer ─────────────────────────── */
+    (function () {
+      var sidebar   = document.getElementById('chat-sidebar');
+      var overlay   = document.getElementById('chat-sidebar-overlay');
+      var toggleBtn = document.getElementById('chat-sidebar-toggle');
+
+      function openSidebar()  { sidebar.classList.add('open');    overlay.classList.add('visible'); }
+      function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('visible'); }
+
+      if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+      if (overlay)   overlay.addEventListener('click', closeSidebar);
+
+      /* Cerrar al seleccionar canal en mobile */
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('.nodo-canal-item') && window.innerWidth <= 640) closeSidebar();
+      });
+    })();
+
+    /* ── Kick off session ──────────────────────────────── */
     document.addEventListener('DOMContentLoaded', function () {
       if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
     });
 
+    /* ── Rank images map ───────────────────────────────── */
     var RANK_SM_MAP = {
       cachorro:       '/rangos/rango1-cachorro-bronce-sm.webp',
       explorador:     '/rangos/rango2-explorador-bronce-sm.webp',
@@ -347,15 +665,16 @@
       leyenda_andina: '/rangos/rango7-leyendaandina-oro-joyas-sm.webp',
     };
 
+    /* ── Session ready ─────────────────────────────────── */
     document.addEventListener('nodo:ready', function (ev) {
-      var user        = ev.detail && ev.detail.user;
-      var inputRow    = document.getElementById('chat-input-row');
-      var emojiBar    = document.getElementById('chat-emoji-bar');
-      var loginNotice = document.getElementById('chat-login-notice');
-      var sessionEl   = document.getElementById('topbar-session');
-      var chatInput   = document.getElementById('nodo-chat-input');
+      var user          = ev.detail && ev.detail.user;
+      var inputRow      = document.getElementById('chat-input-row');
+      var emojiBar      = document.getElementById('chat-emoji-bar');
+      var loginNotice   = document.getElementById('chat-login-notice');
+      var sessionEl     = document.getElementById('topbar-session');
+      var chatInput     = document.getElementById('nodo-chat-input');
+      var sidebarFooter = document.getElementById('chat-sidebar-footer');
 
-      /* Expose CHAT_USER for nodo-chat.js */
       window.CHAT_USER = user || null;
       console.log('[chat] nodo:ready — CHAT_USER:', window.CHAT_USER);
 
@@ -364,21 +683,37 @@
         if (emojiBar)    emojiBar.style.display    = 'none';
         if (loginNotice) loginNotice.style.display = '';
         if (chatInput) {
-          chatInput.disabled     = true;
-          chatInput.placeholder  = 'Inicia sesión para chatear';
-          chatInput.style.borderColor = 'rgba(231,76,60,0.35)';
+          chatInput.disabled    = true;
+          chatInput.placeholder = 'Inicia sesión para chatear';
         }
       } else {
         window.CHAT_USER = user;
+
+        /* Topbar session */
         if (sessionEl) {
           var rankSrc = RANK_SM_MAP[user.rank_key] || RANK_SM_MAP.cachorro;
           sessionEl.innerHTML =
             '<img class="topbar-session-rank" src="' + rankSrc + '" alt="" />' +
             '<span class="topbar-session-name">' + (user.display_name || '') + '</span>';
         }
+
+        /* Input habilitado */
         if (chatInput) {
           chatInput.disabled    = false;
           chatInput.placeholder = 'Escribe un mensaje… (Enter para enviar)';
+        }
+
+        /* Sidebar footer */
+        if (sidebarFooter) {
+          var initial = (user.display_name || 'U').charAt(0).toUpperCase();
+          sidebarFooter.innerHTML =
+            '<div class="chat-sidebar-user-avatar">' +
+              '<span>' + initial + '</span>' +
+              '<span class="chat-sidebar-presence"></span>' +
+            '</div>' +
+            '<span class="chat-sidebar-user-name">' +
+              (user.display_name || user.username || '') +
+            '</span>';
         }
       }
     });
