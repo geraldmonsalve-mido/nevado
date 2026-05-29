@@ -808,6 +808,8 @@
 
     /* Edit */
     container.querySelectorAll('.nodo-action-edit[data-hilo]').forEach(function (btn) {
+      if (btn.dataset.editBound) return;
+      btn.dataset.editBound = '1';
       btn.addEventListener('click', function () {
         var article = btn.closest('article.nodo-post');
         if (article) editarHilo(btn.getAttribute('data-hilo'), article);
