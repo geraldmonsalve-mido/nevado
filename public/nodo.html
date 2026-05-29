@@ -302,6 +302,13 @@
     }
     .nodo-edit-modal-save:hover { background: #c0392b; }
     .nodo-edit-modal-save:disabled { opacity: .5; cursor: not-allowed; }
+    div#composerInput {
+      cursor: pointer !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      pointer-events: auto;
+    }
+    div#composerInput:focus { outline: none; border-color: rgba(231,76,60,0.25); }
   </style>
 </head>
 <body data-page-context="NODO | comunidad venezolana, aportes, red social" data-accent="blue">
@@ -473,7 +480,11 @@
           <img id="composer-avatar" class="nodo-composer-avatar" src=""
             style="object-fit:cover;"
             onerror="this.onerror=null;this.style.display='none'" alt="avatar">
-          <input class="nodo-composer-input" id="composerInput" type="text" placeholder="¿Qué sabes hoy que pueda ayudar a alguien?" />
+          <div class="nodo-composer-input" id="composerInput"
+            role="button" tabindex="0"
+            contenteditable="false"
+            aria-label="Escribir aporte"
+            style="cursor:pointer;user-select:none;">¿Qué sabes hoy que pueda ayudar a alguien?</div>
         </div>
         <div class="nodo-composer-expanded" id="composerExpanded">
           <!-- Título del aporte -->
@@ -671,18 +682,30 @@
     });
 
     // ── Composer expand ───────────────────────────────────────────
+    var _composerJustOpened = false;
     const composerInput    = document.getElementById('composerInput');
     const composerExpanded = document.getElementById('composerExpanded');
-    var _composerJustOpened = false;
-    composerInput.addEventListener('focus', () => {
+
+    function openComposer() {
       _composerJustOpened = true;
       composerExpanded.classList.add('open');
-      setTimeout(() => { _composerJustOpened = false; }, 80);
+      composerInput.style.display = 'none';
+      const titleInp = document.getElementById('composerTitleInput');
+      if (titleInp) setTimeout(() => { titleInp.focus(); _composerJustOpened = false; }, 80);
+    }
+
+    composerInput.addEventListener('click', openComposer);
+    composerInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') openComposer();
     });
+
     document.addEventListener('click', e => {
       if (_composerJustOpened) return;
-      if (!document.getElementById('composerBox').contains(e.target))
+      const box = document.getElementById('composerBox');
+      if (box && !box.contains(e.target)) {
         composerExpanded.classList.remove('open');
+        composerInput.style.display = '';
+      }
     });
 
     // ── Composer type buttons ─────────────────────────────────────
@@ -779,8 +802,7 @@
 
     // ── Publish button ────────────────────────────────────────────
     document.querySelector('.nodo-publish-btn')?.addEventListener('click', () => {
-      composerInput.focus();
-      composerExpanded.classList.add('open');
+      openComposer();
     });
 
     // ── Search keyboard shortcut ──────────────────────────────────
