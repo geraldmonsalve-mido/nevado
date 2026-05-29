@@ -146,8 +146,9 @@
         }
         /* ── Espacio REGLAS: solo Administradores y Founder pueden publicar ── */
         if (cat && cat.slug === 'reglas') {
-          var esFounder = u.is_founder === true || u.role === 'superadmin';
-          var esAdmin   = u.role === 'admin' || u.role === 'superadmin';
+          var roleNorm  = (u.role || '').toLowerCase();
+          var esFounder = u.is_founder === true || roleNorm === 'superadmin';
+          var esAdmin   = roleNorm === 'admin' || roleNorm === 'superadmin';
           if (!esFounder && !esAdmin) {
             window.NODO.showToast('📋 Solo administradores pueden publicar en Reglas.', 'error');
             return null;
@@ -179,8 +180,9 @@
       if (result.error) throw result.error;
       window.NODO.showToast('Aporte publicado.');
       return result.data;
-    } catch (_) {
-      window.NODO.showToast('Error al publicar. Inténtalo de nuevo.', 'error');
+    } catch (err) {
+      console.error('[NODO] createHilo error:', err);
+      window.NODO.showToast('Error al publicar: ' + (err.message || 'inténtalo de nuevo.'), 'error');
       return null;
     }
   }

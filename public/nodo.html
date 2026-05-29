@@ -673,8 +673,14 @@
     // ── Composer expand ───────────────────────────────────────────
     const composerInput    = document.getElementById('composerInput');
     const composerExpanded = document.getElementById('composerExpanded');
-    composerInput.addEventListener('focus', () => composerExpanded.classList.add('open'));
+    var _composerJustOpened = false;
+    composerInput.addEventListener('focus', () => {
+      _composerJustOpened = true;
+      composerExpanded.classList.add('open');
+      setTimeout(() => { _composerJustOpened = false; }, 80);
+    });
     document.addEventListener('click', e => {
+      if (_composerJustOpened) return;
       if (!document.getElementById('composerBox').contains(e.target))
         composerExpanded.classList.remove('open');
     });
