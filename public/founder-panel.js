@@ -1242,6 +1242,7 @@ window.fpAbrirTitular = async function(envioId) {
     }
     document.getElementById('fp-tit-nota-founder').value = '';
     document.getElementById('fp-tit-prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
+    document.getElementById('fp-tit-destino').value = e.destino || '';
   } catch(err) {
     console.error('[FOUNDER] fpAbrirTitular:', err);
     fpMostrarToast('Error al cargar el titular.', 'error');
@@ -1258,12 +1259,18 @@ window.fpCerrarTitModal = function() {
 
 window.fpDecidirTitular = async function(nuevoEstado) {
   if (!_fpTitEnvioActual || !fpSb) return;
-  var nota = document.getElementById('fp-tit-nota-founder').value.trim();
-  var prog = document.getElementById('fp-tit-prog-fecha').value;
+  var nota    = document.getElementById('fp-tit-nota-founder').value.trim();
+  var prog    = document.getElementById('fp-tit-prog-fecha').value;
+  var destino = document.getElementById('fp-tit-destino').value;
+  if (nuevoEstado === 'publicado' && !destino) {
+    fpMostrarToast('Selecciona una sección de destino antes de publicar.', 'error');
+    return;
+  }
   var payload = {
     estado:          nuevoEstado,
     nota_editorial:  nota || _fpTitEnvioActual.nota_editorial || null,
     programado_para: prog ? new Date(prog).toISOString() : null,
+    destino:         destino || null,
   };
   if (nuevoEstado === 'publicado') payload.publicado_en = new Date().toISOString();
   try {
