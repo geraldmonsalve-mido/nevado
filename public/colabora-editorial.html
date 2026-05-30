@@ -548,25 +548,28 @@
     }
 
     async function cargarPorEstado(vista){
-      var query = sb().from('titulares_envios')
-        .select('id,titulo,categoria,estado,autor_nombre,autor_username,created_at')
-        .order('created_at', { ascending: false });
-      if (vista === 'pendientes') query = query.in('estado',['enviado','en_revision']);
-      else if (vista === 'publicados') query = query.eq('estado','publicado');
-      var { data } = await query;
+      var estado = vista === 'pendientes' ? null : vista === 'publicados' ? 'publicado' : 'todos';
+      var url = '/api/titulares?estado=' + (estado || 'todos');
+      var resp = await fetch(url);
+      var all  = await resp.json();
+      var data = Array.isArray(all) ? all : [];
+      if (vista === 'pendientes') {
+        data = data.filter(function(e){ return e.estado === 'enviado' || e.estado === 'en_revision'; });
+      }
       var cid = vista === 'pendientes' ? 'rows-pendientes'
               : vista === 'publicados'  ? 'rows-publicados'
               : 'rows-todos';
-      renderRows(cid, data || []);
+      renderRows(cid, data);
       if (vista === 'pendientes'){
         var badge = document.getElementById('badge-pendientes');
-        if (badge) badge.textContent = (data||[]).length;
+        if (badge) badge.textContent = data.length;
       }
     }
 
     async function abrirPanel(envioId){
-      var { data: e } = await sb().from('titulares_envios').select('*').eq('id', envioId).single();
-      if (!e) return;
+      var resp = await fetch('/api/titulares?id=' + envioId);
+      var e = await resp.json();
+      if (!e || e.error) return;
       currentEnvioId = envioId;
       currentEnvio = e;
 
@@ -659,7 +662,11 @@
         var reporte = JSON.parse(clean);
         var score = parseFloat(reporte.score) || 0;
 
-        await sb().from('titulares_envios').update({ ia_score: score, ia_reporte: reporte }).eq('id', currentEnvioId);
+        await fetch('/api/titulares?id=' + currentEnvioId, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ia_score: score, ia_reporte: reporte }),
+        });
         mostrarScore(score, reporte);
       } catch(err){
         console.error('[IA]', err);
@@ -685,8 +692,12 @@
       };
       if (nuevoEstado === 'publicado') payload.publicado_en = new Date().toISOString();
 
-      var { error } = await sb().from('titulares_envios').update(payload).eq('id', currentEnvioId);
-      if (error){ window.NODO.showToast('Error al actualizar: ' + error.message,'error'); return; }
+      var upResp = await fetch('/api/titulares?id=' + currentEnvioId, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!upResp.ok){ var e = await upResp.json(); window.NODO.showToast('Error: ' + (e.error||'inténtalo de nuevo.'),'error'); return; }
 
       var msgs = { rechazado:'Envío rechazado.', en_revision:'Marcado como en revisión.', publicado:'✓ Publicado exitosamente.' };
       window.NODO.showToast(msgs[nuevoEstado] || 'Actualizado.');

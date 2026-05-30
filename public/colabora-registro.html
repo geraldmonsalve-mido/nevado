@@ -406,8 +406,13 @@
       btn.disabled = true;
       btn.textContent = 'Guardando…';
       try {
-        var { error } = await sb().from('titulares_envios').insert(payload);
-        if (error) throw error;
+        var resp = await fetch('/api/titulares', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        var result = await resp.json();
+        if (!resp.ok) throw new Error(result.error || 'Error al guardar');
         window.NODO.showToast(estado === 'enviado'
           ? '✓ Enviado a revisión editorial.'
           : '✓ Borrador guardado.');
@@ -447,12 +452,12 @@
       if (!currentUser) return;
       var list = document.getElementById('mis-envios-list');
       list.innerHTML = '<div class="sala-empty">Cargando…</div>';
-      var { data, error } = await sb()
-        .from('titulares_envios')
-        .select('id,titulo,categoria,estado,nota_editorial,created_at')
-        .eq('profile_id', currentUser.profile_id)
-        .order('created_at', { ascending: false });
-      if (error || !data || !data.length){
+      var resp = await fetch('/api/titulares?estado=todos');
+      var all  = await resp.json();
+      var data = Array.isArray(all)
+        ? all.filter(function(e){ return e.profile_id === currentUser.profile_id; })
+        : [];
+      if (!data.length){
         list.innerHTML = '<div class="sala-empty">Aún no tienes envíos.</div>';
         return;
       }
