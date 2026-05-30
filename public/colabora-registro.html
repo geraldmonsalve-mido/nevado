@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Sala de Redacción · Colabora · NEVADO</title>
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin/>
+  <link rel="dns-prefetch" href="https://clerk.nevado.pro"/>
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    async
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/nodo.css"/>
+  <style>
+    :root { --accent: #2980B9; }
+    body { background: #05050A; color: #E8E8E0; font-family: 'Geist', system-ui; min-height: 100vh; }
+
+    body > .nv-session-widget,
+    body > .nvd-session-widget,
+    body > [class*="nvd-"],
+    body > [id*="nvd-session"]:not(#nvd-session-pill) { display: none !important; }
+    .nv-rank-icon { width:28px !important; height:28px !important; object-fit:contain !important; }
+    .nvd-dd-rank-img { max-width:36px !important; max-height:36px !important; }
+
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97); backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      font-family: 'Cormorant Garamond', serif; }
+    .topbar-logo span { color: #2980B9; }
+    .topbar-breadcrumb { display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: rgba(255,255,255,0.4); }
+    .topbar-breadcrumb a { color: rgba(255,255,255,0.4); text-decoration: none; }
+    .topbar-breadcrumb a:hover { color: rgba(255,255,255,0.7); }
+    .topbar-breadcrumb span { color: rgba(255,255,255,0.2); }
+
+    .sala-layout {
+      display: grid; grid-template-columns: 240px 1fr;
+      min-height: 100vh; padding-top: 52px;
+    }
+    @media(max-width:768px){ .sala-layout{ grid-template-columns:1fr; } }
+
+    .sala-sidebar {
+      background: rgba(255,255,255,0.015);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 24px 16px; position: sticky; top: 52px;
+      height: calc(100vh - 52px); overflow-y: auto;
+    }
+    .sala-sidebar-title {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.28); padding: 0 8px; margin-bottom: 8px;
+    }
+    .sala-nav-btn {
+      display: flex; align-items: center; gap: 9px;
+      width: 100%; background: none; border: none;
+      padding: 9px 10px; border-radius: 8px; text-align: left;
+      font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5);
+      cursor: pointer; font-family: inherit; transition: all 0.15s; margin-bottom: 1px;
+    }
+    .sala-nav-btn:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .sala-nav-btn.active { background: rgba(41,128,185,0.12); color: #2980B9; }
+    .sala-badge { margin-left: auto; background: rgba(41,128,185,0.2);
+      color: #2980B9; font-size: 10px; padding: 1px 6px; border-radius: 8px; }
+
+    .sala-main { padding: 32px 40px; max-width: 820px; }
+    @media(max-width:768px){ .sala-main{ padding: 24px 16px; } }
+
+    .sala-section { display: none; }
+    .sala-section.active { display: block; }
+
+    .sala-section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600; color: #E8E8E0; margin: 0 0 6px;
+    }
+    .sala-section-sub { font-size: 13px; color: rgba(232,232,224,0.45); margin: 0 0 28px; }
+
+    .sala-editor {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; padding: 28px; display: flex;
+      flex-direction: column; gap: 16px;
+    }
+    .sala-field label {
+      display: block; font-size: 10px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 7px;
+    }
+    .sala-input, .sala-select, .sala-textarea {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 9px;
+      padding: 10px 13px; font-size: 14px; color: #E8E8E0;
+      font-family: inherit; outline: none; transition: border-color 0.2s;
+    }
+    .sala-input:focus, .sala-textarea:focus, .sala-select:focus {
+      border-color: rgba(41,128,185,0.45);
+    }
+    .sala-select option { background: #0d0d18; }
+    .sala-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    .sala-textarea.body { min-height: 240px; }
+    .sala-char-count { font-size: 11px; color: rgba(255,255,255,0.25); text-align: right; margin-top: -8px; }
+    .sala-char-count.over { color: #E74C3C; }
+
+    .sala-fuentes-list { display: flex; flex-direction: column; gap: 6px; }
+    .sala-fuente-row { display: flex; gap: 8px; }
+    .sala-fuente-row input { flex: 1; }
+    .sala-fuente-rm {
+      background: none; border: 1px solid rgba(255,76,60,0.2);
+      border-radius: 7px; color: rgba(231,76,60,0.5);
+      width: 34px; cursor: pointer; font-size: 14px;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .sala-fuente-rm:hover { background: rgba(231,76,60,0.08); color: #E74C3C; }
+    .sala-add-fuente {
+      background: none; border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 8px; color: rgba(255,255,255,0.35); padding: 7px;
+      cursor: pointer; font-size: 12px; font-family: inherit;
+      transition: all 0.15s; width: 100%;
+    }
+    .sala-add-fuente:hover { border-color: rgba(41,128,185,0.4); color: #2980B9; }
+
+    .sala-nota-vol {
+      background: rgba(184,148,74,0.06); border: 1px solid rgba(184,148,74,0.15);
+      border-radius: 9px; padding: 12px 16px; font-size: 12px;
+      color: rgba(184,148,74,0.8); line-height: 1.6;
+    }
+
+    .sala-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .sala-btn {
+      border: none; border-radius: 9px; padding: 10px 20px;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .sala-btn-ghost {
+      background: transparent; border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.55);
+    }
+    .sala-btn-ghost:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); }
+    .sala-btn-primary { background: #2980B9; color: #fff; }
+    .sala-btn-primary:hover { opacity: 0.85; }
+    .sala-btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+    .sala-envios-list { display: flex; flex-direction: column; gap: 12px; }
+    .sala-envio-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 18px 20px;
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .sala-envio-estado {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 3px 9px;
+      border-radius: 5px; flex-shrink: 0; white-space: nowrap; margin-top: 2px;
+    }
+    .estado-borrador  { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); }
+    .estado-enviado   { background: rgba(41,128,185,0.12); color: #2980B9; }
+    .estado-en_revision { background: rgba(184,148,74,0.12); color: #B8944A; }
+    .estado-aprobado  { background: rgba(39,174,96,0.12); color: #27AE60; }
+    .estado-publicado { background: rgba(39,174,96,0.2); color: #27AE60; border: 1px solid rgba(39,174,96,0.3); }
+    .estado-rechazado { background: rgba(231,76,60,0.1); color: #E74C3C; }
+    .sala-envio-info { flex: 1; min-width: 0; }
+    .sala-envio-title {
+      font-size: 14px; font-weight: 500; color: #E8E8E0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sala-envio-meta { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 3px; }
+    .sala-envio-nota {
+      font-size: 11px; color: rgba(184,148,74,0.8);
+      background: rgba(184,148,74,0.06); border-radius: 6px;
+      padding: 5px 9px; margin-top: 6px; font-style: italic;
+    }
+    .sala-empty { text-align: center; padding: 48px; color: rgba(255,255,255,0.28); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <div class="topbar-breadcrumb">
+      <a href="/enterate.html">Titulares</a>
+      <span>/</span>
+      <a href="/colabora.html">Colabora</a>
+      <span>/</span>
+      <span style="color:rgba(255,255,255,0.7)">La Sala de Redacción</span>
+    </div>
+    <div id="nvd-session-pill" style="display:flex;align-items:center;min-width:120px;justify-content:flex-end;"></div>
+  </header>
+
+  <div class="sala-layout">
+    <aside class="sala-sidebar">
+      <div class="sala-sidebar-title">La Sala</div>
+      <button class="sala-nav-btn active" data-section="nuevo">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Nuevo envío
+      </button>
+      <button class="sala-nav-btn" data-section="mis-envios">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M2 6.5h6M2 10h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Mis envíos
+        <span class="sala-badge" id="badge-envios">0</span>
+      </button>
+      <button class="sala-nav-btn" data-section="guia">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6.5 5.5v4M6.5 3.5v.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Guía editorial
+      </button>
+      <div class="sala-sidebar-title" style="margin-top:20px">Mi cuenta</div>
+      <div id="sala-user-info" style="padding:8px 10px;font-size:12px;color:rgba(255,255,255,0.4)">
+        Cargando...
+      </div>
+    </aside>
+
+    <main class="sala-main">
+      <div class="sala-section active" id="section-nuevo">
+        <div class="sala-section-title">Nuevo envío</div>
+        <div class="sala-section-sub">Redacta tu aporte. Será revisado antes de publicarse.</div>
+        <div class="sala-editor">
+          <div class="sala-nota-vol">
+            ✦ Tu colaboración es voluntaria. Al enviar, autorizas a NEVADO a publicar
+            el contenido bajo revisión editorial objetiva. El equipo puede editar,
+            complementar o rechazar el envío. El crédito siempre será tuyo.
+          </div>
+          <div class="sala-field">
+            <label>Título *</label>
+            <input class="sala-input" id="env-titulo" type="text"
+              placeholder="Título claro y descriptivo…" maxlength="120"/>
+            <div class="sala-char-count" id="cnt-titulo">0 / 120</div>
+          </div>
+          <div class="sala-field">
+            <label>Categoría *</label>
+            <select class="sala-select" id="env-categoria">
+              <option value="">Selecciona…</option>
+              <option>Venezuela</option>
+              <option>Diáspora</option>
+              <option>Trabajo</option>
+              <option>Educación</option>
+              <option>Economía</option>
+              <option>Tecnología</option>
+              <option>Comunidad</option>
+              <option>Oportunidades</option>
+              <option>Mundo</option>
+            </select>
+          </div>
+          <div class="sala-field">
+            <label>Resumen editorial * (máx 300 caracteres)</label>
+            <textarea class="sala-textarea" id="env-resumen"
+              placeholder="Un párrafo que capture la esencia del artículo…"
+              maxlength="300" rows="3"></textarea>
+            <div class="sala-char-count" id="cnt-resumen">0 / 300</div>
+          </div>
+          <div class="sala-field">
+            <label>Contenido completo *</label>
+            <textarea class="sala-textarea body" id="env-cuerpo"
+              placeholder="Desarrolla el artículo completo aquí. Incluye contexto, datos, análisis y conclusiones. Mínimo 200 caracteres."
+              maxlength="8000"></textarea>
+            <div class="sala-char-count" id="cnt-cuerpo">0 / 8000</div>
+          </div>
+          <div class="sala-field">
+            <label>Fuentes verificables</label>
+            <div class="sala-fuentes-list" id="fuentes-list">
+              <div class="sala-fuente-row">
+                <input class="sala-input" type="text" placeholder="Nombre de la fuente o URL…"/>
+                <button class="sala-fuente-rm" onclick="removeFuente(this)">−</button>
+              </div>
+            </div>
+            <button class="sala-add-fuente" onclick="addFuente()" style="margin-top:8px">
+              + Agregar fuente
+            </button>
+          </div>
+          <div class="sala-actions">
+            <button class="sala-btn sala-btn-ghost" onclick="guardarBorrador()">
+              Guardar borrador
+            </button>
+            <button class="sala-btn sala-btn-primary" id="btn-enviar" onclick="enviarContenido()">
+              Enviar a revisión →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sala-section" id="section-mis-envios">
+        <div class="sala-section-title">Mis envíos</div>
+        <div class="sala-section-sub">Estado de tus contribuciones al equipo editorial.</div>
+        <div class="sala-envios-list" id="mis-envios-list">
+          <div class="sala-empty">Cargando tus envíos…</div>
+        </div>
+      </div>
+
+      <div class="sala-section" id="section-guia">
+        <div class="sala-section-title">Guía editorial</div>
+        <div class="sala-section-sub">Criterios para que tu contenido sea aprobado.</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px">
+            <div style="font-size:12px;font-weight:600;color:#2980B9;margin-bottom:8px">✓ LO QUE BUSCAMOS</div>
+            <ul style="font-size:13px;color:rgba(232,232,224,0.6);padding-left:16px;line-height:2">
+              <li>Noticias con impacto real en la diáspora venezolana</li>
+              <li>Análisis con datos verificables y fuentes citadas</li>
+              <li>Oportunidades concretas: becas, empleos, convocatorias</li>
+              <li>Historias de comunidad con datos reales</li>
+              <li>Tecnología y economía desde perspectiva venezolana</li>
+            </ul>
+          </div>
+          <div style="background:rgba(231,76,60,0.04);border:1px solid rgba(231,76,60,0.12);border-radius:14px;padding:20px">
+            <div style="font-size:12px;font-weight:600;color:#E74C3C;margin-bottom:8px">✗ LO QUE RECHAZAMOS</div>
+            <ul style="font-size:13px;color:rgba(232,232,224,0.5);padding-left:16px;line-height:2">
+              <li>Contenido político partidista o propagandístico</li>
+              <li>Artículos sin fuentes ni posibilidad de verificación</li>
+              <li>Opiniones personales presentadas como hechos</li>
+              <li>Contenido ofensivo, discriminatorio o denigrante</li>
+              <li>Noticias desactualizadas presentadas como recientes</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/cursor.js"></script>
+  <script src="/nevado-env.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script type="module" src="/src/auth.js"></script>
+  <script src="/js/nodo/nodo-core.js"></script>
+  <script src="/nevado-session-widget.js"></script>
+  <script src="/nevado-home-desktop-pill.js"></script>
+  <script>
+    var RANGOS_SALA = ['guardian','montanista','guia','protector','leyenda_andina'];
+    var sb = function(){ return window.NODO && window.NODO.sb; };
+    var currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', function(){
+      if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+    });
+
+    document.querySelectorAll('.sala-nav-btn[data-section]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.sala-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.querySelectorAll('.sala-section').forEach(function(s){ s.classList.remove('active'); });
+        document.getElementById('section-' + btn.dataset.section).classList.add('active');
+        if (btn.dataset.section === 'mis-envios') cargarMisEnvios();
+      });
+    });
+
+    function bindCounter(inputId, countId, max){
+      var el = document.getElementById(inputId);
+      var cnt = document.getElementById(countId);
+      if (!el || !cnt) return;
+      el.addEventListener('input', function(){
+        var len = el.value.length;
+        cnt.textContent = len + ' / ' + max;
+        cnt.classList.toggle('over', len > max);
+      });
+    }
+    bindCounter('env-titulo','cnt-titulo',120);
+    bindCounter('env-resumen','cnt-resumen',300);
+    bindCounter('env-cuerpo','cnt-cuerpo',8000);
+
+    function addFuente(){
+      var list = document.getElementById('fuentes-list');
+      var row = document.createElement('div');
+      row.className = 'sala-fuente-row';
+      row.innerHTML = '<input class="sala-input" type="text" placeholder="Nombre de la fuente o URL…"/>' +
+        '<button class="sala-fuente-rm" onclick="removeFuente(this)">−</button>';
+      list.appendChild(row);
+    }
+    function removeFuente(btn){
+      var rows = document.querySelectorAll('.sala-fuente-row');
+      if (rows.length > 1) btn.parentElement.remove();
+    }
+    function getFuentes(){
+      return Array.from(document.querySelectorAll('.sala-fuente-row input'))
+        .map(function(i){ return i.value.trim(); }).filter(Boolean);
+    }
+
+    function getPayload(){
+      if (!currentUser){ window.NODO.showToast('Sesión no disponible.','error'); return null; }
+      var titulo  = document.getElementById('env-titulo').value.trim();
+      var cat     = document.getElementById('env-categoria').value;
+      var resumen = document.getElementById('env-resumen').value.trim();
+      var cuerpo  = document.getElementById('env-cuerpo').value.trim();
+      if (!titulo)  { window.NODO.showToast('El título es obligatorio.','error'); return null; }
+      if (!cat)     { window.NODO.showToast('Selecciona una categoría.','error'); return null; }
+      if (!resumen) { window.NODO.showToast('El resumen es obligatorio.','error'); return null; }
+      if (!cuerpo)  { window.NODO.showToast('El contenido no puede estar vacío.','error'); return null; }
+      return {
+        profile_id:     currentUser.profile_id,
+        autor_nombre:   currentUser.display_name,
+        autor_username: currentUser.username,
+        autor_rank:     currentUser.rank_key,
+        titulo: titulo, categoria: cat,
+        resumen: resumen, cuerpo: cuerpo,
+        fuentes: getFuentes(), estado: 'borrador',
+      };
+    }
+
+    async function guardar(payload, estado){
+      var btn = document.getElementById('btn-enviar');
+      btn.disabled = true;
+      btn.textContent = 'Guardando…';
+      try {
+        var { error } = await sb().from('titulares_envios').insert(payload);
+        if (error) throw error;
+        window.NODO.showToast(estado === 'enviado'
+          ? '✓ Enviado a revisión editorial.'
+          : '✓ Borrador guardado.');
+        document.getElementById('env-titulo').value = '';
+        document.getElementById('env-categoria').value = '';
+        document.getElementById('env-resumen').value = '';
+        document.getElementById('env-cuerpo').value = '';
+        ['cnt-titulo','cnt-resumen','cnt-cuerpo'].forEach(function(id){
+          var max = id==='cnt-cuerpo'?'8000':id==='cnt-resumen'?'300':'120';
+          document.getElementById(id).textContent = '0 / ' + max;
+        });
+      } catch(err){
+        console.error(err);
+        window.NODO.showToast('Error al guardar: ' + (err.message||'inténtalo de nuevo.'),'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enviar a revisión →';
+      }
+    }
+
+    function guardarBorrador(){
+      var payload = getPayload();
+      if (payload) guardar(payload, 'borrador');
+    }
+    function enviarContenido(){
+      var payload = getPayload();
+      if (!payload) return;
+      if (payload.cuerpo.length < 200){
+        window.NODO.showToast('El contenido debe tener al menos 200 caracteres.','error');
+        return;
+      }
+      payload.estado = 'enviado';
+      guardar(payload, 'enviado');
+    }
+
+    async function cargarMisEnvios(){
+      if (!currentUser) return;
+      var list = document.getElementById('mis-envios-list');
+      list.innerHTML = '<div class="sala-empty">Cargando…</div>';
+      var { data, error } = await sb()
+        .from('titulares_envios')
+        .select('id,titulo,categoria,estado,nota_editorial,created_at')
+        .eq('profile_id', currentUser.profile_id)
+        .order('created_at', { ascending: false });
+      if (error || !data || !data.length){
+        list.innerHTML = '<div class="sala-empty">Aún no tienes envíos.</div>';
+        return;
+      }
+      document.getElementById('badge-envios').textContent = data.length;
+      list.innerHTML = data.map(function(e){
+        var d = new Date(e.created_at).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'});
+        return '<div class="sala-envio-card">' +
+          '<span class="sala-envio-estado estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>' +
+          '<div class="sala-envio-info">' +
+            '<div class="sala-envio-title">' + e.titulo + '</div>' +
+            '<div class="sala-envio-meta">' + e.categoria + ' · ' + d + '</div>' +
+            (e.nota_editorial ? '<div class="sala-envio-nota">Nota editorial: ' + e.nota_editorial + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    document.addEventListener('nodo:ready', function(ev){
+      var user = ev.detail && ev.detail.user;
+      if (!user){
+        window.location.href = '/auth.html?redirect=/colabora-registro.html';
+        return;
+      }
+      var rank = (user.rank_key||'').toLowerCase();
+      if (!RANGOS_SALA.includes(rank)){
+        document.querySelector('.sala-main').innerHTML =
+          '<div style="text-align:center;padding:80px 24px">' +
+          '<img src="/rangos/rango3-guardian-plata-md.webp" style="width:56px;margin-bottom:20px"><br>' +
+          '<strong style="font-size:18px">Necesitas rango Guardián</strong>' +
+          '<p style="color:rgba(232,232,224,0.5);margin:12px 0 24px;font-size:14px">' +
+          'Tu rango actual es <strong>' + (user.rank_key||'Cachorro') + '</strong>. ' +
+          'Alcanza el nivel 21 para acceder a La Sala de Redacción.</p>' +
+          '<a href="/colabora.html" style="color:#2980B9">← Volver a Colabora</a></div>';
+        return;
+      }
+      currentUser = user;
+      var infoEl = document.getElementById('sala-user-info');
+      if (infoEl) infoEl.innerHTML =
+        '<strong style="color:#E8E8E0">' + (user.display_name||'Usuario') + '</strong><br>' +
+        '<span style="color:#2980B9">' + (user.rank_key||'') + ' · Nv.' + (user.level||1) + '</span>';
+    });
+  </script>
+</body>
+</html>

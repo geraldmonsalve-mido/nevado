@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>La Mesa Editorial · Colabora · NEVADO</title>
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin/>
+  <link rel="dns-prefetch" href="https://clerk.nevado.pro"/>
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    async
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/nodo.css"/>
+  <style>
+    :root { --accent: #B8944A; --accent2: #2980B9; }
+    body { background: #05050A; color: #E8E8E0; font-family: 'Geist', system-ui; min-height: 100vh; }
+
+    body > .nv-session-widget,
+    body > .nvd-session-widget,
+    body > [class*="nvd-"],
+    body > [id*="nvd-session"]:not(#nvd-session-pill) { display: none !important; }
+    .nv-rank-icon { width:28px !important; height:28px !important; object-fit:contain !important; }
+    .nvd-dd-rank-img { max-width:36px !important; max-height:36px !important; }
+
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97); backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      font-family: 'Cormorant Garamond', serif; }
+    .topbar-logo span { color: #B8944A; }
+    .topbar-breadcrumb { display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: rgba(255,255,255,0.4); }
+    .topbar-breadcrumb a { color: rgba(255,255,255,0.4); text-decoration: none; }
+    .topbar-breadcrumb span { color: rgba(255,255,255,0.2); }
+
+    .mesa-layout {
+      display: grid; grid-template-columns: 260px 1fr;
+      min-height: 100vh; padding-top: 52px;
+    }
+
+    .mesa-sidebar {
+      background: rgba(255,255,255,0.015);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 24px 16px; position: sticky; top: 52px;
+      height: calc(100vh - 52px); overflow-y: auto;
+    }
+    .mesa-sidebar-title {
+      font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.28); padding: 0 8px; margin-bottom: 8px;
+    }
+    .mesa-nav-btn {
+      display: flex; align-items: center; gap: 9px;
+      width: 100%; background: none; border: none;
+      padding: 9px 10px; border-radius: 8px; text-align: left;
+      font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5);
+      cursor: pointer; font-family: inherit; transition: all 0.15s; margin-bottom: 1px;
+    }
+    .mesa-nav-btn:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+    .mesa-nav-btn.active { background: rgba(184,148,74,0.12); color: #B8944A; }
+    .mesa-badge {
+      margin-left: auto; background: rgba(184,148,74,0.2);
+      color: #B8944A; font-size: 10px; padding: 1px 6px; border-radius: 8px;
+    }
+
+    .mesa-main { padding: 32px 40px; }
+    .mesa-section { display: none; }
+    .mesa-section.active { display: block; }
+    .mesa-section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600; color: #E8E8E0; margin: 0 0 6px;
+    }
+    .mesa-section-sub { font-size: 13px; color: rgba(232,232,224,0.45); margin: 0 0 28px; }
+
+    .mesa-table {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; overflow: hidden;
+    }
+    .mesa-table-header {
+      display: grid; grid-template-columns: 1fr 100px 100px 120px 80px;
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    .mesa-table-row {
+      display: grid; grid-template-columns: 1fr 100px 100px 120px 80px;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      align-items: center; transition: background 0.15s; cursor: pointer;
+    }
+    .mesa-table-row:hover { background: rgba(255,255,255,0.03); }
+    .mesa-table-row:last-child { border-bottom: none; }
+    .mesa-row-title { font-size: 13px; font-weight: 500; color: #E8E8E0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mesa-row-autor { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+    .mesa-row-cat { font-size: 11px; color: rgba(255,255,255,0.4); }
+    .mesa-row-fecha { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .mesa-estado-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 3px 8px; border-radius: 5px; text-transform: uppercase;
+    }
+    .mesa-estado-enviado     { background:rgba(41,128,185,0.12);color:#2980B9; }
+    .mesa-estado-en_revision { background:rgba(184,148,74,0.12);color:#B8944A; }
+    .mesa-estado-aprobado    { background:rgba(39,174,96,0.12);color:#27AE60; }
+    .mesa-estado-publicado   { background:rgba(39,174,96,0.2);color:#27AE60; }
+    .mesa-estado-rechazado   { background:rgba(231,76,60,0.1);color:#E74C3C; }
+    .mesa-row-actions { display:flex; gap:6px; }
+    .mesa-action-btn {
+      background:none; border:1px solid rgba(255,255,255,0.1);
+      border-radius:6px; padding:4px 8px; font-size:11px;
+      color:rgba(255,255,255,0.5); cursor:pointer; font-family:inherit; transition:all 0.15s;
+    }
+    .mesa-action-btn:hover { border-color:rgba(255,255,255,0.25); color:#E8E8E0; }
+
+    .mesa-review-panel {
+      position: fixed; top: 52px; right: 0; bottom: 0;
+      width: min(680px, 90vw);
+      background: rgba(8,9,16,0.98); backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(255,255,255,0.08);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.3s ease;
+      z-index: 700; overflow: hidden;
+    }
+    .mesa-review-panel.open { transform: translateX(0); }
+    .mesa-review-header {
+      padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+    }
+    .mesa-review-title { font-size: 14px; font-weight: 600; color: #E8E8E0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; margin-right: 12px; }
+    .mesa-review-close {
+      background: none; border: none; color: rgba(255,255,255,0.4);
+      cursor: pointer; padding: 4px; border-radius: 4px; font-size: 16px; flex-shrink: 0;
+    }
+    .mesa-review-body {
+      flex: 1; overflow-y: auto; padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .mesa-review-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mesa-review-tag {
+      font-size: 11px; padding: 3px 10px; border-radius: 6px;
+      background: rgba(255,255,255,0.05); color: rgba(232,232,224,0.6);
+    }
+    .mesa-review-contenido {
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 18px;
+      font-size: 14px; line-height: 1.75; color: rgba(232,232,224,0.85);
+      max-height: 220px; overflow-y: auto; white-space: pre-wrap;
+    }
+    .mesa-review-fuentes { font-size: 12px; color: rgba(255,255,255,0.35); }
+    .mesa-review-fuentes strong { color: rgba(255,255,255,0.6); display: block; margin-bottom: 6px; }
+
+    .mesa-ia-panel {
+      background: rgba(41,128,185,0.04); border: 1px solid rgba(41,128,185,0.15);
+      border-radius: 14px; padding: 18px;
+    }
+    .mesa-ia-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .mesa-ia-title { font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #2980B9; }
+    .mesa-ia-run {
+      background: #2980B9; border: none; border-radius: 7px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600;
+      color: #fff; cursor: pointer; font-family: inherit; transition: opacity 0.2s;
+    }
+    .mesa-ia-run:hover { opacity: 0.85; }
+    .mesa-ia-run:disabled { opacity: 0.4; cursor: default; }
+
+    .mesa-score-wrap { text-align: center; margin: 8px 0; }
+    .mesa-score-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px; font-weight: 600; line-height: 1;
+    }
+    .mesa-score-label { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+    .mesa-score-bar-wrap { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; margin: 12px 0 8px; overflow: hidden; }
+    .mesa-score-bar { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+    .mesa-ia-result { font-size: 13px; color: rgba(232,232,224,0.7); line-height: 1.65; }
+    .mesa-ia-fuentes-check { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+    .mesa-fuente-check { display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12px; color: rgba(232,232,224,0.55); }
+    .mesa-fuente-check-icon { flex-shrink: 0; }
+
+    .mesa-programador {
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 16px;
+    }
+    .mesa-programador label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); display: block; margin-bottom: 8px;
+    }
+    .mesa-datetime {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 8px; padding: 9px 12px; font-size: 13px;
+      color: #E8E8E0; font-family: inherit; outline: none; color-scheme: dark;
+    }
+
+    .mesa-nota-input {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 9px; padding: 10px 13px; font-size: 13px;
+      color: #E8E8E0; font-family: inherit; outline: none;
+      resize: vertical; min-height: 70px; transition: border-color 0.2s;
+    }
+    .mesa-nota-input:focus { border-color: rgba(184,148,74,0.4); }
+
+    .mesa-decision {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px; padding: 16px 24px;
+      border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+    }
+    .mesa-dec-btn {
+      border: none; border-radius: 9px; padding: 11px;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: opacity 0.2s; text-align: center;
+    }
+    .mesa-dec-rechazar { background: rgba(231,76,60,0.12); color: #E74C3C; border: 1px solid rgba(231,76,60,0.2); }
+    .mesa-dec-rechazar:hover { background: rgba(231,76,60,0.2); }
+    .mesa-dec-revision { background: rgba(184,148,74,0.12); color: #B8944A; border: 1px solid rgba(184,148,74,0.2); }
+    .mesa-dec-revision:hover { background: rgba(184,148,74,0.2); }
+    .mesa-dec-publicar { background: #27AE60; color: #fff; }
+    .mesa-dec-publicar:hover { opacity: 0.85; }
+    .mesa-dec-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .mesa-empty { text-align:center; padding:48px; color:rgba(255,255,255,0.28); font-size:14px; }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <div class="topbar-breadcrumb">
+      <a href="/enterate.html">Titulares</a>
+      <span>/</span>
+      <a href="/colabora.html">Colabora</a>
+      <span>/</span>
+      <span style="color:rgba(255,255,255,0.7)">La Mesa Editorial</span>
+    </div>
+    <div id="nvd-session-pill" style="display:flex;align-items:center;min-width:120px;justify-content:flex-end;"></div>
+  </header>
+
+  <div class="mesa-layout">
+    <aside class="mesa-sidebar">
+      <div class="mesa-sidebar-title">La Mesa</div>
+      <button class="mesa-nav-btn active" data-section="pendientes">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6.5 3.5v3.5l2 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Pendientes
+        <span class="mesa-badge" id="badge-pendientes">0</span>
+      </button>
+      <button class="mesa-nav-btn" data-section="todos">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3h9M2 6.5h9M2 10h9" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Todos los envíos
+      </button>
+      <button class="mesa-nav-btn" data-section="publicados">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L11 3.5v4c0 2.5-2 4.5-4.5 5C4 12 2 10 2 7.5v-4L6.5 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+        Publicados
+      </button>
+    </aside>
+
+    <main class="mesa-main">
+      <div class="mesa-section active" id="section-pendientes">
+        <div class="mesa-section-title">Cola editorial</div>
+        <div class="mesa-section-sub">Envíos pendientes de revisión.</div>
+        <div class="mesa-table">
+          <div class="mesa-table-header">
+            <span>Artículo</span><span>Categoría</span><span>Estado</span><span>Enviado</span><span>Acción</span>
+          </div>
+          <div id="rows-pendientes"><div class="mesa-empty">Cargando…</div></div>
+        </div>
+      </div>
+
+      <div class="mesa-section" id="section-todos">
+        <div class="mesa-section-title">Todos los envíos</div>
+        <div class="mesa-section-sub">Historial completo de la comunidad.</div>
+        <div class="mesa-table">
+          <div class="mesa-table-header">
+            <span>Artículo</span><span>Categoría</span><span>Estado</span><span>Enviado</span><span>Acción</span>
+          </div>
+          <div id="rows-todos"><div class="mesa-empty">Cargando…</div></div>
+        </div>
+      </div>
+
+      <div class="mesa-section" id="section-publicados">
+        <div class="mesa-section-title">Publicados</div>
+        <div class="mesa-section-sub">Contenido ya publicado en Titulares.</div>
+        <div class="mesa-table">
+          <div class="mesa-table-header">
+            <span>Artículo</span><span>Categoría</span><span>Estado</span><span>Publicado</span><span>Acción</span>
+          </div>
+          <div id="rows-publicados"><div class="mesa-empty">Cargando…</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Panel de revisión slide-in -->
+  <div class="mesa-review-panel" id="reviewPanel">
+    <div class="mesa-review-header">
+      <span class="mesa-review-title" id="rp-titulo">Revisando artículo</span>
+      <button class="mesa-review-close" onclick="cerrarPanel()">✕</button>
+    </div>
+    <div class="mesa-review-body">
+      <div class="mesa-review-meta" id="rp-meta"></div>
+      <div>
+        <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Resumen</div>
+        <div id="rp-resumen" style="font-size:13px;color:rgba(232,232,224,0.7);line-height:1.6"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Contenido completo</div>
+        <div class="mesa-review-contenido" id="rp-contenido"></div>
+      </div>
+      <div class="mesa-review-fuentes" id="rp-fuentes"></div>
+
+      <div class="mesa-ia-panel">
+        <div class="mesa-ia-header">
+          <span class="mesa-ia-title">✦ Verificación IA · Anthropic</span>
+          <button class="mesa-ia-run" id="btn-ia" onclick="runIAVerification()">Analizar con IA</button>
+        </div>
+        <div id="ia-result-wrap" style="display:none">
+          <div class="mesa-score-wrap">
+            <div class="mesa-score-num" id="ia-score">—</div>
+            <div class="mesa-score-label">Score de veracidad / 10</div>
+            <div class="mesa-score-bar-wrap">
+              <div class="mesa-score-bar" id="ia-score-bar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="mesa-ia-result" id="ia-texto"></div>
+          <div class="mesa-ia-fuentes-check" id="ia-fuentes-check"></div>
+        </div>
+        <div id="ia-loading" style="display:none;text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.35)">
+          Analizando con IA…
+        </div>
+      </div>
+
+      <div class="mesa-programador">
+        <label>Programar publicación (opcional)</label>
+        <input type="datetime-local" class="mesa-datetime" id="prog-fecha"/>
+      </div>
+
+      <div>
+        <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Nota editorial (visible para el autor)</div>
+        <textarea class="mesa-nota-input" id="nota-editorial"
+          placeholder="Escribe feedback constructivo para el colaborador…"></textarea>
+      </div>
+    </div>
+    <div class="mesa-decision">
+      <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
+      <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
+      <button class="mesa-dec-btn mesa-dec-publicar" onclick="decidir('publicado')">Publicar ✓</button>
+    </div>
+  </div>
+
+  <script src="/cursor.js"></script>
+  <script src="/nevado-env.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script type="module" src="/src/auth.js"></script>
+  <script src="/js/nodo/nodo-core.js"></script>
+  <script src="/nevado-session-widget.js"></script>
+  <script src="/nevado-home-desktop-pill.js"></script>
+  <script>
+    var RANGOS_MESA = ['guia','protector','leyenda_andina'];
+    var sb = function(){ return window.NODO && window.NODO.sb; };
+    var currentUser = null;
+    var currentEnvioId = null;
+    var currentEnvio = null;
+
+    document.addEventListener('DOMContentLoaded', function(){
+      if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+    });
+
+    document.querySelectorAll('.mesa-nav-btn[data-section]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.mesa-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        document.querySelectorAll('.mesa-section').forEach(function(s){ s.classList.remove('active'); });
+        document.getElementById('section-' + btn.dataset.section).classList.add('active');
+        cargarPorEstado(btn.dataset.section);
+      });
+    });
+
+    function fmtFecha(iso){
+      return new Date(iso).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'});
+    }
+
+    function renderRows(containerId, rows){
+      var c = document.getElementById(containerId);
+      if (!rows || !rows.length){
+        c.innerHTML = '<div class="mesa-empty">Sin envíos en esta sección.</div>';
+        return;
+      }
+      c.innerHTML = rows.map(function(e){
+        var ec = 'mesa-estado-' + e.estado;
+        return '<div class="mesa-table-row" onclick="abrirPanel(\'' + e.id + '\')">' +
+          '<div><div class="mesa-row-title">' + e.titulo + '</div>' +
+          '<div class="mesa-row-autor">' + (e.autor_username ? '@'+e.autor_username : e.autor_nombre||'') + '</div></div>' +
+          '<div class="mesa-row-cat">' + e.categoria + '</div>' +
+          '<div><span class="mesa-estado-tag ' + ec + '">' + e.estado.replace('_',' ') + '</span></div>' +
+          '<div class="mesa-row-fecha">' + fmtFecha(e.created_at) + '</div>' +
+          '<div class="mesa-row-actions"><button class="mesa-action-btn" onclick="event.stopPropagation();abrirPanel(\'' + e.id + '\')">Revisar</button></div>' +
+        '</div>';
+      }).join('');
+    }
+
+    async function cargarPorEstado(vista){
+      var query = sb().from('titulares_envios')
+        .select('id,titulo,categoria,estado,autor_nombre,autor_username,created_at')
+        .order('created_at', { ascending: false });
+      if (vista === 'pendientes') query = query.in('estado',['enviado','en_revision']);
+      else if (vista === 'publicados') query = query.eq('estado','publicado');
+      var { data } = await query;
+      var cid = vista === 'pendientes' ? 'rows-pendientes'
+              : vista === 'publicados'  ? 'rows-publicados'
+              : 'rows-todos';
+      renderRows(cid, data || []);
+      if (vista === 'pendientes'){
+        var badge = document.getElementById('badge-pendientes');
+        if (badge) badge.textContent = (data||[]).length;
+      }
+    }
+
+    async function abrirPanel(envioId){
+      var { data: e } = await sb().from('titulares_envios').select('*').eq('id', envioId).single();
+      if (!e) return;
+      currentEnvioId = envioId;
+      currentEnvio = e;
+
+      document.getElementById('rp-titulo').textContent = e.titulo;
+      document.getElementById('rp-resumen').textContent = e.resumen || '';
+      document.getElementById('rp-contenido').textContent = e.cuerpo || '';
+      document.getElementById('rp-meta').innerHTML =
+        '<span class="mesa-review-tag">' + e.categoria + '</span>' +
+        '<span class="mesa-review-tag">' + (e.autor_username ? '@'+e.autor_username : e.autor_nombre||'') + '</span>' +
+        '<span class="mesa-review-tag">' + (e.autor_rank||'') + '</span>' +
+        '<span class="mesa-estado-tag mesa-estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>';
+
+      document.getElementById('rp-fuentes').innerHTML = (e.fuentes && e.fuentes.length)
+        ? '<strong>Fuentes declaradas:</strong>' + e.fuentes.map(function(f){ return '<div>· ' + f + '</div>'; }).join('')
+        : '<span style="color:rgba(255,255,255,0.25)">Sin fuentes declaradas</span>';
+
+      document.getElementById('ia-result-wrap').style.display = 'none';
+      document.getElementById('ia-loading').style.display = 'none';
+      document.getElementById('btn-ia').disabled = false;
+      document.getElementById('btn-ia').textContent = 'Analizar con IA';
+      document.getElementById('nota-editorial').value = e.nota_editorial || '';
+      document.getElementById('prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
+
+      if (e.ia_score !== null && e.ia_score !== undefined) {
+        mostrarScore(e.ia_score, e.ia_reporte);
+      }
+      document.getElementById('reviewPanel').classList.add('open');
+    }
+
+    function cerrarPanel(){
+      document.getElementById('reviewPanel').classList.remove('open');
+      currentEnvioId = null;
+      currentEnvio = null;
+    }
+
+    function mostrarScore(score, reporte){
+      var pct = (score / 10) * 100;
+      var color = score >= 7 ? '#27AE60' : score >= 4 ? '#B8944A' : '#E74C3C';
+      var scoreEl = document.getElementById('ia-score');
+      scoreEl.textContent = parseFloat(score).toFixed(1);
+      scoreEl.style.color = color;
+      document.getElementById('ia-score-bar').style.width = pct + '%';
+      document.getElementById('ia-score-bar').style.background = color;
+      document.getElementById('ia-texto').textContent = reporte && reporte.analisis ? reporte.analisis : '';
+      var fuentesEl = document.getElementById('ia-fuentes-check');
+      fuentesEl.innerHTML = (reporte && reporte.fuentes_evaluadas && reporte.fuentes_evaluadas.length)
+        ? reporte.fuentes_evaluadas.map(function(f){
+            return '<div class="mesa-fuente-check">' +
+              '<span class="mesa-fuente-check-icon">' + (f.verificable ? '✓' : '⚠') + '</span>' +
+              '<span>' + f.nombre + ' — ' + f.nota + '</span></div>';
+          }).join('')
+        : '';
+      document.getElementById('ia-result-wrap').style.display = 'block';
+    }
+
+    async function runIAVerification(){
+      if (!currentEnvio) return;
+      var btn = document.getElementById('btn-ia');
+      btn.disabled = true;
+      btn.textContent = 'Analizando…';
+      document.getElementById('ia-loading').style.display = 'block';
+      document.getElementById('ia-result-wrap').style.display = 'none';
+
+      try {
+        var prompt = 'Eres el equipo de verificación editorial de NEVADO, una plataforma de noticias para la diáspora venezolana. ' +
+          'Analiza el siguiente artículo periodístico y devuelve SOLO un objeto JSON con esta estructura exacta:\n' +
+          '{"score": <número 0-10>, "analisis": "<2-3 oraciones sobre veracidad, objetividad y calidad>", ' +
+          '"fuentes_evaluadas": [{"nombre": "<nombre>", "verificable": <true/false>, "nota": "<nota breve>"}], ' +
+          '"recomendacion": "<publicar|revisar|rechazar>", "advertencias": ["<lista de advertencias si aplica>"]}\n\n' +
+          'TÍTULO: ' + currentEnvio.titulo + '\n' +
+          'CATEGORÍA: ' + currentEnvio.categoria + '\n' +
+          'RESUMEN: ' + currentEnvio.resumen + '\n' +
+          'CONTENIDO: ' + currentEnvio.cuerpo + '\n' +
+          'FUENTES DECLARADAS: ' + (currentEnvio.fuentes ? currentEnvio.fuentes.join(', ') : 'ninguna') + '\n\n' +
+          'Evalúa rigurosamente. Score 8-10: excelente, verificable. 5-7: aceptable con correcciones. 0-4: problemático.';
+
+        var resp = await fetch('/api/claude', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{ role: 'user', content: prompt }],
+          }),
+        });
+        var data = await resp.json();
+        if (data.error) throw new Error(data.error.message || data.error);
+        var text = (data.content||[]).map(function(c){ return c.text||''; }).join('');
+        var clean = text.replace(/```json|```/g,'').trim();
+        var reporte = JSON.parse(clean);
+        var score = parseFloat(reporte.score) || 0;
+
+        await sb().from('titulares_envios').update({ ia_score: score, ia_reporte: reporte }).eq('id', currentEnvioId);
+        mostrarScore(score, reporte);
+      } catch(err){
+        console.error('[IA]', err);
+        window.NODO.showToast('Error en análisis IA: ' + (err.message||'inténtalo de nuevo.'),'error');
+        btn.disabled = false;
+        btn.textContent = 'Reintentar';
+        document.getElementById('ia-loading').style.display = 'none';
+        return;
+      }
+      document.getElementById('ia-loading').style.display = 'none';
+      btn.textContent = 'Reanálizar';
+      btn.disabled = false;
+    }
+
+    async function decidir(nuevoEstado){
+      if (!currentEnvioId) return;
+      var nota = document.getElementById('nota-editorial').value.trim();
+      var prog  = document.getElementById('prog-fecha').value;
+      var payload = {
+        estado: nuevoEstado,
+        nota_editorial: nota || null,
+        programado_para: prog ? new Date(prog).toISOString() : null,
+      };
+      if (nuevoEstado === 'publicado') payload.publicado_en = new Date().toISOString();
+
+      var { error } = await sb().from('titulares_envios').update(payload).eq('id', currentEnvioId);
+      if (error){ window.NODO.showToast('Error al actualizar: ' + error.message,'error'); return; }
+
+      var msgs = { rechazado:'Envío rechazado.', en_revision:'Marcado como en revisión.', publicado:'✓ Publicado exitosamente.' };
+      window.NODO.showToast(msgs[nuevoEstado] || 'Actualizado.');
+      cerrarPanel();
+      cargarPorEstado('pendientes');
+    }
+
+    document.addEventListener('nodo:ready', function(ev){
+      var user = ev.detail && ev.detail.user;
+      if (!user){
+        window.location.href = '/auth.html?redirect=/colabora-editorial.html';
+        return;
+      }
+      var rank = (user.rank_key||'').toLowerCase();
+      if (!RANGOS_MESA.includes(rank)){
+        document.querySelector('.mesa-main').innerHTML =
+          '<div style="text-align:center;padding:80px 24px">' +
+          '<strong style="font-size:18px">Acceso restringido</strong>' +
+          '<p style="font-size:14px;color:rgba(232,232,224,0.5);margin:12px 0 24px">' +
+          'La Mesa Editorial requiere rango <strong>Guía o superior</strong>.<br>' +
+          'Tu rango actual es <strong>' + (user.rank_key||'—') + '</strong>.</p>' +
+          '<a href="/colabora.html" style="color:#B8944A">← Ir a La Sala de Redacción</a></div>';
+        return;
+      }
+      currentUser = user;
+      cargarPorEstado('pendientes');
+    });
+  </script>
+</body>
+</html>

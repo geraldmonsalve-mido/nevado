@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Colabora · Titulares · NEVADO</title>
+  <link rel="preconnect" href="https://clerk.nevado.pro" crossorigin/>
+  <link rel="dns-prefetch" href="https://clerk.nevado.pro"/>
+  <script
+    data-clerk-publishable-key="pk_live_Y2xlcmsubmV2YWRvLnBybyQ"
+    src="https://clerk.nevado.pro/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    async
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/nodo.css"/>
+  <style>
+    :root {
+      --col-blue: #2980B9;
+      --col-gold: #B8944A;
+      --col-green: #27AE60;
+      --col-red: #E74C3C;
+    }
+    body { background: #05050A; color: #E8E8E0; font-family: 'Geist', system-ui; min-height: 100vh; }
+
+    /* Suprimir widgets de sesión inyectados fuera del topbar */
+    body > .nv-session-widget,
+    body > .nvd-session-widget,
+    body > [class*="nvd-"],
+    body > [id*="nvd-session"]:not(#nvd-session-pill) { display: none !important; }
+    .nv-rank-icon { width:28px !important; height:28px !important; object-fit:contain !important; }
+    .nvd-dd-rank-img { max-width:36px !important; max-height:36px !important; }
+
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+      height: 52px; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 28px;
+      background: rgba(5,5,10,0.97); backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .topbar-logo { font-size: 13px; font-weight: 600; letter-spacing: 0.14em;
+      color: rgba(232,228,220,0.88); text-decoration: none;
+      font-family: 'Cormorant Garamond', serif; }
+    .topbar-logo span { color: #2980B9; }
+    .topbar-back { font-size: 11px; color: rgba(255,255,255,0.45); text-decoration: none;
+      transition: color 0.2s; }
+    .topbar-back:hover { color: rgba(255,255,255,0.8); }
+
+    .col-page { max-width: 860px; margin: 0 auto; padding: 90px 24px 80px; }
+
+    .col-masthead { text-align: center; margin-bottom: 56px; }
+    .col-masthead-eyebrow {
+      font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: #2980B9; margin-bottom: 16px; display: block;
+    }
+    .col-masthead-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 7vw, 72px);
+      font-weight: 600; color: #E8E8E0;
+      line-height: 1.05; margin: 0 0 20px;
+      letter-spacing: -0.01em;
+    }
+    .col-masthead-title span { color: #2980B9; font-style: italic; }
+    .col-masthead-sub {
+      font-size: 16px; line-height: 1.7;
+      color: rgba(232,232,224,0.6); max-width: 560px; margin: 0 auto 28px;
+    }
+    .col-voluntario-note {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(184,148,74,0.08);
+      border: 1px solid rgba(184,148,74,0.2);
+      border-radius: 8px; padding: 10px 18px;
+      font-size: 12px; color: rgba(184,148,74,0.9);
+    }
+
+    .col-requisito {
+      background: rgba(41,128,185,0.06);
+      border: 1px solid rgba(41,128,185,0.18);
+      border-radius: 12px; padding: 16px 24px;
+      margin-bottom: 48px; display: flex;
+      align-items: center; gap: 14px;
+    }
+    .col-requisito-icon { width: 36px; height: 36px; flex-shrink: 0; }
+    .col-requisito-text { font-size: 13px; color: rgba(232,232,224,0.7); }
+    .col-requisito-text strong { color: #E8E8E0; }
+
+    .col-portales {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 640px) { .col-portales { grid-template-columns: 1fr; } }
+
+    .col-portal {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px; padding: 32px 28px;
+      display: flex; flex-direction: column; gap: 16px;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer; text-decoration: none; color: inherit;
+      position: relative; overflow: hidden;
+    }
+    .col-portal::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--portal-accent, #2980B9); opacity: 0.6;
+    }
+    .col-portal:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); }
+    .col-portal-num {
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--portal-accent, #2980B9); margin-bottom: 4px;
+    }
+    .col-portal-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 600; color: #E8E8E0; line-height: 1.15;
+    }
+    .col-portal-tagline { font-size: 13px; color: rgba(232,232,224,0.55); line-height: 1.6; }
+    .col-portal-features { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .col-portal-feat {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 12px; color: rgba(232,232,224,0.6);
+    }
+    .col-portal-feat::before { content: '→'; color: var(--portal-accent, #2980B9); flex-shrink: 0; }
+    .col-portal-rangos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .col-rango-tag {
+      font-size: 10px; padding: 3px 9px; border-radius: 5px;
+      border: 1px solid rgba(255,255,255,0.12); color: rgba(232,232,224,0.55);
+    }
+    .col-rango-tag.allowed {
+      background: rgba(41,128,185,0.1); border-color: rgba(41,128,185,0.3); color: #2980B9;
+    }
+    .col-portal-cta {
+      margin-top: auto; padding: 10px 0 0;
+      font-size: 12px; color: var(--portal-accent, #2980B9);
+      font-weight: 500; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    #col-auth-gate {
+      text-align: center; padding: 48px 24px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 18px;
+    }
+    #col-auth-gate h2 { font-size: 18px; margin: 0 0 10px; }
+    #col-auth-gate p { font-size: 13px; color: rgba(232,232,224,0.5); margin: 0 0 20px; }
+    .col-btn-primary {
+      background: #2980B9; color: #fff; border: none;
+      border-radius: 9px; padding: 11px 24px;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      cursor: pointer; text-decoration: none; display: inline-block; transition: opacity 0.2s;
+    }
+    .col-btn-primary:hover { opacity: 0.85; }
+
+    .col-faq { margin-top: 48px; }
+    .col-faq-title {
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); margin-bottom: 16px;
+    }
+    .col-faq-item { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 0; }
+    .col-faq-q { font-size: 13px; font-weight: 500; color: #E8E8E0; margin-bottom: 6px; }
+    .col-faq-a { font-size: 12px; color: rgba(232,232,224,0.5); line-height: 1.65; }
+  </style>
+</head>
+<body>
+  <header id="topbar">
+    <a class="topbar-logo" href="/">N<span>·</span>EVADO</a>
+    <a class="topbar-back" href="/enterate.html">← Titulares</a>
+    <div id="nvd-session-pill" style="display:flex;align-items:center;min-width:120px;justify-content:flex-end;"></div>
+  </header>
+
+  <div class="col-page">
+
+    <div class="col-masthead">
+      <span class="col-masthead-eyebrow">Titulares · Periodismo Comunitario</span>
+      <h1 class="col-masthead-title">Colabora con<br><span>Titulares</span></h1>
+      <p class="col-masthead-sub">
+        NEVADO Titulares es construido por venezolanos para venezolanos.
+        Si tienes algo que reportar, verificar o analizar — hay un lugar para ti aquí.
+      </p>
+      <div class="col-voluntario-note">
+        ✦ Participación voluntaria · Sin remuneración económica ·
+        Tu aporte construye el ecosistema
+      </div>
+    </div>
+
+    <div class="col-requisito">
+      <img src="/rangos/rango3-guardian-plata-md.webp" class="col-requisito-icon" alt="Guardián">
+      <div class="col-requisito-text">
+        <strong>Requisito mínimo: Rango Guardián (Nivel 21+)</strong><br>
+        Para colaborar con Titulares necesitas haber alcanzado el rango Guardián.
+        Es la forma de garantizar que quienes contribuyen están comprometidos
+        genuinamente con el ecosistema NEVADO.
+      </div>
+    </div>
+
+    <div id="col-portales-wrap">
+      <div id="col-auth-gate" style="display:none">
+        <h2>Inicia sesión para continuar</h2>
+        <p>Necesitas una cuenta NEVADO para acceder a los portales de colaboración.</p>
+        <a href="/auth.html?redirect=/colabora.html" class="col-btn-primary">Iniciar sesión</a>
+      </div>
+      <div class="col-portales" id="col-portales" style="display:none">
+        <a class="col-portal" href="/colabora-registro.html" id="portal-sala"
+           style="--portal-accent: #2980B9">
+          <div>
+            <div class="col-portal-num">Portal I</div>
+            <div class="col-portal-name">La Sala de<br>Redacción</div>
+            <div class="col-portal-tagline">
+              Registra, redacta y envía contenido editorial para ser considerado en Titulares.
+              Tu voz, tu perspectiva, desde donde estés.
+            </div>
+          </div>
+          <div class="col-portal-features">
+            <div class="col-portal-feat">Editor de contenido completo</div>
+            <div class="col-portal-feat">Registro de fuentes verificables</div>
+            <div class="col-portal-feat">Estado de tus envíos en tiempo real</div>
+            <div class="col-portal-feat">Historial editorial personal</div>
+          </div>
+          <div class="col-portal-rangos">
+            <span class="col-rango-tag">Cachorro ✗</span>
+            <span class="col-rango-tag">Explorador ✗</span>
+            <span class="col-rango-tag allowed">Guardián ✓</span>
+            <span class="col-rango-tag allowed">Montañista ✓</span>
+            <span class="col-rango-tag allowed">Guía ✓</span>
+            <span class="col-rango-tag allowed">Protector ✓</span>
+            <span class="col-rango-tag allowed">Leyenda ✓</span>
+          </div>
+          <div class="col-portal-cta">Entrar a La Sala →</div>
+        </a>
+
+        <a class="col-portal" href="/colabora-editorial.html" id="portal-mesa"
+           style="--portal-accent: #B8944A">
+          <div>
+            <div class="col-portal-num">Portal II</div>
+            <div class="col-portal-name">La Mesa<br>Editorial</div>
+            <div class="col-portal-tagline">
+              Revisa, verifica y publica el contenido enviado por la comunidad.
+              Panel editorial completo con IA y programación de publicaciones.
+            </div>
+          </div>
+          <div class="col-portal-features">
+            <div class="col-portal-feat">Panel de aprobación editorial</div>
+            <div class="col-portal-feat">Verificación IA con Anthropic</div>
+            <div class="col-portal-feat">Programador de publicaciones</div>
+            <div class="col-portal-feat">Análisis de veracidad con fuentes</div>
+          </div>
+          <div class="col-portal-rangos">
+            <span class="col-rango-tag">Guardián ✗</span>
+            <span class="col-rango-tag">Montañista ✗</span>
+            <span class="col-rango-tag allowed">Guía ✓</span>
+            <span class="col-rango-tag allowed">Protector ✓</span>
+            <span class="col-rango-tag allowed">Leyenda ✓</span>
+          </div>
+          <div class="col-portal-cta">Entrar a La Mesa →</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="col-faq">
+      <div class="col-faq-title">Preguntas frecuentes</div>
+      <div class="col-faq-item">
+        <div class="col-faq-q">¿Recibiré alguna compensación económica?</div>
+        <div class="col-faq-a">No. La colaboración con NEVADO Titulares es completamente voluntaria y no genera ningún tipo de remuneración económica. Tu contribución es un aporte al ecosistema venezolano y al periodismo comunitario de calidad.</div>
+      </div>
+      <div class="col-faq-item">
+        <div class="col-faq-q">¿Todo lo que envíe se publicará?</div>
+        <div class="col-faq-a">No automáticamente. Todo contenido enviado entra en proceso de revisión editorial objetiva antes de ser publicado. Los editores de La Mesa Editorial revisan cada envío independientemente del rango del autor.</div>
+      </div>
+      <div class="col-faq-item">
+        <div class="col-faq-q">¿Puedo enviar contenido sobre cualquier tema?</div>
+        <div class="col-faq-a">El contenido debe estar relacionado con la diáspora venezolana, Venezuela, oportunidades para venezolanos en el mundo, o temas de impacto directo en la comunidad. Contenido político partidista, desinformación o contenido sin fuentes verificables será rechazado.</div>
+      </div>
+      <div class="col-faq-item">
+        <div class="col-faq-q">¿Cómo subo de rango para acceder a La Mesa Editorial?</div>
+        <div class="col-faq-a">Los rangos Guía, Protector y Leyenda Andina requieren aprobación del Founder. La actividad genuina y consistente en el ecosistema — aportes en NODO, participación en Capital Humano, contribuciones verificadas — es lo que acelera el proceso.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/cursor.js"></script>
+  <script src="/nevado-env.js"></script>
+  <script type="module" src="/src/nevado-key.js"></script>
+  <script type="module" src="/src/auth.js"></script>
+  <script src="/js/nodo/nodo-core.js"></script>
+  <script src="/nevado-session-widget.js"></script>
+  <script src="/nevado-home-desktop-pill.js"></script>
+  <script>
+    var RANGOS_SALA = ['guardian','montanista','guia','protector','leyenda_andina'];
+    var RANGOS_MESA = ['guia','protector','leyenda_andina'];
+
+    document.addEventListener('DOMContentLoaded', function(){
+      if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+    });
+
+    document.addEventListener('nodo:ready', function(e) {
+      var user = e.detail && e.detail.user;
+      var gate     = document.getElementById('col-auth-gate');
+      var portales = document.getElementById('col-portales');
+
+      if (!user) {
+        gate.style.display = '';
+        portales.style.display = 'none';
+        return;
+      }
+
+      var rank = (user.rank_key || '').toLowerCase();
+      var tieneSala = RANGOS_SALA.includes(rank);
+      var tieneMesa = RANGOS_MESA.includes(rank);
+
+      gate.style.display = 'none';
+      portales.style.display = 'grid';
+
+      if (!tieneSala) {
+        portales.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;' +
+          'background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);' +
+          'border-radius:18px;">' +
+          '<img src="/rangos/rango3-guardian-plata-md.webp" style="width:48px;margin-bottom:16px"><br>' +
+          '<strong style="font-size:16px">Necesitas rango Guardián</strong><br>' +
+          '<p style="font-size:13px;color:rgba(232,232,224,0.5);margin:8px 0 20px">' +
+          'Actualmente tienes rango <strong>' + (user.rank_key||'Cachorro') + '</strong>. ' +
+          'Alcanza el nivel 21 para colaborar con Titulares.</p>' +
+          '<a href="/nodo.html" style="color:#2980B9;font-size:13px">Ir a NODO →</a>' +
+          '</div>';
+        return;
+      }
+
+      if (!tieneMesa) {
+        var mesa = document.getElementById('portal-mesa');
+        if (mesa) {
+          mesa.style.opacity = '0.45';
+          mesa.style.pointerEvents = 'none';
+          mesa.style.cursor = 'not-allowed';
+          var cta = mesa.querySelector('.col-portal-cta');
+          if (cta) cta.textContent = '🔒 Requiere rango Guía o superior';
+          mesa.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.NODO && window.NODO.showToast('Necesitas rango Guía o superior para acceder a La Mesa Editorial.','error');
+          }, true);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

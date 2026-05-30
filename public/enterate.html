@@ -272,6 +272,10 @@
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="3" width="11" height="8" rx="1.5" stroke="currentColor" stroke-width="1.1"/><path d="M1 3l5.5 4.5L12 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
             Boletín
           </button>
+          <button class="tit-sidebar-item" onclick="window.location.href='/colabora.html'" style="cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 2h9v7H2zM5 9v2M4 11h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Colabora
+          </button>
           <button class="tit-sidebar-item" id="tit-reading-link" onclick="toggleReadingMode()" style="cursor:pointer">
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.1"/><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" stroke-width="1.1"/></svg>
             Modo lectura
@@ -321,7 +325,7 @@
           </div>
           <div class="tit-hero-actions">
             <button class="tit-btn-primary" onclick="openArticle(0)">Leer análisis</button>
-            <button class="tit-btn-ghost">Conversar en NODO</button>
+            <button class="tit-btn-ghost" onclick="nodearArticulo(articles[0])">Conversar en NODO</button>
           </div>
         </div>
       </section>
@@ -357,7 +361,7 @@
           <div class="tit-article-actions">
             <button class="tit-article-btn primary" onclick="openArticle(1)">Leer</button>
             <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
-            <button class="tit-article-btn">NODO</button>
+            <button class="tit-article-btn" onclick="nodearArticulo(articles.find(function(a){return a.id===parseInt(this.closest('[data-article-id]').dataset.articleId);}),this)">NODO</button>
           </div>
         </div>
 
@@ -373,7 +377,7 @@
           <div class="tit-article-actions">
             <button class="tit-article-btn primary" onclick="openArticle(2)">Leer</button>
             <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
-            <button class="tit-article-btn">NODO</button>
+            <button class="tit-article-btn" onclick="nodearArticulo(articles.find(function(a){return a.id===parseInt(this.closest('[data-article-id]').dataset.articleId);}),this)">NODO</button>
           </div>
         </div>
 
@@ -389,7 +393,7 @@
           <div class="tit-article-actions">
             <button class="tit-article-btn primary" onclick="openArticle(3)">Leer</button>
             <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
-            <button class="tit-article-btn">NODO</button>
+            <button class="tit-article-btn" onclick="nodearArticulo(articles.find(function(a){return a.id===parseInt(this.closest('[data-article-id]').dataset.articleId);}),this)">NODO</button>
           </div>
         </div>
 
@@ -405,7 +409,7 @@
           <div class="tit-article-actions">
             <button class="tit-article-btn primary" onclick="openArticle(4)">Leer</button>
             <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
-            <button class="tit-article-btn">NODO</button>
+            <button class="tit-article-btn" onclick="nodearArticulo(articles.find(function(a){return a.id===parseInt(this.closest('[data-article-id]').dataset.articleId);}),this)">NODO</button>
           </div>
         </div>
 
@@ -421,7 +425,7 @@
           <div class="tit-article-actions">
             <button class="tit-article-btn primary" onclick="openArticle(5)">Leer</button>
             <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
-            <button class="tit-article-btn">NODO</button>
+            <button class="tit-article-btn" onclick="nodearArticulo(articles.find(function(a){return a.id===parseInt(this.closest('[data-article-id]').dataset.articleId);}),this)">NODO</button>
           </div>
         </div>
 
@@ -437,7 +441,7 @@
           <div class="tit-article-actions">
             <button class="tit-article-btn primary" onclick="openArticle(6)">Leer</button>
             <button class="tit-article-btn" onclick="this.textContent=this.textContent==='Guardado ✓'?'Guardar':'Guardado ✓'">Guardar</button>
-            <button class="tit-article-btn">NODO</button>
+            <button class="tit-article-btn" onclick="nodearArticulo(articles.find(function(a){return a.id===parseInt(this.closest('[data-article-id]').dataset.articleId);}),this)">NODO</button>
           </div>
         </div>
 
@@ -733,7 +737,7 @@
       <div class="tit-modal-actions">
         <button class="tit-modal-action primary" id="saveArticleBtn" onclick="toggleSaveArticle(this)">Guardar</button>
         <button class="tit-modal-action" onclick="navigator.share?.({title:document.getElementById('modalTitle').textContent})">Compartir</button>
-        <button class="tit-modal-action">Conversar en NODO</button>
+        <button class="tit-modal-action" onclick="nodearArticulo(articles.find(function(a){return String(a.id)===document.getElementById('modalCat').dataset.articleId;}))">Conversar en NODO</button>
         <button class="tit-modal-action" onclick="toggleReadingMode()">Modo lectura</button>
         <button class="tit-modal-action" id="sourcesBtn">Ver fuentes</button>
       </div>
@@ -924,6 +928,7 @@
     const a = articles.find(x => x.id === id);
     if (!a) return;
     document.getElementById('modalCat').textContent    = a.category;
+    document.getElementById('modalCat').dataset.articleId = a.id;
     document.getElementById('modalStatus').textContent = a.status;
     document.getElementById('modalTitle').textContent  = a.title;
     document.getElementById('modalExcerpt').textContent= a.excerpt;
@@ -1050,6 +1055,50 @@
       document.querySelector('.tit-search').focus();
     }
   });
+
+  // ─── Nodear artículo — crear hilo en NODO desde Titulares ────────────────────
+  async function nodearArticulo(article, btn) {
+    if (!article) return;
+    if (!window.NODO_USER) {
+      window.location.href = '/auth.html?redirect=/enterate.html';
+      return;
+    }
+    var check = window.NODO && window.NODO.canPost && window.NODO.canPost();
+    if (check && !check.ok) { alert(check.reason); return; }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Nodeando…'; }
+
+    try {
+      var catR = await window.NODO.sb
+        .from('foro_categorias').select('id').eq('slug','general').maybeSingle();
+      var catId = catR.data ? catR.data.id : null;
+
+      var u = window.NODO_USER;
+      var contenido = '[TITULAR NEVADO] ' + article.excerpt +
+        '\n\n→ Leer análisis completo en Titulares: ' +
+        window.location.origin + '/enterate.html';
+
+      var { data, error } = await window.NODO.sb.from('foro_hilos').insert({
+        profile_id:     u.profile_id,
+        autor_nombre:   u.display_name,
+        autor_username: u.username,
+        autor_rank:     u.rank_key || 'cachorro',
+        autor_nivel:    u.level || 1,
+        titulo:         article.title,
+        contenido:      contenido,
+        tipo:           'insight',
+        categoria_id:   catId,
+        estado:         'activo',
+      }).select().single();
+
+      if (error) throw error;
+      window.open('/nodo-hilo.html?id=' + data.id, '_blank');
+    } catch(err) {
+      alert('Error al crear hilo: ' + (err.message || err));
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'NODO'; }
+    }
+  }
   </script>
   <div id="reading-mode-bar" style="display:none">
     <button id="exit-reading-btn" onclick="toggleReadingMode()"><span>⊞</span> Salir del modo lectura</button>
