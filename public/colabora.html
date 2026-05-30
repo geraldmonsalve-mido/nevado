@@ -288,9 +288,14 @@
     var RANGOS_SALA = ['guardian','montanista','guia','protector','leyenda_andina'];
     var RANGOS_MESA = ['guia','protector','leyenda_andina'];
 
-    document.addEventListener('DOMContentLoaded', function(){
-      if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
-    });
+    /* Iniciar sesión Clerk — llamada directa porque nodo-core.js ya corrió */
+    if (window.NODO && window.NODO.initClerkSession) {
+      window.NODO.initClerkSession();
+    } else {
+      document.addEventListener('DOMContentLoaded', function(){
+        if (window.NODO && window.NODO.initClerkSession) window.NODO.initClerkSession();
+      });
+    }
 
     document.addEventListener('nodo:ready', function(e) {
       var user = e.detail && e.detail.user;
