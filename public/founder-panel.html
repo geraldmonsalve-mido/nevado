@@ -82,7 +82,7 @@
     <!-- ─── MAIN ──────────────────────────────────────────────────── -->
     <main class="fp-main">
 
-      <!-- ─── BLOQUE 2: MÉTRICAS REALES ──────────────────────────── -->
+      <!-- ── MÉTRICAS — siempre visible ─────────────────────────── -->
       <section class="fp-section" aria-label="Métricas del ecosistema">
         <div class="fp-kpi-grid">
 
@@ -121,7 +121,7 @@
         </div>
       </section>
 
-      <!-- ─── BLOQUE 3: CAMBIOS DE CROQUETAS ─────────────────────── -->
+      <!-- ── CROQUETAS — siempre visible ────────────────────────── -->
       <section class="fp-section" aria-label="Cambios de croquetas">
         <h2 class="fp-section-title">Cambios de Croquetas</h2>
 
@@ -201,140 +201,123 @@
         </form>
       </section>
 
-      <!-- ─── BLOQUE 4: LOGS RECIENTES ────────────────────────────── -->
-      <section class="fp-section" aria-label="Logs de croquetas">
-        <h2 class="fp-section-title">
-          Logs recientes
-          <small class="fp-refresh-note">Auto-actualiza cada 30s</small>
-        </h2>
-        <div id="fp-logs-wrap" class="fp-logs-wrap">
-          <p class="fp-empty">Sin movimientos registrados aún.</p>
-        </div>
-      </section>
-
-      <!-- ─── BLOQUE 5: PENDIENTES FUNCIONALES ────────────────────── -->
-      <section class="fp-pending-section" aria-label="Funcionalidades pendientes">
-        <details>
-          <summary class="fp-pending-summary">Funcionalidades Pendientes</summary>
-          <div class="fp-pending-list">
-
-            <div class="fp-pending-item">
-              <span class="fp-badge-pending">Pendiente</span>
-              <div>
-                <strong>Desbloqueo manual Guardián → Montañista</strong>
-                <p>Requiere autorización founder — pendiente backend de validación de rangos</p>
-              </div>
-            </div>
-
-            <div class="fp-pending-item">
-              <span class="fp-badge-pending">Pendiente</span>
-              <div>
-                <strong>Moderación de contenido NODO</strong>
-                <p>Requiere tabla de contenidos y API de moderación</p>
-              </div>
-            </div>
-
-            <div class="fp-pending-item">
-              <span class="fp-badge-pending">Pendiente</span>
-              <div>
-                <strong>Reportes de campañas Corazón</strong>
-                <p>Requiere tabla de campañas y endpoints de métricas</p>
-              </div>
-            </div>
-
-            <div class="fp-pending-item">
-              <span class="fp-badge-pending">Pendiente</span>
-              <div>
-                <strong>Gestión de permisos avanzados</strong>
-                <p>Requiere tabla de roles/permisos y UI de gestión</p>
-              </div>
-            </div>
-
+      <!-- ── LOGS — accordion ────────────────────────────────────── -->
+      <details class="fp-accordion" id="fp-logs-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">📋</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">Logs recientes de Croquetas</span>
+            <span class="fp-accordion-desc">Historial de movimientos</span>
           </div>
-        </details>
-      </section>
-
-      <!-- ─── BLOQUE 5: NODO COMUNIDAD ─────────────────────────── -->
-      <section class="fp-section" aria-label="NODO — Comunidad">
-        <h2 class="fp-section-title">NODO — Comunidad</h2>
-        <div class="fp-kpi-grid">
-          <article class="fp-kpi">
-            <span class="fp-kpi-icon fp-icon-blue" aria-hidden="true">◎</span>
-            <div>
-              <p class="fp-kpi-label">Aportes publicados</p>
-              <strong class="fp-kpi-value" id="fp-hilos-count">—</strong>
-            </div>
-          </article>
-          <article class="fp-kpi">
-            <span class="fp-kpi-icon fp-icon-green" aria-hidden="true">◉</span>
-            <div>
-              <p class="fp-kpi-label">Respuestas</p>
-              <strong class="fp-kpi-value" id="fp-respuestas-count">—</strong>
-            </div>
-          </article>
-          <article class="fp-kpi">
-            <span class="fp-kpi-icon fp-icon-violet" aria-hidden="true">▣</span>
-            <div>
-              <p class="fp-kpi-label">Mensajes de chat</p>
-              <strong class="fp-kpi-value" id="fp-mensajes-count">—</strong>
-            </div>
-          </article>
-          <article class="fp-kpi">
-            <span class="fp-kpi-icon fp-icon-gold" aria-hidden="true">♥</span>
-            <div>
-              <p class="fp-kpi-label">Likes dados</p>
-              <strong class="fp-kpi-value" id="fp-likes-count">—</strong>
-            </div>
-          </article>
-          <article class="fp-kpi">
-            <span class="fp-kpi-icon fp-icon-blue" aria-hidden="true">□</span>
-            <div>
-              <p class="fp-kpi-label">Espacios activos</p>
-              <strong class="fp-kpi-value" id="fp-espacios-count">—</strong>
-            </div>
-          </article>
-          <article class="fp-kpi">
-            <span class="fp-kpi-icon fp-icon-green" aria-hidden="true">◈</span>
-            <div>
-              <p class="fp-kpi-label">Canales activos</p>
-              <strong class="fp-kpi-value" id="fp-canales-count">—</strong>
-            </div>
-          </article>
+          <span class="fp-accordion-badge" id="fp-logs-badge">—</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <div class="fp-logs-header">
+            <span style="font-size:12px;color:var(--muted)">Últimos 20 movimientos</span>
+            <button class="fp-logs-refresh-btn" id="fp-logs-refresh-btn" type="button">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M10.5 6A4.5 4.5 0 1 1 6 1.5a4.5 4.5 0 0 1 3.18 1.32L10.5 4"
+                  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <path d="M10.5 1.5V4H8" stroke="currentColor" stroke-width="1.3"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Actualizar
+            </button>
+          </div>
+          <div id="fp-logs-wrap" class="fp-logs-wrap">
+            <p class="fp-empty">Abre esta sección para cargar los logs.</p>
+          </div>
         </div>
-      </section>
+      </details>
 
-      <!-- ─── BLOQUE: ASCENSOS PENDIENTES ────────────────────────── -->
-      <section class="fp-section" aria-label="Solicitudes de Ascenso" id="fp-ascensos-section">
-        <h2 class="fp-section-title">🏆 Solicitudes de Ascenso</h2>
-        <p style="color:rgba(255,255,255,.4);font-size:12px;margin-bottom:16px;">Usuarios cuyas croquetas califican para el siguiente rango pero requieren aprobación founder (Montañista y superiores).</p>
-        <div id="fp-ascensos-list">
-          <p class="fp-empty">Cargando…</p>
+      <!-- ── NODO COMUNIDAD — accordion ─────────────────────────── -->
+      <details class="fp-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">🌐</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">NODO — Métricas de Comunidad</span>
+            <span class="fp-accordion-desc">Aportes, respuestas, mensajes, likes, espacios</span>
+          </div>
+          <span class="fp-accordion-badge blue" id="fp-nodo-badge">—</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <div class="fp-kpi-grid">
+            <article class="fp-kpi">
+              <span class="fp-kpi-icon fp-icon-blue" aria-hidden="true">◎</span>
+              <div><p class="fp-kpi-label">Aportes publicados</p><strong class="fp-kpi-value" id="fp-hilos-count">—</strong></div>
+            </article>
+            <article class="fp-kpi">
+              <span class="fp-kpi-icon fp-icon-green" aria-hidden="true">◉</span>
+              <div><p class="fp-kpi-label">Respuestas</p><strong class="fp-kpi-value" id="fp-respuestas-count">—</strong></div>
+            </article>
+            <article class="fp-kpi">
+              <span class="fp-kpi-icon fp-icon-violet" aria-hidden="true">▣</span>
+              <div><p class="fp-kpi-label">Mensajes de chat</p><strong class="fp-kpi-value" id="fp-mensajes-count">—</strong></div>
+            </article>
+            <article class="fp-kpi">
+              <span class="fp-kpi-icon fp-icon-gold" aria-hidden="true">♥</span>
+              <div><p class="fp-kpi-label">Likes dados</p><strong class="fp-kpi-value" id="fp-likes-count">—</strong></div>
+            </article>
+            <article class="fp-kpi">
+              <span class="fp-kpi-icon fp-icon-blue" aria-hidden="true">□</span>
+              <div><p class="fp-kpi-label">Espacios activos</p><strong class="fp-kpi-value" id="fp-espacios-count">—</strong></div>
+            </article>
+            <article class="fp-kpi">
+              <span class="fp-kpi-icon fp-icon-green" aria-hidden="true">◈</span>
+              <div><p class="fp-kpi-label">Canales activos</p><strong class="fp-kpi-value" id="fp-canales-count">—</strong></div>
+            </article>
+          </div>
         </div>
-      </section>
+      </details>
 
-      <!-- ── TITULARES ─────────────────────────────────────────────── -->
-      <section class="fp-section" aria-label="Titulares — Cola Editorial" id="fp-titulares-section">
-        <h2 class="fp-section-title">📰 Titulares — Cola Editorial</h2>
-        <div id="fp-tit-tabs" style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;">
-          <button class="fp-tit-tab active" data-estado="enviado">
-            Enviados <span class="fp-tit-badge" id="badge-enviado">0</span>
-          </button>
-          <button class="fp-tit-tab" data-estado="en_revision">
-            En revisión <span class="fp-tit-badge" id="badge-en_revision">0</span>
-          </button>
-          <button class="fp-tit-tab" data-estado="aprobado">
-            Aprobados <span class="fp-tit-badge" id="badge-aprobado">0</span>
-          </button>
-          <button class="fp-tit-tab" data-estado="publicado">
-            Publicados <span class="fp-tit-badge" id="badge-publicado">0</span>
-          </button>
-          <button class="fp-tit-tab" data-estado="rechazado">
-            Rechazados <span class="fp-tit-badge" id="badge-rechazado">0</span>
-          </button>
-          <button class="fp-tit-tab" data-estado="todos">Todos</button>
+      <!-- ── ASCENSOS — accordion ────────────────────────────────── -->
+      <details class="fp-accordion" id="fp-ascensos-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">🏆</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">Solicitudes de Ascenso</span>
+            <span class="fp-accordion-desc">Usuarios con croquetas suficientes pendientes de aprobación</span>
+          </div>
+          <span class="fp-accordion-badge gold" id="fp-ascensos-badge">—</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <p style="color:rgba(255,255,255,.4);font-size:12px;">Montañista y superiores requieren aprobación founder.</p>
+          <div id="fp-ascensos-list"><p class="fp-empty">Abre esta sección para cargar.</p></div>
         </div>
-        <div id="fp-titulares-list"><p class="fp-empty">Cargando envíos…</p></div>
-      </section>
+      </details>
+
+      <!-- ── TITULARES — accordion ───────────────────────────────── -->
+      <details class="fp-accordion" id="fp-titulares-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">📰</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">Titulares — Cola Editorial</span>
+            <span class="fp-accordion-desc">Envíos de corresponsales pendientes de revisión</span>
+          </div>
+          <span class="fp-accordion-badge red" id="fp-titulares-badge">—</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <div id="fp-tit-tabs" style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="fp-tit-tab active" data-estado="enviado">
+              Enviados <span class="fp-tit-badge" id="badge-enviado">0</span>
+            </button>
+            <button class="fp-tit-tab" data-estado="en_revision">
+              En revisión <span class="fp-tit-badge" id="badge-en_revision">0</span>
+            </button>
+            <button class="fp-tit-tab" data-estado="aprobado">
+              Aprobados <span class="fp-tit-badge" id="badge-aprobado">0</span>
+            </button>
+            <button class="fp-tit-tab" data-estado="publicado">
+              Publicados <span class="fp-tit-badge" id="badge-publicado">0</span>
+            </button>
+            <button class="fp-tit-tab" data-estado="rechazado">
+              Rechazados <span class="fp-tit-badge" id="badge-rechazado">0</span>
+            </button>
+            <button class="fp-tit-tab" data-estado="todos">Todos</button>
+          </div>
+          <div id="fp-titulares-list"><p class="fp-empty">Abre esta sección para cargar los envíos.</p></div>
+        </div>
+      </details>
 
       <!-- ── MODAL DE REVISIÓN DE TITULAR ── -->
       <div id="fp-tit-modal-overlay" style="display:none;position:fixed;inset:0;z-index:1000;
@@ -443,21 +426,67 @@
         </div>
       </div>
 
-      <!-- ─── BLOQUE 6: CANALES DE CHAT ──────────────────────────── -->
-      <section class="fp-section" aria-label="Chat en Vivo — Canales">
-        <h2 class="fp-section-title">💬 Chat en Vivo — Canales</h2>
-        <div id="fp-canales-list">
-          <p class="fp-empty">Cargando canales…</p>
+      <!-- ── CHAT CANALES — accordion ────────────────────────────── -->
+      <details class="fp-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">💬</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">Chat en Vivo — Canales</span>
+            <span class="fp-accordion-desc">Gestión de canales del chat NODO</span>
+          </div>
+          <span class="fp-accordion-badge" id="fp-canales-badge">—</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <div id="fp-canales-list"><p class="fp-empty">Cargando canales…</p></div>
         </div>
-      </section>
+      </details>
 
-      <!-- ─── BLOQUE 7: ESPACIOS DEL FORO ──────────────────────── -->
-      <section class="fp-section" aria-label="Espacios del Foro">
-        <h2 class="fp-section-title">🗂 Espacios del Foro</h2>
-        <div id="fp-espacios-list">
-          <p class="fp-empty">Cargando espacios…</p>
+      <!-- ── ESPACIOS FORO — accordion ───────────────────────────── -->
+      <details class="fp-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">🗂</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">Espacios del Foro</span>
+            <span class="fp-accordion-desc">Gestión de espacios y categorías de NODO</span>
+          </div>
+          <span class="fp-accordion-badge" id="fp-espacios-badge">—</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <div id="fp-espacios-list"><p class="fp-empty">Cargando espacios…</p></div>
         </div>
-      </section>
+      </details>
+
+      <!-- ── PENDIENTES — accordion ───────────────────────────────── -->
+      <details class="fp-accordion">
+        <summary class="fp-accordion-summary">
+          <span class="fp-accordion-icon">⏳</span>
+          <div class="fp-accordion-label">
+            <span class="fp-accordion-title">Funcionalidades Pendientes</span>
+            <span class="fp-accordion-desc">Módulos en desarrollo próximo</span>
+          </div>
+          <span class="fp-accordion-badge gold">4</span>
+        </summary>
+        <div class="fp-accordion-body">
+          <div class="fp-pending-list">
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
+              <div><strong>Moderación de contenido NODO</strong><p>Requiere tabla de contenidos y API de moderación</p></div>
+            </div>
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
+              <div><strong>Reportes de campañas Corazón</strong><p>Requiere tabla de campañas y endpoints de métricas</p></div>
+            </div>
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
+              <div><strong>Gestión de permisos avanzados</strong><p>Requiere tabla de roles/permisos y UI de gestión</p></div>
+            </div>
+            <div class="fp-pending-item">
+              <span class="fp-badge-pending">Pendiente</span>
+              <div><strong>Analytics de ecosistema</strong><p>Gráficas de crecimiento, retención y engagement</p></div>
+            </div>
+          </div>
+        </div>
+      </details>
 
     </main>
   </div>

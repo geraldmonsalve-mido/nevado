@@ -821,6 +821,86 @@ details[open] .fp-pending-summary::before { transform: rotate(90deg); }
 .fp-toast-warning { border-color: rgba(255,215,120,0.35); }
 .fp-toast-info    { border-color: rgba(120,183,255,0.35); }
 
+/* ═══════════════════════════════════════════════════════════════
+   FP ACCORDION — patrón unificado para todas las secciones
+   ═══════════════════════════════════════════════════════════════ */
+
+.fp-accordion {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.fp-accordion:focus-within,
+.fp-accordion[open] { border-color: rgba(255,255,255,0.1); }
+
+.fp-accordion-summary {
+  padding: 18px 24px;
+  cursor: pointer; user-select: none; list-style: none;
+  display: flex; align-items: center; gap: 12px;
+  transition: background 0.15s;
+}
+.fp-accordion-summary::-webkit-details-marker { display: none; }
+.fp-accordion-summary:hover { background: rgba(255,255,255,0.03); }
+
+.fp-accordion-summary::before {
+  content: "▸"; color: var(--muted); font-size: 11px;
+  transition: transform 0.22s ease; flex-shrink: 0;
+}
+.fp-accordion[open] > .fp-accordion-summary::before { transform: rotate(90deg); }
+
+.fp-accordion-icon { font-size: 15px; flex-shrink: 0; opacity: 0.75; }
+
+.fp-accordion-label {
+  flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0;
+}
+.fp-accordion-title {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.fp-accordion-desc { font-size: 11px; color: var(--muted); letter-spacing: 0.02em; }
+
+.fp-accordion-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  padding: 3px 9px; border-radius: 999px;
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45);
+  flex-shrink: 0; transition: background 0.2s, color 0.2s;
+}
+.fp-accordion-badge.gold  { background: var(--gold-dim); color: var(--gold); }
+.fp-accordion-badge.green { background: rgba(39,174,96,0.12); color: #27AE60; }
+.fp-accordion-badge.blue  { background: rgba(41,128,185,0.12); color: #2980B9; }
+.fp-accordion-badge.red   { background: rgba(231,76,60,0.1); color: #E74C3C; }
+
+.fp-accordion-body {
+  padding: 4px 24px 22px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+/* ── Botón Actualizar en logs ─────────────────────────────────── */
+.fp-logs-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.fp-logs-refresh-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 500;
+  color: rgba(255,255,255,0.5); cursor: pointer; font-family: inherit;
+  letter-spacing: 0.04em; transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.fp-logs-refresh-btn:hover {
+  background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.18);
+}
+.fp-logs-refresh-btn:active { transform: scale(0.97); }
+.fp-logs-refresh-btn svg { transition: transform 0.5s ease; }
+.fp-logs-refresh-btn.spinning svg { animation: fpLogsSpin 0.6s linear infinite; }
+@keyframes fpLogsSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────────────────── */
 
 @media (max-width: 860px) {

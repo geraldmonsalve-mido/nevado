@@ -628,6 +628,9 @@ async function cargarMetricasComunidad() {
     set('fp-likes-count',      likes.count);
     set('fp-espacios-count',   espacios.count);
     set('fp-canales-count',    canales.count);
+    /* Badge NODO */
+    var nodoBadge = document.getElementById('fp-nodo-badge');
+    if (nodoBadge) nodoBadge.textContent = fmt(hilos.count || 0) + ' aportes';
   } catch (err) {
     console.error('[FOUNDER] cargarMetricasComunidad:', err);
   }
@@ -690,6 +693,9 @@ async function cargarLogsRecientes() {
         '</tr></thead>' +
         '<tbody>' + rows + '</tbody>' +
       '</table>';
+    /* Badge del summary */
+    var logsBadge = document.getElementById('fp-logs-badge');
+    if (logsBadge) logsBadge.textContent = logs.length;
   } catch (err) {
     console.error('[FOUNDER] cargarLogsRecientes:', err);
     wrap.innerHTML = '<p class="fp-empty">Error al cargar logs.</p>';
@@ -954,6 +960,13 @@ async function cargarAscensosPendientes() {
       return umbral && u.croquetas >= umbral;
     });
 
+    /* Badge de ascensos */
+    var ascBadge = document.getElementById('fp-ascensos-badge');
+    if (ascBadge) {
+      ascBadge.textContent = pendientes.length || '0';
+      if (pendientes.length > 0) ascBadge.className = 'fp-accordion-badge gold';
+    }
+
     if (!pendientes.length) {
       container.innerHTML = '<p class="fp-empty">Sin solicitudes de ascenso pendientes.</p>';
       return;
@@ -1165,6 +1178,17 @@ async function cargarTitulares(estado) {
         '<span class="fp-tit-estado fp-tit-estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>' +
       '</div>';
     }).join('');
+    /* Badge de titulares: suma enviados + en_revision */
+    setTimeout(function() {
+      var titBadge = document.getElementById('fp-titulares-badge');
+      if (titBadge) {
+        var env = parseInt(document.getElementById('badge-enviado') && document.getElementById('badge-enviado').textContent || 0);
+        var rev = parseInt(document.getElementById('badge-en_revision') && document.getElementById('badge-en_revision').textContent || 0);
+        var total = (env || 0) + (rev || 0);
+        titBadge.textContent = total || '—';
+        if (total > 0) titBadge.className = 'fp-accordion-badge red';
+      }
+    }, 50);
   } catch(err) {
     console.error('[FOUNDER] cargarTitulares:', err);
     if (list) list.innerHTML = '<p class="fp-empty">Error: ' + err.message + '</p>';
@@ -1280,19 +1304,61 @@ window.addEventListener('nvd:founder-ready', async function () {
   initCroquetasForm();
   initLogout();
 
+  /* Carga inmediata: KPIs, canales y espacios */
   Promise.all([
     loadStats(),
     cargarMetricasComunidad(),
-    cargarLogsRecientes(),
     cargarCanales(),
     cargarEspacios(),
-    cargarAscensosPendientes(),
-    cargarTitulares('enviado'),
   ]);
 
-  /* Auto-refresh: only logs and metrics to avoid UI flickering */
-  setInterval(function () {
-    cargarLogsRecientes();
-    cargarMetricasComunidad();
-  }, 30000);
+  /* ── Carga lazy: logs al abrir el accordion ── */
+  var logsAccordion = document.getElementById('fp-logs-accordion');
+  if (logsAccordion) {
+    var _logsYaCargados = false;
+    logsAccordion.addEventListener('toggle', function () {
+      if (logsAccordion.open && !_logsYaCargados) {
+        _logsYaCargados = true;
+        cargarLogsRecientes();
+      }
+    });
+  }
+
+  /* ── Botón Actualizar logs ── */
+  var btnRefreshLogs = document.getElementById('fp-logs-refresh-btn');
+  if (btnRefreshLogs) {
+    btnRefreshLogs.addEventListener('click', function () {
+      btnRefreshLogs.classList.add('spinning');
+      btnRefreshLogs.disabled = true;
+      cargarLogsRecientes().then(function () {
+        setTimeout(function () {
+          btnRefreshLogs.classList.remove('spinning');
+          btnRefreshLogs.disabled = false;
+        }, 400);
+      });
+    });
+  }
+
+  /* ── Carga lazy: titulares al abrir ── */
+  var titAccordion = document.getElementById('fp-titulares-accordion');
+  if (titAccordion) {
+    var _titYaCargados = false;
+    titAccordion.addEventListener('toggle', function () {
+      if (titAccordion.open && !_titYaCargados) {
+        _titYaCargados = true;
+        if (typeof cargarTitulares === 'function') cargarTitulares('enviado');
+      }
+    });
+  }
+
+  /* ── Carga lazy: ascensos al abrir ── */
+  var ascAccordion = document.getElementById('fp-ascensos-accordion');
+  if (ascAccordion) {
+    ascAccordion.addEventListener('toggle', function () {
+      if (ascAccordion.open) cargarAscensosPendientes();
+    });
+  }
+
+  /* Métricas: refresh cada 5 minutos */
+  setInterval(cargarMetricasComunidad, 300000);
 });
