@@ -231,6 +231,105 @@
     .mesa-dec-btn:disabled { opacity: 0.4; cursor: default; }
 
     .mesa-empty { text-align:center; padding:48px; color:rgba(255,255,255,0.28); font-size:14px; }
+    /* ── Juramento Modal ──────────────────────────────────────────── */
+    #juramento-overlay {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(2,3,8,0.92);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: jurOverlayIn 0.3s ease forwards;
+    }
+    @keyframes jurOverlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    #juramento-modal {
+      background: rgba(10,12,20,0.98);
+      border: 1px solid rgba(184,148,74,0.2);
+      border-radius: 22px;
+      width: min(620px, 96vw);
+      max-height: 88vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(184,148,74,0.08);
+      animation: jurModalIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
+      position: relative; overflow: hidden;
+    }
+    @keyframes jurModalIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #juramento-modal::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, #B8944A, transparent);
+    }
+    #juramento-scroll {
+      overflow-y: auto; display: flex; flex-direction: column;
+    }
+    #juramento-scroll::-webkit-scrollbar { width: 4px; }
+    #juramento-scroll::-webkit-scrollbar-thumb { background: rgba(184,148,74,0.2); border-radius: 2px; }
+    #juramento-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none;
+      color: rgba(255,255,255,0.25); cursor: pointer;
+      font-size: 16px; padding: 6px; border-radius: 6px;
+      transition: color 0.2s, background 0.2s; z-index: 1;
+    }
+    #juramento-close:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.06); }
+    #juramento-header {
+      padding: 32px 32px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    #juramento-eyebrow {
+      display: block; font-size: 9px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: #B8944A; margin-bottom: 10px;
+    }
+    #juramento-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 600; color: #E8E8E0;
+      margin: 0; line-height: 1.2;
+    }
+    #juramento-body {
+      padding: 24px 32px; flex: 1; overflow-y: auto;
+      font-size: 13px; line-height: 1.8;
+      color: rgba(232,228,220,0.65);
+    }
+    #juramento-body p { margin: 0 0 14px; }
+    #juramento-body p:last-child { margin-bottom: 0; }
+    #juramento-body strong { color: rgba(232,228,220,0.85); }
+    #juramento-body ul {
+      padding-left: 20px; margin: 8px 0 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    #juramento-body ul li { color: rgba(232,232,224,0.6); }
+    #juramento-cierre {
+      margin-top: 20px !important;
+      padding: 16px; border-radius: 10px;
+      background: rgba(184,148,74,0.06);
+      border: 1px solid rgba(184,148,74,0.15);
+      color: rgba(184,148,74,0.85) !important;
+      font-size: 13px; text-align: center;
+    }
+    #juramento-footer {
+      padding: 20px 32px 28px; border-top: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0; display: flex; flex-direction: column;
+      align-items: center; gap: 12px;
+    }
+    #juramento-nota {
+      font-size: 11px; color: rgba(255,255,255,0.25);
+      text-align: center; margin: 0;
+    }
+    #juramento-aceptar {
+      background: linear-gradient(135deg, rgba(184,148,74,0.9), rgba(184,148,74,0.7));
+      border: 1px solid rgba(184,148,74,0.5);
+      border-radius: 10px; padding: 13px 28px;
+      font-size: 13px; font-weight: 600; color: #05050A;
+      cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s, transform 0.15s;
+      letter-spacing: 0.02em;
+    }
+    #juramento-aceptar:hover { opacity: 0.88; transform: scale(0.99); }
   </style>
 </head>
 <body>
@@ -354,6 +453,41 @@
       <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
       <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
       <button class="mesa-dec-btn mesa-dec-publicar" onclick="decidir('publicado')">Publicar ✓</button>
+    </div>
+  </div>
+
+  <!-- ── Juramento de Integridad Editorial ── -->
+  <div id="juramento-overlay" style="display:none">
+    <div id="juramento-modal">
+      <button id="juramento-close" aria-label="Cerrar">✕</button>
+      <div id="juramento-scroll">
+        <div id="juramento-header">
+          <span id="juramento-eyebrow">Mesa Editorial · NEVADO</span>
+          <h2 id="juramento-title">Juramento de Integridad Editorial</h2>
+        </div>
+        <div id="juramento-body">
+          <p>Al ingresar a la Mesa Editorial de NEVADO, acepto voluntariamente ejercer esta responsabilidad con honestidad, criterio, prudencia y compromiso con la verdad.</p>
+          <p>Reconozco que la función de la Mesa Editorial no consiste en promover intereses personales, ideológicos, políticos, económicos o partidistas, sino en evaluar de manera objetiva la relevancia, veracidad y pertinencia de los contenidos que podrán ser publicados en la sección Titulares.</p>
+          <p><strong>Me comprometo a:</strong></p>
+          <ul>
+            <li>Priorizar los hechos verificables por encima de opiniones, preferencias o creencias personales.</li>
+            <li>Evaluar cada propuesta de publicación utilizando fuentes confiables, evidencia verificable y criterios editoriales transparentes.</li>
+            <li>Evitar la difusión de información falsa, manipulada, engañosa o presentada fuera de contexto.</li>
+            <li>Declarar cualquier posible conflicto de interés que pueda afectar mi imparcialidad.</li>
+            <li>Respetar la diversidad de ideas, perspectivas y opiniones legítimas dentro de un marco de convivencia democrática y respeto humano.</li>
+            <li>Actuar con independencia de presiones externas, campañas coordinadas, intereses particulares o incentivos ajenos a la misión de NEVADO.</li>
+            <li>Comprender que la confianza pública es uno de los activos más valiosos de la comunidad y que toda decisión editorial puede contribuir a fortalecerla o debilitarla.</li>
+          </ul>
+          <p>Entiendo que mi participación en esta Mesa Editorial constituye una labor voluntaria y honorífica. No recibiré remuneración económica por mis decisiones editoriales ni podré exigir compensación alguna derivada de esta actividad.</p>
+          <p>Acepto que el privilegio de participar en la validación de contenidos puede ser suspendido o revocado cuando existan evidencias de manipulación deliberada, abuso de funciones, conflictos de interés ocultos, incumplimiento de este juramento o conductas incompatibles con los principios de NEVADO.</p>
+          <p>Finalmente, declaro que ejerceré esta responsabilidad con integridad, criterio independiente y vocación de servicio, procurando que cada publicación autorizada contribuya al acceso a información confiable, al fortalecimiento de la inteligencia colectiva y al desarrollo de una ciudadanía mejor informada.</p>
+          <p id="juramento-cierre"><em>La credibilidad se construye publicación tras publicación. Mi compromiso es protegerla.</em></p>
+        </div>
+        <div id="juramento-footer">
+          <p id="juramento-nota">Esta declaración es de carácter voluntario y honorífico.</p>
+          <button id="juramento-aceptar">Acepto el juramento — Ingresar a La Mesa</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -573,6 +707,42 @@
         return;
       }
       currentUser = user;
+
+      /* ── Juramento: mostrar 1 vez por sesión ── */
+      var jKey = 'nvd_juramento_' + (user.profile_id || 'anon');
+      var yaAcepto = sessionStorage.getItem(jKey);
+      if (!yaAcepto) {
+        var overlay = document.getElementById('juramento-overlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        function cerrarJuramento() {
+          overlay.style.animation = 'none';
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'opacity 0.25s ease';
+          setTimeout(function() {
+            overlay.style.display = 'none';
+            document.body.style.overflow = '';
+          }, 250);
+        }
+
+        document.getElementById('juramento-aceptar').addEventListener('click', function() {
+          sessionStorage.setItem(jKey, '1');
+          cerrarJuramento();
+        });
+
+        document.getElementById('juramento-close').addEventListener('click', function() {
+          window.location.href = '/colabora.html';
+        });
+
+        document.addEventListener('keydown', function escHandler(e) {
+          if (e.key === 'Escape') {
+            document.removeEventListener('keydown', escHandler);
+            window.location.href = '/colabora.html';
+          }
+        });
+      }
+
       cargarPorEstado('pendientes');
     });
   </script>
