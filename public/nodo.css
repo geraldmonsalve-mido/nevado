@@ -988,3 +988,24 @@ body { padding-bottom: 28px; }
 /* ─── Tendencias clickable ───────────────────────────────────────────────── */
 .nodo-trending-item { cursor: pointer; }
 .nodo-trending-item:hover .nodo-trending-tag { color: #E74C3C; }
+
+/* ── NEVADO Lang Selector ───────────────────────────────────────── */
+#nvd-lang-selector {
+  display: flex; align-items: center; gap: 2px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px; padding: 3px 6px; flex-shrink: 0;
+}
+.nvd-lang-btn {
+  background: none; border: none; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; color: rgba(255,255,255,0.35);
+  cursor: pointer; padding: 3px 6px; border-radius: 5px;
+  font-family: inherit; transition: color 0.15s, background 0.15s; line-height: 1;
+}
+.nvd-lang-btn:hover { color: rgba(255,255,255,0.75); }
+.nvd-lang-btn.active { color: #E8E8E0; background: rgba(255,255,255,0.08); }
+.nvd-lang-sep { font-size: 10px; color: rgba(255,255,255,0.15); user-select: none; line-height: 1; }
+@media (max-width: 640px) {
+  #nvd-lang-selector { padding: 2px 5px; }
+  .nvd-lang-btn { font-size: 10px; padding: 2px 5px; }
+}

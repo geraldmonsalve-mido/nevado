@@ -176,6 +176,14 @@
       padding: 5px 9px; margin-top: 6px; font-style: italic;
     }
     .sala-empty { text-align: center; padding: 48px; color: rgba(255,255,255,0.28); font-size: 14px; }
+    .sala-lang-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .sala-lang-tab {
+      background: transparent; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 7px 16px; font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,0.4); cursor: pointer; font-family: inherit; transition: all 0.15s;
+    }
+    .sala-lang-tab:hover { color: rgba(255,255,255,0.7); }
+    .sala-lang-tab.active { background: rgba(41,128,185,0.12); border-color: rgba(41,128,185,0.35); color: #2980B9; }
   </style>
 </head>
 <body>
@@ -223,12 +231,63 @@
             el contenido bajo revisión editorial objetiva. El equipo puede editar,
             complementar o rechazar el envío. El crédito siempre será tuyo.
           </div>
-          <div class="sala-field">
-            <label>Título *</label>
-            <input class="sala-input" id="env-titulo" type="text"
-              placeholder="Título claro y descriptivo…" maxlength="120"/>
-            <div class="sala-char-count" id="cnt-titulo">0 / 120</div>
+          <!-- Tabs ES/EN -->
+          <div class="sala-lang-tabs">
+            <button class="sala-lang-tab active" data-lang="es">🇪🇸 Español</button>
+            <button class="sala-lang-tab" data-lang="en">🇺🇸 English</button>
           </div>
+
+          <!-- Panel ES -->
+          <div class="sala-lang-panel" data-panel="es">
+            <div class="sala-field">
+              <label>Título * (Español)</label>
+              <input class="sala-input" id="env-titulo-es" type="text"
+                placeholder="Título claro y descriptivo…" maxlength="120"/>
+              <div class="sala-char-count" id="cnt-titulo-es">0 / 120</div>
+            </div>
+            <div class="sala-field">
+              <label>Resumen editorial * (máx 300)</label>
+              <textarea class="sala-textarea" id="env-resumen-es" maxlength="300" rows="3"
+                placeholder="Resumen en español…"></textarea>
+              <div class="sala-char-count" id="cnt-resumen-es">0 / 300</div>
+            </div>
+            <div class="sala-field">
+              <label>Contenido completo *</label>
+              <textarea class="sala-textarea body" id="env-cuerpo-es" maxlength="8000"
+                placeholder="Artículo completo en español. Mínimo 200 caracteres."></textarea>
+              <div class="sala-char-count" id="cnt-cuerpo-es">0 / 8000</div>
+            </div>
+          </div>
+
+          <!-- Panel EN -->
+          <div class="sala-lang-panel" data-panel="en" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span style="font-size:12px;color:rgba(255,255,255,0.4)">Generate a draft from your Spanish content with AI.</span>
+              <button class="sala-btn sala-btn-ghost" id="btn-gen-en" type="button"
+                style="font-size:11px;padding:6px 12px">✦ Generate English Draft</button>
+            </div>
+            <div id="traduccion-estado" style="display:none;font-size:11px;color:#B8944A;
+              background:rgba(184,148,74,0.08);border:1px solid rgba(184,148,74,0.15);
+              border-radius:7px;padding:7px 12px;margin-bottom:10px">
+              ⚠ Translation pending editorial review
+            </div>
+            <div class="sala-field">
+              <label>Title (English)</label>
+              <input class="sala-input" id="env-titulo-en" type="text"
+                placeholder="Title in English…" maxlength="120"/>
+            </div>
+            <div class="sala-field">
+              <label>Summary (max 300)</label>
+              <textarea class="sala-textarea" id="env-resumen-en" maxlength="300" rows="3"
+                placeholder="Summary in English…"></textarea>
+            </div>
+            <div class="sala-field">
+              <label>Full content</label>
+              <textarea class="sala-textarea body" id="env-cuerpo-en" maxlength="8000"
+                placeholder="Full article in English…"></textarea>
+            </div>
+          </div>
+
           <div class="sala-field">
             <label>Categoría *</label>
             <select class="sala-select" id="env-categoria">
@@ -243,20 +302,6 @@
               <option>Oportunidades</option>
               <option>Mundo</option>
             </select>
-          </div>
-          <div class="sala-field">
-            <label>Resumen editorial * (máx 300 caracteres)</label>
-            <textarea class="sala-textarea" id="env-resumen"
-              placeholder="Un párrafo que capture la esencia del artículo…"
-              maxlength="300" rows="3"></textarea>
-            <div class="sala-char-count" id="cnt-resumen">0 / 300</div>
-          </div>
-          <div class="sala-field">
-            <label>Contenido completo *</label>
-            <textarea class="sala-textarea body" id="env-cuerpo"
-              placeholder="Desarrolla el artículo completo aquí. Incluye contexto, datos, análisis y conclusiones. Mínimo 200 caracteres."
-              maxlength="8000"></textarea>
-            <div class="sala-char-count" id="cnt-cuerpo">0 / 8000</div>
           </div>
           <div class="sala-field">
             <label>Fuentes verificables</label>
@@ -359,9 +404,65 @@
         cnt.classList.toggle('over', len > max);
       });
     }
-    bindCounter('env-titulo','cnt-titulo',120);
-    bindCounter('env-resumen','cnt-resumen',300);
-    bindCounter('env-cuerpo','cnt-cuerpo',8000);
+    bindCounter('env-titulo-es','cnt-titulo-es',120);
+    bindCounter('env-resumen-es','cnt-resumen-es',300);
+    bindCounter('env-cuerpo-es','cnt-cuerpo-es',8000);
+
+    /* ── Tabs ES/EN ── */
+    document.querySelectorAll('.sala-lang-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.sala-lang-tab').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        var lang = btn.dataset.lang;
+        document.querySelectorAll('.sala-lang-panel').forEach(function(p) {
+          p.style.display = p.dataset.panel === lang ? '' : 'none';
+        });
+      });
+    });
+
+    /* ── Generate English Draft con IA ── */
+    var btnGenEn = document.getElementById('btn-gen-en');
+    if (btnGenEn) {
+      btnGenEn.addEventListener('click', async function() {
+        var tituloEs  = document.getElementById('env-titulo-es').value.trim();
+        var resumenEs = document.getElementById('env-resumen-es').value.trim();
+        var cuerpoEs  = document.getElementById('env-cuerpo-es').value.trim();
+        if (!cuerpoEs) { window.NODO && window.NODO.showToast('Escribe el contenido en español primero.','error'); return; }
+        btnGenEn.disabled = true;
+        btnGenEn.textContent = '⏳ Generating…';
+        try {
+          var prompt = 'You are a professional translator and journalist specializing in Venezuelan diaspora news. ' +
+            'Translate the following article from Spanish to English. ' +
+            'Maintain journalistic tone, accuracy and cultural context. ' +
+            'Return ONLY a JSON object with this exact structure (no markdown): ' +
+            '{"titulo_en":"...","resumen_en":"...","cuerpo_en":"..."}\n\n' +
+            'TÍTULO ES: ' + tituloEs + '\n' +
+            'RESUMEN ES: ' + resumenEs + '\n' +
+            'CUERPO ES: ' + cuerpoEs;
+          var resp = await fetch('/api/claude', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000,
+              messages: [{ role: 'user', content: prompt }] }),
+          });
+          var data = await resp.json();
+          if (data.error) throw new Error(data.error.message || data.error);
+          var text = (data.content||[]).map(function(c){ return c.text||''; }).join('');
+          var result = JSON.parse(text.replace(/```json|```/g,'').trim());
+          if (result.titulo_en)  document.getElementById('env-titulo-en').value  = result.titulo_en;
+          if (result.resumen_en) document.getElementById('env-resumen-en').value = result.resumen_en;
+          if (result.cuerpo_en)  document.getElementById('env-cuerpo-en').value  = result.cuerpo_en;
+          document.getElementById('traduccion-estado').style.display = 'block';
+          window.NODO && window.NODO.showToast('✓ Draft en inglés generado. Pendiente revisión editorial.');
+        } catch(err) {
+          console.error('[i18n] Generate EN draft:', err);
+          window.NODO && window.NODO.showToast('Error al generar traducción.','error');
+        } finally {
+          btnGenEn.disabled = false;
+          btnGenEn.textContent = '✦ Generate English Draft';
+        }
+      });
+    }
 
     function addFuente(){
       var list = document.getElementById('fuentes-list');
@@ -500,5 +601,11 @@
         '<span style="color:#2980B9">' + (user.rank_key||'') + ' · Nv.' + (user.level||1) + '</span>';
     });
   </script>
+
+  <!-- i18n NEVADO -->
+  <script src="/i18n/es.js"></script>
+  <script src="/i18n/en.js"></script>
+  <script src="/i18n/i18n.js"></script>
+  <script src="/i18n/lang-selector.js"></script>
 </body>
 </html>
