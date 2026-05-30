@@ -139,6 +139,46 @@
       from { opacity:0; transform:translateX(-50%) translateY(6px); }
       to   { opacity:1; transform:translateX(-50%) translateY(0); }
     }
+    /* ── Hero image ─────────────────────────────────────────────── */
+    .tit-hero-img {
+      width: calc(100% + 56px);
+      height: 280px;
+      overflow: hidden;
+      border-radius: 14px 14px 0 0;
+      margin: -28px -28px 24px -28px;
+      flex-shrink: 0;
+    }
+    .tit-hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .tit-hero-card:hover .tit-hero-img img { transform: scale(1.03); }
+
+    /* ── Article card image ──────────────────────────────────────── */
+    .tit-card-img {
+      width: calc(100% + 48px);
+      margin: -24px -24px 16px -24px;
+      height: 180px;
+      overflow: hidden;
+      border-radius: 14px 14px 0 0;
+      flex-shrink: 0;
+    }
+    .tit-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block;
+      transition: transform 0.4s ease;
+      filter: brightness(0.88) saturate(0.9);
+    }
+    .tit-article-card:hover .tit-card-img img {
+      transform: scale(1.04);
+      filter: brightness(0.95) saturate(1);
+    }
+    .tit-article-card { overflow: hidden; }
+    .tit-hero-card { overflow: hidden; }
+
     /* Suprimir widgets de sesión inyectados fuera del topbar */
     body > .nv-session-widget,
     body > .nvd-session-widget,
@@ -261,6 +301,12 @@
       <!-- HERO -->
       <section class="tit-hero" id="hero">
         <div class="tit-hero-card">
+          <div class="tit-hero-img">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80&fit=crop"
+                 alt="Venezolanos en trabajo remoto"
+                 loading="eager"
+                 onerror="this.parentElement.style.display='none'">
+          </div>
           <div class="tit-hero-top">
             <span class="tit-hero-badge">TRABAJO REMOTO</span>
             <span class="tit-hero-status">Fuente revisada</span>
@@ -300,6 +346,7 @@
       <section class="tit-articles">
 
         <div class="tit-article-card" data-category="Economía" data-title="Remesas digitales venezolanas superan los $2.400 millones en 2025" data-summary="Las transferencias digitales de venezolanos en el exterior rompen récord histórico" data-article-id="1">
+          <div class="tit-card-img"><img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80&fit=crop" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
           <div class="tit-article-cat">Economía</div>
           <div class="tit-article-title">Remesas digitales venezolanas superan los $2.400 millones en 2025</div>
           <div class="tit-article-excerpt">Las transferencias digitales de venezolanos en el exterior rompen récord histórico impulsadas por adopción cripto y plataformas remesas como Zelle, Binance Pay y nuevas fintech latinas.</div>
@@ -315,6 +362,7 @@
         </div>
 
         <div class="tit-article-card" data-category="Trabajo" data-title="Nueva ola de talentos venezolanos lidera el sector tecnológico europeo" data-summary="Desarrolladores y diseñadores venezolanos ocupan posiciones clave en startups de Madrid, Lisboa y Berlín" data-article-id="2">
+          <div class="tit-card-img"><img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&q=80&fit=crop" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
           <div class="tit-article-cat">Trabajo</div>
           <div class="tit-article-title">Nueva ola de talentos venezolanos lidera el sector tecnológico europeo</div>
           <div class="tit-article-excerpt">Desarrolladores y diseñadores venezolanos ocupan posiciones clave en startups de Madrid, Lisboa y Berlín. El patrón revela concentración en IA, fintech y producto.</div>
@@ -330,6 +378,7 @@
         </div>
 
         <div class="tit-article-card" data-category="Diáspora" data-title="Venezuela registra récord histórico de emigración universitaria en una década" data-summary="El 34% de egresados universitarios entre 2015–2025 reside fuera del país" data-article-id="3">
+          <div class="tit-card-img"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80&fit=crop" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
           <div class="tit-article-cat">Diáspora</div>
           <div class="tit-article-title">Venezuela registra récord histórico de emigración universitaria en una década</div>
           <div class="tit-article-excerpt">El 34% de egresados universitarios entre 2015–2025 reside fuera del país, según datos del Observatorio de la Diáspora Venezolana. El impacto y los mecanismos de retención de talento, en debate.</div>
@@ -345,6 +394,7 @@
         </div>
 
         <div class="tit-article-card" data-category="Educación" data-title="Convocatorias abiertas: 18 becas internacionales para venezolanos en 2025" data-summary="Universidades en España, Canadá y Chile abren programas con cupo especial para la diáspora venezolana" data-article-id="4">
+          <div class="tit-card-img"><img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80&fit=crop" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
           <div class="tit-article-cat">Educación</div>
           <div class="tit-article-title">Convocatorias abiertas: 18 becas internacionales para venezolanos en 2025</div>
           <div class="tit-article-excerpt">Universidades en España, Canadá y Chile abren programas con cupo especial para la diáspora venezolana. Fechas límite, requisitos y enlaces directos a las convocatorias.</div>
@@ -360,6 +410,7 @@
         </div>
 
         <div class="tit-article-card" data-category="Comunidad" data-title="Comunidades venezolanas en Madrid superan 150,000 residentes activos" data-summary="Madrid consolida su posición como el mayor hub venezolano fuera de América" data-article-id="5">
+          <div class="tit-card-img"><img src="https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=600&q=80&fit=crop" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
           <div class="tit-article-cat">Comunidad</div>
           <div class="tit-article-title">Comunidades venezolanas en Madrid superan 150,000 residentes activos</div>
           <div class="tit-article-excerpt">Madrid consolida su posición como el mayor hub venezolano fuera de América. El análisis revela concentración en 4 distritos, integración laboral exitosa y mantenimiento de identidad cultural.</div>
@@ -375,6 +426,7 @@
         </div>
 
         <div class="tit-article-card" data-category="Tecnología" data-title="Cripto como infraestructura económica: el caso venezolano como modelo global" data-summary="Venezuela lidera adopción cripto per cápita en América Latina por quinto año consecutivo" data-article-id="6">
+          <div class="tit-card-img"><img src="https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=600&q=80&fit=crop" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
           <div class="tit-article-cat">Tecnología</div>
           <div class="tit-article-title">Cripto como infraestructura económica: el caso venezolano como modelo global</div>
           <div class="tit-article-excerpt">Venezuela lidera adopción cripto per cápita en América Latina por quinto año consecutivo. El análisis estudia cómo la necesidad forjó competencia digital que ahora exporta al mundo.</div>
