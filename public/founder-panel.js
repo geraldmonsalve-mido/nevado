@@ -1108,6 +1108,171 @@ function initLogout() {
 
 // ── BOOT ──────────────────────────────────────────────────────────────────
 
+/* ════════════════════════════════════════════════════════════════
+   TITULARES — Cola Editorial (Founder)
+   ════════════════════════════════════════════════════════════════ */
+
+var _fpTitEstadoActivo = 'enviado';
+var _fpTitEnvioActual  = null;
+
+function fpEsc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function cargarTitulares(estado) {
+  if (!fpSb) return;
+  _fpTitEstadoActivo = estado;
+  var list = document.getElementById('fp-titulares-list');
+  if (list) list.innerHTML = '<p class="fp-empty">Cargando…</p>';
+  try {
+    var query = fpSb
+      .from('titulares_envios')
+      .select('id,titulo,categoria,autor_nombre,autor_username,autor_rank,estado,ia_score,created_at')
+      .order('created_at', { ascending: false });
+    if (estado !== 'todos') query = query.eq('estado', estado);
+    var { data, error } = await query;
+    if (error) throw error;
+
+    /* Badges de todos los estados */
+    var estados = ['enviado','en_revision','aprobado','publicado','rechazado'];
+    await Promise.all(estados.map(async function(est) {
+      var { count } = await fpSb
+        .from('titulares_envios')
+        .select('*', { count: 'exact', head: true })
+        .eq('estado', est);
+      var badge = document.getElementById('badge-' + est);
+      if (badge) badge.textContent = count || 0;
+    }));
+
+    if (!list) return;
+    if (!data || !data.length) {
+      list.innerHTML = '<p class="fp-empty">Sin envíos en esta categoría.</p>';
+      return;
+    }
+    list.innerHTML = data.map(function(e) {
+      var fecha = new Date(e.created_at).toLocaleDateString('es', {day:'2-digit',month:'short',year:'numeric'});
+      var autor = e.autor_username ? '@' + e.autor_username : (e.autor_nombre || '—');
+      var iaHtml = (e.ia_score !== null && e.ia_score !== undefined)
+        ? '<span class="fp-tit-card-ia">IA: ' + parseFloat(e.ia_score).toFixed(1) + '/10</span>'
+        : '';
+      return '<div class="fp-tit-card" onclick="fpAbrirTitular(\'' + e.id + '\')">' +
+        '<div style="min-width:0">' +
+          '<div class="fp-tit-card-title">' + fpEsc(e.titulo) + '</div>' +
+          '<div class="fp-tit-card-meta">' +
+            fpEsc(e.categoria) + ' · ' + fpEsc(autor) + ' · ' + fpEsc(e.autor_rank||'') + ' · ' + fecha + iaHtml +
+          '</div>' +
+        '</div>' +
+        '<span class="fp-tit-estado fp-tit-estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>' +
+      '</div>';
+    }).join('');
+  } catch(err) {
+    console.error('[FOUNDER] cargarTitulares:', err);
+    if (list) list.innerHTML = '<p class="fp-empty">Error: ' + err.message + '</p>';
+  }
+}
+
+window.fpAbrirTitular = async function(envioId) {
+  if (!fpSb) return;
+  var overlay = document.getElementById('fp-tit-modal-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  try {
+    var { data: e, error } = await fpSb.from('titulares_envios').select('*').eq('id', envioId).single();
+    if (error) throw error;
+    _fpTitEnvioActual = e;
+
+    document.getElementById('fp-tit-modal-titulo').textContent = e.titulo;
+    document.getElementById('fp-tit-modal-meta').innerHTML =
+      '<span style="font-size:11px;padding:3px 10px;border-radius:6px;background:rgba(255,255,255,0.05);color:rgba(232,232,224,0.6)">' + fpEsc(e.categoria) + '</span>' +
+      '<span style="font-size:11px;padding:3px 10px;border-radius:6px;background:rgba(255,255,255,0.05);color:rgba(232,232,224,0.6)">' + (e.autor_username ? '@'+fpEsc(e.autor_username) : fpEsc(e.autor_nombre||'')) + '</span>' +
+      '<span style="font-size:11px;padding:3px 10px;border-radius:6px;background:rgba(255,255,255,0.05);color:rgba(232,232,224,0.6)">' + fpEsc(e.autor_rank||'') + '</span>' +
+      '<span class="fp-tit-estado fp-tit-estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>';
+
+    document.getElementById('fp-tit-modal-resumen').textContent = e.resumen || '';
+    document.getElementById('fp-tit-modal-cuerpo').textContent  = e.cuerpo  || '';
+    document.getElementById('fp-tit-modal-fuentes').innerHTML = (e.fuentes && e.fuentes.length)
+      ? '<strong style="color:rgba(255,255,255,0.5);display:block;margin-bottom:6px">Fuentes declaradas:</strong>' +
+        e.fuentes.map(function(f){ return '<div>· ' + fpEsc(f) + '</div>'; }).join('')
+      : '<span style="color:rgba(255,255,255,0.2)">Sin fuentes declaradas</span>';
+
+    var iaPanel = document.getElementById('fp-tit-modal-ia');
+    if (e.ia_score !== null && e.ia_score !== undefined) {
+      iaPanel.style.display = 'block';
+      var score = parseFloat(e.ia_score);
+      var color = score >= 7 ? '#27AE60' : score >= 4 ? '#B8944A' : '#E74C3C';
+      document.getElementById('fp-tit-ia-score-num').textContent = score.toFixed(1);
+      document.getElementById('fp-tit-ia-score-num').style.color = color;
+      document.getElementById('fp-tit-ia-bar').style.width = (score/10*100) + '%';
+      document.getElementById('fp-tit-ia-bar').style.background = color;
+      document.getElementById('fp-tit-ia-texto').textContent = (e.ia_reporte && e.ia_reporte.analisis) ? e.ia_reporte.analisis : '';
+    } else {
+      iaPanel.style.display = 'none';
+    }
+
+    var notaExist = document.getElementById('fp-tit-modal-nota-existente');
+    if (e.nota_editorial) {
+      notaExist.style.display = 'block';
+      document.getElementById('fp-tit-nota-prev-text').textContent = e.nota_editorial;
+    } else {
+      notaExist.style.display = 'none';
+    }
+    document.getElementById('fp-tit-nota-founder').value = '';
+    document.getElementById('fp-tit-prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
+  } catch(err) {
+    console.error('[FOUNDER] fpAbrirTitular:', err);
+    fpMostrarToast('Error al cargar el titular.', 'error');
+    fpCerrarTitModal();
+  }
+};
+
+window.fpCerrarTitModal = function() {
+  var overlay = document.getElementById('fp-tit-modal-overlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  _fpTitEnvioActual = null;
+};
+
+window.fpDecidirTitular = async function(nuevoEstado) {
+  if (!_fpTitEnvioActual || !fpSb) return;
+  var nota = document.getElementById('fp-tit-nota-founder').value.trim();
+  var prog = document.getElementById('fp-tit-prog-fecha').value;
+  var payload = {
+    estado:          nuevoEstado,
+    nota_editorial:  nota || _fpTitEnvioActual.nota_editorial || null,
+    programado_para: prog ? new Date(prog).toISOString() : null,
+  };
+  if (nuevoEstado === 'publicado') payload.publicado_en = new Date().toISOString();
+  try {
+    var { error } = await fpSb.from('titulares_envios').update(payload).eq('id', _fpTitEnvioActual.id);
+    if (error) throw error;
+    var msgs = { rechazado:'✗ Titular rechazado.', en_revision:'↩ En revisión.', publicado:'✓ Publicado.', aprobado:'✓ Aprobado.' };
+    fpMostrarToast(msgs[nuevoEstado] || 'Actualizado.', nuevoEstado === 'rechazado' ? 'error' : 'success');
+    fpCerrarTitModal();
+    cargarTitulares(_fpTitEstadoActivo);
+  } catch(err) {
+    console.error('[FOUNDER] fpDecidirTitular:', err);
+    fpMostrarToast('Error: ' + err.message, 'error');
+  }
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && _fpTitEnvioActual) fpCerrarTitModal();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  var overlay = document.getElementById('fp-tit-modal-overlay');
+  if (overlay) overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) fpCerrarTitModal();
+  });
+  document.querySelectorAll('.fp-tit-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.fp-tit-tab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      cargarTitulares(btn.dataset.estado);
+    });
+  });
+});
+
 window.addEventListener('nvd:founder-ready', async function () {
   await initFpSb();
 
@@ -1122,6 +1287,7 @@ window.addEventListener('nvd:founder-ready', async function () {
     cargarCanales(),
     cargarEspacios(),
     cargarAscensosPendientes(),
+    cargarTitulares('enviado'),
   ]);
 
   /* Auto-refresh: only logs and metrics to avoid UI flickering */
