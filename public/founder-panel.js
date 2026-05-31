@@ -1270,9 +1270,11 @@ window.fpDecidirTitular = async function(nuevoEstado) {
     estado:          nuevoEstado,
     nota_editorial:  nota || _fpTitEnvioActual.nota_editorial || null,
     programado_para: prog ? new Date(prog).toISOString() : null,
-    destino:         destino || null,
   };
-  if (nuevoEstado === 'publicado') payload.publicado_en = new Date().toISOString();
+  if (nuevoEstado === 'publicado') {
+    payload.publicado_en = new Date().toISOString();
+    if (destino) payload.destino = destino;
+  }
   try {
     var { error } = await fpSb.from('titulares_envios').update(payload).eq('id', _fpTitEnvioActual.id);
     if (error) throw error;

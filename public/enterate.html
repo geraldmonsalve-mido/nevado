@@ -651,11 +651,11 @@
   }
 
   async function cargarTitulares() {
-    if (!window.NEVADO_SUPABASE_URL) return;
+    var sb = window.NODO && window.NODO.sb;
+    if (!sb) { setTimeout(cargarTitulares, 400); return; }
     try {
-      var sb = supabase.createClient(window.NEVADO_SUPABASE_URL, window.NEVADO_SUPABASE_ANON_KEY);
       var { data, error } = await sb.from('titulares_envios')
-        .select('id,titulo,categoria,resumen,cuerpo,fuentes,imagen_url,destino,publicado_en,autor_nombre')
+        .select('*')
         .eq('estado','publicado')
         .order('publicado_en',{ascending:false});
       if (error) throw error;

@@ -449,6 +449,17 @@
           placeholder="Escribe feedback constructivo para el colaborador…"></textarea>
       </div>
     </div>
+    <div style="padding:12px 20px 0">
+      <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
+      <select id="rp-destino" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:8px 12px;font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;color-scheme:dark">
+        <option value="">— Sin asignar —</option>
+        <option value="portada">Portada (hero con foto)</option>
+        <option value="relevante">Relevante (grid con foto)</option>
+        <option value="secundario">Secundario (sin foto)</option>
+        <option value="profundidad">En Profundidad (análisis)</option>
+        <option value="oportunidades">Oportunidades (recursos)</option>
+      </select>
+    </div>
     <div class="mesa-decision">
       <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
       <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
@@ -552,7 +563,10 @@
       var all  = await resp.json();
       var data = Array.isArray(all) ? all : [];
       if (vista === 'pendientes') {
-        data = data.filter(function(e){ return e.estado === 'enviado' || e.estado === 'en_revision'; });
+        data = data.filter(function(e){
+          return e.estado === 'borrador' || e.estado === 'enviado' ||
+                 e.estado === 'en_revision' || e.estado === 'aprobado';
+        });
       }
       var cid = vista === 'pendientes' ? 'rows-pendientes'
               : vista === 'publicados'  ? 'rows-publicados'
@@ -590,6 +604,7 @@
       document.getElementById('btn-ia').textContent = 'Analizar con IA';
       document.getElementById('nota-editorial').value = e.nota_editorial || '';
       document.getElementById('prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
+      document.getElementById('rp-destino').value = e.destino || '';
 
       if (e.ia_score !== null && e.ia_score !== undefined) {
         mostrarScore(e.ia_score, e.ia_reporte);
@@ -681,14 +696,22 @@
 
     async function decidir(nuevoEstado){
       if (!currentEnvioId) return;
-      var nota = document.getElementById('nota-editorial').value.trim();
-      var prog  = document.getElementById('prog-fecha').value;
+      var nota    = document.getElementById('nota-editorial').value.trim();
+      var prog    = document.getElementById('prog-fecha').value;
+      var destino = document.getElementById('rp-destino').value;
+      if (nuevoEstado === 'publicado' && !destino) {
+        window.NODO && window.NODO.showToast('Selecciona una sección de destino antes de publicar.', 'error');
+        return;
+      }
       var payload = {
         estado: nuevoEstado,
         nota_editorial: nota || null,
         programado_para: prog ? new Date(prog).toISOString() : null,
       };
-      if (nuevoEstado === 'publicado') payload.publicado_en = new Date().toISOString();
+      if (nuevoEstado === 'publicado') {
+        payload.publicado_en = new Date().toISOString();
+        if (destino) payload.destino = destino;
+      }
 
       var upResp = await fetch('/api/titulares?id=' + currentEnvioId, {
         method: 'PATCH',
