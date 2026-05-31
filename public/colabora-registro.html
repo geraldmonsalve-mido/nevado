@@ -479,12 +479,18 @@
         .map(function(i){ return i.value.trim(); }).filter(Boolean);
     }
 
+    function getActiveLang(){
+      var tab = document.querySelector('.sala-lang-tab.active');
+      return tab ? tab.dataset.lang : 'es';
+    }
+
     function getPayload(){
       if (!currentUser){ window.NODO.showToast('Sesión no disponible.','error'); return null; }
-      var titulo  = document.getElementById('env-titulo').value.trim();
+      var lang    = getActiveLang();
+      var titulo  = document.getElementById('env-titulo-'  + lang).value.trim();
       var cat     = document.getElementById('env-categoria').value;
-      var resumen = document.getElementById('env-resumen').value.trim();
-      var cuerpo  = document.getElementById('env-cuerpo').value.trim();
+      var resumen = document.getElementById('env-resumen-' + lang).value.trim();
+      var cuerpo  = document.getElementById('env-cuerpo-'  + lang).value.trim();
       if (!titulo)  { window.NODO.showToast('El título es obligatorio.','error'); return null; }
       if (!cat)     { window.NODO.showToast('Selecciona una categoría.','error'); return null; }
       if (!resumen) { window.NODO.showToast('El resumen es obligatorio.','error'); return null; }
@@ -515,13 +521,15 @@
         window.NODO.showToast(estado === 'enviado'
           ? '✓ Enviado a revisión editorial.'
           : '✓ Borrador guardado.');
-        document.getElementById('env-titulo').value = '';
         document.getElementById('env-categoria').value = '';
-        document.getElementById('env-resumen').value = '';
-        document.getElementById('env-cuerpo').value = '';
-        ['cnt-titulo','cnt-resumen','cnt-cuerpo'].forEach(function(id){
-          var max = id==='cnt-cuerpo'?'8000':id==='cnt-resumen'?'300':'120';
-          document.getElementById(id).textContent = '0 / ' + max;
+        ['es','en'].forEach(function(l){
+          ['titulo','resumen','cuerpo'].forEach(function(f){
+            var limits = {titulo:120, resumen:300, cuerpo:8000};
+            var el  = document.getElementById('env-' + f + '-' + l);
+            var cnt = document.getElementById('cnt-' + f + '-' + l);
+            if (el)  el.value = '';
+            if (cnt) cnt.textContent = '0 / ' + limits[f];
+          });
         });
       } catch(err){
         console.error(err);
