@@ -193,6 +193,9 @@
     </div>
 
     <div id="col-portales-wrap">
+      <div id="col-auth-loading" style="text-align:center;padding:40px 0;color:rgba(232,228,220,0.3);font-size:12px;letter-spacing:0.1em">
+        Verificando sesión…
+      </div>
       <div id="col-auth-gate" style="display:none">
         <h2>Inicia sesión para continuar</h2>
         <p>Necesitas una cuenta NEVADO para acceder a los portales de colaboración.</p>
@@ -279,8 +282,6 @@
 
   <script src="/cursor.js"></script>
   <script src="/nevado-env.js"></script>
-  <script type="module" src="/src/nevado-key.js"></script>
-  <script type="module" src="/src/auth.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
   <script src="/nevado-session-widget.js"></script>
   <script src="/nevado-home-desktop-pill.js"></script>
@@ -299,8 +300,10 @@
 
     document.addEventListener('nodo:ready', function(e) {
       var user = e.detail && e.detail.user;
+      var loading  = document.getElementById('col-auth-loading');
       var gate     = document.getElementById('col-auth-gate');
       var portales = document.getElementById('col-portales');
+      if (loading) loading.style.display = 'none';
 
       if (!user) {
         gate.style.display = '';

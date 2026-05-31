@@ -36,7 +36,7 @@
       var check = setInterval(function () {
         if (window.Clerk) { clearInterval(check); resolve(window.Clerk); }
       }, 80);
-      setTimeout(function () { clearInterval(check); resolve(null); }, 3000);
+      setTimeout(function () { clearInterval(check); resolve(null); }, 8000);
     });
 
     if (!clerk) {
@@ -60,7 +60,9 @@
           .select('id,display_name,avatar_url,rank_key,level,croquetas,role,is_founder,is_banned,username,bio,location,website,privacy_public,is_verified,croquetas_next_rank,permissions')
           .eq('clerk_id', clerkUser.id)
           .limit(1);
+        if (result.error) console.warn('[NODO] profiles query error:', result.error.message, result.error.code);
         var profile = result.data && result.data[0];
+        if (!profile) console.warn('[NODO] No profile found for clerk_id:', clerkUser.id, '— email:', email);
         if (profile) {
           window.NODO_USER = {
             clerk_id:       clerkUser.id,
