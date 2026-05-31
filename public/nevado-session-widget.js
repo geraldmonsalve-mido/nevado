@@ -17,8 +17,12 @@
   }
 
   function findSessionBox() {
+    // Busca el pill dedicado primero, luego fallback por texto solo en elementos visibles
+    var pill = document.getElementById('nvd-session-pill');
+    if (pill) return pill;
     return [...document.querySelectorAll('div, a, button')]
-      .find(el => /Sesión verificada|Sesión Verificada|Iniciar sesión|Modo Nevado|2FA activa/i.test(el.textContent || ''));
+      .find(el => el.offsetParent !== null &&
+        /Sesión verificada|Sesión Verificada|Iniciar sesión|Modo Nevado|2FA activa/i.test(el.textContent || ''));
   }
 
   function setLogin(el) {

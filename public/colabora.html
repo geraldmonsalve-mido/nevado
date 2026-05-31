@@ -306,8 +306,8 @@
       if (loading) loading.style.display = 'none';
 
       if (!user) {
-        gate.style.display = '';
-        portales.style.display = 'none';
+        if (gate)     gate.style.display     = '';
+        if (portales) portales.style.display = 'none';
         return;
       }
 
@@ -315,8 +315,8 @@
       var tieneSala = RANGOS_SALA.includes(rank);
       var tieneMesa = RANGOS_MESA.includes(rank);
 
-      gate.style.display = 'none';
-      portales.style.display = 'grid';
+      if (gate)     gate.style.display     = 'none';
+      if (portales) portales.style.display = 'grid';
 
       if (!tieneSala) {
         portales.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;' +
