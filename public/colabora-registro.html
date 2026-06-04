@@ -587,24 +587,24 @@
       };
       reader.readAsDataURL(file);
 
-      // Upload a Supabase Storage
+      // Upload via API (service role key — bypasa RLS de Storage)
       if (!currentUser) { updateImgStatus('⚠ Esperando sesión…'); return; }
       updateImgStatus('Subiendo imagen…');
-      var s = sb();
-      if (!s) { updateImgStatus('Error de conexión'); return; }
-
-      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      var path = currentUser.profile_id + '/' + Date.now() + '_' + safeName;
 
       try {
-        var { error: upErr } = await s.storage
-          .from('titulares-imagenes')
-          .upload(path, file, { cacheControl: '3600', upsert: false });
-        if (upErr) throw upErr;
-
-        var { data: urlData } = s.storage.from('titulares-imagenes').getPublicUrl(path);
-        imgState.url  = urlData.publicUrl;
-        imgState.path = path;
+        var upResp = await fetch('/api/upload-imagen', {
+          method: 'POST',
+          headers: {
+            'Content-Type': file.type,
+            'X-File-Name':  encodeURIComponent(file.name),
+            'X-Profile-Id': currentUser.profile_id || 'anon',
+          },
+          body: file,
+        });
+        var upData = await upResp.json();
+        if (!upResp.ok) throw new Error(upData.error || 'Error al subir');
+        imgState.url  = upData.url;
+        imgState.path = upData.path;
         imgState.file = file;
         updateImgStatus('✓ Imagen lista');
       } catch(err) {

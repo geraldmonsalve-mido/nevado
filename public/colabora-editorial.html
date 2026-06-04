@@ -595,17 +595,22 @@
         document.getElementById('rp-img-drop-content').style.display = 'none';
       };
       reader.readAsDataURL(file);
+      if (!currentUser) { updateRpImgStatus('Error de sesión'); return; }
       updateRpImgStatus('Subiendo…');
-      var s = sb();
-      if (!s || !currentUser) { updateRpImgStatus('Error de sesión'); return; }
-      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-      var path = currentUser.profile_id + '/' + Date.now() + '_' + safeName;
       try {
-        var { error: upErr } = await s.storage.from('titulares-imagenes').upload(path, file, { cacheControl:'3600', upsert:false });
-        if (upErr) throw upErr;
-        var { data: urlData } = s.storage.from('titulares-imagenes').getPublicUrl(path);
-        rpImgState.url  = urlData.publicUrl;
-        rpImgState.path = path;
+        var upResp = await fetch('/api/upload-imagen', {
+          method: 'POST',
+          headers: {
+            'Content-Type':  file.type,
+            'X-File-Name':   encodeURIComponent(file.name),
+            'X-Profile-Id':  currentUser.profile_id || 'anon',
+          },
+          body: file,
+        });
+        var upData = await upResp.json();
+        if (!upResp.ok) throw new Error(upData.error || 'Error al subir');
+        rpImgState.url  = upData.url;
+        rpImgState.path = upData.path;
         updateRpImgStatus('✓ Lista para publicar');
       } catch(err) {
         window.NODO.showToast('Error al subir: ' + (err.message||''),'error');
