@@ -215,7 +215,7 @@
     }
     .estado-borrador  { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); }
     .estado-enviado   { background: rgba(41,128,185,0.12); color: #2980B9; }
-    .estado-en_revision { background: rgba(184,148,74,0.12); color: #B8944A; }
+    .estado-en_revision { background: rgba(244,208,63,0.12); color: #F4D03F; }
     .estado-aprobado  { background: rgba(39,174,96,0.12); color: #27AE60; }
     .estado-publicado { background: rgba(39,174,96,0.2); color: #27AE60; border: 1px solid rgba(39,174,96,0.3); }
     .estado-rechazado { background: rgba(231,76,60,0.1); color: #E74C3C; }
@@ -741,12 +741,28 @@
       document.getElementById('badge-envios').textContent = data.length;
       list.innerHTML = data.map(function(e){
         var d = new Date(e.created_at).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'});
+        var estadoLabel = {
+          borrador:    'Borrador',
+          enviado:     'Enviado',
+          en_revision: 'En revisión',
+          aprobado:    'Aprobado',
+          publicado:   'Publicado',
+          rechazado:   'Rechazado',
+        }[e.estado] || e.estado.replace('_',' ');
+        var mensajeExtra = '';
+        if (e.estado === 'en_revision') {
+          mensajeExtra = '<div class="sala-envio-nota" style="color:rgba(244,208,63,0.8)">En revisión por el equipo editorial.</div>';
+        } else if (e.estado === 'rechazado' && e.nota_editorial) {
+          mensajeExtra = '<div class="sala-envio-nota">Motivo: ' + e.nota_editorial + '</div>';
+        } else if (e.nota_editorial) {
+          mensajeExtra = '<div class="sala-envio-nota">Nota: ' + e.nota_editorial + '</div>';
+        }
         return '<div class="sala-envio-card">' +
-          '<span class="sala-envio-estado estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>' +
+          '<span class="sala-envio-estado estado-' + e.estado + '">' + estadoLabel + '</span>' +
           '<div class="sala-envio-info">' +
             '<div class="sala-envio-title">' + e.titulo + '</div>' +
             '<div class="sala-envio-meta">' + e.categoria + ' · ' + d + '</div>' +
-            (e.nota_editorial ? '<div class="sala-envio-nota">Nota editorial: ' + e.nota_editorial + '</div>' : '') +
+            mensajeExtra +
           '</div>' +
         '</div>';
       }).join('');

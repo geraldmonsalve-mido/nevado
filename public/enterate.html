@@ -740,9 +740,9 @@
     if (parseFloat(a.ia_score) > 7) { statusEl.style.display = ''; statusEl.textContent = '✓ Verificado'; }
     else { statusEl.style.display = 'none'; }
 
-    // Title + excerpt
+    // Title (excerpt va dentro del body como intro, no en el header)
     document.getElementById('modalTitle').textContent   = a.titulo  || '';
-    document.getElementById('modalExcerpt').textContent = a.resumen || '';
+    document.getElementById('modalExcerpt').style.display = 'none';
 
     // Author + date
     const autor = a.autor_username ? '@' + a.autor_username : (a.autor_nombre || 'NEVADO Editorial');
@@ -753,10 +753,14 @@
     document.getElementById('modalDate').textContent      = fecha;
     document.getElementById('modalReadTime').textContent  = '';
 
-    // Body — cuerpo completo con párrafos; fallback al resumen
-    document.getElementById('modalBody').innerHTML = a.cuerpo
+    // Body — resumen completo (sin truncar) como intro + cuerpo por párrafos
+    const introHtml = a.resumen
+      ? '<p class="tit-modal-lead">' + esc(a.resumen) + '</p>'
+      : '';
+    const bodyHtml = a.cuerpo
       ? a.cuerpo.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('')
-      : '<p style="font-style:italic;color:rgba(232,232,224,0.6)">' + esc(a.resumen || '') + '</p>';
+      : '';
+    document.getElementById('modalBody').innerHTML = introHtml + bodyHtml || introHtml;
 
     // Sources — links clickeables si parecen URLs
     const fuentes = Array.isArray(a.fuentes) && a.fuentes.length ? a.fuentes : [];

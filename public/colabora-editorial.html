@@ -682,8 +682,7 @@
       var data = Array.isArray(all) ? all : [];
       if (vista === 'pendientes') {
         data = data.filter(function(e){
-          return e.estado === 'borrador' || e.estado === 'enviado' ||
-                 e.estado === 'en_revision' || e.estado === 'aprobado';
+          return e.estado === 'enviado' || e.estado === 'en_revision';
         });
       }
       var cid = vista === 'pendientes' ? 'rows-pendientes'
@@ -858,6 +857,8 @@
       window.NODO.showToast(msgs[nuevoEstado] || 'Actualizado.');
       cerrarPanel();
       cargarPorEstado('pendientes');
+      cargarPorEstado('todos');
+      if (nuevoEstado === 'publicado') cargarPorEstado('publicados');
     }
 
     document.addEventListener('DOMContentLoaded', initRpImageUpload);
