@@ -231,6 +231,32 @@
     .mesa-dec-btn:disabled { opacity: 0.4; cursor: default; }
 
     .mesa-empty { text-align:center; padding:48px; color:rgba(255,255,255,0.28); font-size:14px; }
+
+    /* ── Imagen artículo en panel de revisión ── */
+    #rp-imagen { width:100%; max-height:240px; object-fit:cover; border-radius:12px; display:block; }
+    #rp-img-dropzone {
+      border: 1px dashed rgba(184,148,74,0.32);
+      border-radius: 12px; padding: 14px;
+      background: rgba(184,148,74,0.02);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    #rp-img-dropzone.drag-over { border-color: #B8944A; background: rgba(184,148,74,0.06); }
+    #rp-img-drop-content {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      color: rgba(255,255,255,0.3); font-size: 12px; text-align: center; padding: 4px 0;
+    }
+    .rp-img-sel-btn {
+      display: inline-block;
+      background: rgba(184,148,74,0.08); border: 1px solid rgba(184,148,74,0.25);
+      border-radius: 7px; padding: 5px 13px;
+      color: #B8944A; cursor: pointer; font-size: 11px; font-weight: 600;
+      font-family: inherit; transition: background 0.15s;
+    }
+    .rp-img-sel-btn:hover { background: rgba(184,148,74,0.16); }
+    #rp-img-preview { display: flex; align-items: center; gap: 12px; }
+    #rp-img-thumb { width:120px; height:68px; object-fit:cover; border-radius:7px; border:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
+    #rp-img-status { font-size:11px; color:rgba(184,148,74,0.7); text-align:center; margin-top:5px; min-height:14px; }
     /* ── Juramento Modal ──────────────────────────────────────────── */
     #juramento-overlay {
       position: fixed; inset: 0; z-index: 9000;
@@ -407,6 +433,34 @@
     </div>
     <div class="mesa-review-body">
       <div class="mesa-review-meta" id="rp-meta"></div>
+
+      <!-- Imagen del artículo — solo se muestra si existe -->
+      <div id="rp-imagen-wrap" style="display:none">
+        <img id="rp-imagen" src="" alt="Imagen del artículo">
+      </div>
+
+      <!-- Reemplazar imagen antes de publicar (opcional) -->
+      <div>
+        <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">
+          Reemplazar imagen <span style="color:rgba(255,255,255,0.18);font-weight:400;text-transform:none;letter-spacing:0;font-size:9px">(opcional)</span>
+        </div>
+        <div id="rp-img-dropzone">
+          <div id="rp-img-drop-content">
+            <label for="rp-img-input" class="rp-img-sel-btn">Seleccionar imagen</label>
+            <input type="file" id="rp-img-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+            <span style="font-size:10px;color:rgba(255,255,255,0.2)">JPG · PNG · WEBP · máx 5 MB</span>
+          </div>
+          <div id="rp-img-preview" style="display:none">
+            <img id="rp-img-thumb" src="" alt="preview">
+            <div style="flex:1;min-width:0">
+              <div id="rp-img-preview-name" style="font-size:11px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:6px"></div>
+              <button class="mesa-action-btn" style="font-size:11px;color:rgba(231,76,60,0.6);border-color:rgba(231,76,60,0.2)" onclick="removeRpImage()">✕ Quitar</button>
+            </div>
+          </div>
+          <div id="rp-img-status"></div>
+        </div>
+      </div>
+
       <div>
         <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Resumen</div>
         <div id="rp-resumen" style="font-size:13px;color:rgba(232,232,224,0.7);line-height:1.6"></div>
@@ -451,7 +505,7 @@
     </div>
     <div style="padding:12px 20px 0">
       <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
-      <select id="rp-destino" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:8px 12px;font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;color-scheme:dark">
+      <select id="rp-seccion" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:8px 12px;font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;color-scheme:dark">
         <option value="">— Sin asignar —</option>
         <option value="portada">Portada (hero con foto)</option>
         <option value="relevante">Relevante (grid con foto)</option>
@@ -513,6 +567,65 @@
     var currentUser = null;
     var currentEnvioId = null;
     var currentEnvio = null;
+    var rpImgState = { url: null, path: null };
+
+    /* ── Upload imagen en panel de revisión ── */
+    function initRpImageUpload() {
+      var zone  = document.getElementById('rp-img-dropzone');
+      var input = document.getElementById('rp-img-input');
+      if (!zone || !input) return;
+      zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', function(e) { if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over'); });
+      zone.addEventListener('drop', function(e) {
+        e.preventDefault(); zone.classList.remove('drag-over');
+        if (e.dataTransfer.files[0]) handleRpImageFile(e.dataTransfer.files[0]);
+      });
+      input.addEventListener('change', function() { if (this.files[0]) handleRpImageFile(this.files[0]); });
+    }
+
+    async function handleRpImageFile(file) {
+      var ALLOWED = ['image/jpeg','image/png','image/webp'];
+      if (!ALLOWED.includes(file.type)) { window.NODO.showToast('Solo jpg, png o webp.','error'); return; }
+      if (file.size > 5*1024*1024) { window.NODO.showToast('Máx 5 MB.','error'); return; }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('rp-img-thumb').src = ev.target.result;
+        document.getElementById('rp-img-preview-name').textContent = file.name;
+        document.getElementById('rp-img-preview').style.display = 'flex';
+        document.getElementById('rp-img-drop-content').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+      updateRpImgStatus('Subiendo…');
+      var s = sb();
+      if (!s || !currentUser) { updateRpImgStatus('Error de sesión'); return; }
+      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      var path = currentUser.profile_id + '/' + Date.now() + '_' + safeName;
+      try {
+        var { error: upErr } = await s.storage.from('titulares-imagenes').upload(path, file, { cacheControl:'3600', upsert:false });
+        if (upErr) throw upErr;
+        var { data: urlData } = s.storage.from('titulares-imagenes').getPublicUrl(path);
+        rpImgState.url  = urlData.publicUrl;
+        rpImgState.path = path;
+        updateRpImgStatus('✓ Lista para publicar');
+      } catch(err) {
+        window.NODO.showToast('Error al subir: ' + (err.message||''),'error');
+        rpImgState = { url:null, path:null };
+        updateRpImgStatus('');
+      }
+    }
+
+    function removeRpImage() {
+      rpImgState = { url:null, path:null };
+      document.getElementById('rp-img-input').value = '';
+      document.getElementById('rp-img-preview').style.display = 'none';
+      document.getElementById('rp-img-drop-content').style.display = '';
+      updateRpImgStatus('');
+    }
+
+    function updateRpImgStatus(msg) {
+      var el = document.getElementById('rp-img-status');
+      if (el) el.textContent = msg;
+    }
 
     /* Iniciar sesión Clerk — llamada directa porque nodo-core.js ya corrió */
     if (window.NODO && window.NODO.initClerkSession) {
@@ -604,7 +717,19 @@
       document.getElementById('btn-ia').textContent = 'Analizar con IA';
       document.getElementById('nota-editorial').value = e.nota_editorial || '';
       document.getElementById('prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
-      document.getElementById('rp-destino').value = e.destino || '';
+      document.getElementById('rp-seccion').value = e.seccion || '';
+
+      // Imagen del artículo
+      var imgWrap = document.getElementById('rp-imagen-wrap');
+      var imgEl   = document.getElementById('rp-imagen');
+      if (e.imagen_url) { imgEl.src = e.imagen_url; imgWrap.style.display = 'block'; }
+      else              { imgEl.src = '';            imgWrap.style.display = 'none';  }
+      // Resetear campo de reemplazo
+      rpImgState = { url:null, path:null };
+      document.getElementById('rp-img-input').value = '';
+      document.getElementById('rp-img-preview').style.display = 'none';
+      document.getElementById('rp-img-drop-content').style.display = '';
+      updateRpImgStatus('');
 
       if (e.ia_score !== null && e.ia_score !== undefined) {
         mostrarScore(e.ia_score, e.ia_reporte);
@@ -698,8 +823,8 @@
       if (!currentEnvioId) return;
       var nota    = document.getElementById('nota-editorial').value.trim();
       var prog    = document.getElementById('prog-fecha').value;
-      var destino = document.getElementById('rp-destino').value;
-      if (nuevoEstado === 'publicado' && !destino) {
+      var seccion = document.getElementById('rp-seccion').value;
+      if (nuevoEstado === 'publicado' && !seccion) {
         window.NODO && window.NODO.showToast('Selecciona una sección de destino antes de publicar.', 'error');
         return;
       }
@@ -710,7 +835,11 @@
       };
       if (nuevoEstado === 'publicado') {
         payload.publicado_en = new Date().toISOString();
-        if (destino) payload.destino = destino;
+        if (seccion) payload.seccion = seccion;
+        if (rpImgState.url) {
+          payload.imagen_url          = rpImgState.url;
+          payload.imagen_storage_path = rpImgState.path;
+        }
       }
 
       var upResp = await fetch('/api/titulares?id=' + currentEnvioId, {
@@ -725,6 +854,8 @@
       cerrarPanel();
       cargarPorEstado('pendientes');
     }
+
+    document.addEventListener('DOMContentLoaded', initRpImageUpload);
 
     document.addEventListener('nodo:ready', function(ev){
       var user = ev.detail && ev.detail.user;

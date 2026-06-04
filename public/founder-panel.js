@@ -1242,7 +1242,7 @@ window.fpAbrirTitular = async function(envioId) {
     }
     document.getElementById('fp-tit-nota-founder').value = '';
     document.getElementById('fp-tit-prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
-    document.getElementById('fp-tit-destino').value = e.destino || '';
+    document.getElementById('fp-tit-seccion').value = e.seccion || '';
   } catch(err) {
     console.error('[FOUNDER] fpAbrirTitular:', err);
     fpMostrarToast('Error al cargar el titular.', 'error');
@@ -1261,8 +1261,8 @@ window.fpDecidirTitular = async function(nuevoEstado) {
   if (!_fpTitEnvioActual || !fpSb) return;
   var nota    = document.getElementById('fp-tit-nota-founder').value.trim();
   var prog    = document.getElementById('fp-tit-prog-fecha').value;
-  var destino = document.getElementById('fp-tit-destino').value;
-  if (nuevoEstado === 'publicado' && !destino) {
+  var seccion = document.getElementById('fp-tit-seccion').value;
+  if (nuevoEstado === 'publicado' && !seccion) {
     fpMostrarToast('Selecciona una sección de destino antes de publicar.', 'error');
     return;
   }
@@ -1273,7 +1273,7 @@ window.fpDecidirTitular = async function(nuevoEstado) {
   };
   if (nuevoEstado === 'publicado') {
     payload.publicado_en = new Date().toISOString();
-    if (destino) payload.destino = destino;
+    if (seccion) payload.seccion = seccion;
   }
   try {
     var { error } = await fpSb.from('titulares_envios').update(payload).eq('id', _fpTitEnvioActual.id);

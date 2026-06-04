@@ -131,6 +131,61 @@
       color: rgba(184,148,74,0.8); line-height: 1.6;
     }
 
+    /* ── Imagen upload ── */
+    #sala-img-dropzone {
+      border: 1px dashed rgba(41,128,185,0.38);
+      border-radius: 12px;
+      padding: 20px;
+      background: rgba(41,128,185,0.03);
+      transition: border-color 0.2s, background 0.2s;
+      cursor: default;
+    }
+    #sala-img-dropzone.drag-over {
+      border-color: #2980B9;
+      background: rgba(41,128,185,0.07);
+    }
+    #sala-img-drop-content {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.35);
+      font-size: 13px; text-align: center; padding: 8px 0;
+    }
+    .sala-img-sel-btn {
+      display: inline-block;
+      background: rgba(41,128,185,0.1);
+      border: 1px solid rgba(41,128,185,0.28);
+      border-radius: 8px; padding: 7px 16px;
+      color: #2980B9; cursor: pointer;
+      font-size: 12px; font-weight: 600;
+      font-family: inherit; margin-top: 4px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .sala-img-sel-btn:hover { background: rgba(41,128,185,0.18); border-color: rgba(41,128,185,0.5); }
+    #sala-img-preview { display: flex; align-items: center; gap: 16px; }
+    #sala-img-thumb {
+      width: 160px; height: 90px;
+      object-fit: cover; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+    }
+    .sala-img-preview-info { flex: 1; min-width: 0; }
+    .sala-img-preview-name {
+      font-size: 12px; color: rgba(255,255,255,0.55);
+      overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap; margin-bottom: 8px;
+    }
+    .sala-img-rm-btn {
+      background: none; border: 1px solid rgba(231,76,60,0.22);
+      border-radius: 7px; color: rgba(231,76,60,0.55);
+      padding: 4px 10px; cursor: pointer;
+      font-size: 11px; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .sala-img-rm-btn:hover { background: rgba(231,76,60,0.07); color: #E74C3C; border-color: rgba(231,76,60,0.4); }
+    #sala-img-status {
+      font-size: 11px; color: rgba(41,128,185,0.75);
+      text-align: center; margin-top: 6px; min-height: 16px;
+    }
+
     .sala-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
     .sala-btn {
       border: none; border-radius: 9px; padding: 10px 20px;
@@ -315,6 +370,35 @@
               + Agregar fuente
             </button>
           </div>
+          <!-- ── Imagen del artículo ── -->
+          <div class="sala-field">
+            <label>Imagen del artículo
+              <span style="color:rgba(255,255,255,0.28);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">(opcional)</span>
+            </label>
+            <div id="sala-img-dropzone">
+              <div id="sala-img-drop-content">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="opacity:.38">
+                  <rect x="2" y="7" width="24" height="17" rx="3" stroke="currentColor" stroke-width="1.3"/>
+                  <circle cx="9" cy="14" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M2 21l6-5 5 4 4-4 9 6" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                  <path d="M20 1v8M17 4l3-3 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Arrastra una imagen aquí</span>
+                <label for="sala-img-input" class="sala-img-sel-btn">Seleccionar imagen</label>
+                <input type="file" id="sala-img-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+                <span style="font-size:11px;color:rgba(255,255,255,0.2)">JPG · PNG · WEBP · máx 5 MB</span>
+              </div>
+              <div id="sala-img-preview" style="display:none">
+                <img id="sala-img-thumb" src="" alt="preview">
+                <div class="sala-img-preview-info">
+                  <div id="sala-img-preview-name" class="sala-img-preview-name"></div>
+                  <button class="sala-img-rm-btn" onclick="removeImage()">✕ Quitar imagen</button>
+                </div>
+              </div>
+              <div id="sala-img-status"></div>
+            </div>
+          </div>
+
           <div class="sala-actions">
             <button class="sala-btn sala-btn-ghost" onclick="guardarBorrador()">
               Guardar borrador
@@ -372,6 +456,7 @@
     var RANGOS_SALA = ['guardian','montanista','guia','protector','leyenda_andina'];
     var sb = function(){ return window.NODO && window.NODO.sb; };
     var currentUser = null;
+    var imgState = { file: null, url: null, path: null };
 
     /* Iniciar sesión Clerk — llamada directa porque nodo-core.js ya corrió */
     if (window.NODO && window.NODO.initClerkSession) {
@@ -462,6 +547,87 @@
       });
     }
 
+    /* ── Imagen upload ── */
+    function initImageUpload() {
+      var zone  = document.getElementById('sala-img-dropzone');
+      var input = document.getElementById('sala-img-input');
+      if (!zone || !input) return;
+
+      zone.addEventListener('dragover', function(e) {
+        e.preventDefault(); zone.classList.add('drag-over');
+      });
+      zone.addEventListener('dragleave', function(e) {
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+      });
+      zone.addEventListener('drop', function(e) {
+        e.preventDefault(); zone.classList.remove('drag-over');
+        if (e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]);
+      });
+      input.addEventListener('change', function() {
+        if (this.files[0]) handleImageFile(this.files[0]);
+      });
+    }
+
+    async function handleImageFile(file) {
+      var ALLOWED = ['image/jpeg','image/png','image/webp'];
+      if (!ALLOWED.includes(file.type)) {
+        window.NODO.showToast('Solo se aceptan jpg, png o webp.','error'); return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        window.NODO.showToast('La imagen no puede superar 5 MB.','error'); return;
+      }
+
+      // Preview inmediata
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('sala-img-thumb').src = ev.target.result;
+        document.getElementById('sala-img-preview-name').textContent = file.name;
+        document.getElementById('sala-img-preview').style.display = 'flex';
+        document.getElementById('sala-img-drop-content').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+
+      // Upload a Supabase Storage
+      if (!currentUser) { updateImgStatus('⚠ Esperando sesión…'); return; }
+      updateImgStatus('Subiendo imagen…');
+      var s = sb();
+      if (!s) { updateImgStatus('Error de conexión'); return; }
+
+      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var path = currentUser.profile_id + '/' + Date.now() + '_' + safeName;
+
+      try {
+        var { error: upErr } = await s.storage
+          .from('titulares-imagenes')
+          .upload(path, file, { cacheControl: '3600', upsert: false });
+        if (upErr) throw upErr;
+
+        var { data: urlData } = s.storage.from('titulares-imagenes').getPublicUrl(path);
+        imgState.url  = urlData.publicUrl;
+        imgState.path = path;
+        imgState.file = file;
+        updateImgStatus('✓ Imagen lista');
+      } catch(err) {
+        console.error('[img upload]', err);
+        window.NODO.showToast('Error al subir imagen: ' + (err.message || ''), 'error');
+        imgState = { file: null, url: null, path: null };
+        updateImgStatus('');
+      }
+    }
+
+    function removeImage() {
+      imgState = { file: null, url: null, path: null };
+      document.getElementById('sala-img-input').value = '';
+      document.getElementById('sala-img-preview').style.display = 'none';
+      document.getElementById('sala-img-drop-content').style.display = '';
+      updateImgStatus('');
+    }
+
+    function updateImgStatus(msg) {
+      var el = document.getElementById('sala-img-status');
+      if (el) el.textContent = msg;
+    }
+
     function addFuente(){
       var list = document.getElementById('fuentes-list');
       var row = document.createElement('div');
@@ -496,13 +662,15 @@
       if (!resumen) { window.NODO.showToast('El resumen es obligatorio.','error'); return null; }
       if (!cuerpo)  { window.NODO.showToast('El contenido no puede estar vacío.','error'); return null; }
       return {
-        profile_id:     currentUser.profile_id,
-        autor_nombre:   currentUser.display_name,
-        autor_username: currentUser.username,
-        autor_rank:     currentUser.rank_key,
+        profile_id:           currentUser.profile_id,
+        autor_nombre:         currentUser.display_name,
+        autor_username:       currentUser.username,
+        autor_rank:           currentUser.rank_key,
         titulo: titulo, categoria: cat,
         resumen: resumen, cuerpo: cuerpo,
         fuentes: getFuentes(), estado: 'borrador',
+        imagen_url:           imgState.url  || null,
+        imagen_storage_path:  imgState.path || null,
       };
     }
 
@@ -521,6 +689,7 @@
         window.NODO.showToast(estado === 'enviado'
           ? '✓ Enviado a revisión editorial.'
           : '✓ Borrador guardado.');
+        removeImage();
         document.getElementById('env-categoria').value = '';
         ['es','en'].forEach(function(l){
           ['titulo','resumen','cuerpo'].forEach(function(f){
@@ -581,6 +750,8 @@
         '</div>';
       }).join('');
     }
+
+    document.addEventListener('DOMContentLoaded', initImageUpload);
 
     document.addEventListener('nodo:ready', function(ev){
       var user = ev.detail && ev.detail.user;
