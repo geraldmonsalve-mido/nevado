@@ -72,6 +72,164 @@
     </script>
 </head>
   <body>
+
+<!-- ═══════════════════════════════════════════════
+     NEVADO · PIN GATE — Rising Tide Foundation
+     ═══════════════════════════════════════════════ -->
+<style>
+  #pin-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: #05050A;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  #pin-overlay, #pin-overlay * { cursor: auto !important; }
+  #pin-overlay button { cursor: pointer !important; }
+  #pin-overlay.unlocked { animation: fadeOut 0.6s forwards; }
+  @keyframes fadeOut { to { opacity: 0; pointer-events: none; visibility: hidden; } }
+
+  .pin-card {
+    width: 380px;
+    border: 1px solid rgba(184,148,74,0.25);
+    border-radius: 22px;
+    padding: 2.5rem 2rem;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(12px);
+    text-align: center;
+  }
+  .pin-logo {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: #B8944A;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    font-family: 'Geist', system-ui, sans-serif;
+  }
+  .pin-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 0.5rem;
+    line-height: 1.2;
+  }
+  .pin-notice {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    font-family: 'Geist', system-ui, sans-serif;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  .pin-notice strong { color: #B8944A; }
+  .pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 2rem; }
+  .pin-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(184,148,74,0.5);
+    background: transparent;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .pin-dot.filled { background: #B8944A; border-color: #B8944A; }
+  .pin-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .pin-key {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1.2rem;
+    font-family: 'Geist', system-ui, sans-serif;
+    padding: 0.9rem 0;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.08s;
+    user-select: none;
+  }
+  .pin-key:hover { background: rgba(184,148,74,0.12); border-color: rgba(184,148,74,0.35); }
+  .pin-key:active { transform: scale(0.95); }
+  .pin-key.wide { font-size: 0.85rem; color: rgba(255,255,255,0.45); letter-spacing: 0.05em; }
+  .pin-error {
+    font-size: 12px;
+    font-family: 'Geist', system-ui, sans-serif;
+    color: #E74C3C;
+    height: 18px;
+    letter-spacing: 0.03em;
+  }
+</style>
+
+<div id="pin-overlay">
+  <div class="pin-card">
+    <div class="pin-logo">NEVADO · Restricted Access</div>
+    <h1 class="pin-title">Under Construction</h1>
+    <p class="pin-notice">
+      This platform is currently in development.<br>
+      Only <strong>Rising Tide Foundation</strong> is authorized<br>
+      to access it using the assigned PIN.
+    </p>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="press('1')">1</button>
+      <button class="pin-key" onclick="press('2')">2</button>
+      <button class="pin-key" onclick="press('3')">3</button>
+      <button class="pin-key" onclick="press('4')">4</button>
+      <button class="pin-key" onclick="press('5')">5</button>
+      <button class="pin-key" onclick="press('6')">6</button>
+      <button class="pin-key" onclick="press('7')">7</button>
+      <button class="pin-key" onclick="press('8')">8</button>
+      <button class="pin-key" onclick="press('9')">9</button>
+      <button class="pin-key wide" onclick="clearPin()">Clear</button>
+      <button class="pin-key" onclick="press('0')">0</button>
+      <button class="pin-key wide" style="font-size:1.1rem;color:rgba(255,255,255,0.3)" onclick="delPin()">⌫</button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const CORRECT = '2310';
+    let entry = '';
+
+    function updateDots() {
+      for (let i = 0; i < 4; i++)
+        document.getElementById('d' + i).classList.toggle('filled', i < entry.length);
+    }
+    window.press = function(d) {
+      if (entry.length >= 4) return;
+      entry += d;
+      updateDots();
+      if (entry.length === 4) setTimeout(check, 120);
+    };
+    window.delPin = function() {
+      entry = entry.slice(0, -1);
+      updateDots();
+      document.getElementById('pin-error').textContent = '';
+    };
+    window.clearPin = function() {
+      entry = '';
+      updateDots();
+      document.getElementById('pin-error').textContent = '';
+    };
+    function check() {
+      if (entry === CORRECT) {
+        document.getElementById('pin-overlay').classList.add('unlocked');
+      } else {
+        document.getElementById('pin-error').textContent = 'Incorrect PIN. Please try again.';
+        entry = '';
+        updateDots();
+      }
+    }
+  })();
+</script>
+<!-- ═══════════════════════════════════════════════ -->
+
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
     <script src="/nevado-env.js"></script>
