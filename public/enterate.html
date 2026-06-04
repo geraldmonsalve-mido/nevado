@@ -480,17 +480,20 @@
   <div class="tit-article-modal" id="articleModal" hidden>
     <div class="tit-modal-inner">
       <button class="tit-modal-close" id="modalClose">✕</button>
+      <div id="modalHeroWrap" style="display:none">
+        <img id="modalHeroImg" src="" alt="">
+      </div>
       <div class="tit-modal-header">
         <div class="tit-modal-top">
-          <span class="tit-modal-cat" id="modalCat">Economía</span>
-          <span class="tit-modal-status" id="modalStatus">✓ Verificado</span>
+          <span class="tit-modal-cat" id="modalCat"></span>
+          <span class="tit-modal-status" id="modalStatus" style="display:none">✓ Verificado</span>
         </div>
         <h2 class="tit-modal-title" id="modalTitle"></h2>
         <p class="tit-modal-excerpt" id="modalExcerpt"></p>
         <div class="tit-modal-meta">
-          <span>NEVADO Editorial</span>
+          <span id="modalAutor">NEVADO Editorial</span>
+          <span id="modalDate"></span>
           <span id="modalReadTime"></span>
-          <span>24 mayo 2026</span>
         </div>
       </div>
       <div class="tit-modal-body" id="modalBody"></div>
@@ -564,16 +567,17 @@
   function renderPortada(el, a) {
     if (!el) return;
     if (!a) { el.innerHTML = '<div class="tit-empty-sec">Sin portada publicada aún.</div>'; return; }
-    var fecha = a.publicado_en ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'long',year:'numeric'}) : '';
+    var fecha  = a.publicado_en ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'long',year:'numeric'}) : '';
+    var autor  = a.autor_username ? '@'+a.autor_username : (a.autor_nombre || 'NEVADO Editorial');
     var imgHtml = a.imagen_url
       ? '<div class="tit-hero-img"><img src="'+esc(a.imagen_url)+'" alt="" loading="eager" onerror="this.parentElement.classList.add(\'tit-hero-img-ph\')"></div>'
       : '<div class="tit-hero-img tit-hero-img-ph"></div>';
+    var verified = parseFloat(a.ia_score) > 7 ? '<span class="tit-hero-status">✓ Verificado</span>' : '';
     el.innerHTML = '<div class="tit-hero-card">' + imgHtml +
-      '<div class="tit-hero-top"><span class="tit-hero-badge">'+esc(a.categoria)+'</span>' +
-      '<span class="tit-hero-status">✓ Verificado</span></div>' +
+      '<div class="tit-hero-top"><span class="tit-hero-badge">'+esc(a.categoria)+'</span>' + verified + '</div>' +
       '<h1 class="tit-hero-title">'+esc(a.titulo)+'</h1>' +
       '<p class="tit-hero-excerpt">'+esc(a.resumen)+'</p>' +
-      '<div class="tit-hero-meta"><span>NEVADO Editorial</span><span>'+fecha+'</span></div>' +
+      '<div class="tit-hero-meta"><span>'+esc(autor)+'</span><span>'+fecha+'</span></div>' +
       '<div class="tit-hero-actions">' +
         '<button class="tit-btn-primary" onclick="openArticle(\''+a.id+'\')">Leer análisis</button>' +
         '<button class="tit-btn-ghost" onclick="nodearArticulo(articlesMap[\''+a.id+'\'])">Conversar en NODO</button>' +
@@ -583,22 +587,29 @@
   function renderRelevante(el, arts) {
     if (!el) return;
     if (!arts.length) { el.innerHTML = '<div class="tit-empty-sec">Sin artículos relevantes publicados.</div>'; return; }
-    el.innerHTML = arts.slice(0,4).map(function(a) {
+    el.innerHTML = '<div class="tit-relevante-list">' + arts.slice(0,4).map(function(a) {
+      var fecha  = a.publicado_en ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}) : '';
+      var autor  = a.autor_username ? '@'+a.autor_username : (a.autor_nombre || '');
       var imgHtml = a.imagen_url
-        ? '<div class="tit-card-img"><img src="'+esc(a.imagen_url)+'" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'
+        ? '<div class="tit-rel-card-img"><img src="'+esc(a.imagen_url)+'" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'
         : '';
-      return '<div class="tit-article-card" data-category="'+esc(a.categoria)+'" data-title="'+esc(a.titulo)+'" data-summary="'+esc(a.resumen)+'">' +
+      return '<div class="tit-rel-card" data-category="'+esc(a.categoria)+'" data-title="'+esc(a.titulo)+'" data-summary="'+esc(a.resumen)+'" onclick="openArticle(\''+a.id+'\')">' +
         imgHtml +
-        '<div class="tit-article-cat">'+esc(a.categoria)+'</div>' +
-        '<div class="tit-article-title">'+esc(a.titulo)+'</div>' +
-        '<div class="tit-article-excerpt">'+esc(a.resumen)+'</div>' +
-        '<div class="tit-article-footer"><span class="tit-article-status verified">✓ Verificado</span></div>' +
-        '<div class="tit-article-actions">' +
-          '<button class="tit-article-btn primary" onclick="openArticle(\''+a.id+'\')">Leer</button>' +
-          '<button class="tit-article-btn" onclick="this.textContent=this.textContent===\'Guardado ✓\'?\'Guardar\':\'Guardado ✓\'">Guardar</button>' +
-          '<button class="tit-article-btn" onclick="nodearArticulo(articlesMap[\''+a.id+'\'],this)">NODO</button>' +
-        '</div></div>';
-    }).join('');
+        '<div class="tit-rel-card-body">' +
+          '<div class="tit-article-cat">'+esc(a.categoria)+'</div>' +
+          '<div class="tit-article-title">'+esc(a.titulo)+'</div>' +
+          '<div class="tit-article-excerpt">'+esc(a.resumen)+'</div>' +
+          '<div class="tit-rel-card-footer">' +
+            (autor ? '<span>'+esc(autor)+'</span>' : '') +
+            (fecha ? '<span>'+fecha+'</span>' : '') +
+            '<div class="tit-article-actions" style="margin-top:0;margin-left:auto">' +
+              '<button class="tit-article-btn primary" onclick="openArticle(\''+a.id+'\');event.stopPropagation()">Leer</button>' +
+              '<button class="tit-article-btn" onclick="nodearArticulo(articlesMap[\''+a.id+'\'],this);event.stopPropagation()">NODO</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('') + '</div>';
   }
 
   function renderSecundario(el, arts) {
@@ -622,11 +633,13 @@
       var imgHtml = a.imagen_url
         ? '<div class="tit-card-img"><img src="'+esc(a.imagen_url)+'" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'
         : '';
+      var extracto = a.cuerpo ? esc(a.cuerpo.slice(0,150)) + (a.cuerpo.length > 150 ? '…' : '') : '';
       return '<div class="tit-article-card tit-prof-card" data-category="'+esc(a.categoria)+'" data-title="'+esc(a.titulo)+'" data-summary="'+esc(a.resumen)+'">' +
         imgHtml +
-        '<div class="tit-article-cat tit-prof-cat">◈ Análisis</div>' +
+        '<div class="tit-article-cat tit-prof-cat">◈ ANÁLISIS EN PROFUNDIDAD</div>' +
         '<div class="tit-article-title">'+esc(a.titulo)+'</div>' +
         '<div class="tit-article-excerpt">'+esc(a.resumen)+'</div>' +
+        (extracto ? '<div class="tit-prof-extract">'+extracto+'</div>' : '') +
         '<div class="tit-article-actions">' +
           '<button class="tit-article-btn primary" onclick="openArticle(\''+a.id+'\')">Leer análisis</button>' +
           '<button class="tit-article-btn" onclick="nodearArticulo(articlesMap[\''+a.id+'\'],this)">NODO</button>' +
@@ -645,7 +658,7 @@
           '<div class="tit-opp-title">'+esc(a.titulo)+'</div>' +
           '<div class="tit-opp-meta">'+esc(a.resumen)+'</div>' +
         '</div>' +
-        '<span class="tit-opp-status open">Ver más</span>' +
+        '<button class="tit-opp-btn" onclick="openArticle(\''+a.id+'\');event.stopPropagation()">Ver oportunidad</button>' +
       '</div>';
     }).join('') + '</div>';
   }
@@ -713,21 +726,51 @@
   function openArticle(id) {
     const a = articlesMap[id];
     if (!a) return;
+
+    // Hero image
+    const heroWrap = document.getElementById('modalHeroWrap');
+    const heroImg  = document.getElementById('modalHeroImg');
+    if (a.imagen_url) { heroImg.src = a.imagen_url; heroWrap.style.display = 'block'; }
+    else              { heroWrap.style.display = 'none'; heroImg.src = ''; }
+
+    // Category + verified badge
     document.getElementById('modalCat').textContent       = a.categoria || '';
     document.getElementById('modalCat').dataset.articleId = a.id;
-    document.getElementById('modalStatus').textContent    = '✓ Verificado';
-    document.getElementById('modalTitle').textContent     = a.titulo || '';
-    document.getElementById('modalExcerpt').textContent   = a.resumen || '';
+    const statusEl = document.getElementById('modalStatus');
+    if (parseFloat(a.ia_score) > 7) { statusEl.style.display = ''; statusEl.textContent = '✓ Verificado'; }
+    else { statusEl.style.display = 'none'; }
+
+    // Title + excerpt
+    document.getElementById('modalTitle').textContent   = a.titulo  || '';
+    document.getElementById('modalExcerpt').textContent = a.resumen || '';
+
+    // Author + date
+    const autor = a.autor_username ? '@' + a.autor_username : (a.autor_nombre || 'NEVADO Editorial');
+    const fecha = a.publicado_en
+      ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'long',year:'numeric'})
+      : '';
+    document.getElementById('modalAutor').textContent     = autor;
+    document.getElementById('modalDate').textContent      = fecha;
     document.getElementById('modalReadTime').textContent  = '';
+
+    // Body — cuerpo completo con párrafos; fallback al resumen
     document.getElementById('modalBody').innerHTML = a.cuerpo
       ? a.cuerpo.split(/\n\n+/).map(p => '<p>' + esc(p) + '</p>').join('')
-      : '<p>' + esc(a.resumen || '') + '</p>';
-    const fuentes = a.fuentes && a.fuentes.length ? a.fuentes : [];
+      : '<p style="font-style:italic;color:rgba(232,232,224,0.6)">' + esc(a.resumen || '') + '</p>';
+
+    // Sources — links clickeables si parecen URLs
+    const fuentes = Array.isArray(a.fuentes) && a.fuentes.length ? a.fuentes : [];
     document.getElementById('modalSources').innerHTML = fuentes.length
-      ? fuentes.map(s => '<div class="tit-modal-source-item">' + esc(s) + '</div>').join('')
+      ? fuentes.map(function(s) {
+          const isUrl = /^https?:\/\//.test(s);
+          const inner = isUrl
+            ? '<a href="' + esc(s) + '" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;text-underline-offset:3px">' + esc(s) + '</a>'
+            : esc(s);
+          return '<div class="tit-modal-source-item">' + inner + '</div>';
+        }).join('')
       : '<div class="tit-modal-source-item" style="opacity:0.4">Sin fuentes declaradas</div>';
-    const modal = document.getElementById('articleModal');
-    modal.hidden = false;
+
+    document.getElementById('articleModal').hidden = false;
     document.body.style.overflow = 'hidden';
   }
 

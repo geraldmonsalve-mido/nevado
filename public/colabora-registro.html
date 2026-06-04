@@ -725,13 +725,14 @@
     }
 
     async function cargarMisEnvios(){
-      if (!currentUser) return;
+      var pid = (window.NODO_USER && window.NODO_USER.profile_id) || (currentUser && currentUser.profile_id);
+      if (!pid) return;
       var list = document.getElementById('mis-envios-list');
       list.innerHTML = '<div class="sala-empty">Cargando…</div>';
       var resp = await fetch('/api/titulares?estado=todos');
       var all  = await resp.json();
       var data = Array.isArray(all)
-        ? all.filter(function(e){ return e.profile_id === currentUser.profile_id; })
+        ? all.filter(function(e){ return e.profile_id === pid; })
         : [];
       if (!data.length){
         list.innerHTML = '<div class="sala-empty">Aún no tienes envíos.</div>';
