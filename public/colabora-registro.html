@@ -652,22 +652,28 @@
 
     function getPayload(){
       if (!currentUser){ window.NODO.showToast('Sesión no disponible.','error'); return null; }
-      var lang    = getActiveLang();
-      var titulo  = document.getElementById('env-titulo-'  + lang).value.trim();
+      // ES siempre canónico — validamos solo español
+      var titulo  = document.getElementById('env-titulo-es').value.trim();
       var cat     = document.getElementById('env-categoria').value;
-      var resumen = document.getElementById('env-resumen-' + lang).value.trim();
-      var cuerpo  = document.getElementById('env-cuerpo-'  + lang).value.trim();
-      if (!titulo)  { window.NODO.showToast('El título es obligatorio.','error'); return null; }
+      var resumen = document.getElementById('env-resumen-es').value.trim();
+      var cuerpo  = document.getElementById('env-cuerpo-es').value.trim();
+      if (!titulo)  { window.NODO.showToast('El título en español es obligatorio.','error'); return null; }
       if (!cat)     { window.NODO.showToast('Selecciona una categoría.','error'); return null; }
-      if (!resumen) { window.NODO.showToast('El resumen es obligatorio.','error'); return null; }
-      if (!cuerpo)  { window.NODO.showToast('El contenido no puede estar vacío.','error'); return null; }
+      if (!resumen) { window.NODO.showToast('El resumen en español es obligatorio.','error'); return null; }
+      if (!cuerpo)  { window.NODO.showToast('El contenido en español no puede estar vacío.','error'); return null; }
+      // Campos EN — opcionales, null si vacíos
+      var tituloEn  = (document.getElementById('env-titulo-en')?.value  || '').trim() || null;
+      var resumenEn = (document.getElementById('env-resumen-en')?.value || '').trim() || null;
+      var cuerpoEn  = (document.getElementById('env-cuerpo-en')?.value  || '').trim() || null;
       return {
         profile_id:           currentUser.profile_id,
         autor_nombre:         currentUser.display_name,
         autor_username:       currentUser.username,
         autor_rank:           currentUser.rank_key,
-        titulo: titulo, categoria: cat,
-        resumen: resumen, cuerpo: cuerpo,
+        titulo: titulo,   titulo_en:  tituloEn,
+        categoria: cat,
+        resumen: resumen, resumen_en: resumenEn,
+        cuerpo: cuerpo,   cuerpo_en:  cuerpoEn,
         fuentes: getFuentes(), estado: 'borrador',
         imagen_url:           imgState.url  || null,
         imagen_storage_path:  imgState.path || null,

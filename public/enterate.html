@@ -559,6 +559,28 @@
   <script>
   // ─── DB Articles ─────────────────────────────────────────────────────────────
   const articlesMap = {};
+  var activeLang    = (window.i18n && window.i18n.getLang()) || 'es';
+  var groupedCache  = null;   // cache para re-render sin API call al cambiar idioma
+
+  // Devuelve el campo en el idioma activo con fallback al español
+  function lf(a, field) {
+    if (activeLang === 'en') {
+      var enVal = a[field + '_en'];
+      if (enVal && String(enVal).trim()) return String(enVal).trim();
+    }
+    return a[field] || '';
+  }
+
+  // Envuelve el artículo aplicando langify para que render functions usen campos correctos
+  function langify(a) {
+    if (!a) return a;
+    if (activeLang === 'es') return a;
+    return Object.assign({}, a, {
+      titulo:  lf(a, 'titulo'),
+      resumen: lf(a, 'resumen'),
+      cuerpo:  lf(a, 'cuerpo'),
+    });
+  }
 
   function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -567,6 +589,7 @@
   function renderPortada(el, a) {
     if (!el) return;
     if (!a) { el.innerHTML = '<div class="tit-empty-sec">Sin portada publicada aún.</div>'; return; }
+    a = langify(a);
     var fecha  = a.publicado_en ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'long',year:'numeric'}) : '';
     var autor  = a.autor_username ? '@'+a.autor_username : (a.autor_nombre || 'NEVADO Editorial');
     var imgHtml = a.imagen_url
@@ -588,6 +611,7 @@
     if (!el) return;
     if (!arts.length) { el.innerHTML = '<div class="tit-empty-sec">Sin artículos relevantes publicados.</div>'; return; }
     el.innerHTML = '<div class="tit-relevante-list">' + arts.slice(0,4).map(function(a) {
+      a = langify(a);
       var fecha  = a.publicado_en ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}) : '';
       var autor  = a.autor_username ? '@'+a.autor_username : (a.autor_nombre || '');
       var imgHtml = a.imagen_url
@@ -616,6 +640,7 @@
     if (!el) return;
     if (!arts.length) { el.innerHTML = '<div class="tit-empty-sec">Sin artículos secundarios publicados.</div>'; return; }
     el.innerHTML = arts.slice(0,6).map(function(a) {
+      a = langify(a);
       var fecha = a.publicado_en ? new Date(a.publicado_en).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}) : '';
       return '<div class="tit-sec-item" onclick="openArticle(\''+a.id+'\')">' +
         '<span class="tit-sec-cat">'+esc(a.categoria)+'</span>' +
@@ -630,6 +655,7 @@
     if (!el) return;
     if (!arts.length) { el.innerHTML = '<div class="tit-empty-sec">Sin análisis publicados.</div>'; return; }
     el.innerHTML = arts.slice(0,3).map(function(a) {
+      a = langify(a);
       var imgHtml = a.imagen_url
         ? '<div class="tit-card-img"><img src="'+esc(a.imagen_url)+'" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'
         : '';
@@ -651,6 +677,7 @@
     if (!el) return;
     if (!arts.length) { el.innerHTML = '<div class="tit-empty-sec">Sin oportunidades publicadas.</div>'; return; }
     el.innerHTML = '<div class="tit-opp-list">' + arts.slice(0,6).map(function(a) {
+      a = langify(a);
       return '<div class="tit-opp-card" style="cursor:pointer" onclick="openArticle(\''+a.id+'\')">' +
         '<div class="tit-opp-icon">★</div>' +
         '<div class="tit-opp-info">' +
@@ -661,6 +688,14 @@
         '<button class="tit-opp-btn" onclick="openArticle(\''+a.id+'\');event.stopPropagation()">Ver oportunidad</button>' +
       '</div>';
     }).join('') + '</div>';
+  }
+
+  function renderAllSections(grouped) {
+    renderPortada(document.getElementById('tit-portada-wrap'),                 grouped.portada[0]);
+    renderRelevante(document.getElementById('tit-relevante-container'),         grouped.relevante);
+    renderSecundario(document.getElementById('tit-secundario-container'),       grouped.secundario);
+    renderProfundidad(document.getElementById('tit-profundidad-container'),     grouped.profundidad);
+    renderOportunidades(document.getElementById('tit-oportunidades-container'), grouped.oportunidades);
   }
 
   async function cargarTitulares() {
@@ -675,11 +710,8 @@
         articlesMap[a.id] = a;
         if (grouped[a.seccion]) grouped[a.seccion].push(a);
       });
-      renderPortada(document.getElementById('tit-portada-wrap'), grouped.portada[0]);
-      renderRelevante(document.getElementById('tit-relevante-container'), grouped.relevante);
-      renderSecundario(document.getElementById('tit-secundario-container'), grouped.secundario);
-      renderProfundidad(document.getElementById('tit-profundidad-container'), grouped.profundidad);
-      renderOportunidades(document.getElementById('tit-oportunidades-container'), grouped.oportunidades);
+      groupedCache = grouped;
+      renderAllSections(grouped);
     } catch(err) {
       console.error('[TITULARES] cargarTitulares:', err);
     }
@@ -724,7 +756,7 @@
 
   // ─── Modal ───────────────────────────────────────────────────────────────────
   function openArticle(id) {
-    const a = articlesMap[id];
+    const a = langify(articlesMap[id]);
     if (!a) return;
 
     // Hero image
@@ -987,10 +1019,17 @@
   <script src="/croquetas.js"></script>
   <script src="/nevado-bubble.js"></script>
   <script>
+    // Re-renderiza en el idioma correcto sin nueva llamada API
+    document.addEventListener('nvd:langchange', function(e) {
+      activeLang = (e.detail && e.detail.lang) || 'es';
+      if (groupedCache) renderAllSections(groupedCache);
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
       if (window.NODO && window.NODO.initClerkSession) {
         window.NODO.initClerkSession();
       }
+      activeLang = (window.i18n && window.i18n.getLang()) || 'es';
       cargarTitulares();
     });
   </script>
