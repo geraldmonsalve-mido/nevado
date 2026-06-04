@@ -103,6 +103,9 @@ body::after {
   position: fixed;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
+  width: 100vw;
+  overflow: hidden;
+  text-align: center;
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(96px, 20vw, 240px);
   font-weight: 300;
@@ -675,7 +678,7 @@ body::after {
 /* Speech bubble */
 #nm-bubble {
   position: fixed;
-  left: calc(50% + 100px);
+  left: calc(50% + 15px);
   top: calc(50% - 270px);
   background: rgba(8,8,8,0.88);
   backdrop-filter: blur(16px);

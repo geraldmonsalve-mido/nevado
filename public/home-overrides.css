@@ -84,14 +84,14 @@ body.home::before {
 
 /* ─── FOOTER: ticker + sysbar + tricolor ────────────────────────────────── */
 
-/* Ticker y sysbar: se mueven al #home-footer vía home-footer.js,
-   por eso se anulan sus posiciones fijas originales de style.css */
-body.home #ticker {
+/* Ticker y sysbar: se mueven al #home-footer vía home-footer.js.
+   Selector por padre en lugar de body.home — aplica independiente del class en body. */
+#home-footer #ticker {
   position: static !important;
   bottom: auto !important;
   width: 100%;
 }
-body.home #sysbar {
+#home-footer #sysbar {
   position: static !important;
   bottom: auto !important;
   width: 100%;

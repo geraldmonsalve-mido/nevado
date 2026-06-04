@@ -83,7 +83,7 @@
     const rango = profile?.rango || 'Cachorro';
 
     el.innerHTML = `
-      <img class="nv-rank-icon" src="${rangoIcon(rango)}" alt="${rango}">
+      <img class="nv-rank-icon" src="${rangoIcon(rango)}" alt="${rango}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0">
       <span class="nv-session-copy">
         <strong>@${String(username).replace(/^@/, '')}</strong>
         <small>${croquetas.toLocaleString('es-CO')} croquetas</small>
