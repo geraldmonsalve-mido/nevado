@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       }
       let query = supabase
         .from('titulares_envios')
-        .select('id,titulo,categoria,autor_nombre,autor_username,autor_rank,estado,ia_score,created_at,updated_at')
+        .select('id,titulo,categoria,autor_nombre,autor_username,autor_rank,estado,ia_score,created_at,updated_at,profile_id')
         .order('created_at', { ascending: false });
       if (estado && estado !== 'todos') query = query.eq('estado', estado);
       const { data, error } = await query;

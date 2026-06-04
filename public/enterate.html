@@ -662,7 +662,7 @@
       var grouped = {portada:[],relevante:[],secundario:[],profundidad:[],oportunidades:[]};
       (data||[]).forEach(function(a) {
         articlesMap[a.id] = a;
-        if (grouped[a.destino]) grouped[a.destino].push(a);
+        if (grouped[a.seccion]) grouped[a.seccion].push(a);
       });
       renderPortada(document.getElementById('tit-portada-wrap'), grouped.portada[0]);
       renderRelevante(document.getElementById('tit-relevante-container'), grouped.relevante);
