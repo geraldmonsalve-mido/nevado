@@ -651,14 +651,12 @@
   }
 
   async function cargarTitulares() {
-    var sb = window.NODO && window.NODO.sb;
-    if (!sb) { setTimeout(cargarTitulares, 400); return; }
     try {
-      var { data, error } = await sb.from('titulares_envios')
-        .select('*')
-        .eq('estado','publicado')
-        .order('publicado_en',{ascending:false});
-      if (error) throw error;
+      var resp = await fetch('/api/titulares?estado=publicado');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json();
+      data = (Array.isArray(data) ? data : [])
+        .sort(function(a,b){ return (b.publicado_en||'') > (a.publicado_en||'') ? 1 : -1; });
       var grouped = {portada:[],relevante:[],secundario:[],profundidad:[],oportunidades:[]};
       (data||[]).forEach(function(a) {
         articlesMap[a.id] = a;
