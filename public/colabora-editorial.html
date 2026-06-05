@@ -232,6 +232,42 @@
 
     .mesa-empty { text-align:center; padding:48px; color:rgba(255,255,255,0.28); font-size:14px; }
 
+    /* ── Sección EN en panel de revisión ── */
+    #rp-en-section {
+      background: rgba(41,128,185,0.03);
+      border: 1px solid rgba(41,128,185,0.18);
+      border-radius: 12px; overflow: hidden;
+    }
+    #rp-en-toggle {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      background: none; border: none; padding: 11px 14px;
+      font-size: 12px; font-weight: 500; color: rgba(232,232,224,0.6);
+      cursor: pointer; text-align: left; font-family: inherit;
+      transition: color 0.15s;
+    }
+    #rp-en-toggle:hover { color: #E8E8E0; }
+    .rp-en-badge-none { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: rgba(231,76,60,0.1); color: #E74C3C; margin-left: auto; }
+    .rp-en-badge-ok   { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: rgba(39,174,96,0.1); color: #27AE60; margin-left: auto; }
+    #rp-en-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .rp-en-label { display:block; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:5px; }
+    .rp-en-input, .rp-en-textarea {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 8px;
+      padding: 8px 11px; font-size: 13px; color: #E8E8E0;
+      font-family: inherit; outline: none; resize: vertical;
+      transition: border-color 0.2s; box-sizing: border-box;
+    }
+    .rp-en-input:focus, .rp-en-textarea:focus { border-color: rgba(41,128,185,0.45); }
+    #rp-en-save-btn {
+      align-self: flex-end; background: rgba(41,128,185,0.12);
+      border: 1px solid rgba(41,128,185,0.3); border-radius: 8px;
+      padding: 7px 16px; font-size: 12px; font-weight: 600;
+      color: #2980B9; cursor: pointer; font-family: inherit;
+      transition: background 0.15s;
+    }
+    #rp-en-save-btn:hover { background: rgba(41,128,185,0.22); }
+    #rp-en-save-status { font-size: 11px; color: rgba(41,128,185,0.7); min-height: 16px; text-align: right; }
+
     /* ── Imagen artículo en panel de revisión ── */
     #rp-imagen { width:100%; max-height:240px; object-fit:cover; border-radius:12px; display:block; }
     #rp-img-dropzone {
@@ -471,6 +507,25 @@
       </div>
       <div class="mesa-review-fuentes" id="rp-fuentes"></div>
 
+      <!-- ── Contenido EN — expandible ── -->
+      <div id="rp-en-section">
+        <button id="rp-en-toggle" onclick="toggleEnSection()">
+          <span id="rp-en-arrow">▸</span>
+          Ver / editar versión en inglés
+          <span id="rp-en-badge" class="rp-en-badge-none">Sin traducción</span>
+        </button>
+        <div id="rp-en-body" style="display:none">
+          <div><label class="rp-en-label">Título EN</label>
+            <input type="text" id="rp-en-titulo" class="rp-en-input" placeholder="Title in English…"></div>
+          <div><label class="rp-en-label">Resumen EN</label>
+            <textarea id="rp-en-resumen" class="rp-en-textarea" rows="3" placeholder="Summary in English…"></textarea></div>
+          <div><label class="rp-en-label">Cuerpo EN</label>
+            <textarea id="rp-en-cuerpo" class="rp-en-textarea" rows="8" placeholder="Full content in English…"></textarea></div>
+          <button id="rp-en-save-btn" onclick="guardarTraduccionEN()">Guardar traducción</button>
+          <div id="rp-en-save-status"></div>
+        </div>
+      </div>
+
       <div class="mesa-ia-panel">
         <div class="mesa-ia-header">
           <span class="mesa-ia-title">✦ Verificación IA · Anthropic</span>
@@ -632,6 +687,52 @@
       if (el) el.textContent = msg;
     }
 
+    /* ── Sección EN ── */
+    function toggleEnSection() {
+      var body  = document.getElementById('rp-en-body');
+      var arrow = document.getElementById('rp-en-arrow');
+      var open  = body.style.display === 'none';
+      body.style.display = open ? 'flex' : 'none';
+      arrow.textContent  = open ? '▾' : '▸';
+    }
+
+    function updateEnBadge(e) {
+      var badge = document.getElementById('rp-en-badge');
+      if (!badge) return;
+      var has = (e.titulo_en  && e.titulo_en.trim())  ||
+                (e.resumen_en && e.resumen_en.trim())  ||
+                (e.cuerpo_en  && e.cuerpo_en.trim());
+      badge.textContent = has ? 'Traducido' : 'Sin traducción';
+      badge.className   = has ? 'rp-en-badge-ok' : 'rp-en-badge-none';
+    }
+
+    async function guardarTraduccionEN() {
+      if (!currentEnvioId) return;
+      var titulo_en  = document.getElementById('rp-en-titulo').value.trim()  || null;
+      var resumen_en = document.getElementById('rp-en-resumen').value.trim() || null;
+      var cuerpo_en  = document.getElementById('rp-en-cuerpo').value.trim()  || null;
+      var statusEl   = document.getElementById('rp-en-save-status');
+      statusEl.textContent = 'Guardando…';
+      try {
+        var upResp = await fetch('/api/titulares?id=' + currentEnvioId, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ titulo_en: titulo_en, resumen_en: resumen_en, cuerpo_en: cuerpo_en }),
+        });
+        if (!upResp.ok) { var err = await upResp.json(); throw new Error(err.error); }
+        if (currentEnvio) {
+          currentEnvio.titulo_en  = titulo_en;
+          currentEnvio.resumen_en = resumen_en;
+          currentEnvio.cuerpo_en  = cuerpo_en;
+        }
+        updateEnBadge({ titulo_en: titulo_en, resumen_en: resumen_en, cuerpo_en: cuerpo_en });
+        statusEl.textContent = '✓ Guardado';
+        setTimeout(function(){ statusEl.textContent = ''; }, 2500);
+      } catch(err) {
+        statusEl.textContent = 'Error: ' + (err.message || '');
+      }
+    }
+
     /* Iniciar sesión Clerk — llamada directa porque nodo-core.js ya corrió */
     if (window.NODO && window.NODO.initClerkSession) {
       window.NODO.initClerkSession();
@@ -722,6 +823,15 @@
       document.getElementById('nota-editorial').value = e.nota_editorial || '';
       document.getElementById('prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
       document.getElementById('rp-seccion').value = e.seccion || '';
+
+      // Campos EN
+      document.getElementById('rp-en-titulo').value  = e.titulo_en  || '';
+      document.getElementById('rp-en-resumen').value = e.resumen_en || '';
+      document.getElementById('rp-en-cuerpo').value  = e.cuerpo_en  || '';
+      document.getElementById('rp-en-body').style.display = 'none';
+      document.getElementById('rp-en-arrow').textContent  = '▸';
+      document.getElementById('rp-en-save-status').textContent = '';
+      updateEnBadge(e);
 
       // Imagen del artículo
       var imgWrap = document.getElementById('rp-imagen-wrap');

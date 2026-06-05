@@ -239,6 +239,33 @@
     }
     .sala-lang-tab:hover { color: rgba(255,255,255,0.7); }
     .sala-lang-tab.active { background: rgba(41,128,185,0.12); border-color: rgba(41,128,185,0.35); color: #2980B9; }
+
+    /* ── Modal detalle envío ── */
+    #envio-detalle-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(2,3,8,0.88); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    #envio-detalle-overlay[hidden] { display: none; }
+    #envio-detalle-modal {
+      background: rgba(10,12,18,0.98);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      width: min(540px, 96vw); max-height: 88vh;
+      overflow-y: auto; padding: 28px 32px;
+      position: relative;
+    }
+    .detalle-close { position:absolute; top:14px; right:14px; background:none; border:none; color:rgba(255,255,255,0.35); font-size:16px; cursor:pointer; padding:4px; border-radius:4px; }
+    .detalle-close:hover { color:rgba(255,255,255,0.7); }
+    .detalle-titulo { font-size:16px; font-weight:600; color:#E8E8E0; margin:14px 0 16px; line-height:1.35; }
+    .detalle-nota-rechazo { background:rgba(231,76,60,0.06); border:1px solid rgba(231,76,60,0.18); border-radius:10px; padding:12px 16px; font-size:13px; color:rgba(231,76,60,0.9); line-height:1.6; margin-bottom:16px; }
+    .detalle-nota-revision { background:rgba(244,208,63,0.06); border:1px solid rgba(244,208,63,0.18); border-radius:10px; padding:12px 16px; font-size:13px; color:rgba(244,208,63,0.9); line-height:1.6; margin-bottom:16px; }
+    .detalle-readonly { background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:14px 16px; font-size:13px; color:rgba(232,232,224,0.55); line-height:1.6; margin-bottom:16px; font-style:italic; }
+    .detalle-btn-editar { display:block; width:100%; background:#2980B9; border:none; border-radius:9px; padding:11px; font-size:13px; font-weight:600; color:#fff; cursor:pointer; font-family:inherit; transition:opacity 0.2s; }
+    .detalle-btn-editar:hover { opacity:0.85; }
+    .sala-envio-ver { background:none; border:1px solid rgba(255,255,255,0.1); border-radius:7px; padding:4px 10px; font-size:11px; color:rgba(255,255,255,0.5); cursor:pointer; font-family:inherit; transition:all 0.15s; margin-top:8px; }
+    .sala-envio-ver:hover { border-color:rgba(255,255,255,0.25); color:#E8E8E0; }
   </style>
 </head>
 <body>
@@ -447,6 +474,17 @@
     </main>
   </div>
 
+  <!-- Modal detalle de envío -->
+  <div id="envio-detalle-overlay" hidden>
+    <div id="envio-detalle-modal">
+      <button class="detalle-close" onclick="cerrarDetalleEnvio()">✕</button>
+      <div id="detalle-estado-wrap"></div>
+      <h3 class="detalle-titulo" id="detalle-titulo"></h3>
+      <div id="detalle-nota-wrap"></div>
+      <div id="detalle-action-wrap"></div>
+    </div>
+  </div>
+
   <script src="/cursor.js"></script>
   <script src="/nevado-env.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
@@ -457,6 +495,7 @@
     var sb = function(){ return window.NODO && window.NODO.sb; };
     var currentUser = null;
     var imgState = { file: null, url: null, path: null };
+    var misEnviosCache = {};
 
     /* Iniciar sesión Clerk — llamada directa porque nodo-core.js ya corrió */
     if (window.NODO && window.NODO.initClerkSession) {
@@ -745,7 +784,9 @@
         return;
       }
       document.getElementById('badge-envios').textContent = data.length;
+      misEnviosCache = {};
       list.innerHTML = data.map(function(e){
+        misEnviosCache[e.id] = e;
         var d = new Date(e.created_at).toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'});
         var estadoLabel = {
           borrador:    'Borrador',
@@ -763,16 +804,103 @@
         } else if (e.nota_editorial) {
           mensajeExtra = '<div class="sala-envio-nota">Nota: ' + e.nota_editorial + '</div>';
         }
+        var showDetail = e.estado === 'en_revision' || e.estado === 'rechazado';
         return '<div class="sala-envio-card">' +
           '<span class="sala-envio-estado estado-' + e.estado + '">' + estadoLabel + '</span>' +
           '<div class="sala-envio-info">' +
             '<div class="sala-envio-title">' + e.titulo + '</div>' +
             '<div class="sala-envio-meta">' + e.categoria + ' · ' + d + '</div>' +
             mensajeExtra +
+            (showDetail ? '<button class="sala-envio-ver" onclick="abrirDetalleEnvio(\'' + e.id + '\')">Ver detalle →</button>' : '') +
           '</div>' +
         '</div>';
       }).join('');
     }
+
+    /* ── Modal detalle de envío ── */
+    function abrirDetalleEnvio(id) {
+      var e = misEnviosCache[id];
+      if (!e) return;
+      var LABELS = { en_revision:'En revisión', rechazado:'Rechazado' };
+      document.getElementById('detalle-estado-wrap').innerHTML =
+        '<span class="sala-envio-estado estado-' + e.estado + '">' + (LABELS[e.estado] || e.estado) + '</span>';
+      document.getElementById('detalle-titulo').textContent = e.titulo;
+
+      var notaWrap = document.getElementById('detalle-nota-wrap');
+      if (e.estado === 'rechazado') {
+        notaWrap.innerHTML = '<div class="detalle-nota-rechazo"><strong>Motivo del rechazo:</strong><br>' +
+          (e.nota_editorial || 'Sin nota adicional del editor.') + '</div>';
+      } else if (e.estado === 'en_revision') {
+        notaWrap.innerHTML = e.nota_editorial
+          ? '<div class="detalle-nota-revision"><strong>Comentario del editor:</strong><br>' + e.nota_editorial + '</div>'
+          : '';
+      } else {
+        notaWrap.innerHTML = '';
+      }
+
+      var actionWrap = document.getElementById('detalle-action-wrap');
+      if (e.estado === 'rechazado') {
+        actionWrap.innerHTML = '<button class="detalle-btn-editar" onclick="editarYReenviar(\'' + id + '\')">Editar y reenviar →</button>';
+      } else if (e.estado === 'en_revision') {
+        actionWrap.innerHTML = '<div class="detalle-readonly">Tu artículo está siendo revisado por el equipo editorial. No puedes editarlo en este momento.</div>';
+      } else {
+        actionWrap.innerHTML = '';
+      }
+
+      document.getElementById('envio-detalle-overlay').hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarDetalleEnvio() {
+      document.getElementById('envio-detalle-overlay').hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    function editarYReenviar(id) {
+      var e = misEnviosCache[id];
+      if (!e) return;
+      cerrarDetalleEnvio();
+
+      // Ir a "Nuevo envío"
+      document.querySelectorAll('.sala-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+      var btnNuevo = document.querySelector('.sala-nav-btn[data-section="nuevo"]');
+      if (btnNuevo) btnNuevo.classList.add('active');
+      document.querySelectorAll('.sala-section').forEach(function(s){ s.classList.remove('active'); });
+      document.getElementById('section-nuevo').classList.add('active');
+
+      // Pre-rellenar campos ES
+      document.getElementById('env-titulo-es').value  = e.titulo    || '';
+      document.getElementById('env-resumen-es').value = e.resumen   || '';
+      document.getElementById('env-cuerpo-es').value  = e.cuerpo    || '';
+      document.getElementById('env-categoria').value  = e.categoria || '';
+
+      // Pre-rellenar campos EN si existen
+      var tEn = document.getElementById('env-titulo-en');
+      var rEn = document.getElementById('env-resumen-en');
+      var cEn = document.getElementById('env-cuerpo-en');
+      if (tEn) tEn.value = e.titulo_en  || '';
+      if (rEn) rEn.value = e.resumen_en || '';
+      if (cEn) cEn.value = e.cuerpo_en  || '';
+
+      // Actualizar contadores
+      var limits = { titulo: 120, resumen: 300, cuerpo: 8000 };
+      Object.keys(limits).forEach(function(f) {
+        var el  = document.getElementById('env-' + f + '-es');
+        var cnt = document.getElementById('cnt-' + f + '-es');
+        if (el && cnt) cnt.textContent = el.value.length + ' / ' + limits[f];
+      });
+
+      window.NODO && window.NODO.showToast('Artículo cargado. Edita y reenvía cuando estés listo.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Cerrar modal con Escape o clic fuera
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Escape' && !document.getElementById('envio-detalle-overlay').hidden) cerrarDetalleEnvio();
+    });
+    document.getElementById('envio-detalle-overlay').addEventListener('click', function(ev) {
+      if (ev.target === this) cerrarDetalleEnvio();
+    });
 
     document.addEventListener('DOMContentLoaded', initImageUpload);
 
