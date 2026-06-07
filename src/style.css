@@ -310,12 +310,12 @@ body::after {
 }
 
 /* Card positions */
-#mod-talent     { left: 3vw; top: 10vh; animation-duration: 6.1s; animation-delay: 0s; }
-#mod-education  { right: 3vw; top: 10vh; animation-duration: 5.8s; animation-delay: -1.4s; }
-#mod-transparent{ left: 3vw; top: 50vh; transform: translateY(-50%); animation-duration: 6.4s; animation-delay: -2.1s; }
-#mod-media      { right: 3vw; top: 50vh; transform: translateY(-50%); animation-duration: 5.6s; animation-delay: -0.7s; }
-#mod-community  { left: 3vw; bottom: 10vh; animation-duration: 6.7s; animation-delay: -3.2s; }
-#mod-services   { right: 3vw; bottom: 10vh; animation-duration: 6.0s; animation-delay: -1.9s; }
+#mod-talent     { left: 0; top: 10vh; animation-duration: 6.1s; animation-delay: 0s; }
+#mod-education  { right: 0; top: 10vh; animation-duration: 5.8s; animation-delay: -1.4s; }
+#mod-transparent{ left: 0; top: 50vh; transform: translateY(-50%); animation-duration: 6.4s; animation-delay: -2.1s; }
+#mod-media      { right: 0; top: 50vh; transform: translateY(-50%); animation-duration: 5.6s; animation-delay: -0.7s; }
+#mod-community  { left: 0; bottom: 10vh; animation-duration: 6.7s; animation-delay: -3.2s; }
+#mod-services   { right: 0; bottom: 10vh; animation-duration: 6.0s; animation-delay: -1.9s; }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
