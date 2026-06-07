@@ -562,9 +562,10 @@
     if (!a) return a;
     if (activeLang === 'es') return a;
     return Object.assign({}, a, {
-      titulo:  lf(a, 'titulo'),
-      resumen: lf(a, 'resumen'),
-      cuerpo:  lf(a, 'cuerpo'),
+      titulo:    lf(a, 'titulo'),
+      resumen:   lf(a, 'resumen'),
+      cuerpo:    lf(a, 'cuerpo'),
+      categoria: a.categoria_en || a.categoria,
     });
   }
 

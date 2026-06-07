@@ -1195,6 +1195,68 @@ async function cargarTitulares(estado) {
   }
 }
 
+window.fpSwitchTab = function(tab) {
+  var esContent = document.getElementById('fp-tab-es-content');
+  var enContent = document.getElementById('fp-tab-en-content');
+  var esBtn = document.getElementById('fp-tab-es-btn');
+  var enBtn = document.getElementById('fp-tab-en-btn');
+  if (!esContent || !enContent) return;
+  if (tab === 'es') {
+    esContent.style.display = 'flex';
+    enContent.style.display = 'none';
+    esBtn.style.background = 'rgba(184,148,74,0.12)';
+    esBtn.style.color = '#B8944A';
+    esBtn.style.borderColor = 'rgba(184,148,74,0.25)';
+    enBtn.style.background = 'none';
+    enBtn.style.color = 'rgba(255,255,255,0.4)';
+    enBtn.style.borderColor = 'rgba(255,255,255,0.1)';
+  } else {
+    esContent.style.display = 'none';
+    enContent.style.display = 'flex';
+    enBtn.style.background = 'rgba(41,128,185,0.12)';
+    enBtn.style.color = '#2980B9';
+    enBtn.style.borderColor = 'rgba(41,128,185,0.25)';
+    esBtn.style.background = 'none';
+    esBtn.style.color = 'rgba(255,255,255,0.4)';
+    esBtn.style.borderColor = 'rgba(255,255,255,0.1)';
+  }
+};
+
+function fpActualizarEnBadge() {
+  var badge = document.getElementById('fp-en-badge');
+  if (!badge || !_fpTitEnvioActual) return;
+  var has = _fpTitEnvioActual.titulo_en && _fpTitEnvioActual.titulo_en.trim();
+  badge.textContent = has ? '✓ Traducido' : '⚠ Sin traducción';
+  badge.style.color = has ? '#27AE60' : '#B8944A';
+  badge.style.background = has ? 'rgba(39,174,96,0.08)' : 'rgba(184,148,74,0.08)';
+}
+
+window.fpGuardarEN = async function() {
+  if (!_fpTitEnvioActual) return;
+  var titulo_en    = document.getElementById('fp-en-titulo').value.trim()    || null;
+  var resumen_en   = document.getElementById('fp-en-resumen').value.trim()   || null;
+  var cuerpo_en    = document.getElementById('fp-en-cuerpo').value.trim()    || null;
+  var categoria_en = document.getElementById('fp-en-categoria').value.trim() || null;
+  var statusEl = document.getElementById('fp-en-save-status');
+  if (statusEl) statusEl.textContent = 'Guardando…';
+  try {
+    var resp = await fetch('/api/titulares?id=' + _fpTitEnvioActual.id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ titulo_en: titulo_en, resumen_en: resumen_en, cuerpo_en: cuerpo_en, categoria_en: categoria_en }),
+    });
+    if (!resp.ok) { var errData = await resp.json(); throw new Error(errData.error); }
+    _fpTitEnvioActual.titulo_en    = titulo_en;
+    _fpTitEnvioActual.resumen_en   = resumen_en;
+    _fpTitEnvioActual.cuerpo_en    = cuerpo_en;
+    _fpTitEnvioActual.categoria_en = categoria_en;
+    fpActualizarEnBadge();
+    if (statusEl) { statusEl.textContent = '✓ Traducción guardada'; setTimeout(function(){ statusEl.textContent = ''; }, 2500); }
+  } catch(err) {
+    if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+  }
+};
+
 window.fpAbrirTitular = async function(envioId) {
   if (!fpSb) return;
   var overlay = document.getElementById('fp-tit-modal-overlay');
@@ -1243,6 +1305,15 @@ window.fpAbrirTitular = async function(envioId) {
     document.getElementById('fp-tit-nota-founder').value = '';
     document.getElementById('fp-tit-prog-fecha').value = e.programado_para ? e.programado_para.slice(0,16) : '';
     document.getElementById('fp-tit-seccion').value = e.seccion || '';
+
+    // Campos EN
+    document.getElementById('fp-en-titulo').value    = e.titulo_en    || '';
+    document.getElementById('fp-en-resumen').value   = e.resumen_en   || '';
+    document.getElementById('fp-en-cuerpo').value    = e.cuerpo_en    || '';
+    document.getElementById('fp-en-categoria').value = e.categoria_en || '';
+    document.getElementById('fp-en-save-status').textContent = '';
+    fpSwitchTab('es');
+    fpActualizarEnBadge();
   } catch(err) {
     console.error('[FOUNDER] fpAbrirTitular:', err);
     fpMostrarToast('Error al cargar el titular.', 'error');

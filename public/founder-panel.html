@@ -345,82 +345,139 @@
           <!-- Body -->
           <div style="overflow-y:auto;padding:22px 28px;display:flex;flex-direction:column;gap:18px;flex:1">
             <div id="fp-tit-modal-meta" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-            <!-- Resumen -->
-            <div>
-              <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
-                color:rgba(255,255,255,0.28);margin-bottom:8px">Resumen</div>
-              <div id="fp-tit-modal-resumen" style="font-size:13px;color:rgba(232,232,224,0.7);
-                line-height:1.65;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
-                border-radius:10px;padding:14px"></div>
+            <!-- Tab switcher -->
+            <div style="display:flex;align-items:center;gap:8px">
+              <button id="fp-tab-es-btn" onclick="fpSwitchTab('es')"
+                style="background:rgba(184,148,74,0.12);border:1px solid rgba(184,148,74,0.25);
+                border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;
+                color:#B8944A;cursor:pointer;font-family:inherit;transition:all 0.15s">🇻🇪 ES</button>
+              <button id="fp-tab-en-btn" onclick="fpSwitchTab('en')"
+                style="background:none;border:1px solid rgba(255,255,255,0.1);
+                border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;
+                color:rgba(255,255,255,0.4);cursor:pointer;font-family:inherit;transition:all 0.15s">🇺🇸 EN</button>
+              <span id="fp-en-badge"
+                style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+                padding:2px 8px;border-radius:20px;background:rgba(184,148,74,0.08);color:#B8944A">⚠ Sin traducción</span>
             </div>
-            <!-- Contenido -->
-            <div>
-              <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
-                color:rgba(255,255,255,0.28);margin-bottom:8px">Contenido completo</div>
-              <div id="fp-tit-modal-cuerpo" style="font-size:13px;color:rgba(232,232,224,0.75);
-                line-height:1.75;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
-                border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;white-space:pre-wrap"></div>
-            </div>
-            <!-- Fuentes -->
-            <div id="fp-tit-modal-fuentes" style="font-size:12px;color:rgba(255,255,255,0.35)"></div>
-            <!-- Score IA -->
-            <div id="fp-tit-modal-ia" style="display:none;background:rgba(41,128,185,0.05);
-              border:1px solid rgba(41,128,185,0.15);border-radius:12px;padding:16px">
-              <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
-                color:#2980B9;margin-bottom:12px">✦ Score IA · Anthropic</div>
-              <div style="display:flex;align-items:center;gap:16px">
-                <div id="fp-tit-ia-score-num" style="font-size:38px;font-weight:600;
-                  font-family:'Cormorant Garamond',serif;line-height:1">—</div>
-                <div style="flex:1">
-                  <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:8px">
-                    <div id="fp-tit-ia-bar" style="height:100%;border-radius:3px;transition:width 0.8s ease;width:0%"></div>
+            <!-- Tab ES (contenido existente) -->
+            <div id="fp-tab-es-content" style="display:flex;flex-direction:column;gap:18px">
+              <!-- Resumen -->
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Resumen</div>
+                <div id="fp-tit-modal-resumen" style="font-size:13px;color:rgba(232,232,224,0.7);
+                  line-height:1.65;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
+                  border-radius:10px;padding:14px"></div>
+              </div>
+              <!-- Contenido -->
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Contenido completo</div>
+                <div id="fp-tit-modal-cuerpo" style="font-size:13px;color:rgba(232,232,224,0.75);
+                  line-height:1.75;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
+                  border-radius:10px;padding:14px;max-height:200px;overflow-y:auto;white-space:pre-wrap"></div>
+              </div>
+              <!-- Fuentes -->
+              <div id="fp-tit-modal-fuentes" style="font-size:12px;color:rgba(255,255,255,0.35)"></div>
+              <!-- Score IA -->
+              <div id="fp-tit-modal-ia" style="display:none;background:rgba(41,128,185,0.05);
+                border:1px solid rgba(41,128,185,0.15);border-radius:12px;padding:16px">
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:#2980B9;margin-bottom:12px">✦ Score IA · Anthropic</div>
+                <div style="display:flex;align-items:center;gap:16px">
+                  <div id="fp-tit-ia-score-num" style="font-size:38px;font-weight:600;
+                    font-family:'Cormorant Garamond',serif;line-height:1">—</div>
+                  <div style="flex:1">
+                    <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:8px">
+                      <div id="fp-tit-ia-bar" style="height:100%;border-radius:3px;transition:width 0.8s ease;width:0%"></div>
+                    </div>
+                    <div id="fp-tit-ia-texto" style="font-size:12px;color:rgba(232,232,224,0.6);line-height:1.6"></div>
                   </div>
-                  <div id="fp-tit-ia-texto" style="font-size:12px;color:rgba(232,232,224,0.6);line-height:1.6"></div>
                 </div>
               </div>
+              <!-- Nota previa -->
+              <div id="fp-tit-modal-nota-existente" style="display:none;
+                background:rgba(184,148,74,0.06);border:1px solid rgba(184,148,74,0.15);
+                border-radius:10px;padding:14px;font-size:12px;color:rgba(184,148,74,0.8)">
+                <strong style="display:block;margin-bottom:4px;color:rgba(184,148,74,0.9)">Nota editorial previa:</strong>
+                <span id="fp-tit-nota-prev-text"></span>
+              </div>
+              <!-- Nota founder -->
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Nota del Founder (visible para el autor)</div>
+                <textarea id="fp-tit-nota-founder" rows="3"
+                  placeholder="Escribe feedback, correcciones o motivo de decisión…"
+                  style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+                  border-radius:9px;padding:10px 13px;font-size:13px;color:#E8E8E0;
+                  font-family:inherit;outline:none;resize:vertical;
+                  transition:border-color 0.2s;box-sizing:border-box"></textarea>
+              </div>
+              <!-- Destino -->
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
+                <select id="fp-tit-seccion" style="width:100%;background:rgba(255,255,255,0.04);
+                  border:1px solid rgba(255,255,255,0.09);border-radius:9px;padding:9px 13px;
+                  font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;
+                  color-scheme:dark;cursor:pointer">
+                  <option value="">— Sin asignar —</option>
+                  <option value="portada">Portada (hero con foto)</option>
+                  <option value="relevante">Relevante (grid con foto)</option>
+                  <option value="secundario">Secundario (sin foto)</option>
+                  <option value="profundidad">En Profundidad (análisis)</option>
+                  <option value="oportunidades">Oportunidades (recursos)</option>
+                </select>
+              </div>
+              <!-- Programar -->
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Programar publicación (opcional)</div>
+                <input type="datetime-local" id="fp-tit-prog-fecha"
+                  style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+                  border-radius:9px;padding:9px 13px;font-size:13px;color:#E8E8E0;
+                  font-family:inherit;outline:none;color-scheme:dark"/>
+              </div>
             </div>
-            <!-- Nota previa -->
-            <div id="fp-tit-modal-nota-existente" style="display:none;
-              background:rgba(184,148,74,0.06);border:1px solid rgba(184,148,74,0.15);
-              border-radius:10px;padding:14px;font-size:12px;color:rgba(184,148,74,0.8)">
-              <strong style="display:block;margin-bottom:4px;color:rgba(184,148,74,0.9)">Nota editorial previa:</strong>
-              <span id="fp-tit-nota-prev-text"></span>
-            </div>
-            <!-- Nota founder -->
-            <div>
-              <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
-                color:rgba(255,255,255,0.28);margin-bottom:8px">Nota del Founder (visible para el autor)</div>
-              <textarea id="fp-tit-nota-founder" rows="3"
-                placeholder="Escribe feedback, correcciones o motivo de decisión…"
-                style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
-                border-radius:9px;padding:10px 13px;font-size:13px;color:#E8E8E0;
-                font-family:inherit;outline:none;resize:vertical;
-                transition:border-color 0.2s;box-sizing:border-box"></textarea>
-            </div>
-            <!-- Destino -->
-            <div>
-              <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
-                color:rgba(255,255,255,0.28);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
-              <select id="fp-tit-seccion" style="width:100%;background:rgba(255,255,255,0.04);
-                border:1px solid rgba(255,255,255,0.09);border-radius:9px;padding:9px 13px;
-                font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;
-                color-scheme:dark;cursor:pointer">
-                <option value="">— Sin asignar —</option>
-                <option value="portada">Portada (hero con foto)</option>
-                <option value="relevante">Relevante (grid con foto)</option>
-                <option value="secundario">Secundario (sin foto)</option>
-                <option value="profundidad">En Profundidad (análisis)</option>
-                <option value="oportunidades">Oportunidades (recursos)</option>
-              </select>
-            </div>
-            <!-- Programar -->
-            <div>
-              <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
-                color:rgba(255,255,255,0.28);margin-bottom:8px">Programar publicación (opcional)</div>
-              <input type="datetime-local" id="fp-tit-prog-fecha"
-                style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
-                border-radius:9px;padding:9px 13px;font-size:13px;color:#E8E8E0;
-                font-family:inherit;outline:none;color-scheme:dark"/>
+            <!-- Tab EN (nuevo) -->
+            <div id="fp-tab-en-content" style="display:none;flex-direction:column;gap:16px">
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Título EN</div>
+                <input type="text" id="fp-en-titulo" placeholder="Title in English…"
+                  style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+                  border-radius:9px;padding:9px 13px;font-size:13px;color:#E8E8E0;
+                  font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.2s"/>
+              </div>
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Resumen EN</div>
+                <textarea id="fp-en-resumen" rows="3" placeholder="Summary in English…"
+                  style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+                  border-radius:9px;padding:9px 13px;font-size:13px;color:#E8E8E0;
+                  font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;transition:border-color 0.2s"></textarea>
+              </div>
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Cuerpo EN</div>
+                <textarea id="fp-en-cuerpo" rows="8" placeholder="Full content in English…"
+                  style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+                  border-radius:9px;padding:9px 13px;font-size:13px;color:#E8E8E0;
+                  font-family:inherit;outline:none;resize:vertical;box-sizing:border-box;transition:border-color 0.2s"></textarea>
+              </div>
+              <div>
+                <div style="font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+                  color:rgba(255,255,255,0.28);margin-bottom:8px">Categoría EN</div>
+                <input type="text" id="fp-en-categoria" placeholder="Category in English (e.g. Economy, Politics, Migration)"
+                  style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+                  border-radius:9px;padding:9px 13px;font-size:13px;color:#E8E8E0;
+                  font-family:inherit;outline:none;box-sizing:border-box;transition:border-color 0.2s"/>
+              </div>
+              <button onclick="fpGuardarEN()"
+                style="align-self:flex-end;background:rgba(41,128,185,0.12);border:1px solid rgba(41,128,185,0.3);
+                border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;color:#2980B9;
+                cursor:pointer;font-family:inherit;transition:background 0.15s">Guardar EN</button>
+              <div id="fp-en-save-status" style="font-size:11px;color:rgba(41,128,185,0.7);min-height:16px;text-align:right"></div>
             </div>
           </div>
           <!-- Decisiones -->
