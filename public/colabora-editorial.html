@@ -124,7 +124,7 @@
     .mesa-action-btn:hover { border-color:rgba(255,255,255,0.25); color:#E8E8E0; }
 
     .mesa-review-panel {
-      position: fixed; top: 52px; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 52px; left: 260px; right: 0; bottom: 0;
       background: rgba(8,9,16,0.98); backdrop-filter: blur(20px);
       display: flex; flex-direction: column;
       transform: translateX(100%); transition: transform 0.3s ease;
@@ -154,8 +154,18 @@
     }
     .mesa-review-footer {
       flex-shrink: 0; background: rgba(5,5,10,0.97); backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,255,255,0.07); overflow-y: auto; max-height: 55vh;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      height: 52px; display: flex; align-items: center; gap: 8px;
+      padding: 0 16px; overflow: hidden;
     }
+    .rp-ctrl-select, .rp-ctrl-datetime {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 7px; padding: 5px 8px; font-size: 12px;
+      color: #E8E8E0; font-family: inherit; outline: none; color-scheme: dark; height: 32px;
+    }
+    .rp-ctrl-select { max-width: 180px; }
+    .rp-ctrl-datetime { max-width: 160px; }
+    .mesa-review-footer .mesa-dec-btn { padding: 7px 12px; font-size: 12px; }
     .mesa-review-meta { display: flex; flex-wrap: wrap; gap: 8px; }
     .mesa-review-tag {
       font-size: 11px; padding: 3px 10px; border-radius: 6px;
@@ -238,7 +248,7 @@
 
     /* ── Vista bilingüe lado a lado ── */
     .rp-split-view {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1;
     }
     @media (max-width: 1023px) {
       .rp-split-view { grid-template-columns: 1fr; }
@@ -256,6 +266,8 @@
     }
     .rp-col-hdr-es { color: #B8944A; }
     .rp-col-hdr-en { color: #2980B9; }
+    #rp-es-cuerpo, #rp-en-cuerpo { min-height: 300px; resize: vertical; }
+    @keyframes unsavedIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     .rp-en-badge-none { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: rgba(231,76,60,0.1); color: #E74C3C; }
     .rp-en-badge-ok   { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: rgba(39,174,96,0.1); color: #27AE60; }
     .rp-en-label { display:block; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:5px; }
@@ -532,62 +544,51 @@
         </div>
       </div>
 
+      <!-- Nota editorial -->
+      <div>
+        <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Nota editorial <span style="font-size:9px;color:rgba(255,255,255,0.2);font-weight:400;text-transform:none;letter-spacing:0">(visible para el autor)</span></div>
+        <textarea class="mesa-nota-input" id="nota-editorial" placeholder="Escribe feedback constructivo para el colaborador…"></textarea>
+      </div>
+
     </div>
 
     <!-- ── Barra inferior fija ── -->
     <div class="mesa-review-footer">
-      <div style="padding:14px 20px;display:flex;flex-direction:column;gap:14px">
-        <!-- IA -->
-        <div class="mesa-ia-panel">
-          <div class="mesa-ia-header">
-            <span class="mesa-ia-title">✦ Verificación IA · Anthropic</span>
-            <button class="mesa-ia-run" id="btn-ia" onclick="runIAVerification()">Analizar con IA</button>
-          </div>
-          <div id="ia-result-wrap" style="display:none">
-            <div class="mesa-score-wrap">
-              <div class="mesa-score-num" id="ia-score">—</div>
-              <div class="mesa-score-label">Score de veracidad / 10</div>
-              <div class="mesa-score-bar-wrap">
-                <div class="mesa-score-bar" id="ia-score-bar" style="width:0%"></div>
-              </div>
+      <!-- IA — oculto, permanece en DOM para el JS -->
+      <div class="mesa-ia-panel" style="display:none">
+        <div class="mesa-ia-header">
+          <span class="mesa-ia-title">✦ Verificación IA · Anthropic</span>
+          <button class="mesa-ia-run" id="btn-ia" onclick="runIAVerification()">Analizar con IA</button>
+        </div>
+        <div id="ia-result-wrap" style="display:none">
+          <div class="mesa-score-wrap">
+            <div class="mesa-score-num" id="ia-score">—</div>
+            <div class="mesa-score-label">Score de veracidad / 10</div>
+            <div class="mesa-score-bar-wrap">
+              <div class="mesa-score-bar" id="ia-score-bar" style="width:0%"></div>
             </div>
-            <div class="mesa-ia-result" id="ia-texto"></div>
-            <div class="mesa-ia-fuentes-check" id="ia-fuentes-check"></div>
           </div>
-          <div id="ia-loading" style="display:none;text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.35)">
-            Analizando con IA…
-          </div>
+          <div class="mesa-ia-result" id="ia-texto"></div>
+          <div class="mesa-ia-fuentes-check" id="ia-fuentes-check"></div>
         </div>
-        <!-- Programar + Sección en fila -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="mesa-programador">
-            <label>Programar publicación (opcional)</label>
-            <input type="datetime-local" class="mesa-datetime" id="prog-fecha"/>
-          </div>
-          <div>
-            <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
-            <select id="rp-seccion" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:8px 12px;font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;color-scheme:dark">
-              <option value="">— Sin asignar —</option>
-              <option value="portada">Portada (hero con foto)</option>
-              <option value="relevante">Relevante (grid con foto)</option>
-              <option value="secundario">Secundario (sin foto)</option>
-              <option value="profundidad">En Profundidad (análisis)</option>
-              <option value="oportunidades">Oportunidades (recursos)</option>
-            </select>
-          </div>
-        </div>
-        <!-- Nota editorial -->
-        <div>
-          <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Nota editorial (visible para el autor)</div>
-          <textarea class="mesa-nota-input" id="nota-editorial"
-            placeholder="Escribe feedback constructivo para el colaborador…"></textarea>
+        <div id="ia-loading" style="display:none;text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.35)">
+          Analizando con IA…
         </div>
       </div>
-      <div class="mesa-decision">
-        <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
-        <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
-        <button class="mesa-dec-btn mesa-dec-publicar" onclick="decidir('publicado')">Publicar ✓</button>
-      </div>
+      <!-- Controles compactos -->
+      <select id="rp-seccion" class="rp-ctrl-select">
+        <option value="">— Sección —</option>
+        <option value="portada">Portada (hero con foto)</option>
+        <option value="relevante">Relevante (grid con foto)</option>
+        <option value="secundario">Secundario (sin foto)</option>
+        <option value="profundidad">En Profundidad (análisis)</option>
+        <option value="oportunidades">Oportunidades (recursos)</option>
+      </select>
+      <input type="datetime-local" class="rp-ctrl-datetime" id="prog-fecha"/>
+      <div style="flex:1"></div>
+      <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
+      <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
+      <button class="mesa-dec-btn mesa-dec-publicar" onclick="decidir('publicado')">Publicar ✓</button>
     </div>
   </div>
 
@@ -626,6 +627,18 @@
     </div>
   </div>
 
+  <!-- Modal: cambios sin guardar -->
+  <div id="unsaved-overlay" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(2,3,8,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center">
+    <div style="background:rgba(12,14,24,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;width:min(420px,90vw);padding:28px 32px;display:flex;flex-direction:column;gap:16px;animation:unsavedIn 0.15s ease forwards">
+      <div style="font-size:16px;font-weight:600;color:#E8E8E0">Hay cambios sin guardar</div>
+      <div style="font-size:13px;color:rgba(232,232,224,0.5);line-height:1.6">Si sales ahora perderás los cambios realizados en este artículo.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+        <button onclick="cancelarCerrar()" style="background:none;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Volver a editar</button>
+        <button onclick="confirmarCerrar()" style="background:rgba(231,76,60,0.15);border:1px solid rgba(231,76,60,0.3);color:#E74C3C;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Continuar sin guardar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/cursor.js"></script>
   <script src="/nevado-env.js"></script>
   <script src="/js/nodo/nodo-core.js"></script>
@@ -638,6 +651,53 @@
     var currentEnvioId = null;
     var currentEnvio = null;
     var rpImgState = { url: null, path: null };
+    var originalValues = {};
+    var pendingCloseAction = null;
+
+    function captureOriginalValues() {
+      originalValues = {
+        esTitulo:    document.getElementById('rp-es-titulo').value,
+        esResumen:   document.getElementById('rp-es-resumen').value,
+        esCuerpo:    document.getElementById('rp-es-cuerpo').value,
+        enTitulo:    document.getElementById('rp-en-titulo').value,
+        enResumen:   document.getElementById('rp-en-resumen').value,
+        enCuerpo:    document.getElementById('rp-en-cuerpo').value,
+        enCategoria: document.getElementById('rp-en-categoria').value,
+        nota:        document.getElementById('nota-editorial').value,
+      };
+    }
+
+    function hasUnsavedChanges() {
+      return (
+        document.getElementById('rp-es-titulo').value    !== originalValues.esTitulo    ||
+        document.getElementById('rp-es-resumen').value   !== originalValues.esResumen   ||
+        document.getElementById('rp-es-cuerpo').value    !== originalValues.esCuerpo    ||
+        document.getElementById('rp-en-titulo').value    !== originalValues.enTitulo    ||
+        document.getElementById('rp-en-resumen').value   !== originalValues.enResumen   ||
+        document.getElementById('rp-en-cuerpo').value    !== originalValues.enCuerpo    ||
+        document.getElementById('rp-en-categoria').value !== originalValues.enCategoria ||
+        document.getElementById('nota-editorial').value  !== originalValues.nota
+      );
+    }
+
+    function _doCerrarPanel() {
+      document.getElementById('reviewPanel').classList.remove('open');
+      currentEnvioId = null;
+      currentEnvio = null;
+      originalValues = {};
+      pendingCloseAction = null;
+    }
+
+    function confirmarCerrar() {
+      document.getElementById('unsaved-overlay').style.display = 'none';
+      if (pendingCloseAction) { pendingCloseAction(); }
+      pendingCloseAction = null;
+    }
+
+    function cancelarCerrar() {
+      document.getElementById('unsaved-overlay').style.display = 'none';
+      pendingCloseAction = null;
+    }
 
     /* ── Upload imagen en panel de revisión ── */
     function initRpImageUpload() {
@@ -835,6 +895,11 @@
     }
 
     async function abrirPanel(envioId){
+      if (currentEnvioId && currentEnvioId !== envioId && hasUnsavedChanges()) {
+        pendingCloseAction = function(){ abrirPanel(envioId); };
+        document.getElementById('unsaved-overlay').style.display = 'flex';
+        return;
+      }
       var resp = await fetch('/api/titulares?id=' + envioId);
       var e = await resp.json();
       if (!e || e.error) return;
@@ -886,17 +951,17 @@
       if (e.ia_score !== null && e.ia_score !== undefined) {
         mostrarScore(e.ia_score, e.ia_reporte);
       }
-      document.querySelector('.mesa-sidebar').style.display = 'none';
-      document.querySelector('.mesa-main').style.display    = 'none';
       document.getElementById('reviewPanel').classList.add('open');
+      captureOriginalValues();
     }
 
     function cerrarPanel(){
-      document.getElementById('reviewPanel').classList.remove('open');
-      document.querySelector('.mesa-sidebar').style.display = '';
-      document.querySelector('.mesa-main').style.display    = '';
-      currentEnvioId = null;
-      currentEnvio = null;
+      if (currentEnvioId && hasUnsavedChanges()) {
+        pendingCloseAction = _doCerrarPanel;
+        document.getElementById('unsaved-overlay').style.display = 'flex';
+        return;
+      }
+      _doCerrarPanel();
     }
 
     function mostrarScore(score, reporte){
