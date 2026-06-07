@@ -27,12 +27,12 @@
 
   // ── Nav link definitions ───────────────────────────────────────────────────
   var LINKS = [
-    { href: '/talento.html',          label: 'Capital Humano', re: /^\/(talento|capital-humano)/i },
-    { href: '/avila.html',            label: 'ÁVILA',          re: /^\/avila/i },
-    { href: '/nodo.html',             label: 'NODO',           re: /^\/nodo/i },
-    { href: '/enterate.html',         label: 'Titulares',      re: /^\/(enterate|titulares)/i },
-    { href: '/corazon-tricolor.html', label: 'Corazón',        re: /^\/corazon/i },
-    { href: '/servicios.html',        label: 'Servicios',      re: /^\/servicios/i },
+    { href: '/talento.html',          label: 'Capital Humano', re: /^\/(talento|capital-humano)/i, key: 'nav.capital' },
+    { href: '/avila.html',            label: 'ÁVILA',          re: /^\/avila/i,                    key: 'nav.avila' },
+    { href: '/nodo.html',             label: 'NODO',           re: /^\/nodo/i,                     key: 'nav.nodo' },
+    { href: '/enterate.html',         label: 'Titulares',      re: /^\/(enterate|titulares)/i,     key: 'nav.titulares' },
+    { href: '/corazon-tricolor.html', label: 'Corazón',        re: /^\/corazon/i,                  key: 'nav.corazon' },
+    { href: '/servicios.html',        label: 'Servicios',      re: /^\/servicios/i,                key: 'nav.servicios' },
   ];
 
   // ── Inject CSS (once, using ID guard) ─────────────────────────────────────
@@ -256,11 +256,11 @@
 
   // ── Build nav & mobile menu HTML ───────────────────────────────────────────
   var linksHtml = LINKS.map(function (l) {
-    return '<a class="nav-item' + (l.re.test(PATH) ? ' active' : '') + '" href="' + l.href + '">' + l.label + '</a>';
+    return '<a class="nav-item' + (l.re.test(PATH) ? ' active' : '') + '" href="' + l.href + '" data-i18n="' + l.key + '">' + l.label + '</a>';
   }).join('');
 
   var mobileLinksHtml = LINKS.map(function (l) {
-    return '<a class="nvd-mobile-link' + (l.re.test(PATH) ? ' active' : '') + '" href="' + l.href + '">' + l.label + '</a>';
+    return '<a class="nvd-mobile-link' + (l.re.test(PATH) ? ' active' : '') + '" href="' + l.href + '" data-i18n="' + l.key + '">' + l.label + '</a>';
   }).join('');
 
   var navHTML =
@@ -268,7 +268,7 @@
     '<nav class="topbar-nav">' + linksHtml + '</nav>' +
     '<div class="topbar-actions">' +
       '<div class="topbar-divider"></div>' +
-      '<button class="btn-plus" data-nevado-plus>Nevado Plus</button>' +
+      '<button class="btn-plus" data-nevado-plus data-i18n="nav.plus">Nevado Plus</button>' +
       '<div id="nvd-session-pill"><span class="nvd-pill-shimmer"></span></div>' +
       '<button class="nvd-hamburger" id="nvd-hamburger" aria-label="Menú" aria-expanded="false">☰</button>' +
     '</div>';
@@ -299,7 +299,7 @@
       mm.innerHTML =
         mobileLinksHtml +
         '<div class="nvd-mobile-sep"></div>' +
-        '<button class="nvd-mobile-plus-btn" data-nevado-plus>Nevado Plus</button>';
+        '<button class="nvd-mobile-plus-btn" data-nevado-plus data-i18n="nav.plus">Nevado Plus</button>';
       tb.insertAdjacentElement('afterend', mm);
     }
 
@@ -374,7 +374,7 @@
           '<div class="nvd-footer-col-title">Fundación Puente Sur</div>' +
           '<div class="nvd-footer-links">' +
             '<a href="/transparencia.html">Transparencia</a>' +
-            '<a href="/colabora.html">Contacto</a>' +
+            '<a href="mailto:contacto@nevado.pro">Contacto</a>' +
           '</div>' +
         '</div>' +
       '</div>' +
