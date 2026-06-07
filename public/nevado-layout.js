@@ -83,7 +83,9 @@
       '}\n' +
       '.nav-item.active {\n' +
       '  color: var(--page-accent, #B8944A);\n' +
-      '  background: rgba(255,255,255,0.05);\n' +
+      '  background: color-mix(in srgb, var(--page-accent, #B8944A) 12%, transparent);\n' +
+      '  border: 1px solid color-mix(in srgb, var(--page-accent, #B8944A) 30%, transparent);\n' +
+      '  box-shadow: 0 0 12px color-mix(in srgb, var(--page-accent, #B8944A) 20%, transparent);\n' +
       '}\n' +
       '.topbar-actions {\n' +
       '  display: flex; align-items: center; gap: 10px; flex-shrink: 0;\n' +
@@ -378,31 +380,15 @@
     document.body.appendChild(ft);
   }
 
-  // ── Chat bubble injection ──────────────────────────────────────────────────
-  function injectChatBubble() {
-    var skip = ['/founder-panel.html', '/auth.html', '/profile.html', '/colabora-editorial.html'];
-    if (skip.some(function(p) { return PATH.includes(p); })) return;
-    function loadScript(src) {
-      if (document.querySelector('script[src="' + src + '"]')) return;
-      var s = document.createElement('script');
-      s.src = src;
-      document.body.appendChild(s);
-    }
-    loadScript('/mini-nevado.js');
-    loadScript('/nevado-bubble.js');
-  }
-
   // ── Execute synchronously ──────────────────────────────────────────────────
   if (document.body) {
     buildNav();
     buildFooter();
-    injectChatBubble();
     document.documentElement.style.visibility = '';
   } else {
     document.addEventListener('DOMContentLoaded', function () {
       buildNav();
       buildFooter();
-      injectChatBubble();
       document.documentElement.style.visibility = '';
     });
   }
