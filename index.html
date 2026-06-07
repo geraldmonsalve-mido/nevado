@@ -226,6 +226,17 @@
         updateDots();
       }
     }
+
+    document.addEventListener('keydown', function(e) {
+      const overlay = document.getElementById('pin-overlay');
+      if (!overlay || overlay.classList.contains('unlocked')) return;
+      if (/^[0-9]$/.test(e.key)) {
+        window.press(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        window.delPin();
+      }
+    });
   })();
 </script>
 <!-- ═══════════════════════════════════════════════ -->
