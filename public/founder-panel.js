@@ -1133,36 +1133,32 @@ function fpEsc(s) {
 }
 
 async function cargarTitulares(estado) {
-  if (!fpSb) return;
   _fpTitEstadoActivo = estado;
   var list = document.getElementById('fp-titulares-list');
   if (list) list.innerHTML = '<p class="fp-empty">Cargando…</p>';
   try {
-    var query = fpSb
-      .from('titulares_envios')
-      .select('id,titulo,categoria,autor_nombre,autor_username,autor_rank,estado,ia_score,created_at')
-      .order('created_at', { ascending: false });
-    if (estado !== 'todos') query = query.eq('estado', estado);
-    var { data, error } = await query;
-    if (error) throw error;
+    /* Usar la API en lugar de fpSb directo — bypasa RLS del anon key */
+    var resp = await fetch('/api/titulares?estado=todos');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var all = await resp.json();
+    var data = Array.isArray(all) ? all : [];
 
-    /* Badges de todos los estados */
-    var estados = ['enviado','en_revision','aprobado','publicado','rechazado'];
-    await Promise.all(estados.map(async function(est) {
-      var { count } = await fpSb
-        .from('titulares_envios')
-        .select('*', { count: 'exact', head: true })
-        .eq('estado', est);
+    /* Badges de todos los estados calculados del resultado completo */
+    var estadosList = ['enviado','en_revision','aprobado','publicado','rechazado'];
+    estadosList.forEach(function(est) {
       var badge = document.getElementById('badge-' + est);
-      if (badge) badge.textContent = count || 0;
-    }));
+      if (badge) badge.textContent = data.filter(function(e){ return e.estado === est; }).length;
+    });
+
+    /* Filtrar según tab activo */
+    var filtered = estado === 'todos' ? data : data.filter(function(e){ return e.estado === estado; });
 
     if (!list) return;
-    if (!data || !data.length) {
+    if (!filtered.length) {
       list.innerHTML = '<p class="fp-empty">Sin envíos en esta categoría.</p>';
       return;
     }
-    list.innerHTML = data.map(function(e) {
+    list.innerHTML = filtered.map(function(e) {
       var fecha = new Date(e.created_at).toLocaleDateString('es', {day:'2-digit',month:'short',year:'numeric'});
       var autor = e.autor_username ? '@' + e.autor_username : (e.autor_nombre || '—');
       var iaHtml = (e.ia_score !== null && e.ia_score !== undefined)
@@ -1178,17 +1174,13 @@ async function cargarTitulares(estado) {
         '<span class="fp-tit-estado fp-tit-estado-' + e.estado + '">' + e.estado.replace('_',' ') + '</span>' +
       '</div>';
     }).join('');
-    /* Badge de titulares: suma enviados + en_revision */
-    setTimeout(function() {
-      var titBadge = document.getElementById('fp-titulares-badge');
-      if (titBadge) {
-        var env = parseInt(document.getElementById('badge-enviado') && document.getElementById('badge-enviado').textContent || 0);
-        var rev = parseInt(document.getElementById('badge-en_revision') && document.getElementById('badge-en_revision').textContent || 0);
-        var total = (env || 0) + (rev || 0);
-        titBadge.textContent = total || '—';
-        if (total > 0) titBadge.className = 'fp-accordion-badge red';
-      }
-    }, 50);
+    /* Badge total del accordion header: suma enviados + en_revision */
+    var total = data.filter(function(e){ return e.estado === 'enviado' || e.estado === 'en_revision'; }).length;
+    var titBadge = document.getElementById('fp-titulares-badge');
+    if (titBadge) {
+      titBadge.textContent = total || '—';
+      if (total > 0) titBadge.className = 'fp-accordion-badge red';
+    }
   } catch(err) {
     console.error('[FOUNDER] cargarTitulares:', err);
     if (list) list.innerHTML = '<p class="fp-empty">Error: ' + err.message + '</p>';
@@ -1258,13 +1250,13 @@ window.fpGuardarEN = async function() {
 };
 
 window.fpAbrirTitular = async function(envioId) {
-  if (!fpSb) return;
   var overlay = document.getElementById('fp-tit-modal-overlay');
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';
   try {
-    var { data: e, error } = await fpSb.from('titulares_envios').select('*').eq('id', envioId).single();
-    if (error) throw error;
+    var titResp = await fetch('/api/titulares?id=' + envioId);
+    var e = await titResp.json();
+    if (!titResp.ok || !e || e.error) throw new Error(e && e.error ? e.error : 'Error al cargar');
     _fpTitEnvioActual = e;
 
     document.getElementById('fp-tit-modal-titulo').textContent = e.titulo;
@@ -1329,7 +1321,7 @@ window.fpCerrarTitModal = function() {
 };
 
 window.fpDecidirTitular = async function(nuevoEstado) {
-  if (!_fpTitEnvioActual || !fpSb) return;
+  if (!_fpTitEnvioActual) return;
   var nota    = document.getElementById('fp-tit-nota-founder').value.trim();
   var prog    = document.getElementById('fp-tit-prog-fecha').value;
   var seccion = document.getElementById('fp-tit-seccion').value;
@@ -1347,8 +1339,12 @@ window.fpDecidirTitular = async function(nuevoEstado) {
     if (seccion) payload.seccion = seccion;
   }
   try {
-    var { error } = await fpSb.from('titulares_envios').update(payload).eq('id', _fpTitEnvioActual.id);
-    if (error) throw error;
+    var decResp = await fetch('/api/titulares?id=' + _fpTitEnvioActual.id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!decResp.ok) { var decErr = await decResp.json(); throw new Error(decErr.error || 'Error'); }
     var msgs = { rechazado:'✗ Titular rechazado.', en_revision:'↩ En revisión.', publicado:'✓ Publicado.', aprobado:'✓ Aprobado.' };
     fpMostrarToast(msgs[nuevoEstado] || 'Actualizado.', nuevoEstado === 'rechazado' ? 'error' : 'success');
     fpCerrarTitModal();
