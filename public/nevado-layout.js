@@ -5,6 +5,7 @@
 
 (function () {
   'use strict';
+  document.documentElement.style.visibility = 'hidden';
 
   var PATH = window.location.pathname;
 
@@ -157,6 +158,31 @@
       '@media (max-width: 768px) {\n' +
       '  .nvd-footer-grid { grid-template-columns: 1fr; gap: 28px; }\n' +
       '  #nvd-footer { padding: 36px 20px 0; }\n' +
+      '}\n' +
+      '#nvd-lang-toggle button, #nvd-lang-toggle span, .nvd-lang-btn {\n' +
+      '  background: transparent !important;\n' +
+      '  border: none !important;\n' +
+      '  border-radius: 0 !important;\n' +
+      '  box-shadow: none !important;\n' +
+      '  appearance: none;\n' +
+      '  -webkit-appearance: none;\n' +
+      '  padding: 2px 4px;\n' +
+      '  cursor: pointer;\n' +
+      '  font-size: 12px;\n' +
+      '  font-weight: 400;\n' +
+      '  letter-spacing: 0.08em;\n' +
+      '}\n' +
+      '#nvd-lang-toggle .lang-active {\n' +
+      '  color: #ffffff;\n' +
+      '  font-weight: 600;\n' +
+      '}\n' +
+      '#nvd-lang-toggle .lang-inactive {\n' +
+      '  color: rgba(255,255,255,0.45);\n' +
+      '}\n' +
+      '#nvd-lang-toggle .lang-sep {\n' +
+      '  color: rgba(255,255,255,0.25);\n' +
+      '  margin: 0 2px;\n' +
+      '  pointer-events: none;\n' +
       '}\n';
     document.head.appendChild(st);
   }
@@ -234,10 +260,12 @@
   if (document.body) {
     buildNav();
     buildFooter();
+    document.documentElement.style.visibility = '';
   } else {
     document.addEventListener('DOMContentLoaded', function () {
       buildNav();
       buildFooter();
+      document.documentElement.style.visibility = '';
     });
   }
 })();
