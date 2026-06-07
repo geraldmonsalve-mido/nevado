@@ -68,11 +68,13 @@
       '.topbar-nav {\n' +
       '  display: flex; align-items: center; gap: 2px;\n' +
       '  position: absolute; left: 50%; transform: translateX(-50%);\n' +
+      '  transition: opacity 200ms ease;\n' +
       '}\n' +
       '.nav-item {\n' +
       '  font-size: 12px; font-weight: 400; letter-spacing: 0.07em;\n' +
       '  color: rgba(232,228,220,0.42); padding: 6px 12px; border-radius: 4px;\n' +
-      '  text-decoration: none; transition: color 0.2s, background 0.2s;\n' +
+      '  text-decoration: none;\n' +
+      '  transition: color 0.2s, background 0.2s, font-size 200ms ease, letter-spacing 200ms ease, padding 200ms ease;\n' +
       '  white-space: nowrap;\n' +
       '}\n' +
       '.nav-item:hover {\n' +
@@ -103,7 +105,16 @@
       '  display: flex; align-items: center; min-width: 120px;\n' +
       '  transition: opacity 150ms ease;\n' +
       '}\n' +
-      /* Shimmer — also defined by nevado-session-widget.js (ID-guarded), harmless duplication */
+      /* Hamburger button — hidden on desktop */
+      '.nvd-hamburger {\n' +
+      '  display: none; align-items: center; justify-content: center;\n' +
+      '  background: transparent; border: none;\n' +
+      '  color: rgba(232,228,220,0.85); font-size: 18px;\n' +
+      '  cursor: pointer; padding: 4px 6px; line-height: 1;\n' +
+      '  flex-shrink: 0; transition: color 0.2s; font-family: inherit;\n' +
+      '}\n' +
+      '.nvd-hamburger:hover { color: #fff; }\n' +
+      /* Shimmer — also defined by nevado-session-widget.js (ID-guarded) */
       '.nvd-pill-shimmer {\n' +
       '  display: inline-flex; align-items: center; padding: 6px 16px;\n' +
       '  border-radius: 999px; border: 1px solid rgba(255,255,255,0.08);\n' +
@@ -114,6 +125,50 @@
       '@keyframes nvd-shimmer {\n' +
       '  0% { background-position: 200% 0; }\n' +
       '  100% { background-position: -200% 0; }\n' +
+      '}\n' +
+      /* Mobile menu panel */
+      '#nvd-mobile-menu {\n' +
+      '  display: none;\n' +
+      '  position: fixed; top: var(--topbar-h); left: 0; right: 0;\n' +
+      '  background: rgba(5,5,10,0.97);\n' +
+      '  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);\n' +
+      '  border-bottom: 1px solid rgba(255,255,255,0.08);\n' +
+      '  z-index: 999;\n' +
+      '  flex-direction: column;\n' +
+      '  padding: 8px 0 16px;\n' +
+      '  font-family: "Geist", system-ui, sans-serif;\n' +
+      '}\n' +
+      '#nvd-mobile-menu.is-open {\n' +
+      '  display: flex;\n' +
+      '  animation: nvd-slide-down 200ms ease;\n' +
+      '}\n' +
+      '.nvd-mobile-link {\n' +
+      '  font-size: 15px; font-weight: 400; letter-spacing: 0.04em;\n' +
+      '  color: rgba(232,228,220,0.65); text-decoration: none;\n' +
+      '  padding: 14px 24px;\n' +
+      '  transition: color 0.2s, background 0.2s;\n' +
+      '}\n' +
+      '.nvd-mobile-link:hover {\n' +
+      '  color: rgba(232,228,220,0.95);\n' +
+      '  background: rgba(255,255,255,0.04);\n' +
+      '}\n' +
+      '.nvd-mobile-link.active { color: var(--page-accent, #B8944A); }\n' +
+      '.nvd-mobile-sep {\n' +
+      '  height: 1px; background: rgba(255,255,255,0.07); margin: 8px 24px;\n' +
+      '}\n' +
+      /* Nevado Plus in mobile menu — only visible in FASE 3 */
+      '.nvd-mobile-plus-btn {\n' +
+      '  display: none;\n' +
+      '  font-size: 13px; font-weight: 500; letter-spacing: 0.08em;\n' +
+      '  color: #B8944A; padding: 12px 24px;\n' +
+      '  background: transparent; border: none; cursor: pointer;\n' +
+      '  font-family: inherit; text-align: left;\n' +
+      '  transition: color 0.2s;\n' +
+      '}\n' +
+      '.nvd-mobile-plus-btn:hover { color: #d4aa6a; }\n' +
+      '@keyframes nvd-slide-down {\n' +
+      '  from { opacity: 0; transform: translateY(-8px); }\n' +
+      '  to   { opacity: 1; transform: translateY(0); }\n' +
       '}\n' +
       'body { padding-top: var(--topbar-h) !important; }\n' +
       /* ── Footer ── */
@@ -154,11 +209,30 @@
       '  height: 3px;\n' +
       '  background: linear-gradient(90deg, #F4D03F 33.33%, #2980B9 33.33% 66.66%, #E74C3C 66.66%);\n' +
       '}\n' +
-      '@media (max-width: 900px) { .topbar-nav { display: none; } }\n' +
+      /* ── Responsive breakpoints ── */
+      /* FASE 1 — 1024-1280px: nav links compact, all visible */
+      '@media (max-width: 1280px) and (min-width: 1024px) {\n' +
+      '  .nav-item { font-size: 11px; letter-spacing: 0.04em; padding: 6px 9px; }\n' +
+      '}\n' +
+      /* FASE 2 — 768-1023px: hide nav links, show hamburger */
+      '@media (max-width: 1023px) {\n' +
+      '  .topbar-nav { opacity: 0; pointer-events: none; }\n' +
+      '  .nvd-hamburger { display: flex; }\n' +
+      '}\n' +
+      /* FASE 3 — <768px: mobile compact, Plus moves to mobile menu */
+      '@media (max-width: 767px) {\n' +
+      '  .topbar-nav { display: none; }\n' +
+      '  .btn-plus { display: none; }\n' +
+      '  .topbar-divider { display: none; }\n' +
+      '  .nvd-hamburger { display: flex; }\n' +
+      '  .nvd-mobile-plus-btn { display: flex; }\n' +
+      '}\n' +
+      /* Footer mobile */
       '@media (max-width: 768px) {\n' +
       '  .nvd-footer-grid { grid-template-columns: 1fr; gap: 28px; }\n' +
       '  #nvd-footer { padding: 36px 20px 0; }\n' +
       '}\n' +
+      /* Lang selector fallback (also covered by lang-selector.js itself) */
       '#nvd-lang-toggle button, #nvd-lang-toggle span, .nvd-lang-btn {\n' +
       '  background: transparent !important;\n' +
       '  border: none !important;\n' +
@@ -172,24 +246,21 @@
       '  font-weight: 400;\n' +
       '  letter-spacing: 0.08em;\n' +
       '}\n' +
-      '#nvd-lang-toggle .lang-active {\n' +
-      '  color: #ffffff;\n' +
-      '  font-weight: 600;\n' +
-      '}\n' +
-      '#nvd-lang-toggle .lang-inactive {\n' +
-      '  color: rgba(255,255,255,0.45);\n' +
-      '}\n' +
+      '#nvd-lang-toggle .lang-active { color: #ffffff; font-weight: 600; }\n' +
+      '#nvd-lang-toggle .lang-inactive { color: rgba(255,255,255,0.45); }\n' +
       '#nvd-lang-toggle .lang-sep {\n' +
-      '  color: rgba(255,255,255,0.25);\n' +
-      '  margin: 0 2px;\n' +
-      '  pointer-events: none;\n' +
+      '  color: rgba(255,255,255,0.25); margin: 0 2px; pointer-events: none;\n' +
       '}\n';
     document.head.appendChild(st);
   }
 
-  // ── Build nav HTML ─────────────────────────────────────────────────────────
+  // ── Build nav & mobile menu HTML ───────────────────────────────────────────
   var linksHtml = LINKS.map(function (l) {
     return '<a class="nav-item' + (l.re.test(PATH) ? ' active' : '') + '" href="' + l.href + '">' + l.label + '</a>';
+  }).join('');
+
+  var mobileLinksHtml = LINKS.map(function (l) {
+    return '<a class="nvd-mobile-link' + (l.re.test(PATH) ? ' active' : '') + '" href="' + l.href + '">' + l.label + '</a>';
   }).join('');
 
   var navHTML =
@@ -199,6 +270,7 @@
       '<div class="topbar-divider"></div>' +
       '<button class="btn-plus" data-nevado-plus>Nevado Plus</button>' +
       '<div id="nvd-session-pill"><span class="nvd-pill-shimmer"></span></div>' +
+      '<button class="nvd-hamburger" id="nvd-hamburger" aria-label="Menú" aria-expanded="false">☰</button>' +
     '</div>';
 
   // ── Inject / replace #topbar ───────────────────────────────────────────────
@@ -217,6 +289,60 @@
       }
       tb.innerHTML = navHTML;
     }
+
+    // ── Mobile menu ──────────────────────────────────────────────────────────
+    var mm = document.getElementById('nvd-mobile-menu');
+    if (!mm) {
+      mm = document.createElement('div');
+      mm.id = 'nvd-mobile-menu';
+      mm.setAttribute('aria-hidden', 'true');
+      mm.innerHTML =
+        mobileLinksHtml +
+        '<div class="nvd-mobile-sep"></div>' +
+        '<button class="nvd-mobile-plus-btn" data-nevado-plus>Nevado Plus</button>';
+      tb.insertAdjacentElement('afterend', mm);
+    }
+
+    // ── Hamburger toggle ──────────────────────────────────────────────────────
+    var hbtn = document.getElementById('nvd-hamburger');
+
+    function closeMenu() {
+      mm.classList.remove('is-open');
+      mm.setAttribute('aria-hidden', 'true');
+      if (hbtn) {
+        hbtn.setAttribute('aria-expanded', 'false');
+        hbtn.textContent = '☰';
+      }
+    }
+
+    if (hbtn) {
+      hbtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = mm.classList.toggle('is-open');
+        mm.setAttribute('aria-hidden', String(!open));
+        hbtn.setAttribute('aria-expanded', String(open));
+        hbtn.textContent = open ? '✕' : '☰';
+      });
+    }
+
+    // Close on mobile link click
+    var mobileLinks = mm.querySelectorAll('.nvd-mobile-link');
+    for (var i = 0; i < mobileLinks.length; i++) {
+      mobileLinks[i].addEventListener('click', closeMenu);
+    }
+
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+      if (!tb.contains(e.target) && !mm.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeMenu();
+    });
+
     window.addEventListener('scroll', function () {
       tb.classList.toggle('nvd-scrolled', window.pageYOffset > 20);
     }, { passive: true });
@@ -256,7 +382,7 @@
     document.body.appendChild(ft);
   }
 
-  // ── Execute synchronously (script is at end of body — DOM available) ───────
+  // ── Execute synchronously ──────────────────────────────────────────────────
   if (document.body) {
     buildNav();
     buildFooter();
