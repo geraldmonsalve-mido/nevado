@@ -124,21 +124,26 @@
     .mesa-action-btn:hover { border-color:rgba(255,255,255,0.25); color:#E8E8E0; }
 
     .mesa-review-panel {
-      position: fixed; top: 52px; right: 0; bottom: 0;
-      width: min(680px, 90vw);
+      position: fixed; top: 52px; left: 0; right: 0; bottom: 0;
       background: rgba(8,9,16,0.98); backdrop-filter: blur(20px);
-      border-left: 1px solid rgba(255,255,255,0.08);
       display: flex; flex-direction: column;
       transform: translateX(100%); transition: transform 0.3s ease;
       z-index: 700; overflow: hidden;
     }
     .mesa-review-panel.open { transform: translateX(0); }
     .mesa-review-header {
-      padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.07);
-      flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0; display: flex; align-items: center; gap: 12px;
     }
+    .mesa-review-back {
+      background: none; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px; padding: 5px 12px; font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,0.5); cursor: pointer; font-family: inherit;
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .mesa-review-back:hover { border-color: rgba(255,255,255,0.25); color: #E8E8E0; }
     .mesa-review-title { font-size: 14px; font-weight: 600; color: #E8E8E0;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; margin-right: 12px; }
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
     .mesa-review-close {
       background: none; border: none; color: rgba(255,255,255,0.4);
       cursor: pointer; padding: 4px; border-radius: 4px; font-size: 16px; flex-shrink: 0;
@@ -147,16 +152,14 @@
       flex: 1; overflow-y: auto; padding: 20px 24px;
       display: flex; flex-direction: column; gap: 20px;
     }
+    .mesa-review-footer {
+      flex-shrink: 0; background: rgba(5,5,10,0.97); backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255,255,255,0.07); overflow-y: auto; max-height: 55vh;
+    }
     .mesa-review-meta { display: flex; flex-wrap: wrap; gap: 8px; }
     .mesa-review-tag {
       font-size: 11px; padding: 3px 10px; border-radius: 6px;
       background: rgba(255,255,255,0.05); color: rgba(232,232,224,0.6);
-    }
-    .mesa-review-contenido {
-      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px; padding: 18px;
-      font-size: 14px; line-height: 1.75; color: rgba(232,232,224,0.85);
-      max-height: 220px; overflow-y: auto; white-space: pre-wrap;
     }
     .mesa-review-fuentes { font-size: 12px; color: rgba(255,255,255,0.35); }
     .mesa-review-fuentes strong { color: rgba(255,255,255,0.6); display: block; margin-bottom: 6px; }
@@ -253,14 +256,6 @@
     }
     .rp-col-hdr-es { color: #B8944A; }
     .rp-col-hdr-en { color: #2980B9; }
-    .rp-col-field-lbl { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 5px; }
-    .rp-edit-es-btn {
-      background: none; border: 1px solid rgba(184,148,74,0.2);
-      border-radius: 6px; padding: 2px 8px; font-size: 10px;
-      color: rgba(184,148,74,0.55); cursor: pointer; font-family: inherit;
-      transition: all 0.15s; text-transform: none; letter-spacing: normal; font-weight: 500;
-    }
-    .rp-edit-es-btn:hover { border-color: rgba(184,148,74,0.5); color: #B8944A; }
     .rp-en-badge-none { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: rgba(231,76,60,0.1); color: #E74C3C; }
     .rp-en-badge-ok   { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; background: rgba(39,174,96,0.1); color: #27AE60; }
     .rp-en-label { display:block; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:5px; }
@@ -468,6 +463,7 @@
   <!-- Panel de revisión slide-in -->
   <div class="mesa-review-panel" id="reviewPanel">
     <div class="mesa-review-header">
+      <button class="mesa-review-back" onclick="cerrarPanel()">← Volver</button>
       <span class="mesa-review-title" id="rp-titulo">Revisando artículo</span>
       <button class="mesa-review-close" onclick="cerrarPanel()">✕</button>
     </div>
@@ -503,34 +499,19 @@
 
       <!-- ── Vista bilingüe lado a lado ── -->
       <div class="rp-split-view">
-        <!-- Columna ES (izquierda) -->
+        <!-- Columna ES (izquierda) — siempre editable -->
         <div class="rp-col">
-          <div class="rp-col-hdr rp-col-hdr-es">
-            🇻🇪 Español
-            <button class="rp-edit-es-btn" id="rp-edit-btn" style="display:none" onclick="activarEdicionES()">✏️ Editar</button>
-          </div>
-          <div id="rp-es-display">
-            <div>
-              <div class="rp-col-field-lbl">Resumen</div>
-              <div id="rp-resumen" style="font-size:12px;color:rgba(232,232,224,0.7);line-height:1.6"></div>
-            </div>
-            <div>
-              <div class="rp-col-field-lbl">Cuerpo</div>
-              <div class="mesa-review-contenido" id="rp-contenido"></div>
-            </div>
-            <div class="mesa-review-fuentes" id="rp-fuentes"></div>
-          </div>
-          <div id="rp-es-edit" style="display:none;flex-direction:column;gap:10px">
-            <div><label class="rp-en-label">Título ES</label>
-              <input type="text" id="rp-es-titulo-edit" class="rp-en-input"></div>
-            <div><label class="rp-en-label">Resumen ES</label>
-              <textarea id="rp-es-resumen-edit" class="rp-en-textarea" rows="3"></textarea></div>
-            <div><label class="rp-en-label">Cuerpo ES</label>
-              <textarea id="rp-es-cuerpo-edit" class="rp-en-textarea" rows="7"></textarea></div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.22);font-style:italic">Edición menor — no regresa a revisión</div>
-            <button id="rp-es-save-btn" onclick="guardarEdicionES()" style="align-self:flex-end;background:rgba(184,148,74,0.12);border:1px solid rgba(184,148,74,0.3);border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;color:#B8944A;cursor:pointer;font-family:inherit;transition:background 0.15s">Guardar cambios</button>
-            <div id="rp-es-save-status" style="font-size:11px;color:rgba(184,148,74,0.7);min-height:16px;text-align:right"></div>
-          </div>
+          <div class="rp-col-hdr rp-col-hdr-es">🇻🇪 Español</div>
+          <div><label class="rp-en-label">Título ES</label>
+            <input type="text" id="rp-es-titulo" class="rp-en-input"></div>
+          <div><label class="rp-en-label">Resumen ES</label>
+            <textarea id="rp-es-resumen" class="rp-en-textarea" rows="3"></textarea></div>
+          <div><label class="rp-en-label">Cuerpo ES</label>
+            <textarea id="rp-es-cuerpo" class="rp-en-textarea" rows="10"></textarea></div>
+          <div class="mesa-review-fuentes" id="rp-fuentes"></div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.22);font-style:italic">Edición menor — no regresa a revisión</div>
+          <button id="rp-es-save-btn" onclick="guardarES()" style="align-self:flex-end;background:rgba(184,148,74,0.12);border:1px solid rgba(184,148,74,0.3);border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;color:#B8944A;cursor:pointer;font-family:inherit;transition:background 0.15s">Guardar ES</button>
+          <div id="rp-es-save-status" style="font-size:11px;color:rgba(184,148,74,0.7);min-height:16px;text-align:right"></div>
         </div>
         <!-- Columna EN (derecha) -->
         <div class="rp-col">
@@ -551,53 +532,62 @@
         </div>
       </div>
 
-      <div class="mesa-ia-panel">
-        <div class="mesa-ia-header">
-          <span class="mesa-ia-title">✦ Verificación IA · Anthropic</span>
-          <button class="mesa-ia-run" id="btn-ia" onclick="runIAVerification()">Analizar con IA</button>
-        </div>
-        <div id="ia-result-wrap" style="display:none">
-          <div class="mesa-score-wrap">
-            <div class="mesa-score-num" id="ia-score">—</div>
-            <div class="mesa-score-label">Score de veracidad / 10</div>
-            <div class="mesa-score-bar-wrap">
-              <div class="mesa-score-bar" id="ia-score-bar" style="width:0%"></div>
-            </div>
+    </div>
+
+    <!-- ── Barra inferior fija ── -->
+    <div class="mesa-review-footer">
+      <div style="padding:14px 20px;display:flex;flex-direction:column;gap:14px">
+        <!-- IA -->
+        <div class="mesa-ia-panel">
+          <div class="mesa-ia-header">
+            <span class="mesa-ia-title">✦ Verificación IA · Anthropic</span>
+            <button class="mesa-ia-run" id="btn-ia" onclick="runIAVerification()">Analizar con IA</button>
           </div>
-          <div class="mesa-ia-result" id="ia-texto"></div>
-          <div class="mesa-ia-fuentes-check" id="ia-fuentes-check"></div>
+          <div id="ia-result-wrap" style="display:none">
+            <div class="mesa-score-wrap">
+              <div class="mesa-score-num" id="ia-score">—</div>
+              <div class="mesa-score-label">Score de veracidad / 10</div>
+              <div class="mesa-score-bar-wrap">
+                <div class="mesa-score-bar" id="ia-score-bar" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="mesa-ia-result" id="ia-texto"></div>
+            <div class="mesa-ia-fuentes-check" id="ia-fuentes-check"></div>
+          </div>
+          <div id="ia-loading" style="display:none;text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.35)">
+            Analizando con IA…
+          </div>
         </div>
-        <div id="ia-loading" style="display:none;text-align:center;padding:20px;font-size:13px;color:rgba(255,255,255,0.35)">
-          Analizando con IA…
+        <!-- Programar + Sección en fila -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="mesa-programador">
+            <label>Programar publicación (opcional)</label>
+            <input type="datetime-local" class="mesa-datetime" id="prog-fecha"/>
+          </div>
+          <div>
+            <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
+            <select id="rp-seccion" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:8px 12px;font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;color-scheme:dark">
+              <option value="">— Sin asignar —</option>
+              <option value="portada">Portada (hero con foto)</option>
+              <option value="relevante">Relevante (grid con foto)</option>
+              <option value="secundario">Secundario (sin foto)</option>
+              <option value="profundidad">En Profundidad (análisis)</option>
+              <option value="oportunidades">Oportunidades (recursos)</option>
+            </select>
+          </div>
+        </div>
+        <!-- Nota editorial -->
+        <div>
+          <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Nota editorial (visible para el autor)</div>
+          <textarea class="mesa-nota-input" id="nota-editorial"
+            placeholder="Escribe feedback constructivo para el colaborador…"></textarea>
         </div>
       </div>
-
-      <div class="mesa-programador">
-        <label>Programar publicación (opcional)</label>
-        <input type="datetime-local" class="mesa-datetime" id="prog-fecha"/>
+      <div class="mesa-decision">
+        <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
+        <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
+        <button class="mesa-dec-btn mesa-dec-publicar" onclick="decidir('publicado')">Publicar ✓</button>
       </div>
-
-      <div>
-        <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Nota editorial (visible para el autor)</div>
-        <textarea class="mesa-nota-input" id="nota-editorial"
-          placeholder="Escribe feedback constructivo para el colaborador…"></textarea>
-      </div>
-    </div>
-    <div style="padding:12px 20px 0">
-      <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px">Sección de destino <span style="color:#E74C3C">*</span></div>
-      <select id="rp-seccion" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px;padding:8px 12px;font-size:13px;color:#E8E8E0;font-family:inherit;outline:none;color-scheme:dark">
-        <option value="">— Sin asignar —</option>
-        <option value="portada">Portada (hero con foto)</option>
-        <option value="relevante">Relevante (grid con foto)</option>
-        <option value="secundario">Secundario (sin foto)</option>
-        <option value="profundidad">En Profundidad (análisis)</option>
-        <option value="oportunidades">Oportunidades (recursos)</option>
-      </select>
-    </div>
-    <div class="mesa-decision">
-      <button class="mesa-dec-btn mesa-dec-rechazar" onclick="decidir('rechazado')">Rechazar</button>
-      <button class="mesa-dec-btn mesa-dec-revision" onclick="decidir('en_revision')">En revisión</button>
-      <button class="mesa-dec-btn mesa-dec-publicar" onclick="decidir('publicado')">Publicar ✓</button>
     </div>
   </div>
 
@@ -753,24 +743,12 @@
       }
     }
 
-    /* ── Edición menor ES (solo founders en publicados) ── */
-    function activarEdicionES() {
-      if (!currentEnvio) return;
-      document.getElementById('rp-es-display').style.display = 'none';
-      var edit = document.getElementById('rp-es-edit');
-      edit.style.display = 'flex';
-      document.getElementById('rp-es-titulo-edit').value  = currentEnvio.titulo  || '';
-      document.getElementById('rp-es-resumen-edit').value = currentEnvio.resumen || '';
-      document.getElementById('rp-es-cuerpo-edit').value  = currentEnvio.cuerpo  || '';
-      document.getElementById('rp-edit-btn').style.display = 'none';
-      document.getElementById('rp-es-save-status').textContent = '';
-    }
-
-    async function guardarEdicionES() {
+    /* ── Guardar edición ES ── */
+    async function guardarES() {
       if (!currentEnvioId) return;
-      var titulo  = document.getElementById('rp-es-titulo-edit').value.trim()  || null;
-      var resumen = document.getElementById('rp-es-resumen-edit').value.trim() || null;
-      var cuerpo  = document.getElementById('rp-es-cuerpo-edit').value.trim()  || null;
+      var titulo  = document.getElementById('rp-es-titulo').value.trim()  || null;
+      var resumen = document.getElementById('rp-es-resumen').value.trim() || null;
+      var cuerpo  = document.getElementById('rp-es-cuerpo').value.trim()  || null;
       var statusEl = document.getElementById('rp-es-save-status');
       statusEl.textContent = 'Guardando…';
       try {
@@ -785,12 +763,7 @@
           currentEnvio.resumen = resumen;
           currentEnvio.cuerpo  = cuerpo;
         }
-        document.getElementById('rp-titulo').textContent    = titulo  || '';
-        document.getElementById('rp-resumen').textContent   = resumen || '';
-        document.getElementById('rp-contenido').textContent = cuerpo  || '';
-        document.getElementById('rp-es-edit').style.display = 'none';
-        document.getElementById('rp-es-display').style.display = '';
-        document.getElementById('rp-edit-btn').style.display = '';
+        document.getElementById('rp-titulo').textContent = titulo || '';
         statusEl.textContent = '✓ Guardado';
         setTimeout(function(){ statusEl.textContent = ''; }, 2500);
       } catch(err) {
@@ -868,9 +841,11 @@
       currentEnvioId = envioId;
       currentEnvio = e;
 
-      document.getElementById('rp-titulo').textContent = e.titulo;
-      document.getElementById('rp-resumen').textContent = e.resumen || '';
-      document.getElementById('rp-contenido').textContent = e.cuerpo || '';
+      document.getElementById('rp-titulo').textContent  = e.titulo;
+      document.getElementById('rp-es-titulo').value  = e.titulo  || '';
+      document.getElementById('rp-es-resumen').value = e.resumen || '';
+      document.getElementById('rp-es-cuerpo').value  = e.cuerpo  || '';
+      document.getElementById('rp-es-save-status').textContent = '';
       document.getElementById('rp-meta').innerHTML =
         '<span class="mesa-review-tag">' + e.categoria + '</span>' +
         '<span class="mesa-review-tag">' + (e.autor_username ? '@'+e.autor_username : e.autor_nombre||'') + '</span>' +
@@ -896,13 +871,6 @@
       document.getElementById('rp-en-categoria').value = e.categoria_en || '';
       document.getElementById('rp-en-save-status').textContent = '';
       updateEnBadge(e);
-      // Reset ES edit mode
-      document.getElementById('rp-es-display').style.display = '';
-      document.getElementById('rp-es-edit').style.display = 'none';
-      document.getElementById('rp-es-save-status').textContent = '';
-      var editBtn = document.getElementById('rp-edit-btn');
-      editBtn.style.display = (currentUser && currentUser.role === 'founder' && e.estado === 'publicado') ? '' : 'none';
-
       // Imagen del artículo
       var imgWrap = document.getElementById('rp-imagen-wrap');
       var imgEl   = document.getElementById('rp-imagen');
@@ -918,11 +886,15 @@
       if (e.ia_score !== null && e.ia_score !== undefined) {
         mostrarScore(e.ia_score, e.ia_reporte);
       }
+      document.querySelector('.mesa-sidebar').style.display = 'none';
+      document.querySelector('.mesa-main').style.display    = 'none';
       document.getElementById('reviewPanel').classList.add('open');
     }
 
     function cerrarPanel(){
       document.getElementById('reviewPanel').classList.remove('open');
+      document.querySelector('.mesa-sidebar').style.display = '';
+      document.querySelector('.mesa-main').style.display    = '';
       currentEnvioId = null;
       currentEnvio = null;
     }
