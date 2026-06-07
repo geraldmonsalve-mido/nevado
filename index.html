@@ -27,22 +27,26 @@
           var pill = document.getElementById('nvd-session-pill');
           if (!pill) return;
 
-          if (!user) {
-            pill.innerHTML = '<a href="/profile.html" style="display:flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;transition:background .2s;">Iniciar sesión</a>';
-            return;
-          }
+          pill.style.transition = 'opacity 150ms ease';
+          pill.style.opacity = '0';
+          setTimeout(function() {
+            if (!user) {
+              pill.innerHTML = '<a href="/profile.html" style="display:flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;transition:background .2s;">Iniciar sesión</a>';
+            } else {
+              var email = (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) ||
+                          (user.emailAddresses && user.emailAddresses[0] && user.emailAddresses[0].emailAddress) || '';
+              var nombre = user.fullName || user.firstName || 'Usuario';
+              var img    = user.imageUrl || '/NevadoUtil.png';
+              var isFounder = email === FOUNDER_EMAIL;
 
-          var email = (user.primaryEmailAddress && user.primaryEmailAddress.emailAddress) ||
-                      (user.emailAddresses && user.emailAddresses[0] && user.emailAddresses[0].emailAddress) || '';
-          var nombre = user.fullName || user.firstName || 'Usuario';
-          var img    = user.imageUrl || '/NevadoUtil.png';
-          var isFounder = email === FOUNDER_EMAIL;
-
-          pill.innerHTML =
-            '<a href="/profile.html" style="display:flex;align-items:center;gap:8px;padding:4px 14px 4px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;transition:background .2s;">' +
-              '<img src="' + img + '" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,215,120,' + (isFounder ? '.5' : '.2') + ');" onerror="this.src=\'/NevadoUtil.png\'" />' +
-              '<span>' + nombre + '</span>' +
-            '</a>';
+              pill.innerHTML =
+                '<a href="/profile.html" style="display:flex;align-items:center;gap:8px;padding:4px 14px 4px 6px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.02em;transition:background .2s;">' +
+                  '<img src="' + img + '" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,215,120,' + (isFounder ? '.5' : '.2') + ');" onerror="this.src=\'/NevadoUtil.png\'" />' +
+                  '<span>' + nombre + '</span>' +
+                '</a>';
+            }
+            pill.style.opacity = '1';
+          }, 150);
         }
 
         function boot() {

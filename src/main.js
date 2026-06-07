@@ -27,7 +27,7 @@ document.querySelector('#app').innerHTML = `
       <span class="nav-item" data-hover>Ecosistema</span>
       <span class="nav-item" data-hover>Fundación</span>
       <button class="btn-plus" data-hover>Nevado Plus</button>
-      <div id="nvd-session-pill"></div>
+      <div id="nvd-session-pill"><span class="nvd-pill-shimmer"></span></div>
     </nav>
   </header>
 

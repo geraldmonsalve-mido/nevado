@@ -643,6 +643,28 @@ body::after {
   to   { stroke-dashoffset: -110; }
 }
 
+/* ─── Auth pill loading shimmer ─────────────────────────────────────────────── */
+@keyframes nvd-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.nvd-pill-shimmer {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: nvd-shimmer 1.2s linear infinite;
+  min-width: 110px;
+  height: 32px;
+  user-select: none;
+}
+#nvd-session-pill {
+  transition: opacity 150ms ease;
+}
+
 /* ─── Scrollbar (none) ───────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { display: none; }
 
