@@ -32,7 +32,7 @@
       position: fixed;
       bottom: 44px;
       right: 28px;
-      z-index: 600;
+      z-index: 1200;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -374,9 +374,9 @@
         const typingEl = appendTyping();
         chatHistory.push({ role: 'user', content: text });
         try {
-          const res = await fetch('https://api.anthropic.com/v1/messages', {
+          const res = await fetch('/api/claude', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'x-api-key': window.__NVD_KEY || '' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               model: 'claude-sonnet-4-5',
               max_tokens: 500,

@@ -210,12 +210,8 @@
       '  background: linear-gradient(90deg, #F4D03F 33.33%, #2980B9 33.33% 66.66%, #E74C3C 66.66%);\n' +
       '}\n' +
       /* ── Responsive breakpoints ── */
-      /* FASE 1 — 1024-1280px: nav links compact, all visible */
-      '@media (max-width: 1280px) and (min-width: 1024px) {\n' +
-      '  .nav-item { font-size: 11px; letter-spacing: 0.04em; padding: 6px 9px; }\n' +
-      '}\n' +
-      /* FASE 2 — 768-1023px: hide nav links, show hamburger */
-      '@media (max-width: 1023px) {\n' +
+      /* FASE 2 — hamburger from 1279px down */
+      '@media (max-width: 1279px) {\n' +
       '  .topbar-nav { opacity: 0; pointer-events: none; }\n' +
       '  .nvd-hamburger { display: flex; }\n' +
       '}\n' +
@@ -382,15 +378,31 @@
     document.body.appendChild(ft);
   }
 
+  // ── Chat bubble injection ──────────────────────────────────────────────────
+  function injectChatBubble() {
+    var skip = ['/founder-panel.html', '/auth.html', '/profile.html', '/colabora-editorial.html'];
+    if (skip.some(function(p) { return PATH.includes(p); })) return;
+    function loadScript(src) {
+      if (document.querySelector('script[src="' + src + '"]')) return;
+      var s = document.createElement('script');
+      s.src = src;
+      document.body.appendChild(s);
+    }
+    loadScript('/mini-nevado.js');
+    loadScript('/nevado-bubble.js');
+  }
+
   // ── Execute synchronously ──────────────────────────────────────────────────
   if (document.body) {
     buildNav();
     buildFooter();
+    injectChatBubble();
     document.documentElement.style.visibility = '';
   } else {
     document.addEventListener('DOMContentLoaded', function () {
       buildNav();
       buildFooter();
+      injectChatBubble();
       document.documentElement.style.visibility = '';
     });
   }
