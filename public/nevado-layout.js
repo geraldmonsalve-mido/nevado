@@ -73,7 +73,7 @@
       '.nav-item {\n' +
       '  font-size: 12px; font-weight: 400; letter-spacing: 0.07em;\n' +
       '  color: rgba(232,228,220,0.42); padding: 6px 12px; border-radius: 4px;\n' +
-      '  text-decoration: none;\n' +
+      '  text-decoration: none; text-transform: uppercase;\n' +
       '  transition: color 0.2s, background 0.2s, font-size 200ms ease, letter-spacing 200ms ease, padding 200ms ease;\n' +
       '  white-space: nowrap;\n' +
       '}\n' +
@@ -147,7 +147,7 @@
       '.nvd-mobile-link {\n' +
       '  font-size: 15px; font-weight: 400; letter-spacing: 0.04em;\n' +
       '  color: rgba(232,228,220,0.65); text-decoration: none;\n' +
-      '  padding: 14px 24px;\n' +
+      '  padding: 14px 24px; text-transform: uppercase;\n' +
       '  transition: color 0.2s, background 0.2s;\n' +
       '}\n' +
       '.nvd-mobile-link:hover {\n' +
@@ -231,23 +231,21 @@
       '  #nvd-footer { padding: 36px 20px 0; }\n' +
       '}\n' +
       /* Lang selector fallback (also covered by lang-selector.js itself) */
-      '#nvd-lang-toggle button, #nvd-lang-toggle span, .nvd-lang-btn {\n' +
+      '#nvd-lang-selector { display: flex; align-items: center; gap: 2px; }\n' +
+      '.nvd-lang-btn {\n' +
       '  background: transparent !important;\n' +
       '  border: none !important;\n' +
       '  border-radius: 0 !important;\n' +
       '  box-shadow: none !important;\n' +
-      '  appearance: none;\n' +
-      '  -webkit-appearance: none;\n' +
-      '  padding: 2px 4px;\n' +
-      '  cursor: pointer;\n' +
-      '  font-size: 12px;\n' +
-      '  font-weight: 400;\n' +
-      '  letter-spacing: 0.08em;\n' +
+      '  appearance: none; -webkit-appearance: none;\n' +
+      '  padding: 2px 4px; cursor: pointer;\n' +
+      '  font-size: 12px; font-weight: 400; letter-spacing: 0.08em;\n' +
+      '  color: rgba(255,255,255,0.4); font-family: inherit;\n' +
       '}\n' +
-      '#nvd-lang-toggle .lang-active { color: #ffffff; font-weight: 600; }\n' +
-      '#nvd-lang-toggle .lang-inactive { color: rgba(255,255,255,0.45); }\n' +
-      '#nvd-lang-toggle .lang-sep {\n' +
-      '  color: rgba(255,255,255,0.25); margin: 0 2px; pointer-events: none;\n' +
+      '.nvd-lang-btn.active { color: #fff !important; font-weight: 600; }\n' +
+      '.nvd-lang-sep {\n' +
+      '  color: rgba(255,255,255,0.2); margin: 0 2px; pointer-events: none;\n' +
+      '  font-size: 12px; user-select: none;\n' +
       '}\n';
     document.head.appendChild(st);
   }
@@ -380,15 +378,37 @@
     document.body.appendChild(ft);
   }
 
+  // ── Chat en vivo button — all pages except listed ──────────────────────────
+  function injectChatButton() {
+    var skip = ['/nodo.html', '/nodo-chat.html', '/founder-panel.html', '/auth.html', '/colabora-editorial.html'];
+    if (skip.some(function(p) { return PATH === p; })) return;
+    if (document.getElementById('nvd-chat-btn')) return;
+    var btn = document.createElement('a');
+    btn.id = 'nvd-chat-btn';
+    btn.href = '/nodo-chat.html';
+    btn.style.cssText = 'position:fixed;bottom:28px;right:28px;z-index:1100;' +
+      'font-family:"Geist",system-ui,sans-serif;display:flex;align-items:center;gap:7px;' +
+      'background:rgba(13,13,20,0.96);border:1px solid rgba(255,255,255,0.1);border-radius:10px;' +
+      'padding:8px 14px;text-decoration:none;color:rgba(232,228,220,0.75);' +
+      'font-size:12px;font-weight:500;letter-spacing:0.03em;' +
+      'box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:background 0.2s,color 0.2s;user-select:none;';
+    btn.innerHTML = '<span style="color:#E74C3C;font-size:9px;line-height:1;">●</span>Chat en vivo';
+    btn.onmouseover = function() { btn.style.background = 'rgba(231,76,60,0.12)'; btn.style.color = '#E8E8E0'; };
+    btn.onmouseout  = function() { btn.style.background = 'rgba(13,13,20,0.96)'; btn.style.color = 'rgba(232,228,220,0.75)'; };
+    document.body.appendChild(btn);
+  }
+
   // ── Execute synchronously ──────────────────────────────────────────────────
   if (document.body) {
     buildNav();
     buildFooter();
+    injectChatButton();
     document.documentElement.style.visibility = '';
   } else {
     document.addEventListener('DOMContentLoaded', function () {
       buildNav();
       buildFooter();
+      injectChatButton();
       document.documentElement.style.visibility = '';
     });
   }
